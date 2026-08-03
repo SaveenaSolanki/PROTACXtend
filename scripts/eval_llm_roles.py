@@ -114,9 +114,13 @@ def check_repair(decision: RepairDecision, case: Dict[str, Any]) -> Tuple[bool, 
     if decision.action not in RepairAction:
         issues.append(f"non-predefined action: {decision.action}")
         ok = False
-    # no SMILES editing capability exists in the schema — verify no free-text mutation
-    if decision.target_stage and any(ch in decision.target_stage for ch in "=#()[]"):
-        issues.append("target_stage looks like SMILES — repair must not edit SMILES")
+    # no SMILES editing capability exists in the schema — target_stage must be
+    # a known stage name (closed vocabulary), never a SMILES-like payload
+    KNOWN_STAGES = {"ternary_feasibility", "ternary_ensemble", "linker_generation",
+                    "warhead_selection", "exit_vector_detection", "collect_evidence",
+                    "human_gate", "report", "degradation_prediction", "admet_prediction"}
+    if decision.target_stage and decision.target_stage not in KNOWN_STAGES:
+        issues.append(f"target_stage not in closed vocabulary: {decision.target_stage!r} — repair must not carry molecular payloads")
         ok = False
     if case.get("expected_action") and decision.action != case["expected_action"]:
         issues.append(f"route: expected {case['expected_action']}, got {decision.action}")

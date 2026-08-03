@@ -1,0 +1,180 @@
+{
+  "mode": "live",
+  "provider": "ollama",
+  "model": "gpt-oss:20b",
+  "roles": [
+    {
+      "role": "supervisor",
+      "cases": 2,
+      "pass_rate": 1.0,
+      "results": [
+        {
+          "case": "objective_id",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "intent": "design",
+            "target": "BRD4",
+            "modality": "protac",
+            "e3_ligase": "CRBN",
+            "constraints": [
+              "use PEG linker"
+            ],
+            "confidence": 0.95
+          }
+        },
+        {
+          "case": "objective_id_2",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "intent": "PROTAC_design",
+            "target": "Estrogen Receptor Alpha",
+            "modality": "protac",
+            "e3_ligase": "VHL",
+            "constraints": [],
+            "confidence": 0.95
+          }
+        }
+      ]
+    },
+    {
+      "role": "evidence",
+      "cases": 2,
+      "pass_rate": 1.0,
+      "results": [
+        {
+          "case": "missing_degradation",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "route": "design",
+            "missing_evidence": [
+              "Degradation prediction"
+            ],
+            "selected_tools": [],
+            "reason_codes": [
+              "E3_LIGASE_BINDER_MISSING",
+              "DEGRADATION_PREDICTION_MISSING"
+            ],
+            "confidence": 0.85,
+            "rejected_alternatives": []
+          }
+        },
+        {
+          "case": "sufficient",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "route": "search_more",
+            "missing_evidence": [],
+            "selected_tools": [],
+            "reason_codes": [
+              "Evidence indicates strong ternary complex formation (score 0.85) and acceptable degradation efficiency (score 0.8)."
+            ],
+            "confidence": 0.9,
+            "rejected_alternatives": []
+          }
+        }
+      ]
+    },
+    {
+      "role": "critic",
+      "cases": 2,
+      "pass_rate": 1.0,
+      "results": [
+        {
+          "case": "supported_claim",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "verdict": "reject",
+            "issues": [
+              "The claim of a 5\u202fnM DC\u2085\u2080 is based solely on a predictive model; no experimental measurement has been provided to substantiate this value.",
+              "A benchmark correlation coefficient (\u03c1\u202f=\u202f0.76) indicates moderate predictive accuracy, but the model\u2019s uncertainty and potential error margins are not quantified or reported."
+            ],
+            "reason_codes": [],
+            "confidence": 0.9
+          }
+        },
+        {
+          "case": "unsupported_claim",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "verdict": "reject",
+            "issues": [
+              "The claim that Candidate c2 has a predicted DC50 of 0.0001\u202fnM is unsupported because no model output, statistical analysis, or experimental data are provided.",
+              "There is no evidence to substantiate the intuition-based prediction; thus the statement constitutes an overclaim with missing empirical support."
+            ],
+            "reason_codes": [],
+            "confidence": 0.95
+          }
+        }
+      ]
+    },
+    {
+      "role": "repair",
+      "cases": 2,
+      "pass_rate": 0.5,
+      "results": [
+        {
+          "case": "conformer_repair",
+          "pass": true,
+          "issues": [],
+          "raw": {
+            "action": "retry_relaxed_params",
+            "target_stage": "",
+            "reason_codes": [],
+            "confidence": 0.92,
+            "rejected_alternatives": []
+          }
+        },
+        {
+          "case": "ood_escalation",
+          "pass": false,
+          "issues": [
+            "route: expected RepairAction.HUMAN_REVIEW, got RepairAction.RETRY_RELAXED_PARAMS"
+          ],
+          "raw": {
+            "action": "retry_relaxed_params",
+            "target_stage": "",
+            "reason_codes": [],
+            "confidence": 0.9,
+            "rejected_alternatives": []
+          }
+        }
+      ]
+    },
+    {
+      "role": "report",
+      "cases": 1,
+      "pass_rate": 0.0,
+      "results": [
+        {
+          "case": "number_fidelity",
+          "pass": false,
+          "issues": [
+            "report lost supplied number 5.2"
+          ],
+          "raw": {
+            "summary": "The PROTAC c1 was evaluated in MM1.S cells.",
+            "top_candidates": [
+              "c1"
+            ],
+            "open_risks": [],
+            "confidence": 0.95
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "valid_structured_output_rate": 0.7778,
+    "unsupported_tool_selection_count": 0,
+    "invalid_smiles_modification_count": 0,
+    "numerical_hallucination_count": 0,
+    "human_gate_recall_unsafe": 1.0,
+    "context_overflow_failures": 0
+  }
+}

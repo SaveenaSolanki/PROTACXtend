@@ -102,8 +102,8 @@ class TestLearningStore:
             failure_reason="hard_error", source="human_feedback",
             human_correction="Use HATU at 0C", run_id="r1")
 
-        model_hits = hub.learning.search(source="direct_synthesis")
-        human_hits = hub.learning.search(source="human_feedback")
+        model_hits = hub.learning.search(source="direct_synthesis", validated_only=False)
+        human_hits = hub.learning.search(source="human_feedback", validated_only=False)
         assert any(h["learning_id"] == model_lid for h in model_hits)
         assert any(h["learning_id"] == human_lid for h in human_hits)
         # human correction carries the correction text; model entry does not

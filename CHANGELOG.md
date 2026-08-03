@@ -186,3 +186,31 @@ geometrically screened against 3600 MegaDock poses.
   /llm/test returns schema-valid decision; status health ok.
 - 14 new tests (gateway + repair + provider registry + switch) — 99 total green.
 - Docs: PROTACPILOT_LLM.md (switch any provider 3 ways).
+
+## 2026-08-03 — Roadmap execution: Tasks 1-3 (immediate actions)
+- **Task 1 — Architecture freeze/unify** (release/v0.3-agentic-core branch):
+  git initialized, `.gitignore` (6GB repos excluded), branch created.
+  ONE entry point `agents/runtime.run_protacpilot(mode=deterministic|agentic)`;
+  mode_router + backend API route both modes through it; unified degradation
+  interface (chemprop→synglue→heuristic, provenance + labelled fallback);
+  DesignMemoryRecord deprecated (Pydantic alias); agentic/ scaffold marked
+  LEGACY; agentic_mode=False regression + agentic_mode=True e2e tests pass
+  (10 unification tests).
+- **Task 2 — Real retrosynthesis**: RAscore prescreen (SAScore proxy fallback,
+  clearly labelled) + **AiZynthFinder real route search** (pretrained USPTO
+  ONNX policy + templates + ZINC stock downloaded: 447 MB). RetrosynthesisResult
+  schema (exact spec), routing (feasible→pareto, repairable→linker, no-route→
+  human, tool-fail→RAscore-only downgrade), provenance, tool-failure safety.
+  13 tests (12 fast + 1 slow real). Verified LIVE: acetamide → 24 routes,
+  1-step, feasible; real PROTACs → honest human_required. Fixed 4.4.1 API
+  differences (Configuration→configdict, RouteCollection dicts, select_all).
+- **Task 3 — Real ternary ensemble**: P4ward + geometric proxy + **SE3-PROTACs
+  with real pretrained weights** (loaded, ESM embeddings, live score) — two
+  genuinely independent methods. Staged escalation (reject<0.30, p4ward<0.60,
+  top→p4ward+se3), consensus on RAW scores (agreement+uncertainty),
+  disagreement→human gate. Live: HMGB2-ICM candidate → geometric 1.0 vs SE3
+  ~0 → AMBIGUOUS → human gate (real scientific disagreement surfaced). 12 tests.
+- **Env fix**: aizynthfinder downgraded rdkit→2023.9.6 breaking chemprop;
+  restored rdkit 2026.3.5 and relinked cuik_molmaker's 158 hash-named RDKit
+  libs to the current rdkit.libs (predictions verified correct).
+- Full suite: 247 passed (11 skipped, slow deselected).

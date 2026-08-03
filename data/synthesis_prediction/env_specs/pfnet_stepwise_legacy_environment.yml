@@ -1,0 +1,15 @@
+name: pfnet-stepwise-synthesis-legacy
+channels:
+  - rdkit
+  - defaults
+dependencies:
+  - python=3.6
+  - rdkit=2017.09.3.0
+  - pip
+  - pip:
+      - chainer==6.2.0
+      - mpi4py
+      # The original README asks for cupy==6.2.0 and editable chainer-chemistry.
+      # cupy is CUDA/version-sensitive and should be selected manually for the
+      # machine GPU/CUDA stack. Install chainer-chemistry from:
+      # ../repos/chainer-chemistry

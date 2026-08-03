@@ -1,0 +1,16 @@
+name,smiles,source,class,known_target,reference
+Inflachromene,CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=CC=C5),Literature,HMGB1/2 binder,HMGB1+HMGB2,Lee et al. 2014 Nat Chem Biol
+Glycyrrhizin,CC1(C2CC3C(=O)C=C4C(C3(C2)C)(CC(C5C4(CCC5C(=O)O)C)O)C)OC6(C(C(C(C(O6)C(=O)O)O)O)O)C(=O)O),Literature,HMGB1 Box B binder,HMGB1,Mollica et al. 2007 Chem Biol
+Sofalcone,CC1=CC=C(C=C1)CC(=O)C2=CC3=C(C=C2)OCO3,Literature,Covalent HMGB1 binder,HMGB1,Park et al. 2023 Chem Commun
+Distamycin A,CC1=CC(=NC=C1C(=O)NCCC(=O)NCCC(=O)NCCC(=O)N)C,Literature,DNA minor groove binder,AT-rich DNA,Classic
+Netropsin,CC1=CC(=NC=C1C(=O)NCCC(=O)NCCC(=O)N)C(=O)N,Literature,DNA minor groove binder,AT-rich DNA,Classic
+Hoechst 33258,CCN1CCN(CC1)C2=CC3=C(C=C2)C(=NN3)C4=CC5=C(C=C4)N=C(N5)C6=CC(=C(C=C6)O)OC,Literature,DNA minor groove binder,AT-rich DNA,Classic
+DAPI,CC1=C2C=C(C=CC2=NC3=C1N=CC=C3)N,Literature,DNA minor groove binder,AT-rich DNA,Classic
+Berenil,CC1=CC=C(C=C1)NC(=O)NC2=CC=C(C=C2)C(=O)NC3=CC=CC=C3,Literature,DNA minor groove binder,AT-rich DNA,Classic
+PDS (Pyridostatin),CC1=CC=C(C=C1)C2=NC3=C(N2)C=C(C=C3)C4=NC5=C(N4)C=C(C=C5)N,Literature,G-quadruplex ligand,G4 DNA,Rodriguez et al. 2008
+Phen-DC3,CC1=CC=C(C=C1)C2=NC3=C(N2)C=C(C=C3)C4=NC5=C(N4)C=CC=C5,Literature,G-quadruplex ligand,G4 DNA,De Cian et al. 2007
+BRACO-19,CC1=CC=C(C=C1)C2=NC3=C(N2)C4=C(C=C3)C(=O)C5=C(C=CC=C5)C4=O,Literature,G-quadruplex ligand,G4 DNA,Burger et al. 2005
+TMPyP4,CC1=CC=C(C=C1)N2C3=C(C=C(C=C3)C4=CC=C5C6=C(C=CC(=C6)C7=CC=CC=C7)N4)N2,Literature,G-quadruplex ligand,G4 DNA,Grand et al. 2002
+5,5-Methylenedi-2,3-cresotic acid,O=C1C2=CC(=C(C(=C2)C3=CC(=C(C(=C3)C(=O)O1)O)C)O)C,Literature,HMGB1-CXCL12 inhibitor,HMGB1,Marcelli et al. 2020 Front Chem
+3-Deoxysappanchalcone,COC1=CC(=C(C=C1)C=CC(=O)C2=CC(=C(C=C2)O)O)O,Literature,HMGB1 inhibitor,HMGB1,Kim et al. 2025
+Folic acid,CC1=CC=C(C=C1)C(=O)NC(CCC(=O)O)C(=O)O,Literature,HMGB1-TLR4 inhibitor,HMGB1,PLOS One 2018

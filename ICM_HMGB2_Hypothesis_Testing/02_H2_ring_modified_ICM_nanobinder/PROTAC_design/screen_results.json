@@ -1,0 +1,21 @@
+{
+  "aicm_exit": [
+    -3.254,
+    14.01,
+    11.002
+  ],
+  "pom_exit": [
+    -1.484,
+    0.3918,
+    1.248
+  ],
+  "linker_effective_span": 13.6,
+  "closest_gap_A": 8.3,
+  "aicm_passing": 8,
+  "aicm_pass_pct": 0.2,
+  "oh27_original_passing": 7,
+  "original_pass_pct": 0.2,
+  "improvement": "MODEST (1.4 A closer, COOH handles are synthetically accessible)",
+  "verdict": "PASSES \u2014 A1_4COOH provides synthetically tractable exit vector with salt bridge affinity boost",
+  "note": "Corrected analysis (2026-07-09): A1_4COOH COOH min gap = 8.3 A vs OH27 min gap = 9.7 A. Both show similar pass rates at longer linkers, but A1_4COOH COOH provides a superior chemical handle for linker attachment."
+}

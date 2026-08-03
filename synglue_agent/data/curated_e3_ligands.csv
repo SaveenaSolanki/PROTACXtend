@@ -1,0 +1,8 @@
+name,e3_ligase,smiles,ligand_class,source,exit_vector_confidence,stereochemistry_valid,source_confidence,diversity_score,known_degrader_usage
+CRBN_demo_pomalidomide_like,CRBN,O=C1NC(=O)c2ccc([*:1])cc21,glutarimide_phthalimide_like,local_demo_e3_ligand,0.88,true,0.76,0.42,common_CRBN_PROTAC_handle
+CRBN_demo_lenalidomide_like,CRBN,NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1,imide_like,local_demo_e3_ligand,0.78,true,0.68,0.55,common_CRBN_PROTAC_handle
+CRBN_demo_avado_like,CRBN,CC(C)N1C(=O)c2ccc([*:1])cc2C1=O,imide_like,local_demo_e3_ligand,0.70,true,0.60,0.68,exploratory_CRBN_handle
+VHL_demo_hydroxyproline_like,VHL,CC(C)[C@H](NC(=O)c1ccc([*:1])cc1)C(=O)N1CCC[C@H]1O,hydroxyproline_like,local_demo_e3_ligand,0.86,true,0.75,0.44,common_VHL_PROTAC_handle
+VHL_demo_vh032_like,VHL,CC(C)c1ccc(C(=O)N[C@@H](C(=O)N2CCC[C@H]2O)C(C)C)cc1[*:1],VH032_like,local_demo_e3_ligand,0.74,true,0.68,0.56,common_VHL_PROTAC_handle
+IAP_demo_bestatin_like,IAP,COc1ccc(C(=O)NCC[*:1])cc1,bestatin_like,local_demo_e3_ligand,0.58,true,0.50,0.65,exploratory_IAP_handle
+MDM2_demo_nutlin_like,MDM2,Clc1ccc(C(=O)NCC[*:1])cc1Cl,nutlin_like,local_demo_e3_ligand,0.52,true,0.46,0.62,exploratory_MDM2_handle

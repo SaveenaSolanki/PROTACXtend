@@ -1,0 +1,69 @@
+{
+  "query": "HMGB2-ICM-CRBN-Pomalidomide linker optimization",
+  "total_linkers_tested": 16,
+  "linkers_with_passing_poses": 5,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "name": "C14-PEG5",
+      "type": "mixed",
+      "extended_length_A": 27.0,
+      "effective_span_A": 18.9,
+      "pass_rate_pct": 0.8,
+      "status": "\u2705 PASSES",
+      "smiles": "[*:1]CCCCCCCCCCCCCCOCCOCCOCCOCCOCC[*:2]"
+    },
+    {
+      "rank": 2,
+      "name": "PEG8",
+      "type": "PEG",
+      "extended_length_A": 22.4,
+      "effective_span_A": 15.7,
+      "pass_rate_pct": 0.4,
+      "status": "\u2705 PASSES",
+      "smiles": "[*:1]CCOCCOCCOCCOCCOCCOCCOCC[*:2]"
+    },
+    {
+      "rank": 3,
+      "name": "C8-PEG4",
+      "type": "mixed",
+      "extended_length_A": 19.5,
+      "effective_span_A": 13.6,
+      "pass_rate_pct": 0.2,
+      "status": "\u2705 PASSES",
+      "smiles": "[*:1]CCCCCCCCOCCOCCOCCOCC[*:2]"
+    },
+    {
+      "rank": 4,
+      "name": "PEG6",
+      "type": "PEG",
+      "extended_length_A": 16.8,
+      "effective_span_A": 11.8,
+      "pass_rate_pct": 0.0,
+      "status": "\u2705 PASSES",
+      "smiles": "[*:1]CCOCCOCCOCCOCCOCC[*:2]"
+    },
+    {
+      "rank": 5,
+      "name": "C6-PEG4",
+      "type": "mixed",
+      "extended_length_A": 17.0,
+      "effective_span_A": 11.9,
+      "pass_rate_pct": 0.0,
+      "status": "\u2705 PASSES",
+      "smiles": "[*:1]CCCCCCOCCOCCOCCOCC[*:2]"
+    }
+  ],
+  "p4ward_run_dirs": [
+    "p4ward_C14-PEG5",
+    "p4ward_PEG8",
+    "p4ward_C8-PEG4",
+    "p4ward_PEG6",
+    "p4ward_C6-PEG4"
+  ],
+  "conclusion": "MARGINAL: C14-PEG5 achieves only 0.8% pass rate. Even the longest linker (up to 27.0A) gives only 30 passing poses out of 3600. The exit vectors on ICM and pomalidomide point in geometrically incompatible directions. Consider testing alternative ICM exit vector (OH at position 29) or switching warhead.",
+  "additional_analysis": {
+    "alternative_icm_exit_vector": "If using ICM OH at position 29 (instead of 27), the exit vector moves by ~3.5 A. This changes the distance distribution and may improve pass rates for certain linkers.",
+    "warhead_replacement": "Hoechst 33258 and PDS (Pyridostatin) dock stronger to HMGB2 than ICM and may have more favorable exit vector geometries. Consider replacing ICM."
+  }
+}

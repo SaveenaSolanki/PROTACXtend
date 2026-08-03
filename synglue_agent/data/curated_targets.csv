@@ -1,0 +1,4 @@
+target_name,gene_symbol,uniprot_id,organism,synonyms,structures,alphafold_id,uniprot_confidence,known_binder_count,tractability_score
+BRD4,BRD4,O60885,human,BRD4|Bromodomain-containing protein 4|HUNK1,2OSS|3MXF|5T35,AF-O60885-F1,0.95,120,0.86
+GSPT1,GSPT1,P15170,human,GSPT1|eRF3a|ETF3A,,AF-P15170-F1,0.92,18,0.55
+EGFR,EGFR,P00533,human,EGFR|ERBB1|HER1,1M17|2ITX|4HJO,AF-P00533-F1,0.95,500,0.82

@@ -1,0 +1,10 @@
+P4WARD Pose #2615 - Exit Vector Gap Analysis
+============================================================
+MegaDock score:          2583.22
+HMGB2 center:            (3.6, 1.7, 1.4)
+CRBN center:             (-59.4, -26.1, -6.0)
+Center-to-center gap:    69.3 Å
+Linker max conformational span:  0.74 Å
+Gap vs linker max:       93.7× too large
+P4ward filter result:    FAILED (pose discarded)
+============================================================

@@ -1,0 +1,4 @@
+protac_id,target,e3_ligase,smiles,source,note
+DEMO_BRD4_CRBN_001,BRD4,CRBN,COc1ccccc1CCOCCO=C1NC(=O)c2ccccc21,local_demo_known_protac,nonvalidated_demo_record_for_similarity_only
+DEMO_BRD4_VHL_001,BRD4,VHL,COc1ccccc1CCCCCC(C)CNC(=O)c1ccccc1,local_demo_known_protac,nonvalidated_demo_record_for_similarity_only
+DEMO_EGFR_CRBN_001,EGFR,CRBN,COc1cc2ncnc(Nc3cccc(F)c3)c2cc1OCCO=C1NC(=O)c2ccccc21,local_demo_known_protac,nonvalidated_demo_record_for_similarity_only

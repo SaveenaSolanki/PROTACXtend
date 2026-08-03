@@ -1,0 +1,10 @@
+rdkit>=2026.3.2
+pydantic>=2.6
+langgraph>=0.2
+langchain>=0.2
+agno>=1.0
+fastapi>=0.110
+uvicorn>=0.27
+streamlit>=1.35
+pandas>=2.2
+numpy>=1.26

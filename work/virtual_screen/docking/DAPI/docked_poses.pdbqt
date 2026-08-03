@@ -1,0 +1,140 @@
+MODEL 1
+REMARK VINA RESULT:    -4.435      0.000      0.000
+REMARK INTER + INTRA:          -4.435
+REMARK INTER:                  -4.435
+REMARK INTRA:                   0.000
+REMARK UNBOUND:                 0.000
+ROOT
+ATOM      1  C   UNL     1      -2.298  15.280   2.654  1.00  0.00           C
+ATOM      2  C   UNL     1      -1.199  15.042   3.664  1.00  0.00           C
+ATOM      3  C   UNL     1       0.113  15.284   3.235  1.00  0.00           C
+ATOM      4  N   UNL     1       0.371  15.701   1.969  1.00  0.00           N
+ATOM      5  C   UNL     1       1.654  15.906   1.610  1.00  0.00           C
+ATOM      6  C   UNL     1       2.718  15.716   2.464  1.00  0.00           C
+ATOM      7  C   UNL     1       2.439  15.295   3.760  1.00  0.00           C
+ATOM      8  C   UNL     1       1.135  15.069   4.177  1.00  0.00           C
+ATOM      9  N   UNL     1       0.922  14.659   5.438  1.00  0.00           N
+ATOM     10  C   UNL     1      -0.335  14.424   5.835  1.00  0.00           C
+ATOM     11  C   UNL     1      -0.527  13.974   7.132  1.00  0.00           C
+ATOM     12  C   UNL     1      -1.798  13.686   7.635  1.00  0.00           C
+ATOM     13  C   UNL     1      -2.922  13.890   6.847  1.00  0.00           C
+ATOM     14  C   UNL     1      -2.735  14.294   5.522  1.00  0.00           C
+ATOM     15  C   UNL     1      -1.451  14.593   4.992  1.00  0.00           C
+ATOM     16  N   UNL     1      -4.182  13.471   7.286  1.00  0.00           N
+ATOM     17  H   UNL     1      -4.296  13.484   8.295  1.00  0.00           H
+ATOM     18  H   UNL     1      -4.959  13.912   6.805  1.00  0.00           H
+ENDROOT
+TORSDOF 0
+ENDMDL
+MODEL 2
+REMARK VINA RESULT:    -4.367      1.076      5.153
+REMARK INTER + INTRA:          -4.367
+REMARK INTER:                  -4.367
+REMARK INTRA:                   0.000
+REMARK UNBOUND:                 0.000
+ROOT
+ATOM      1  C   UNL     1      -2.047  15.258   2.633  1.00  0.00           C
+ATOM      2  C   UNL     1      -0.907  15.015   3.594  1.00  0.00           C
+ATOM      3  C   UNL     1      -1.252  14.610   4.891  1.00  0.00           C
+ATOM      4  N   UNL     1      -2.551  14.458   5.254  1.00  0.00           N
+ATOM      5  C   UNL     1      -2.823  14.077   6.519  1.00  0.00           C
+ATOM      6  C   UNL     1      -1.848  13.833   7.461  1.00  0.00           C
+ATOM      7  C   UNL     1      -0.520  13.987   7.073  1.00  0.00           C
+ATOM      8  C   UNL     1      -0.191  14.377   5.783  1.00  0.00           C
+ATOM      9  N   UNL     1       1.106  14.516   5.462  1.00  0.00           N
+ATOM     10  C   UNL     1       1.424  14.910   4.223  1.00  0.00           C
+ATOM     11  C   UNL     1       2.769  15.073   3.924  1.00  0.00           C
+ATOM     12  C   UNL     1       3.200  15.496   2.665  1.00  0.00           C
+ATOM     13  C   UNL     1       2.279  15.723   1.652  1.00  0.00           C
+ATOM     14  C   UNL     1       0.920  15.612   1.958  1.00  0.00           C
+ATOM     15  C   UNL     1       0.460  15.182   3.232  1.00  0.00           C
+ATOM     16  N   UNL     1       2.686  16.283   0.437  1.00  0.00           N
+ATOM     17  H   UNL     1       3.640  16.057   0.173  1.00  0.00           H
+ATOM     18  H   UNL     1       2.032  16.141  -0.327  1.00  0.00           H
+ENDROOT
+TORSDOF 0
+ENDMDL
+MODEL 3
+REMARK VINA RESULT:    -4.184      1.946      3.182
+REMARK INTER + INTRA:          -4.184
+REMARK INTER:                  -4.184
+REMARK INTRA:                   0.000
+REMARK UNBOUND:                 0.000
+ROOT
+ATOM      1  C   UNL     1       3.007  12.522   6.224  1.00  0.00           C
+ATOM      2  C   UNL     1       2.263  13.535   5.385  1.00  0.00           C
+ATOM      3  C   UNL     1       2.957  14.084   4.298  1.00  0.00           C
+ATOM      4  N   UNL     1       4.237  13.722   4.030  1.00  0.00           N
+ATOM      5  C   UNL     1       4.858  14.292   2.977  1.00  0.00           C
+ATOM      6  C   UNL     1       4.257  15.223   2.158  1.00  0.00           C
+ATOM      7  C   UNL     1       2.942  15.580   2.442  1.00  0.00           C
+ATOM      8  C   UNL     1       2.262  15.022   3.514  1.00  0.00           C
+ATOM      9  N   UNL     1       0.996  15.406   3.746  1.00  0.00           N
+ATOM     10  C   UNL     1       0.345  14.881   4.791  1.00  0.00           C
+ATOM     11  C   UNL     1      -0.952  15.314   5.026  1.00  0.00           C
+ATOM     12  C   UNL     1      -1.707  14.838   6.099  1.00  0.00           C
+ATOM     13  C   UNL     1      -1.185  13.869   6.945  1.00  0.00           C
+ATOM     14  C   UNL     1       0.139  13.465   6.747  1.00  0.00           C
+ATOM     15  C   UNL     1       0.924  13.935   5.661  1.00  0.00           C
+ATOM     16  N   UNL     1      -1.873  13.492   8.102  1.00  0.00           N
+ATOM     17  H   UNL     1      -2.882  13.568   8.029  1.00  0.00           H
+ATOM     18  H   UNL     1      -1.581  12.599   8.489  1.00  0.00           H
+ENDROOT
+TORSDOF 0
+ENDMDL
+MODEL 4
+REMARK VINA RESULT:    -3.913      1.672      3.224
+REMARK INTER + INTRA:          -3.913
+REMARK INTER:                  -3.913
+REMARK INTRA:                   0.000
+REMARK UNBOUND:                 0.000
+ROOT
+ATOM      1  C   UNL     1       1.515  14.023   5.727  1.00  0.00           C
+ATOM      2  C   UNL     1       1.116  14.611   4.394  1.00  0.00           C
+ATOM      3  C   UNL     1       2.154  15.068   3.571  1.00  0.00           C
+ATOM      4  N   UNL     1       3.450  14.990   3.969  1.00  0.00           N
+ATOM      5  C   UNL     1       4.405  15.456   3.139  1.00  0.00           C
+ATOM      6  C   UNL     1       4.133  16.006   1.907  1.00  0.00           C
+ATOM      7  C   UNL     1       2.801  16.074   1.509  1.00  0.00           C
+ATOM      8  C   UNL     1       1.783  15.609   2.327  1.00  0.00           C
+ATOM      9  N   UNL     1       0.514  15.703   1.896  1.00  0.00           N
+ATOM     10  C   UNL     1      -0.471  15.270   2.693  1.00  0.00           C
+ATOM     11  C   UNL     1      -1.774  15.404   2.238  1.00  0.00           C
+ATOM     12  C   UNL     1      -2.869  14.996   3.002  1.00  0.00           C
+ATOM     13  C   UNL     1      -2.673  14.397   4.238  1.00  0.00           C
+ATOM     14  C   UNL     1      -1.367  14.305   4.728  1.00  0.00           C
+ATOM     15  C   UNL     1      -0.239  14.711   3.966  1.00  0.00           C
+ATOM     16  N   UNL     1      -3.761  14.118   5.072  1.00  0.00           N
+ATOM     17  H   UNL     1      -4.625  13.920   4.576  1.00  0.00           H
+ATOM     18  H   UNL     1      -3.568  13.433   5.795  1.00  0.00           H
+ENDROOT
+TORSDOF 0
+ENDMDL
+MODEL 5
+REMARK VINA RESULT:    -3.556      2.501      4.568
+REMARK INTER + INTRA:          -3.556
+REMARK INTER:                  -3.556
+REMARK INTRA:                   0.000
+REMARK UNBOUND:                 0.000
+ROOT
+ATOM      1  C   UNL     1       2.111  12.520   1.980  1.00  0.00           C
+ATOM      2  C   UNL     1       1.223  13.218   2.983  1.00  0.00           C
+ATOM      3  C   UNL     1       1.620  13.158   4.326  1.00  0.00           C
+ATOM      4  N   UNL     1       2.745  12.493   4.694  1.00  0.00           N
+ATOM      5  C   UNL     1       3.072  12.460   6.002  1.00  0.00           C
+ATOM      6  C   UNL     1       2.322  13.068   6.983  1.00  0.00           C
+ATOM      7  C   UNL     1       1.175  13.751   6.592  1.00  0.00           C
+ATOM      8  C   UNL     1       0.797  13.813   5.259  1.00  0.00           C
+ATOM      9  N   UNL     1      -0.322  14.482   4.935  1.00  0.00           N
+ATOM     10  C   UNL     1      -0.697  14.527   3.650  1.00  0.00           C
+ATOM     11  C   UNL     1      -1.871  15.199   3.345  1.00  0.00           C
+ATOM     12  C   UNL     1      -2.354  15.288   2.038  1.00  0.00           C
+ATOM     13  C   UNL     1      -1.633  14.734   0.989  1.00  0.00           C
+ATOM     14  C   UNL     1      -0.476  14.011   1.293  1.00  0.00           C
+ATOM     15  C   UNL     1       0.033  13.909   2.615  1.00  0.00           C
+ATOM     16  N   UNL     1      -2.175  14.691  -0.299  1.00  0.00           N
+ATOM     17  H   UNL     1      -2.813  15.453  -0.508  1.00  0.00           H
+ATOM     18  H   UNL     1      -1.490  14.551  -1.036  1.00  0.00           H
+ENDROOT
+TORSDOF 0
+ENDMDL

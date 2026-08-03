@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Data (large, cloned repos, models — never commit)
+data/protac_repos/repos/
+SynGlue_Py/data/
+SynGlue_Py/models/
+data/benchmark/_ad_cache/
+outputs/benchmark/chemprop_*/
+outputs/benchmark/*.log
+outputs/p4ward_evidence/*.pse
+outputs/p4ward_evidence/*.tar.gz
+
+# Notebooks / checkpoints
+.ipynb_checkpoints/
+*.checkpoint
+
+# Env / secrets
+.env
+*.key
+nohup.out
+
+# OS
+.DS_Store

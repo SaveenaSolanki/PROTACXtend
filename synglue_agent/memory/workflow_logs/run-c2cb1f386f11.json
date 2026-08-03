@@ -1,0 +1,176 @@
+{
+  "run_id": "run-c2cb1f386f11",
+  "timestamp": "20260802-092149",
+  "user_request": "Design CRBN-based PROTACs for BRD4 with PEG linkers. Generate 5 candidates with low hERG risk.",
+  "target": "BRD4",
+  "final_candidate_ids": [
+    "SGA-652e8bacb1db",
+    "SGA-6a10113b669b",
+    "SGA-d28151910fad",
+    "SGA-a4c705301594",
+    "SGA-af9681e1a180"
+  ],
+  "warnings": [
+    "TargetBinderRetrievalAgent: Retrieved 3 binders from local_curated."
+  ],
+  "errors": [
+    "TargetBinderRetrievalAgent: max() arg is an empty sequence",
+    "ExitVectorDetectionAgent: 1 validation error for ExitVectorRecord\nattachment_atom_index\n  Input should be a valid integer [type=int_type, input_value={'atom_index': 4, 'symbol...mmy_atom_map_number': 1}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/int_type"
+  ],
+  "workflow_log": [
+    {
+      "agent": "SupervisorAgent",
+      "thought": "Parse the user's degradation objective into a structured PROTAC workflow state.",
+      "action": "parse_user_request",
+      "observation": "target=BRD4, e3=CRBN, candidate_count=5, linkers=['PEG']",
+      "processing_time_s": 0.0006
+    },
+    {
+      "agent": "DesignPlannerAgent",
+      "thought": "Plan tool routing, retries, evidence search, user-input gates, stopping rules, and validation depth.",
+      "action": "create_design_plan",
+      "observation": "status=continue, tools=19, external_target_search=False, docking=False, questions=1",
+      "processing_time_s": 0.0162
+    },
+    {
+      "agent": "SafetyAgent",
+      "thought": "Check user request for haz ard patterns, unreasonable targets, or missing critical information.",
+      "action": "safety_precheck",
+      "observation": "warnings=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "TargetResolverAgent",
+      "thought": "Resolve target gene/protein name to UniProt entry and AlphaFold structure.",
+      "action": "resolve_target",
+      "observation": "uniprot=M0QZD9, gene=BRD4",
+      "processing_time_s": 1.8637
+    },
+    {
+      "agent": "TargetBinderRetrievalAgent",
+      "thought": "Retrieve known ligands for the target from ChEMBL, PubChem, BindingDB.",
+      "action": "retrieve_binders",
+      "observation": "error=max() arg is an empty sequence",
+      "processing_time_s": 21.4039
+    },
+    {
+      "agent": "WarheadSelectionAgent",
+      "thought": "Select warhead molecules from curated library or provided smiles.",
+      "action": "select_warheads",
+      "observation": "warheads=3, valid=3",
+      "processing_time_s": 0.0011
+    },
+    {
+      "agent": "E3LigandSelectionAgent",
+      "thought": "Select E3 ligase and ligand based on target biology and subcellular colocalization.",
+      "action": "select_e3_ligands",
+      "observation": "ligands=3, families=['CRBN']",
+      "processing_time_s": 0.0161
+    },
+    {
+      "agent": "ExitVectorDetectionAgent",
+      "thought": "Detect suitable linker attachment points on warhead and E3 ligand molecules.",
+      "action": "detect_exit_vectors",
+      "observation": "error=1 validation error for ExitVectorRecord\nattachment_atom_index\n  Input should be a valid integer [type=int_type, input_value={'atom_index': 4, 'symbol...mmy_atom_map_number': 1}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/int_type",
+      "processing_time_s": 0.0013
+    },
+    {
+      "agent": "LinkerGenerationAgent",
+      "thought": "Generate curated and rule-based linker candidates matching requested classes and PROTAC-aware constraints.",
+      "action": "generate_linkers",
+      "observation": "linkers=3, classes=['PEG']",
+      "processing_time_s": 0.0099
+    },
+    {
+      "agent": "MolecularConstructionAgent",
+      "thought": "Construct PROTAC candidates with multi-strategy deterministic assembly and provenance tracking.",
+      "action": "construct_protacs",
+      "observation": "attempts=5, assembled=5, successes=5",
+      "processing_time_s": 0.0392
+    },
+    {
+      "agent": "CandidateValidationAgent",
+      "thought": "Sanitize, canonicalize, property-check, and deduplicate assembled PROTAC candidates.",
+      "action": "validate_protacs",
+      "observation": "valid_candidates=5",
+      "processing_time_s": 0.0264
+    },
+    {
+      "agent": "DegradationPredictionAgent",
+      "thought": "Predict DC50, Dmax, degradation probability, confidence, and model-version provenance.",
+      "action": "predict_degradation",
+      "observation": "predictions=5, low_confidence=0",
+      "processing_time_s": 0.01
+    },
+    {
+      "agent": "ADMETAgent",
+      "thought": "Compute PROTAC-aware descriptor and toxicity-risk triage without strict Lipinski rejection.",
+      "action": "predict_admet",
+      "observation": "admet=5, high_risk_records=0",
+      "processing_time_s": 0.0297
+    },
+    {
+      "agent": "NoveltySimilarityAgent",
+      "thought": "Compare candidates against local known PROTAC-like records using fingerprints or deterministic string fallback.",
+      "action": "check_novelty",
+      "observation": "novelty_results=5, duplicates=0",
+      "processing_time_s": 0.0074
+    },
+    {
+      "agent": "ApplicabilityDomainAgent",
+      "thought": "Assess whether candidates are inside the demo model domain before ranking.",
+      "action": "assess_applicability_domain",
+      "observation": "domain_results=5, outside=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "RankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "rank_candidates",
+      "observation": "ranked=5, top_score=0.596",
+      "processing_time_s": 0.001
+    },
+    {
+      "agent": "ProximityDiversityAgent",
+      "thought": "Cluster chemically similar candidates and identify diverse representatives.",
+      "action": "diversity_clustering",
+      "observation": "clusters=1",
+      "processing_time_s": 0.0019
+    },
+    {
+      "agent": "ReflectionReviewAgent",
+      "thought": "Critique top candidates for evidence strength, overclaims, ADME/Tox risk, novelty, and synthesis plausibility.",
+      "action": "reflection_review",
+      "observation": "reviews=5, high_review_risk=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "EvolutionRefinementAgent",
+      "thought": "Use review and ADME/Tox weaknesses to propose deterministic linker replacements and re-score evolved candidates.",
+      "action": "evolution_refinement",
+      "observation": "evolved=2, candidate_pool=7",
+      "processing_time_s": 0.0731
+    },
+    {
+      "agent": "TernaryFeasibilityAgent",
+      "thought": "Evaluate ternary complex formation via docking \u2192 P4ward pipeline.",
+      "action": "assess_ternary_feasibility",
+      "observation": "mode=none, n_results=0, affinity=N/A, feasible=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "FinalRankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "final_ranking",
+      "observation": "ranked=7, top_score=0.596",
+      "processing_time_s": 0.0044
+    },
+    {
+      "agent": "ReportAgent",
+      "thought": "Generate transparent candidate table, workflow summary, provenance, warnings, and scientific limitations.",
+      "action": "generate_report",
+      "observation": "report_chars=11099",
+      "processing_time_s": 1.0062
+    }
+  ]
+}

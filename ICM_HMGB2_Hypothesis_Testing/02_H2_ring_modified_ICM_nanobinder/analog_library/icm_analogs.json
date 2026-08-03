@@ -1,0 +1,178 @@
+[
+  {
+    "name": "ICM",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(C4=C([H])C([H])=C([H])C4([H])[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 365.4,
+    "logp": 1.75,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Modified phenyl ring"
+  },
+  {
+    "name": "A1_4COOH",
+    "smiles": "[H]OC(=O)c1c([H])c([H])c(-n2c(=O)n3n(c2=O)C2([H])C(=C([H])C3([H])[H])C([H])(C([H])([H])[H])C([H])([H])c3c([H])c([H])c(O[H])c2c3O[H])c([H])c1[H]",
+    "mw": 421.4,
+    "logp": 1.63,
+    "hbd": 3,
+    "hba": 6,
+    "rotb": 4,
+    "tpsa": 126.7,
+    "rationale": "Acidic group \u2192 binds basic HMGB2 surface"
+  },
+  {
+    "name": "A2_3COOH",
+    "smiles": "[H]OC(=O)c1c([H])c([H])c([H])c(-n2c(=O)n3n(c2=O)C2([H])C(=C([H])C3([H])[H])C([H])(C([H])([H])[H])C([H])([H])c3c([H])c([H])c(O[H])c2c3O[H])c1[H]",
+    "mw": 421.4,
+    "logp": 1.63,
+    "hbd": 3,
+    "hba": 6,
+    "rotb": 4,
+    "tpsa": 126.7,
+    "rationale": "Acidic group \u2192 binds basic HMGB2 surface"
+  },
+  {
+    "name": "A3_4OH",
+    "smiles": "[H]Oc1c([H])c([H])c(-n2c(=O)n3n(c2=O)C2([H])C(=C([H])C3([H])[H])C([H])(C([H])([H])[H])C([H])([H])c3c([H])c([H])c(O[H])c2c3O[H])c([H])c1[H]",
+    "mw": 393.4,
+    "logp": 1.64,
+    "hbd": 3,
+    "hba": 5,
+    "rotb": 4,
+    "tpsa": 109.6,
+    "rationale": "Extra H-bond donor \u2192 additional HMGB2 contact"
+  },
+  {
+    "name": "A4_4F",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(F)c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 395.4,
+    "logp": 2.07,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Halo/Hydrophobic \u2192 improved pocket fit"
+  },
+  {
+    "name": "A5_4Cl",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(Cl)c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 411.8,
+    "logp": 2.59,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Halo/Hydrophobic \u2192 improved pocket fit"
+  },
+  {
+    "name": "A6_4CF3",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(C(F)(F)F)c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 445.4,
+    "logp": 2.95,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Halo/Hydrophobic \u2192 improved pocket fit"
+  },
+  {
+    "name": "A7_4OMe",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(OC([H])([H])[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 407.4,
+    "logp": 1.94,
+    "hbd": 2,
+    "hba": 5,
+    "rotb": 4,
+    "tpsa": 98.6,
+    "rationale": "Methoxy \u2192 moderate polarity + H-bond acceptor"
+  },
+  {
+    "name": "A8_4tBu",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 433.5,
+    "logp": 3.23,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Hydrophobic bulk \u2192 improved hydrophobic contact"
+  },
+  {
+    "name": "A9_3Cl4F",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(F)c(Cl)c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 429.8,
+    "logp": 2.73,
+    "hbd": 2,
+    "hba": 4,
+    "rotb": 3,
+    "tpsa": 89.4,
+    "rationale": "Halo/Hydrophobic \u2192 improved pocket fit"
+  },
+  {
+    "name": "A10_4SO3H",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(S(=O)(=O)O[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 457.5,
+    "logp": 1.18,
+    "hbd": 3,
+    "hba": 7,
+    "rotb": 5,
+    "tpsa": 143.8,
+    "rationale": "Acidic group \u2192 binds basic HMGB2 surface"
+  },
+  {
+    "name": "A11_4NH2",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(N([H])[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 392.4,
+    "logp": 1.52,
+    "hbd": 3,
+    "hba": 5,
+    "rotb": 4,
+    "tpsa": 115.4,
+    "rationale": "Polar group \u2192 additional H-bonds"
+  },
+  {
+    "name": "A12_4NHAc",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(N([H])C(=O)C([H])([H])[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 434.5,
+    "logp": 1.89,
+    "hbd": 3,
+    "hba": 5,
+    "rotb": 4,
+    "tpsa": 118.5,
+    "rationale": "Polar group \u2192 additional H-bonds"
+  },
+  {
+    "name": "A13_4CH2COOH",
+    "smiles": "[H]OC(=O)C([H])([H])c1c([H])c([H])c(-n2c(=O)n3n(c2=O)C2([H])C(=C([H])C3([H])[H])C([H])(C([H])([H])[H])C([H])([H])c3c([H])c([H])c(O[H])c2c3O[H])c([H])c1[H]",
+    "mw": 435.4,
+    "logp": 1.56,
+    "hbd": 3,
+    "hba": 6,
+    "rotb": 5,
+    "tpsa": 126.7,
+    "rationale": "Acidic group \u2192 binds basic HMGB2 surface"
+  },
+  {
+    "name": "A14_4PO3H2",
+    "smiles": "[H]Oc1c([H])c([H])c2c(O[H])c1C1([H])C(=C([H])C([H])([H])n3c(=O)n(-c4c([H])c([H])c(P(=O)(O[H])O[H])c([H])c4[H])c(=O)n31)C([H])(C([H])([H])[H])C2([H])[H]",
+    "mw": 457.4,
+    "logp": 0.74,
+    "hbd": 4,
+    "hba": 7,
+    "rotb": 6,
+    "tpsa": 146.9,
+    "rationale": "Acidic group \u2192 binds basic HMGB2 surface"
+  },
+  {
+    "name": "A15_34diOH",
+    "smiles": "[H]Oc1c([H])c([H])c(-n2c(=O)n3n(c2=O)C2([H])C(=C([H])C3([H])[H])C([H])(C([H])([H])[H])C([H])([H])c3c([H])c([H])c(O[H])c2c3O[H])c([H])c1O[H]",
+    "mw": 409.4,
+    "logp": 1.34,
+    "hbd": 4,
+    "hba": 6,
+    "rotb": 5,
+    "tpsa": 129.8,
+    "rationale": "Extra H-bond donor \u2192 additional HMGB2 contact"
+  }
+]

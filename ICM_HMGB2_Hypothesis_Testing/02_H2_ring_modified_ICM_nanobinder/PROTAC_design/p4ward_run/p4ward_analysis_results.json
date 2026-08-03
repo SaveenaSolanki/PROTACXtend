@@ -1,0 +1,66 @@
+{
+  "megadock_poses_parsed": 3600,
+  "exit_vectors": {
+    "A1_4COOH_COOH": [
+      -3.254,
+      14.01,
+      11.002
+    ],
+    "pomalidomide_NH2": [
+      -1.484,
+      0.3918,
+      1.248
+    ],
+    "OH27_original": [
+      2.57,
+      12.32,
+      0.29
+    ]
+  },
+  "distance_stats": {
+    "aicm_mean_A": 100.00248130735207,
+    "aicm_std_A": 23.590367344486474,
+    "aicm_min_A": 8.277552328668483,
+    "aicm_median_A": 103.87754456152342,
+    "oh27_mean_A": 96.25633271817017,
+    "oh27_std_A": 25.25457580616021,
+    "oh27_min_A": 9.654528643643406
+  },
+  "passing_poses": {
+    "C4 (C4)": {
+      "span_A": 0.74,
+      "aicm_passing": 0,
+      "aicm_pct": 0.0,
+      "oh27_passing": 0,
+      "oh27_pct": 0.0
+    },
+    "PEG6": {
+      "span_A": 11.8,
+      "aicm_passing": 8,
+      "aicm_pct": 0.22,
+      "oh27_passing": 6,
+      "oh27_pct": 0.17
+    },
+    "C8-PEG4": {
+      "span_A": 13.6,
+      "aicm_passing": 8,
+      "aicm_pct": 0.22,
+      "oh27_passing": 7,
+      "oh27_pct": 0.19
+    },
+    "PEG8": {
+      "span_A": 15.7,
+      "aicm_passing": 12,
+      "aicm_pct": 0.33,
+      "oh27_passing": 12,
+      "oh27_pct": 0.33
+    },
+    "C14-PEG5": {
+      "span_A": 18.9,
+      "aicm_passing": 16,
+      "aicm_pct": 0.44,
+      "oh27_passing": 20,
+      "oh27_pct": 0.56
+    }
+  }
+}

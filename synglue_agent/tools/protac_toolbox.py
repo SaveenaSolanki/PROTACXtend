@@ -1,0 +1,2028 @@
+"""Deterministic PROTAC design toolbox.
+
+This module is the scientific tool layer. Agent classes call these methods, and
+thin modules such as ``warhead_selector.py`` expose the same functions for users
+who want a toolbox-style API without running the full workflow.
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import math
+import re
+import time
+from collections import defaultdict
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+
+from synglue_agent.backend.config import (
+    DATA_DIR,
+    DEFAULT_E3_LIGASES,
+    DEFAULT_LINKER_TYPES,
+    DEFAULT_RANKING_WEIGHTS,
+    WORKFLOW_LOG_DIR,
+    ensure_directories,
+)
+from synglue_agent.backend.schemas import (
+    ADMETPrediction,
+    AgentTrace,
+    ApplicabilityDomainResult,
+    BinderRecord,
+    CandidateRecord,
+    ConstructionAttempt,
+    DegradationPrediction,
+    DiversityCluster,
+    E3LigandRecord,
+    ExitVectorRecord,
+    LinkerRecord,
+    NoveltyResult,
+    ParsedObjective,
+    RankingResult,
+    ReflectionReview,
+    TargetRecord,
+    TernaryFeasibilityResult,
+    WarheadRecord,
+    WorkflowState,
+    model_to_dict,
+)
+from synglue_agent.tools.chemistry_core import (
+    analyze_protac_like_properties,
+    compute_descriptors as compute_core_descriptors,
+    detect_attachment_points,
+)
+
+
+try:  # pragma: no cover - optional scientific dependency.
+    from rdkit import Chem
+    from rdkit import rdBase
+    from rdkit.Chem import AllChem, Crippen, Descriptors, Lipinski, rdMolDescriptors
+
+    RDKIT_AVAILABLE = True
+    rdBase.DisableLog("rdApp.warning")
+    rdBase.DisableLog("rdApp.error")
+except Exception:  # pragma: no cover - default in this execution environment.
+    Chem = None
+    AllChem = None
+    Crippen = None
+    Descriptors = None
+    Lipinski = None
+    rdMolDescriptors = None
+    RDKIT_AVAILABLE = False
+
+
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        if value in ("", None):
+            return default
+        return float(value)
+    except Exception:
+        return default
+
+
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        if value in ("", None):
+            return default
+        return int(float(value))
+    except Exception:
+        return default
+
+
+def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+    return max(low, min(high, value))
+
+
+def _norm_name(value: Optional[str]) -> str:
+    return (value or "").strip().upper()
+
+
+def _has_attachment(smiles: str) -> bool:
+    return "[*" in smiles or "*" in smiles
+
+
+def _remove_attachment_markers(smiles: str) -> str:
+    cleaned = re.sub(r"\(\[\*:?\d*\]\)", "", smiles)
+    cleaned = re.sub(r"\[\*:?\d*\]", "", cleaned).replace("*", "")
+    return cleaned.replace("()", "")
+
+
+def _annotate_hypothetical_attachment(smiles: str) -> str:
+    if _has_attachment(smiles):
+        return smiles
+    return f"{smiles}[*:1]"
+
+
+def _stable_id(prefix: str, *parts: str) -> str:
+    digest = hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()[:12]
+    return f"{prefix}-{digest}"
+
+
+class ProtacDesignToolbox:
+    """All deterministic PROTAC design tools used by SynGlue agents."""
+
+    def __init__(self, data_dir: Path = DATA_DIR):
+        ensure_directories()
+        self.data_dir = Path(data_dir)
+        self.rdkit_available = RDKIT_AVAILABLE
+
+    # ------------------------------------------------------------------
+    # Data loading
+    # ------------------------------------------------------------------
+    def load_table(self, filename: str) -> List[Dict[str, str]]:
+        path = self.data_dir / filename
+        if not path.exists():
+            return []
+        with path.open("r", newline="", encoding="utf-8") as handle:
+            return [dict(row) for row in csv.DictReader(handle)]
+
+    def load_curated_targets(self) -> List[Dict[str, str]]:
+        return self.load_table("curated_targets.csv")
+
+    def load_curated_warheads(self) -> List[Dict[str, str]]:
+        return self.load_table("curated_warheads.csv")
+
+    def load_external_warhead_seed(self) -> List[Dict[str, str]]:
+        return self.load_table("warhead_seed_metaboglue_gold.csv")
+
+    def load_curated_e3_ligands(self) -> List[Dict[str, str]]:
+        return self.load_table("curated_e3_ligands.csv")
+
+    def load_curated_linkers(self) -> List[Dict[str, str]]:
+        return self.load_table("curated_linkers.csv")
+
+    def load_known_protacs(self) -> List[Dict[str, str]]:
+        rows = self.load_table("known_protac_smiles.csv")
+        if rows:
+            return rows
+        return self.load_table("protacdb_local.csv")
+
+    # ------------------------------------------------------------------
+    # Request parsing and guardrails
+    # ------------------------------------------------------------------
+    def parse_user_request(self, user_request: str) -> ParsedObjective:
+        text = user_request.strip()
+        upper = text.upper()
+
+        e3 = None
+        for ligase in ["CRBN", "VHL", "IAP", "MDM2", "DCAF", "DDB1"]:
+            if ligase in upper:
+                e3 = ligase
+                break
+
+        target_name = ""
+        target_patterns = [
+            r"\bfor\s+([A-Za-z0-9\-]+)",
+            r"\bof\s+([A-Za-z0-9\-]+)",
+            r"\btarget\s+([A-Za-z0-9\-]+)",
+        ]
+        for pattern in target_patterns:
+            match = re.search(pattern, text, flags=re.IGNORECASE)
+            if match:
+                candidate = match.group(1).strip(" .,:;")
+                if candidate.upper() not in {"A", "THE", "LOW", "HIGH", "CRBN", "VHL"}:
+                    target_name = candidate
+                    break
+        if not target_name:
+            genes = re.findall(r"\b[A-Z0-9]{3,8}\b", text)
+            genes = [gene for gene in genes if gene not in {"CRBN", "VHL", "PROTAC", "SMILES"}]
+            target_name = genes[-1] if genes else ""
+
+        smiles_candidates = re.findall(r"(?:(?:SMILES|smiles)\s*[:=]?\s*)([A-Za-z0-9@+\-\[\]\(\)=#$\\/%.:]+)", text)
+        warhead_smiles = smiles_candidates[0] if smiles_candidates else None
+
+        linker_types = []
+        for linker_type in ["PEG", "alkyl", "piperazine", "triazole", "amide", "rigid aromatic", "mixed polar"]:
+            if linker_type.upper() in upper:
+                linker_types.append(linker_type if linker_type.isupper() else linker_type)
+        if not linker_types:
+            linker_types = list(DEFAULT_LINKER_TYPES)
+
+        candidate_count = 50
+        count_match = re.search(r"(\d+)(?:\s+[A-Za-z0-9\-]+){0,3}\s+(?:candidates|PROTACs|designs|molecules)", text, flags=re.IGNORECASE)
+        if count_match:
+            candidate_count = max(1, min(500, int(count_match.group(1))))
+
+        admet_constraints: Dict[str, Any] = {}
+        if "HERG" in upper:
+            admet_constraints["avoid_hERG"] = True
+        if "DILI" in upper:
+            admet_constraints["avoid_DILI"] = True
+        if "AMES" in upper:
+            admet_constraints["avoid_AMES"] = True
+        tpsa_match = re.search(r"TPSA\s*(?:<|LESS THAN|UNDER|BELOW)\s*(\d+)", upper)
+        if tpsa_match:
+            admet_constraints["max_tpsa"] = float(tpsa_match.group(1))
+        if "LOW TPSA" in upper or "AVOID HIGH TPSA" in upper:
+            admet_constraints.setdefault("max_tpsa", 190.0)
+
+        use_structure = any(term in upper for term in ["STRUCTURE", "TERNARY", "DOCK", "POSE"])
+        use_retro = any(term in upper for term in ["RETROSYNTHESIS", "SYNTHETICALLY FEASIBLE", "SYNTHESIS"])
+        output_format = "json" if "JSON" in upper else "csv" if "CSV" in upper else "table" if "TABLE" in upper else "markdown"
+
+        objective_terms = []
+        if "LOW DC50" in upper:
+            objective_terms.append("low DC50")
+        if "HIGH DMAX" in upper or "HIGH DMAX" in upper.replace("D_MAX", "DMAX"):
+            objective_terms.append("high Dmax")
+        if "NOVEL" in upper:
+            objective_terms.append("novelty")
+        if "HERG" in upper:
+            objective_terms.append("low hERG risk")
+        optimization = ", ".join(objective_terms) if objective_terms else "balanced degradation, ADME/Tox, novelty, and synthesis feasibility"
+
+        return ParsedObjective(
+            target_name=target_name,
+            warhead_smiles=warhead_smiles,
+            e3_ligase=e3,
+            preferred_linker_types=linker_types,
+            candidate_count=candidate_count,
+            optimization_objective=optimization,
+            admet_constraints=admet_constraints,
+            novelty_requirement="high" if "NOVEL" in upper else "medium",
+            use_structure_aware_ranking=use_structure,
+            use_retrosynthesis_filtering=use_retro,
+            desired_output_format=output_format,
+            ranking_weights=dict(DEFAULT_RANKING_WEIGHTS),
+        )
+
+    def safety_precheck(self, state: WorkflowState) -> WorkflowState:
+        unsafe_terms = ["scale-up", "human dosing", "in vivo dosing", "administer to humans"]
+        if any(term in state.user_request.lower() for term in unsafe_terms):
+            state.warnings.append(
+                "Request includes experimental or dosing language. SynGlue-Agent will only provide computational prioritization and requires expert review."
+            )
+        return state
+
+    # ------------------------------------------------------------------
+    # Target and binder tools
+    # ------------------------------------------------------------------
+    def resolve_target(self, target_name: str, uniprot_id: Optional[str] = None) -> TargetRecord:
+        query = _norm_name(uniprot_id or target_name)
+        targets = self.load_curated_targets()
+        target_rows = []
+        for row in targets:
+            synonyms = [item.strip().upper() for item in row.get("synonyms", "").split("|")]
+            values = {_norm_name(row.get("target_name")), _norm_name(row.get("gene_symbol")), _norm_name(row.get("uniprot_id")), *synonyms}
+            if query in values:
+                target_rows.append(row)
+
+        uniprot_error = None
+        if query:
+            try:
+                from synglue_agent.backend.uniprot_client import resolve_target_via_uniprot
+
+                api_record, api_result = resolve_target_via_uniprot(target_name, uniprot_id, timeout=4.0)
+                if api_record is not None:
+                    if target_rows:
+                        row = target_rows[0]
+                        api_record.structures = [item for item in row.get("structures", "").split("|") if item]
+                        api_record.known_binder_count = _safe_int(row.get("known_binder_count"), 0)
+                        api_record.tractability_score = _safe_float(row.get("tractability_score"), api_record.tractability_score)
+                        api_record.external_ids["local_curated_seed_matched"] = True
+                    return api_record
+                uniprot_error = api_result.get("error") if isinstance(api_result, dict) else "UniProt lookup returned no record."
+            except Exception as exc:
+                uniprot_error = f"UniProt executable lookup failed: {exc}"
+
+        if not target_rows:
+            try:
+                from synglue_agent.tools.online_ligand_miner import resolve_target_from_chembl, retrieve_gcoupler_biology_context
+
+                online_record, online_warnings = resolve_target_from_chembl(target_name)
+                if online_record is not None:
+                    online_record.warnings.extend(online_warnings)
+                    return online_record
+                biology, biology_warnings = retrieve_gcoupler_biology_context(target_name)
+                warnings = ["Target not found in local curated table or ChEMBL target search."]
+                if uniprot_error:
+                    warnings.append(f"UniProt REST lookup did not provide a real API record: {uniprot_error}")
+                warnings.extend(online_warnings)
+                warnings.extend(biology_warnings)
+                return TargetRecord(
+                    target_name=target_name or "unresolved",
+                    gene_symbol=target_name.upper() if target_name else "",
+                    uniprot_id=uniprot_id,
+                    uniprot_confidence=0.0,
+                    known_binder_count=0,
+                    tractability_score=0.12 if biology else 0.05,
+                    source="biology context fallback" if biology else "unresolved",
+                    biology_context=biology,
+                    warnings=warnings
+                    + [
+                        "No ligand-derived warhead can be built unless a chemical inhibitor/activator SMILES is found or provided by the user."
+                    ],
+                )
+            except Exception as exc:
+                fallback_warning = f"Online target fallback failed: {exc}"
+            return TargetRecord(
+                target_name=target_name or "unresolved",
+                gene_symbol=target_name.upper() if target_name else "",
+                uniprot_id=uniprot_id,
+                uniprot_confidence=0.2 if target_name else 0.0,
+                known_binder_count=0,
+                tractability_score=0.15,
+                source="local_curated_seed",
+                warnings=[
+                    "Target not found in local curated table.",
+                    *([f"UniProt REST lookup did not provide a real API record: {uniprot_error}"] if uniprot_error else []),
+                    fallback_warning,
+                ],
+            )
+
+        row = target_rows[0]
+        synonyms = [item for item in row.get("synonyms", "").split("|") if item]
+        structures = [item for item in row.get("structures", "").split("|") if item]
+        return TargetRecord(
+            target_name=row.get("target_name", target_name),
+            gene_symbol=row.get("gene_symbol", target_name.upper()),
+            uniprot_id=row.get("uniprot_id") or uniprot_id,
+            organism=row.get("organism", "human"),
+            synonyms=synonyms,
+            structures=structures,
+            alphafold_id=row.get("alphafold_id") or None,
+            uniprot_confidence=_safe_float(row.get("uniprot_confidence"), 0.9),
+            known_binder_count=_safe_int(row.get("known_binder_count"), 0),
+            tractability_score=_safe_float(row.get("tractability_score"), 0.5),
+            source="local_curated_seed",
+            warnings=([f"UniProt REST lookup did not provide a real API record: {uniprot_error}"] if uniprot_error else []),
+        )
+
+    def retrieve_known_binders(
+        self,
+        target_record: TargetRecord,
+        potency_threshold_nM: float = 1000.0,
+        activity_types: Sequence[str] = ("IC50", "Ki", "Kd", "EC50"),
+    ) -> List[BinderRecord]:
+        rows = self.load_curated_warheads()
+        target_values = {_norm_name(target_record.target_name), _norm_name(target_record.gene_symbol), _norm_name(target_record.uniprot_id)}
+        binders: List[BinderRecord] = []
+        for row in rows:
+            if _norm_name(row.get("target")) not in target_values:
+                continue
+            activity_type = row.get("activity_type", "IC50")
+            activity = _safe_float(row.get("activity_nM"), 999999.0)
+            if activity_type not in activity_types or activity > potency_threshold_nM:
+                continue
+            p_activity = self.compute_p_activity(activity)
+            binders.append(
+                BinderRecord(
+                    name=row.get("name", ""),
+                    target=row.get("target", ""),
+                    smiles=row.get("smiles", ""),
+                    activity_type=activity_type,
+                    activity_nM=activity,
+                    p_activity=p_activity,
+                    assay_confidence=_safe_float(row.get("assay_confidence"), 0.75),
+                    source=f"local_curated_seed:{row.get('source', 'curated_warheads.csv')}",
+                    year=_safe_int(row.get("year"), 0) or None,
+                    metadata={"exit_vector_confidence": row.get("exit_vector_confidence", ""), "real_output_generated": False},
+                )
+            )
+        binders.sort(key=lambda item: (item.activity_nM if item.activity_nM is not None else 999999.0, -item.assay_confidence))
+        binders.extend(self._retrieve_external_seed_binders(target_record, potency_threshold_nM, activity_types))
+        binders.sort(key=lambda item: (item.activity_nM if item.activity_nM is not None else 999999.0, -item.assay_confidence))
+        return binders
+
+    def _retrieve_external_seed_binders(
+        self,
+        target_record: TargetRecord,
+        potency_threshold_nM: float,
+        activity_types: Sequence[str],
+    ) -> List[BinderRecord]:
+        rows = self.load_external_warhead_seed()
+        if not rows:
+            return []
+        query_values = {_norm_name(target_record.uniprot_id), _norm_name(target_record.gene_symbol), _norm_name(target_record.target_name)}
+        allowed_types = {item.upper() for item in activity_types}
+        binders: List[BinderRecord] = []
+        seen: set[str] = set()
+        for row in rows:
+            uniprot = _norm_name(row.get("uniprot_id"))
+            if uniprot and uniprot not in query_values:
+                continue
+            activity_type = (row.get("gt_affinity_type") or "").strip().upper()
+            if activity_type and activity_type not in allowed_types:
+                continue
+            activity = _safe_float(row.get("gt_affinity_nM"), 999999.0)
+            if activity <= 0 or activity > potency_threshold_nM:
+                continue
+            smiles = row.get("SMILES", "")
+            if not smiles or smiles in seen:
+                continue
+            seen.add(smiles)
+            binders.append(
+                BinderRecord(
+                    name=row.get("ligand_name") or f"metaboglue_seed_{len(binders)+1}",
+                    target=target_record.gene_symbol or target_record.target_name,
+                    smiles=smiles,
+                    activity_type=activity_type or "IC50",
+                    activity_nM=activity,
+                    p_activity=self.compute_p_activity(activity),
+                    assay_confidence=0.65,
+                    source="local_curated_seed:warhead_seed_metaboglue_gold.csv",
+                    metadata={
+                        "gt_activity_text": row.get("gt_activity_text"),
+                        "gt_source_column": row.get("gt_source_column"),
+                        "gt_training_reliability": row.get("gt_training_reliability"),
+                        "real_output_generated": False,
+                    },
+                )
+            )
+        return binders
+
+    def mine_external_binders(self, target_record: TargetRecord) -> Tuple[List[BinderRecord], List[str]]:
+        try:
+            from synglue_agent.tools.online_ligand_miner import (
+                load_local_drugbank_binders,
+                retrieve_chembl_bioactive_ligands,
+                retrieve_gcoupler_biology_context,
+            )
+        except Exception as exc:
+            return [], [f"External binder-mining tools are unavailable: {exc}"]
+
+        binders: List[BinderRecord] = []
+        warnings: List[str] = []
+        drugbank_binders, drugbank_warnings = load_local_drugbank_binders(target_record)
+        chembl_binders, chembl_warnings = retrieve_chembl_bioactive_ligands(target_record)
+        binders.extend(drugbank_binders)
+        binders.extend(chembl_binders)
+        warnings.extend(drugbank_warnings)
+        warnings.extend(chembl_warnings)
+        if not binders:
+            biology, biology_warnings = retrieve_gcoupler_biology_context(target_record.gene_symbol or target_record.target_name)
+            target_record.biology_context = biology
+            warnings.extend(biology_warnings)
+            warnings.append(
+                "Biology context was retrieved, but no chemical inhibitor/activator SMILES was available for PROTAC construction."
+            )
+        else:
+            target_record.known_binder_count = len(binders)
+            target_record.tractability_score = max(target_record.tractability_score, min(0.72, 0.35 + 0.02 * len(binders)))
+        return binders, warnings
+
+    def compute_p_activity(self, activity_nM: float) -> float:
+        if activity_nM <= 0:
+            return 0.0
+        return -math.log10(activity_nM * 1e-9)
+
+    # ------------------------------------------------------------------
+    # Component selection and exit vectors
+    # ------------------------------------------------------------------
+    def select_warheads(
+        self,
+        target_record: Optional[TargetRecord],
+        binders: Sequence[BinderRecord],
+        user_warhead_smiles: Optional[str] = None,
+        max_warheads: int = 6,
+    ) -> List[WarheadRecord]:
+        if user_warhead_smiles:
+            validity = self.validate_smiles(user_warhead_smiles)
+            return [
+                WarheadRecord(
+                    name="user_provided_warhead",
+                    target=target_record.gene_symbol if target_record else "user_target",
+                    smiles=user_warhead_smiles,
+                    source="user provided",
+                    potency_score=0.5,
+                    derivatization_score=0.65 if _has_attachment(user_warhead_smiles) else 0.35,
+                    exit_vector_confidence=0.9 if _has_attachment(user_warhead_smiles) else 0.35,
+                    source_confidence=0.5,
+                    chemical_validity=validity,
+                    provenance={"note": "No potency assigned to user-provided warhead."},
+                )
+            ]
+
+        rows_by_name = {row.get("name", ""): row for row in self.load_curated_warheads()}
+        warheads: List[WarheadRecord] = []
+        for binder in binders:
+            row = rows_by_name.get(binder.name, {})
+            needs_exit_vector_hypothesis = bool(binder.metadata.get("needs_exit_vector_hypothesis"))
+            smiles = _annotate_hypothetical_attachment(binder.smiles) if needs_exit_vector_hypothesis else binder.smiles
+            potency_score = self.score_warhead_potency(binder.activity_nM)
+            deriv_score = _safe_float(row.get("derivatization_score"), 0.6)
+            if needs_exit_vector_hypothesis:
+                deriv_score = min(deriv_score, 0.42)
+            exit_conf = _safe_float(row.get("exit_vector_confidence"), 0.7 if _has_attachment(smiles) else 0.35)
+            if needs_exit_vector_hypothesis:
+                exit_conf = min(exit_conf, 0.32)
+            source_conf = 0.5 * binder.assay_confidence + 0.5 * _safe_float(row.get("source_confidence"), 0.7)
+            provenance = {"activity_type": binder.activity_type, "activity_nM": binder.activity_nM}
+            provenance.update(binder.metadata)
+            if needs_exit_vector_hypothesis:
+                provenance["exit_vector_warning"] = "Hypothetical attachment marker added by deterministic tool; chemist review required."
+            warheads.append(
+                WarheadRecord(
+                    name=binder.name,
+                    target=binder.target,
+                    smiles=smiles,
+                    source=binder.source,
+                    potency_nM=binder.activity_nM,
+                    potency_score=potency_score,
+                    derivatization_score=deriv_score,
+                    exit_vector_confidence=exit_conf,
+                    source_confidence=source_conf,
+                    chemical_validity=self.validate_smiles(smiles),
+                    provenance=provenance,
+                )
+            )
+        warheads.sort(key=lambda item: item.potency_score + item.derivatization_score + item.exit_vector_confidence, reverse=True)
+        return warheads[:max_warheads]
+
+    def score_warhead_potency(self, activity_nM: Optional[float]) -> float:
+        if activity_nM is None:
+            return 0.45
+        return _clamp((7.0 - math.log10(max(activity_nM, 1e-6))) / 4.0)
+
+    def select_e3_ligands(
+        self,
+        e3_ligase: Optional[str] = None,
+        e3_ligand_smiles: Optional[str] = None,
+        max_ligands_per_e3: int = 3,
+    ) -> List[E3LigandRecord]:
+        if e3_ligand_smiles:
+            ligase = e3_ligase or "user_specified"
+            return [
+                E3LigandRecord(
+                    name="user_provided_e3_ligand",
+                    e3_ligase=ligase,
+                    smiles=e3_ligand_smiles,
+                    ligand_class="user provided",
+                    source="user provided",
+                    exit_vector_confidence=0.9 if _has_attachment(e3_ligand_smiles) else 0.35,
+                    source_confidence=0.5,
+                    diversity_score=0.5,
+                    provenance={"validation": self.validate_smiles(e3_ligand_smiles)},
+                )
+            ]
+
+        requested = [_norm_name(e3_ligase)] if e3_ligase else DEFAULT_E3_LIGASES
+        rows = [row for row in self.load_curated_e3_ligands() if _norm_name(row.get("e3_ligase")) in requested]
+        grouped: Dict[str, List[E3LigandRecord]] = defaultdict(list)
+        for row in rows:
+            ligand = E3LigandRecord(
+                name=row.get("name", ""),
+                e3_ligase=row.get("e3_ligase", ""),
+                smiles=row.get("smiles", ""),
+                ligand_class=row.get("ligand_class", ""),
+                source=row.get("source", "local curated e3 ligands"),
+                exit_vector_confidence=_safe_float(row.get("exit_vector_confidence"), 0.75),
+                stereochemistry_valid=row.get("stereochemistry_valid", "true").lower() != "false",
+                source_confidence=_safe_float(row.get("source_confidence"), 0.75),
+                diversity_score=_safe_float(row.get("diversity_score"), 0.5),
+                provenance={"known_degrader_usage": row.get("known_degrader_usage", "")},
+            )
+            grouped[_norm_name(ligand.e3_ligase)].append(ligand)
+
+        selected: List[E3LigandRecord] = []
+        for ligase in requested:
+            ligands = grouped.get(ligase, [])
+            ligands.sort(key=lambda item: item.exit_vector_confidence + item.source_confidence + item.diversity_score, reverse=True)
+            selected.extend(ligands[:max_ligands_per_e3])
+        return selected
+
+    def detect_exit_vectors(self, molecules: Sequence[Any], role: str) -> List[ExitVectorRecord]:
+        vectors: List[ExitVectorRecord] = []
+        for molecule in molecules:
+            smiles = getattr(molecule, "smiles", "")
+            name = getattr(molecule, "name", "molecule")
+            attachment = detect_attachment_points(smiles)
+            if attachment["num_dummy_atoms"] > 0:
+                confidence = min(0.95, getattr(molecule, "exit_vector_confidence", 0.8) or 0.8)
+                mapped = attachment["atom_map_numbers"]
+                vectors.append(
+                    ExitVectorRecord(
+                        molecule_name=name,
+                        molecule_role=role,
+                        smiles=smiles,
+                        attachment_atom_index=attachment["dummy_atom_indices"][0] if attachment["dummy_atom_indices"] else 0,
+                        attachment_smarts=f"[*:{mapped[0]}]" if mapped else "[*]",
+                        confidence=confidence,
+                        rationale="Explicit RDKit dummy attachment atom found in curated or user-provided SMILES.",
+                        warning=attachment["warning"],
+                    )
+                )
+            else:
+                vectors.append(
+                    ExitVectorRecord(
+                        molecule_name=name,
+                        molecule_role=role,
+                        smiles=smiles,
+                        confidence=0.25,
+                        rationale="No explicit attachment marker found.",
+                        warning="Attachment vector is ambiguous; curated map or user input is recommended.",
+                        failure_reason="missing_attachment_marker",
+                    )
+                )
+        return vectors
+
+    # ------------------------------------------------------------------
+    # Linkers and construction
+    # ------------------------------------------------------------------
+    def generate_linkers(
+        self,
+        linker_types: Optional[Sequence[str]] = None,
+        length_range: Tuple[int, int] = (3, 14),
+        max_linkers: int = 64,
+    ) -> List[LinkerRecord]:
+        requested = {_norm_name(item) for item in (linker_types or DEFAULT_LINKER_TYPES)}
+        rows = self.load_curated_linkers()
+        linkers: List[LinkerRecord] = []
+        for row in rows:
+            linker_class = row.get("linker_class", "")
+            if requested and _norm_name(linker_class) not in requested:
+                continue
+            graph_length = _safe_int(row.get("graph_length"), 0)
+            if graph_length and not (length_range[0] <= graph_length <= length_range[1]):
+                continue
+            linkers.append(
+                LinkerRecord(
+                    name=row.get("name", ""),
+                    smiles=row.get("smiles", ""),
+                    linker_class=linker_class,
+                    source=row.get("source", "curated"),
+                    graph_length=graph_length,
+                    effective_length=_safe_float(row.get("effective_length"), graph_length),
+                    rotatable_bonds=_safe_int(row.get("rotatable_bonds"), graph_length),
+                    tpsa_contribution=_safe_float(row.get("tpsa_contribution"), 0.0),
+                    hbd=_safe_int(row.get("hbd"), 0),
+                    hba=_safe_int(row.get("hba"), 0),
+                    synthetic_feasibility_proxy=_safe_float(row.get("synthetic_feasibility_proxy"), 0.6),
+                    validity_status=self.validate_linker(row.get("smiles", "")),
+                    provenance={"generation_method": row.get("generation_method", "curated_library")},
+                )
+            )
+        if not linkers:
+            return self.generate_rule_based_linkers(linker_types or DEFAULT_LINKER_TYPES, max_linkers=max_linkers)
+        linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
+        return linkers[:max_linkers]
+
+    def generate_rule_based_linkers(self, linker_types: Sequence[str], max_linkers: int = 32) -> List[LinkerRecord]:
+        patterns = {
+            "PEG": ["[*:1]CCOCC[*:2]", "[*:1]CCOCCOCC[*:2]", "[*:1]CCOCCOCCOCC[*:2]"],
+            "ALKYL": ["[*:1]CCC[*:2]", "[*:1]CCCC[*:2]", "[*:1]CCCCC[*:2]"],
+            "PIPERAZINE": ["[*:1]CCN1CCN(CC1)CC[*:2]"],
+            "TRIAZOLE": ["[*:1]CCn1nncc1CC[*:2]"],
+            "AMIDE": ["[*:1]CCNC(=O)CC[*:2]"],
+            "MIXED POLAR": ["[*:1]CCOCCNC(=O)CC[*:2]"],
+        }
+        linkers: List[LinkerRecord] = []
+        for linker_type in linker_types:
+            for idx, smiles in enumerate(patterns.get(_norm_name(linker_type), []), start=1):
+                props = self.compute_basic_properties(smiles)
+                linkers.append(
+                    LinkerRecord(
+                        name=f"rule_{linker_type}_{idx}",
+                        smiles=smiles,
+                        linker_class=linker_type,
+                        source="rule_based",
+                        graph_length=max(3, _remove_attachment_markers(smiles).count("C") + _remove_attachment_markers(smiles).count("O")),
+                        effective_length=max(3, _remove_attachment_markers(smiles).count("C") + 0.7 * _remove_attachment_markers(smiles).count("O")),
+                        rotatable_bonds=int(props.get("rotatable_bonds", 4)),
+                        tpsa_contribution=float(props.get("tpsa", 0.0)),
+                        hbd=int(props.get("hbd", 0)),
+                        hba=int(props.get("hba", 0)),
+                        synthetic_feasibility_proxy=0.62,
+                        validity_status=self.validate_linker(smiles),
+                        provenance={"generation_method": "rule_based_enumeration"},
+                    )
+                )
+        return linkers[:max_linkers]
+
+    def remove_duplicate_linkers(self, linkers: Sequence[LinkerRecord]) -> List[LinkerRecord]:
+        seen = set()
+        unique: List[LinkerRecord] = []
+        for linker in linkers:
+            key = self.canonicalize_smiles(linker.smiles)
+            if key in seen:
+                continue
+            seen.add(key)
+            unique.append(linker)
+        return unique
+
+    def state_of_the_art_tool_catalog(self) -> List[Dict[str, str]]:
+        from synglue_agent.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox
+
+        return ProtacAutopilotToolbox(self).catalog_as_rows()
+
+    def construct_protac_candidates(
+        self,
+        warheads: Sequence[WarheadRecord],
+        e3_ligands: Sequence[E3LigandRecord],
+        linkers: Sequence[LinkerRecord],
+        target_record: Optional[TargetRecord],
+        candidate_count: int = 50,
+        use_retrosynthesis_filtering: bool = False,
+    ) -> Tuple[List[ConstructionAttempt], List[CandidateRecord]]:
+        strategies = [
+            ("curated_template", "amide_or_ether_coupling"),
+            ("reaction_smarts", "generic_single_bond_join"),
+            ("known_linker_grafting", "known_linker_graft"),
+            ("matched_linker_replacement", "component_matched_replacement"),
+        ]
+        attempts: List[ConstructionAttempt] = []
+        candidates: List[CandidateRecord] = []
+        seen_smiles = set()
+        target = target_record.gene_symbol if target_record else "target"
+
+        for warhead in warheads:
+            for e3_ligand in e3_ligands:
+                for linker in linkers:
+                    if len(candidates) >= candidate_count:
+                        return attempts, candidates
+                    for strategy, reaction_class in strategies:
+                        full_smiles, message = self.assemble_components(warhead.smiles, linker.smiles, e3_ligand.smiles)
+                        success = bool(full_smiles)
+                        candidate_id = None
+                        if success:
+                            canonical = self.canonicalize_smiles(full_smiles)
+                            duplicate = canonical in seen_smiles
+                            if not duplicate:
+                                seen_smiles.add(canonical)
+                                candidate_id = _stable_id("SGA", target, e3_ligand.e3_ligase, warhead.name, linker.name, canonical)
+                                props = self.compute_basic_properties(canonical)
+                                synth_score = _clamp(
+                                    0.45 * linker.synthetic_feasibility_proxy
+                                    + 0.20 * warhead.derivatization_score
+                                    + 0.20 * e3_ligand.source_confidence
+                                    + 0.15 * (0.8 if strategy in {"curated_template", "reaction_smarts"} else 0.6)
+                                )
+                                if use_retrosynthesis_filtering:
+                                    synth_score *= 0.95
+                                candidate = CandidateRecord(
+                                    candidate_id=candidate_id,
+                                    target=target,
+                                    e3_ligase=e3_ligand.e3_ligase,
+                                    warhead_name=warhead.name,
+                                    warhead_smiles=warhead.smiles,
+                                    warhead_source=warhead.source,
+                                    e3_ligand_name=e3_ligand.name,
+                                    e3_ligand_smiles=e3_ligand.smiles,
+                                    linker_name=linker.name,
+                                    linker_smiles=linker.smiles,
+                                    linker_class=linker.linker_class,
+                                    full_protac_smiles=canonical,
+                                    assembly_strategy=strategy,
+                                    reaction_class=reaction_class,
+                                    validity_status=self.validate_smiles(canonical),
+                                    synthetic_feasibility_score=round(synth_score, 3),
+                                    provenance={
+                                        "strategy": strategy,
+                                        "reaction_class": reaction_class,
+                                        "linker_source": linker.source,
+                                        "rdkit_available": self.rdkit_available,
+                                        "warhead_provenance": warhead.provenance,
+                                    },
+                                    warning_flags=(
+                                        ([] if self.rdkit_available else ["rdkit_unavailable_unverified_smiles"])
+                                        + (
+                                            ["hypothetical_exit_vector_requires_chemist_review"]
+                                            if warhead.provenance.get("exit_vector_warning")
+                                            else []
+                                        )
+                                    ),
+                                    mw=props.get("mw"),
+                                    tpsa=props.get("tpsa"),
+                                    logp=props.get("logp"),
+                                    hbd=int(props.get("hbd", 0)),
+                                    hba=int(props.get("hba", 0)),
+                                    rotatable_bonds=int(props.get("rotatable_bonds", 0)),
+                                )
+                                candidates.append(candidate)
+                            else:
+                                message = "duplicate_canonical_smiles"
+                                success = False
+                        attempts.append(
+                            ConstructionAttempt(
+                                warhead_name=warhead.name,
+                                e3_ligand_name=e3_ligand.name,
+                                linker_name=linker.name,
+                                strategy=strategy,
+                                reaction_class=reaction_class,
+                                success=success and candidate_id is not None,
+                                failure_category=None if success and candidate_id is not None else message,
+                                message=message,
+                                candidate_id=candidate_id,
+                            )
+                        )
+                        if success:
+                            break
+        return attempts, candidates
+
+    def assemble_components(self, warhead_smiles: str, linker_smiles: str, e3_smiles: str) -> Tuple[Optional[str], str]:
+        if not all(_has_attachment(item) for item in [warhead_smiles, linker_smiles, e3_smiles]):
+            return None, "missing_attachment_marker"
+        if not self.rdkit_available:
+            # Explicitly marked fallback. It keeps the workflow demonstrable but
+            # downstream validators flag it as unverified until RDKit is installed.
+            fallback = (
+                _remove_attachment_markers(warhead_smiles)
+                + _remove_attachment_markers(linker_smiles)
+                + _remove_attachment_markers(e3_smiles)
+            )
+            return fallback, "assembled_with_string_fallback_rdkit_unavailable"
+        try:
+            left = self._join_on_dummy(warhead_smiles, linker_smiles, left_map=1, right_map=1)
+            full = self._join_on_dummy(left, e3_smiles, left_map=2, right_map=1)
+            return self.canonicalize_smiles(full), "assembled_with_rdkit_dummy_atom_join"
+        except Exception as exc:  # pragma: no cover - depends on RDKit.
+            return None, f"rdkit_assembly_failed:{exc}"
+
+    def _find_dummy_idx(self, mol: Any, atom_map: int) -> Optional[int]:  # pragma: no cover - depends on RDKit.
+        for atom in mol.GetAtoms():
+            if atom.GetAtomicNum() == 0 and atom.GetAtomMapNum() == atom_map:
+                return atom.GetIdx()
+        for atom in mol.GetAtoms():
+            if atom.GetAtomicNum() == 0:
+                return atom.GetIdx()
+        return None
+
+    def _join_on_dummy(self, smiles_a: str, smiles_b: str, left_map: int = 1, right_map: int = 1) -> str:  # pragma: no cover
+        mol_a = Chem.MolFromSmiles(smiles_a)
+        mol_b = Chem.MolFromSmiles(smiles_b)
+        if mol_a is None or mol_b is None:
+            raise ValueError("invalid component smiles")
+        dummy_a = self._find_dummy_idx(mol_a, left_map)
+        dummy_b = self._find_dummy_idx(mol_b, right_map)
+        if dummy_a is None or dummy_b is None:
+            raise ValueError("dummy atom not found")
+        neigh_a = [atom.GetIdx() for atom in mol_a.GetAtomWithIdx(dummy_a).GetNeighbors()]
+        neigh_b = [atom.GetIdx() for atom in mol_b.GetAtomWithIdx(dummy_b).GetNeighbors()]
+        if not neigh_a or not neigh_b:
+            raise ValueError("dummy atom has no attachment neighbor")
+        combo = Chem.CombineMols(mol_a, mol_b)
+        rw = Chem.RWMol(combo)
+        offset = mol_a.GetNumAtoms()
+        rw.AddBond(neigh_a[0], offset + neigh_b[0], Chem.BondType.SINGLE)
+        for idx in sorted([dummy_a, offset + dummy_b], reverse=True):
+            rw.RemoveAtom(idx)
+        mol = rw.GetMol()
+        Chem.SanitizeMol(mol)
+        return Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+
+    # ------------------------------------------------------------------
+    # Validation and descriptors
+    # ------------------------------------------------------------------
+    def validate_smiles(self, smiles: str) -> str:
+        if not smiles:
+            return "invalid_empty"
+        if not self.rdkit_available:
+            allowed = bool(re.match(r"^[A-Za-z0-9@+\-\[\]\(\)=#$\\/%.:*]+$", smiles))
+            return "unverified_no_rdkit" if allowed else "invalid_syntax_no_rdkit"
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return "invalid_rdkit_parse"
+        try:
+            Chem.SanitizeMol(mol)
+        except Exception:
+            return "invalid_sanitization"
+        return "valid"
+
+    def validate_linker(self, smiles: str) -> str:
+        if "[*:1]" not in smiles or "[*:2]" not in smiles:
+            return "invalid_missing_two_attachment_points"
+        return self.validate_smiles(smiles)
+
+    def canonicalize_smiles(self, smiles: str) -> str:
+        if not self.rdkit_available:
+            return smiles
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return smiles
+        return Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+
+    def compute_basic_properties(self, smiles: str) -> Dict[str, Any]:
+        descriptor = compute_core_descriptors(smiles)
+        if descriptor.descriptor_status == "success":
+            return {
+                "mw": round(float(descriptor.mw), 2),
+                "tpsa": round(float(descriptor.tpsa), 2),
+                "logp": round(float(descriptor.logp), 2),
+                "hbd": int(descriptor.hbd),
+                "hba": int(descriptor.hba),
+                "rotatable_bonds": int(descriptor.rotatable_bonds),
+            }
+
+        core = _remove_attachment_markers(smiles)
+        atom_counts = {
+            "C": len(re.findall(r"(?<![a-z])C(?![a-z])|c", core)),
+            "N": len(re.findall(r"N|n", core)),
+            "O": len(re.findall(r"O|o", core)),
+            "S": len(re.findall(r"S|s", core)),
+            "F": core.count("F"),
+            "Cl": core.count("Cl"),
+            "Br": core.count("Br"),
+        }
+        mw = (
+            atom_counts["C"] * 12.01
+            + atom_counts["N"] * 14.01
+            + atom_counts["O"] * 16.00
+            + atom_counts["S"] * 32.07
+            + atom_counts["F"] * 19.00
+            + atom_counts["Cl"] * 35.45
+            + atom_counts["Br"] * 79.90
+            + max(0, atom_counts["C"] * 1.4)
+        )
+        hba = atom_counts["N"] + atom_counts["O"] + atom_counts["S"]
+        hbd = len(re.findall(r"NH|OH|N\]", core))
+        rotors = max(0, core.count("C") + core.count("O") - core.count("1") * 2)
+        tpsa = 12.0 * atom_counts["N"] + 17.0 * atom_counts["O"] + 25.0 * atom_counts["S"]
+        logp = 0.035 * atom_counts["C"] + 0.3 * atom_counts["Cl"] + 0.5 * atom_counts["Br"] - 0.18 * hba
+        return {
+            "mw": round(mw, 2),
+            "tpsa": round(tpsa, 2),
+            "logp": round(logp, 2),
+            "hbd": int(hbd),
+            "hba": int(hba),
+            "rotatable_bonds": int(rotors),
+        }
+
+    def validate_candidates(self, candidates: Sequence[CandidateRecord]) -> List[CandidateRecord]:
+        valid: List[CandidateRecord] = []
+        for candidate in candidates:
+            status = self.validate_smiles(candidate.full_protac_smiles)
+            candidate.validity_status = status
+            if status.startswith("valid") or status == "unverified_no_rdkit":
+                props = self.compute_basic_properties(candidate.full_protac_smiles)
+                candidate.mw = props.get("mw")
+                candidate.tpsa = props.get("tpsa")
+                candidate.logp = props.get("logp")
+                candidate.hbd = int(props.get("hbd", 0))
+                candidate.hba = int(props.get("hba", 0))
+                candidate.rotatable_bonds = int(props.get("rotatable_bonds", 0))
+                analysis = analyze_protac_like_properties(candidate.full_protac_smiles)
+                if analysis.valid:
+                    warning_map = {
+                        "protac_size_warning": analysis.protac_size_warning,
+                        "high_tpsa_warning": analysis.high_tpsa_warning,
+                        "high_logp_warning": analysis.high_logp_warning,
+                        "excessive_rotatable_bonds_warning": analysis.excessive_rotatable_bonds_warning,
+                    }
+                    for warning, active in warning_map.items():
+                        if active and warning not in candidate.warning_flags:
+                            candidate.warning_flags.append(warning)
+                if status == "unverified_no_rdkit":
+                    candidate.warning_flags.append("install_rdkit_for_chemical_validation")
+                valid.append(candidate)
+        return self.remove_duplicate_candidates(valid)
+
+    def remove_duplicate_candidates(self, candidates: Sequence[CandidateRecord]) -> List[CandidateRecord]:
+        seen = set()
+        unique: List[CandidateRecord] = []
+        for candidate in candidates:
+            key = candidate.full_protac_smiles
+            if key in seen:
+                continue
+            seen.add(key)
+            unique.append(candidate)
+        return unique
+
+    # ------------------------------------------------------------------
+    # Prediction, ADME/Tox, novelty, and domain tools
+    # ------------------------------------------------------------------
+    def predict_degradation(
+        self,
+        candidates: Sequence[CandidateRecord],
+        target_record: Optional[TargetRecord],
+        cell_line: Optional[str] = None,
+        assay_context: Optional[str] = None,
+    ) -> List[DegradationPrediction]:
+        predictions: List[DegradationPrediction] = []
+        tractability = target_record.tractability_score if target_record else 0.35
+        for candidate in candidates:
+            props = self.compute_basic_properties(candidate.full_protac_smiles)
+            mw = float(props.get("mw", candidate.mw or 900.0))
+            tpsa = float(props.get("tpsa", candidate.tpsa or 160.0))
+            rotors = float(props.get("rotatable_bonds", candidate.rotatable_bonds or 12))
+            linker_bonus = {"PEG": 0.05, "alkyl": -0.02, "piperazine": 0.04, "triazole": 0.02}.get(candidate.linker_class, 0.0)
+            e3_bonus = {"CRBN": 0.08, "VHL": 0.04, "IAP": 0.02, "MDM2": 0.0}.get(candidate.e3_ligase.upper(), 0.0)
+            size_penalty = _clamp((mw - 850.0) / 600.0)
+            tpsa_penalty = _clamp((tpsa - 170.0) / 180.0)
+            flexibility_penalty = _clamp((rotors - 18.0) / 18.0)
+            activity_signal = _clamp(0.40 + 0.35 * tractability + linker_bonus + e3_bonus - 0.12 * size_penalty - 0.12 * tpsa_penalty)
+            logdc50 = 3.0 - 1.8 * activity_signal + 0.25 * flexibility_penalty
+            dc50 = round(10 ** logdc50, 2)
+            dmax = round(_clamp(35.0 + 55.0 * activity_signal - 12.0 * tpsa_penalty - 8.0 * size_penalty, 5.0, 98.0), 1)
+            domain = self.compute_applicability_domain_score(candidate)
+            confidence = _clamp(0.45 + 0.30 * domain + 0.20 * tractability + (0.05 if self.rdkit_available else -0.08))
+            warning = None
+            if domain < 0.35:
+                warning = "Exploratory prediction: candidate outside demo model applicability domain."
+            if not self.rdkit_available:
+                warning = (warning + " " if warning else "") + "RDKit not installed; descriptors are approximate."
+            predictions.append(
+                DegradationPrediction(
+                    candidate_id=candidate.candidate_id,
+                    predicted_dc50_nM=dc50,
+                    predicted_logdc50=round(logdc50, 3),
+                    predicted_dmax_percent=dmax,
+                    degradation_probability=round(activity_signal, 3),
+                    model_confidence=round(confidence, 3),
+                    applicability_domain_score=round(domain, 3),
+                    model_version="SynGlue-demo-heuristic-v0.1",
+                    warning=warning,
+                )
+            )
+        return predictions
+
+    def predict_admet(self, candidates: Sequence[CandidateRecord]) -> List[ADMETPrediction]:
+        from synglue_agent.tools.admet_predictors import calculate_protac_admet_descriptors, predict_admet
+
+        rows: List[ADMETPrediction] = []
+        for candidate in candidates:
+            admet = predict_admet(candidate.full_protac_smiles, backend="auto")
+            descriptor_result = calculate_protac_admet_descriptors(candidate.full_protac_smiles)
+            descriptor_map = descriptor_result.get("descriptors", {}) if descriptor_result.get("success") else {}
+            mw = float(admet.get("MW", descriptor_map.get("MW", 0.0)) or 0.0)
+            tpsa = float(admet.get("TPSA", descriptor_map.get("TPSA", 0.0)) or 0.0)
+            logp = float(admet.get("LogP", descriptor_map.get("LogP", 0.0)) or 0.0)
+            rotors = int(admet.get("rotatable_bonds", descriptor_map.get("rotatable_bonds", 0)) or 0)
+            hbd = int(descriptor_map.get("HBD", 0) or 0)
+            hba = int(descriptor_map.get("HBA", 0) or 0)
+            sol = admet.get("solubility")
+            if isinstance(sol, (int, float)):
+                sol_risk = "high" if sol <= -6.0 else "medium" if sol <= -4.5 else "low"
+            else:
+                sol_risk = admet.get("solubility_risk", "unknown")
+            risk_weights = {"low": 0.15, "medium": 0.50, "high": 0.85, "unknown": 0.6}
+            hERG_risk = admet.get("hERG_risk", "unknown")
+            AMES_risk = admet.get("AMES_risk", "unknown")
+            DILI_risk = admet.get("DILI_risk", "unknown")
+            CYP_risk = admet.get("CYP_risk", "unknown")
+            Pgp_risk = admet.get("Pgp_risk", "unknown")
+            penalty = _clamp(
+                0.22 * risk_weights.get(hERG_risk, 0.6)
+                + 0.18 * risk_weights.get(DILI_risk, 0.6)
+                + 0.12 * risk_weights.get(AMES_risk, 0.6)
+                + 0.18 * risk_weights.get(sol_risk, 0.6)
+                + 0.16 * risk_weights.get(Pgp_risk, 0.6)
+                + 0.14 * risk_weights.get(CYP_risk, 0.6)
+            )
+            backend = admet.get("backend_used", "unknown")
+            status = admet.get("status", "unknown")
+            rows.append(
+                ADMETPrediction(
+                    candidate_id=candidate.candidate_id,
+                    mw=round(mw, 2),
+                    tpsa=round(tpsa, 2),
+                    logp=round(logp, 2),
+                    hbd=hbd,
+                    hba=hba,
+                    rotatable_bonds=rotors,
+                    qed=descriptor_map.get("QED"),
+                    sa_score_proxy=round(_clamp(1.0 - candidate.synthetic_feasibility_score), 3),
+                    hERG_risk=hERG_risk,
+                    AMES_risk=AMES_risk,
+                    DILI_risk=DILI_risk,
+                    CYP_risk=CYP_risk,
+                    Pgp_risk=Pgp_risk,
+                    solubility_risk=sol_risk,
+                    overall_admet_penalty=round(penalty, 3),
+                    warning=f"backend={backend}; status={status}; limitations={admet.get('limitations')}",
+                )
+            )
+        return rows
+
+    def _risk_label(self, score: float) -> str:
+        if score >= 0.67:
+            return "high"
+        if score >= 0.34:
+            return "medium"
+        return "low"
+
+    def check_novelty(self, candidates: Sequence[CandidateRecord]) -> List[NoveltyResult]:
+        known = self.load_known_protacs()
+        known_smiles = [(row.get("name", row.get("protac_id", "known")), row.get("smiles", "")) for row in known if row.get("smiles")]
+        results: List[NoveltyResult] = []
+        for candidate in candidates:
+            nearest_name = None
+            nearest_sim = 0.0
+            for name, smiles in known_smiles:
+                sim = self.calculate_similarity(candidate.full_protac_smiles, smiles)
+                if sim > nearest_sim:
+                    nearest_name = name
+                    nearest_sim = sim
+            duplicate = nearest_sim >= 0.98
+            novelty = _clamp(1.0 - nearest_sim)
+            component_novelty = _clamp(0.5 * novelty + 0.5 * (0.0 if "known" in candidate.warhead_source.lower() else 0.4))
+            results.append(
+                NoveltyResult(
+                    candidate_id=candidate.candidate_id,
+                    nearest_known_protac=nearest_name,
+                    max_tanimoto_similarity=round(nearest_sim, 3),
+                    duplicate_flag=duplicate,
+                    novelty_score=round(novelty, 3),
+                    scaffold_novelty=round(_clamp(novelty * 0.9 + 0.05), 3),
+                    component_novelty=round(component_novelty, 3),
+                    linker_novelty=0.35 if candidate.linker_name.lower().startswith("known") else 0.65,
+                )
+            )
+        return results
+
+    def calculate_similarity(self, smiles_a: str, smiles_b: str) -> float:
+        if self.rdkit_available:
+            mol_a = Chem.MolFromSmiles(smiles_a)
+            mol_b = Chem.MolFromSmiles(smiles_b)
+            if mol_a is None or mol_b is None:
+                return self._string_similarity(smiles_a, smiles_b)
+            fp_a = AllChem.GetMorganFingerprintAsBitVect(mol_a, 2, nBits=2048)
+            fp_b = AllChem.GetMorganFingerprintAsBitVect(mol_b, 2, nBits=2048)
+            from rdkit.DataStructs import TanimotoSimilarity
+
+            return float(TanimotoSimilarity(fp_a, fp_b))
+        return self._string_similarity(smiles_a, smiles_b)
+
+    def _string_similarity(self, value_a: str, value_b: str) -> float:
+        def grams(value: str) -> set:
+            clean = re.sub(r"\s+", "", value)
+            return {clean[idx : idx + 3] for idx in range(max(1, len(clean) - 2))}
+
+        grams_a = grams(value_a)
+        grams_b = grams(value_b)
+        if not grams_a or not grams_b:
+            return 0.0
+        return len(grams_a & grams_b) / len(grams_a | grams_b)
+
+    def compute_applicability_domain(self, candidates: Sequence[CandidateRecord]) -> List[ApplicabilityDomainResult]:
+        return [
+            ApplicabilityDomainResult(
+                candidate_id=candidate.candidate_id,
+                similarity_to_training_set=round(self.compute_applicability_domain_score(candidate), 3),
+                embedding_distance=round(1.0 - self.compute_applicability_domain_score(candidate), 3),
+                domain_status=self.assign_domain_status(self.compute_applicability_domain_score(candidate)),
+                warning=None
+                if self.compute_applicability_domain_score(candidate) >= 0.35
+                else "Outside local demo applicability domain; treat predictions as exploratory.",
+            )
+            for candidate in candidates
+        ]
+
+    def compute_applicability_domain_score(self, candidate: CandidateRecord) -> float:
+        mw = candidate.mw if candidate.mw is not None else self.compute_basic_properties(candidate.full_protac_smiles).get("mw", 900.0)
+        tpsa = candidate.tpsa if candidate.tpsa is not None else self.compute_basic_properties(candidate.full_protac_smiles).get("tpsa", 160.0)
+        rotors = candidate.rotatable_bonds if candidate.rotatable_bonds is not None else 14
+        mw_score = 1.0 - _clamp(abs(float(mw) - 900.0) / 700.0)
+        tpsa_score = 1.0 - _clamp(abs(float(tpsa) - 160.0) / 220.0)
+        rotor_score = 1.0 - _clamp(abs(float(rotors) - 14.0) / 20.0)
+        return _clamp(0.42 * mw_score + 0.32 * tpsa_score + 0.26 * rotor_score)
+
+    def assign_domain_status(self, score: float) -> str:
+        if score >= 0.65:
+            return "inside"
+        if score >= 0.35:
+            return "edge"
+        return "outside"
+
+    # ------------------------------------------------------------------
+    # Ranking, reflection, evolution, diversity, ternary feasibility
+    # ------------------------------------------------------------------
+    def rank_candidates(
+        self,
+        candidates: Sequence[CandidateRecord],
+        degradation_predictions: Sequence[DegradationPrediction],
+        admet_predictions: Sequence[ADMETPrediction],
+        novelty_results: Sequence[NoveltyResult],
+        domain_results: Sequence[ApplicabilityDomainResult],
+        ternary_results: Optional[Sequence[TernaryFeasibilityResult]] = None,
+        ranking_weights: Optional[Dict[str, float]] = None,
+    ) -> List[RankingResult]:
+        weights = dict(DEFAULT_RANKING_WEIGHTS)
+        if ranking_weights:
+            weights.update(ranking_weights)
+        degradation_by_id = {item.candidate_id: item for item in degradation_predictions}
+        admet_by_id = {item.candidate_id: item for item in admet_predictions}
+        novelty_by_id = {item.candidate_id: item for item in novelty_results}
+        domain_by_id = {item.candidate_id: item for item in domain_results}
+        ternary_by_id = {item.candidate_id: item for item in (ternary_results or [])}
+
+        rows: List[RankingResult] = []
+        for candidate in candidates:
+            deg = degradation_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
+            admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction(candidate_id=candidate.candidate_id))
+            novelty = novelty_by_id.get(candidate.candidate_id, NoveltyResult(candidate_id=candidate.candidate_id, novelty_score=0.5))
+            domain = domain_by_id.get(candidate.candidate_id, ApplicabilityDomainResult(candidate_id=candidate.candidate_id))
+            ternary = ternary_by_id.get(
+                candidate.candidate_id,
+                TernaryFeasibilityResult(candidate_id=candidate.candidate_id, ternary_plausibility_score=0.5),
+            )
+            dc50_score = self.compute_dc50_score(deg.predicted_dc50_nM)
+            dmax_score = self.compute_dmax_score(deg.predicted_dmax_percent)
+            admet_score = _clamp(1.0 - admet.overall_admet_penalty)
+            ternary_score = ternary.ternary_plausibility_score
+            novelty_score = novelty.novelty_score
+            synthetic_score = candidate.synthetic_feasibility_score
+            score = (
+                weights["dc50"] * dc50_score
+                + weights["dmax"] * dmax_score
+                + weights["admet"] * admet_score
+                + weights["ternary"] * ternary_score
+                + weights["novelty"] * novelty_score
+                + weights["synthetic"] * synthetic_score
+            )
+            confidence = _clamp(0.45 * deg.model_confidence + 0.35 * domain.similarity_to_training_set + 0.20 * candidate.synthetic_feasibility_score)
+            uncertainty = []
+            if deg.model_confidence < 0.45:
+                uncertainty.append("low_degradation_model_confidence")
+            if domain.domain_status == "outside":
+                uncertainty.append("outside_applicability_domain")
+            if admet.hERG_risk == "high" or admet.DILI_risk == "high":
+                uncertainty.append("high_admet_toxicity_risk")
+            if not self.rdkit_available:
+                uncertainty.append("rdkit_not_installed")
+            penalty_bits = []
+            if admet.overall_admet_penalty > 0.45:
+                penalty_bits.append(f"ADME/Tox penalty {admet.overall_admet_penalty:.2f}")
+            if novelty.duplicate_flag:
+                penalty_bits.append("near duplicate of local known PROTAC")
+            if domain.domain_status != "inside":
+                penalty_bits.append(f"domain status {domain.domain_status}")
+            rows.append(
+                RankingResult(
+                    candidate_id=candidate.candidate_id,
+                    final_priority_score=round(score, 3),
+                    confidence=round(confidence, 3),
+                    reason_for_rank=(
+                        f"DC50 score {dc50_score:.2f}, Dmax score {dmax_score:.2f}, "
+                        f"ADME score {admet_score:.2f}, novelty {novelty_score:.2f}, synthetic {synthetic_score:.2f}."
+                    ),
+                    penalty_explanation="; ".join(penalty_bits) if penalty_bits else "No dominant penalty in demo scoring.",
+                    uncertainty_flags=uncertainty,
+                )
+            )
+
+        rows.sort(key=lambda item: (item.final_priority_score, item.confidence), reverse=True)
+        for rank, row in enumerate(rows, start=1):
+            row.rank = rank
+            row.tier = self.assign_candidate_tier(row.final_priority_score, row.confidence)
+        return rows
+
+    def compute_dc50_score(self, dc50_nM: Optional[float]) -> float:
+        if dc50_nM is None or dc50_nM <= 0:
+            return 0.0
+        return _clamp((4.0 - math.log10(dc50_nM)) / 3.5)
+
+    def compute_dmax_score(self, dmax_percent: Optional[float]) -> float:
+        if dmax_percent is None:
+            return 0.0
+        return _clamp(dmax_percent / 100.0)
+
+    def assign_candidate_tier(self, score: float, confidence: float) -> str:
+        if score >= 0.72 and confidence >= 0.55:
+            return "Tier 1"
+        if score >= 0.55:
+            return "Tier 2"
+        return "Tier 3"
+
+    def cluster_candidates(self, candidates: Sequence[CandidateRecord], threshold: float = 0.62) -> List[DiversityCluster]:
+        clusters: List[List[CandidateRecord]] = []
+        for candidate in candidates:
+            placed = False
+            for cluster in clusters:
+                if self.calculate_similarity(candidate.full_protac_smiles, cluster[0].full_protac_smiles) >= threshold:
+                    cluster.append(candidate)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([candidate])
+        result: List[DiversityCluster] = []
+        total = max(1, len(candidates))
+        for idx, cluster in enumerate(clusters, start=1):
+            redundancy = max(0.0, (len(cluster) - 1) / total)
+            result.append(
+                DiversityCluster(
+                    cluster_id=f"cluster_{idx}",
+                    candidate_ids=[item.candidate_id for item in cluster],
+                    representative_id=cluster[0].candidate_id if cluster else None,
+                    redundancy_score=round(redundancy, 3),
+                    diversity_score=round(1.0 - redundancy, 3),
+                )
+            )
+        return result
+
+    def choose_diverse_representatives(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        max_count: int,
+    ) -> List[CandidateRecord]:
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+        ordered = sorted(candidates, key=lambda item: ranking_by_id.get(item.candidate_id, RankingResult()).final_priority_score, reverse=True)
+        selected: List[CandidateRecord] = []
+        for candidate in ordered:
+            if len(selected) >= max_count:
+                break
+            if all(self.calculate_similarity(candidate.full_protac_smiles, other.full_protac_smiles) < 0.82 for other in selected):
+                selected.append(candidate)
+        if len(selected) < min(max_count, len(ordered)):
+            for candidate in ordered:
+                if candidate not in selected:
+                    selected.append(candidate)
+                if len(selected) >= max_count:
+                    break
+        return selected
+
+    def critique_candidates(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        degradation_predictions: Sequence[DegradationPrediction],
+        admet_predictions: Sequence[ADMETPrediction],
+        novelty_results: Sequence[NoveltyResult],
+    ) -> List[ReflectionReview]:
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+        deg_by_id = {item.candidate_id: item for item in degradation_predictions}
+        admet_by_id = {item.candidate_id: item for item in admet_predictions}
+        novelty_by_id = {item.candidate_id: item for item in novelty_results}
+        reviews: List[ReflectionReview] = []
+        for candidate in candidates:
+            ranking = ranking_by_id.get(candidate.candidate_id, RankingResult())
+            deg = deg_by_id.get(candidate.candidate_id, DegradationPrediction())
+            admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction())
+            novelty = novelty_by_id.get(candidate.candidate_id, NoveltyResult())
+            recommendations = []
+            risk = 0.0
+            if admet.hERG_risk == "high":
+                recommendations.append("Reduce lipophilicity or replace linker/E3 handle to reduce hERG risk.")
+                risk += 0.25
+            if admet.solubility_risk == "high":
+                recommendations.append("Consider shorter polar linker or reduce aromatic burden.")
+                risk += 0.18
+            if novelty.max_tanimoto_similarity > 0.85:
+                recommendations.append("Increase linker or component novelty; nearest known PROTAC is close.")
+                risk += 0.12
+            if deg.model_confidence < 0.45:
+                recommendations.append("Treat degradation prediction as exploratory and request better model/domain data.")
+                risk += 0.18
+            if not recommendations:
+                recommendations.append("Proceed only to expert medicinal chemistry review; predictions are not experimental evidence.")
+            plausibility = _clamp(0.55 * ranking.final_priority_score + 0.25 * candidate.synthetic_feasibility_score + 0.20 * deg.model_confidence)
+            evidence = _clamp(0.45 * deg.model_confidence + 0.35 * candidate.synthetic_feasibility_score + 0.20 * (1.0 - novelty.duplicate_flag))
+            reviews.append(
+                ReflectionReview(
+                    candidate_id=candidate.candidate_id,
+                    review_score=round(_clamp(0.5 * plausibility + 0.3 * evidence + 0.2 * (1.0 - risk)), 3),
+                    plausibility_score=round(plausibility, 3),
+                    evidence_score=round(evidence, 3),
+                    risk_score=round(_clamp(risk), 3),
+                    overclaiming_warning="Predicted degradation is computational only; no experimental validation is implied.",
+                    factual_consistency_check="provenance_present" if candidate.warhead_source and candidate.e3_ligand_name else "missing_component_provenance",
+                    recommendations=recommendations,
+                )
+            )
+        return reviews
+
+    def evolve_candidates(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        admet_predictions: Sequence[ADMETPrediction],
+        target_record: Optional[TargetRecord],
+        max_new: int = 8,
+    ) -> List[CandidateRecord]:
+        if not candidates:
+            return []
+        admet_by_id = {item.candidate_id: item for item in admet_predictions}
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+        parent_pool = sorted(
+            candidates,
+            key=lambda item: (
+                admet_by_id.get(item.candidate_id, ADMETPrediction()).overall_admet_penalty,
+                ranking_by_id.get(item.candidate_id, RankingResult()).final_priority_score,
+            ),
+            reverse=True,
+        )[: max(3, max_new)]
+        short_linkers = [item for item in self.generate_linkers(["alkyl", "PEG", "triazole"], max_linkers=12) if item.graph_length <= 7]
+        evolved: List[CandidateRecord] = []
+        seen = {item.full_protac_smiles for item in candidates}
+        for parent in parent_pool:
+            if len(evolved) >= max_new:
+                break
+            parent_admet = admet_by_id.get(parent.candidate_id, ADMETPrediction())
+            if parent_admet.overall_admet_penalty < 0.25 and parent.rotatable_bonds and parent.rotatable_bonds < 18:
+                continue
+            warhead = WarheadRecord(
+                name=parent.warhead_name,
+                target=parent.target,
+                smiles=parent.warhead_smiles,
+                source=parent.warhead_source,
+                potency_score=0.55,
+                derivatization_score=0.65,
+                exit_vector_confidence=0.8,
+                source_confidence=0.7,
+            )
+            e3 = E3LigandRecord(
+                name=parent.e3_ligand_name,
+                e3_ligase=parent.e3_ligase,
+                smiles=parent.e3_ligand_smiles,
+                source="retained_parent_component",
+                exit_vector_confidence=0.8,
+                source_confidence=0.7,
+                diversity_score=0.5,
+            )
+            for linker in short_linkers:
+                if linker.name == parent.linker_name:
+                    continue
+                _, variants = self.construct_protac_candidates(
+                    [warhead],
+                    [e3],
+                    [linker],
+                    target_record,
+                    candidate_count=1,
+                    use_retrosynthesis_filtering=False,
+                )
+                if not variants:
+                    continue
+                variant = variants[0]
+                if variant.full_protac_smiles in seen:
+                    continue
+                variant.provenance["evolution_parent"] = parent.candidate_id
+                variant.provenance["evolution_action"] = "linker replacement to reduce size/flexibility/ADME penalty"
+                variant.warning_flags.append("evolved_candidate_requires_revalidation")
+                seen.add(variant.full_protac_smiles)
+                evolved.append(variant)
+                break
+        return evolved
+
+    def assess_ternary_feasibility(
+        self,
+        candidates: Sequence[CandidateRecord],
+        target_record: Optional[TargetRecord],
+        top_n: int = 12,
+    ) -> List[TernaryFeasibilityResult]:
+        results: List[TernaryFeasibilityResult] = []
+        structure_available = bool(target_record and (target_record.structures or target_record.alphafold_id))
+        for candidate in list(candidates)[:top_n]:
+            length = max(1.0, float(candidate.rotatable_bonds or 10) + float(len(candidate.linker_smiles)) / 12.0)
+            reachability = _clamp(1.0 - abs(length - 16.0) / 22.0)
+            flexibility = _clamp((candidate.rotatable_bonds or 10) / 24.0)
+            geometry = _clamp(0.55 * reachability + 0.25 * flexibility + 0.20 * (1.0 if structure_available else 0.45))
+            plausibility = _clamp(0.65 * geometry + 0.20 * candidate.synthetic_feasibility_score + 0.15 * (1.0 if structure_available else 0.4))
+            results.append(
+                TernaryFeasibilityResult(
+                    candidate_id=candidate.candidate_id,
+                    fast_geometry_feasibility_score=round(geometry, 3),
+                    linker_reachability_score=round(reachability, 3),
+                    ternary_plausibility_score=round(plausibility, 3),
+                    docking_status="not_run_stub_available",
+                    interface_warning=None if structure_available else "No target structure available in local table; geometry score is lower confidence.",
+                    structure_availability="target_structure_or_alphafold_available" if structure_available else "not_available_locally",
+                    proceed_to_expensive_modeling=plausibility >= 0.58,
+                )
+            )
+        return results
+
+    # ------------------------------------------------------------------
+    # Reporting and memory
+    # ------------------------------------------------------------------
+    def generate_candidate_table(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        degradation_predictions: Sequence[DegradationPrediction],
+        admet_predictions: Sequence[ADMETPrediction],
+        novelty_results: Sequence[NoveltyResult],
+        ternary_results: Sequence[TernaryFeasibilityResult],
+    ) -> List[Dict[str, Any]]:
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+        deg_by_id = {item.candidate_id: item for item in degradation_predictions}
+        admet_by_id = {item.candidate_id: item for item in admet_predictions}
+        novelty_by_id = {item.candidate_id: item for item in novelty_results}
+        ternary_by_id = {item.candidate_id: item for item in ternary_results}
+        ordered = sorted(candidates, key=lambda item: ranking_by_id.get(item.candidate_id, RankingResult()).rank or 999999)
+        rows: List[Dict[str, Any]] = []
+        for candidate in ordered:
+            ranking = ranking_by_id.get(candidate.candidate_id, RankingResult(candidate_id=candidate.candidate_id))
+            deg = deg_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
+            admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction(candidate_id=candidate.candidate_id))
+            novelty = novelty_by_id.get(candidate.candidate_id, NoveltyResult(candidate_id=candidate.candidate_id))
+            ternary = ternary_by_id.get(candidate.candidate_id, TernaryFeasibilityResult(candidate_id=candidate.candidate_id))
+            rows.append(
+                {
+                    "Rank": ranking.rank,
+                    "Tier": ranking.tier,
+                    "Target": candidate.target,
+                    "E3 ligase": candidate.e3_ligase,
+                    "Warhead name": candidate.warhead_name,
+                    "Warhead SMILES": candidate.warhead_smiles,
+                    "Warhead source": candidate.warhead_source,
+                    "E3 ligand name": candidate.e3_ligand_name,
+                    "E3 ligand SMILES": candidate.e3_ligand_smiles,
+                    "Linker SMILES": candidate.linker_smiles,
+                    "Linker class": candidate.linker_class,
+                    "Full PROTAC SMILES": candidate.full_protac_smiles,
+                    "Assembly strategy": candidate.assembly_strategy,
+                    "Reaction class": candidate.reaction_class,
+                    "Validity status": candidate.validity_status,
+                    "MW": admet.mw,
+                    "TPSA": admet.tpsa,
+                    "logP": admet.logp,
+                    "HBD": admet.hbd,
+                    "HBA": admet.hba,
+                    "Rotatable bonds": admet.rotatable_bonds,
+                    "Predicted DC50 nM": deg.predicted_dc50_nM,
+                    "Predicted Dmax %": deg.predicted_dmax_percent,
+                    "Degradation confidence": deg.model_confidence,
+                    "Applicability domain": deg.applicability_domain_score,
+                    "hERG risk": admet.hERG_risk,
+                    "AMES risk": admet.AMES_risk,
+                    "DILI risk": admet.DILI_risk,
+                    "Solubility risk": admet.solubility_risk,
+                    "Novelty score": novelty.novelty_score,
+                    "Nearest known PROTAC similarity": novelty.max_tanimoto_similarity,
+                    "Ternary feasibility score": ternary.ternary_plausibility_score,
+                    "Synthetic feasibility score": candidate.synthetic_feasibility_score,
+                    "Final priority score": ranking.final_priority_score,
+                    "Warning flags": ";".join(candidate.warning_flags + ranking.uncertainty_flags),
+                    "Reason for ranking": ranking.reason_for_rank,
+                }
+            )
+        return rows
+
+    def generate_agent_workflow_table(self, state: WorkflowState) -> List[Dict[str, Any]]:
+        target = state.target_record.gene_symbol if state.target_record else state.parsed_objective.target_name
+        from synglue_agent.toolkit.registry import get_tool_status
+
+        def status_label(tool_name: str) -> str:
+            status = get_tool_status(tool_name)
+            if status["executable"]:
+                return "executable"
+            if status["available"]:
+                return "available"
+            if status["registered"]:
+                return "registered"
+            return "unregistered"
+
+        def row(
+            agent_type: str,
+            selected_tool: str,
+            data_sources: str,
+            query: str,
+            outputs: str,
+            processing_time: str,
+            real_output: str,
+            integration_note: str = "",
+        ) -> Dict[str, Any]:
+            tool_status = status_label(selected_tool)
+            if not integration_note and tool_status != "executable":
+                integration_note = "planned integration"
+            return {
+                "Agent type": agent_type,
+                "Selected tool": selected_tool,
+                "Tool status": tool_status,
+                "Real output generated": real_output,
+                "Integration note": integration_note,
+                "Data sources/tools": data_sources,
+                "Query parameters": query,
+                "Quantitative outputs": outputs,
+                "Processing time": processing_time,
+            }
+
+        return [
+            row(
+                "Target Resolver Agent",
+                "Target assessment",
+                "local curated target table; ChEMBL target fallback if network is available; no PDB/AlphaFold fetch is run here",
+                f"target={target}, organism=human",
+                f"UniProt={getattr(state.target_record, 'uniprot_id', None)}, structures={len(getattr(state.target_record, 'structures', []) or [])}, tractability={getattr(state.target_record, 'tractability_score', 0)}",
+                "milliseconds locally; seconds only if online ChEMBL fallback is reached",
+                "yes - local/ChEMBL target metadata" if state.target_record else "no - unresolved target",
+            ),
+            row(
+                "Binder Retrieval Agent",
+                "Warhead mining",
+                "local curated binders; optional ChEMBL online fallback; PubChem name lookup only as ChEMBL helper; BindingDB is planned, not run",
+                "activity IC50/Ki/Kd/EC50 <= 1000 nM; assay confidence threshold",
+                f"binders={len(state.retrieved_binders)}, unique_smiles={len({item.smiles for item in state.retrieved_binders})}",
+                "milliseconds locally; minutes only with online APIs",
+                "yes - binder records returned" if state.retrieved_binders else "no - no binder records",
+                "PubChem and BindingDB remain planned integrations unless their specific callables are invoked.",
+            ),
+            row(
+                "Warhead Selection Agent",
+                "Warhead mining",
+                "selected binders, local scoring, optional RDKit validation; curated exit-vector markers only",
+                "activity IC50/Ki/Kd <= 1000 nM; derivatization feasible",
+                f"binders={len(state.retrieved_binders)}, warheads={len(state.selected_warheads)}",
+                "milliseconds locally",
+                "yes - selected warhead records" if state.selected_warheads else "no - no warheads selected",
+            ),
+            row(
+                "E3 Ligand Agent",
+                "E3 ligase selection",
+                "local curated CRBN/VHL/IAP/MDM2 handles; no expression database query is run",
+                f"requested_e3={state.parsed_objective.e3_ligase or 'CRBN/VHL comparison'}",
+                f"e3_ligands={len(state.selected_e3_ligands)}, ligases={len({item.e3_ligase for item in state.selected_e3_ligands})}",
+                "milliseconds locally",
+                "yes - local E3 ligand records" if state.selected_e3_ligands else "no - no E3 ligands selected",
+                "HPA/DepMap/ProteomicsDB/E3Net selection is planned integration.",
+            ),
+            row(
+                "Exit Vector Agent",
+                "Warhead Agent",
+                "explicit attachment markers and local confidence rules; no structural exit-vector modeling is run",
+                "warhead and E3 ligand component SMILES",
+                f"vectors={len(state.exit_vectors)}, ambiguous={sum(1 for item in state.exit_vectors if item.failure_reason)}",
+                "milliseconds locally",
+                "yes - local exit-vector annotations" if state.exit_vectors else "no - no exit-vector annotations",
+            ),
+            row(
+                "Linker Generation Agent",
+                "Linker design",
+                "curated linker CSV plus rule-based enumeration; LinkInvent/DiffLinker/DeLinker are planned, not run",
+                f"linker_types={','.join(state.parsed_objective.preferred_linker_types)}",
+                f"linkers={len(state.generated_linkers)}, classes={len({item.linker_class for item in state.generated_linkers})}",
+                "milliseconds locally; model generation not run",
+                "yes - curated/rule-based linker records" if state.generated_linkers else "no - no linkers generated",
+                "Generative linker models remain planned integrations.",
+            ),
+            row(
+                "Construction Agent",
+                "Assembly Agent",
+                "local dummy-atom assembly with RDKit when installed; named strategies currently share the same assembler",
+                "warhead + linker + E3 with valid exit vectors",
+                f"attempts={len(state.construction_attempts)}, valid={len(state.valid_candidates)}",
+                "seconds locally",
+                "yes - assembled candidate records" if state.valid_candidates else "no - no valid candidates",
+                "Retrosynthesis-aware route planning is planned integration.",
+            ),
+            row(
+                "Prediction Agent",
+                "DC50/Dmax prediction",
+                "heuristic demo predictor in codebase; no trained SynGlue/DeepPROTACs/PROTAC-STAN model is loaded",
+                "full PROTAC, components, target, E3 ligase, optional cell context",
+                f"degradation_predictions={len(state.degradation_predictions)}",
+                "seconds locally",
+                "no - heuristic demo predictions only" if state.degradation_predictions else "no - no predictions",
+                "Trained DC50/Dmax prediction is planned integration.",
+            ),
+            row(
+                "ADME/Tox Agent",
+                "ADME/Tox skill",
+                "RDKit descriptors when available plus heuristic risk triage; SwissADME/ADMETlab/pkCSM/ProTox-II are not run",
+                "PROTAC-aware thresholds; no strict Lipinski rejection",
+                f"admet_records={len(state.admet_predictions)}",
+                "seconds locally",
+                "no - heuristic/local ADME-Tox triage only" if state.admet_predictions else "no - no ADME/Tox records",
+                "External ADME/Tox predictors remain planned integrations.",
+            ),
+            row(
+                "Novelty Agent",
+                "Novelty/IP check",
+                "local known-PROTAC set; RDKit Morgan similarity when available; patent/PubChem/ChEMBL novelty search is not run",
+                "candidate SMILES and similarity thresholds",
+                f"novelty_records={len(state.novelty_results)}",
+                "seconds locally",
+                "yes - local similarity/duplicate records" if state.novelty_results else "no - no novelty records",
+                "SureChEMBL/Lens/Google Patents/PubChem novelty search is planned integration.",
+            ),
+            row(
+                "Ternary Feasibility Agent",
+                "Ternary complex modeling",
+                "local geometry proxy only when structure-aware ranking is requested; docking is not run",
+                "top candidates after first ranking",
+                f"ternary_records={len(state.ternary_feasibility_results)}",
+                "seconds locally; docking not run",
+                "no - geometry proxy only" if state.ternary_feasibility_results else "no - skipped or no ternary records",
+                "Docking/ternary modeling is planned integration.",
+            ),
+            row(
+                "Ranking Agent",
+                "Ranking skill",
+                "weighted deterministic ranking over available local/heuristic outputs",
+                state.parsed_objective.optimization_objective,
+                f"ranked={len(state.ranking_results)}, final={len(state.final_ranked_candidates)}",
+                "seconds",
+                "yes - ranking records over current outputs" if state.ranking_results else "no - no ranking records",
+            ),
+            row(
+                "Reflection/Evolution Agent",
+                "Mini-PROTAC optimization",
+                "deterministic critique and linker replacement over current candidate records",
+                "top candidates and weaknesses",
+                f"reviews={len(state.reflection_reviews)}, evolved={len(state.evolved_candidates)}",
+                "seconds to minutes",
+                "yes - local deterministic review/evolution records" if state.reflection_reviews or state.evolved_candidates else "no - no review/evolution records",
+                "Full generative mini-PROTAC optimization is planned integration.",
+            ),
+            row(
+                "Safety/Human Review Agent",
+                "Assay planning skill",
+                "local guardrail rules and warning aggregation",
+                "final candidates and requested use",
+                f"warnings={len(state.warnings)}, errors={len(state.errors)}, human_review_required=True",
+                "milliseconds locally",
+                "no - assay/human-review plan not generated; local guardrail status only",
+                "Expert assay planning and human-review packet generation are planned integrations.",
+            ),
+        ]
+
+    def generate_pipeline_status_table(self, state: WorkflowState) -> List[Dict[str, Any]]:
+        from synglue_agent.toolkit.status import get_tool_status
+
+        def status_for(name: str) -> Dict[str, Any]:
+            return get_tool_status(name)
+
+        def label(name: str, override: str | None = None) -> str:
+            status = status_for(name)
+            if override:
+                return f"{name}: {override}"
+            if status["executable"]:
+                return f"{name}: executable"
+            if status["classification"] == "stub":
+                return f"{name}: heuristic_stub"
+            if status["registered"]:
+                return f"{name}: registered but not executable"
+            return f"{name}: not connected"
+
+        def evidence(name: str, extra: str = "") -> str:
+            status = status_for(name)
+            parts = [
+                f"source={status.get('source_sheet')} row={status.get('source_row')}",
+                f"availability={status.get('evidence', {}).get('availability')}",
+                f"implementation={status.get('evidence', {}).get('implementation')}",
+            ]
+            if extra:
+                parts.append(extra)
+            return "; ".join(str(part) for part in parts if part)
+
+        docking_status = status_for("GNINA")
+        pubchem_status = status_for("PubChem")
+        admet_backends = []
+        for item in state.admet_predictions:
+            warning = item.warning or ""
+            if "backend=" in warning:
+                value = warning.split("backend=", 1)[1].split(";", 1)[0].strip()
+                if value:
+                    admet_backends.append(value)
+        admet_backend = admet_backends[0] if admet_backends else "unknown"
+        admet_real = bool(state.admet_predictions) and admet_backend not in {"heuristic_stub", "unknown"}
+        rows = [
+            {
+                "step_name": "target resolution",
+                "selected_tool_or_method": "Target assessment; optional UniProt executable lookup available separately",
+                "tool_status": f"{label('Target assessment')}; {label('UniProt')}",
+                "output_type": "TargetRecord",
+                "real_output_generated": bool(state.target_record),
+                "stub_or_heuristic": "local_demo_or_api_wrapper" if state.target_record else "not_connected",
+                "evidence": evidence("Target assessment", f"target_record_present={bool(state.target_record)}"),
+                "limitation": "Workflow still primarily uses local curated target records unless explicit executable wrappers are called.",
+                "next_integration_needed": "Route target resolution through UniProt/Open Targets/RCSB executable wrappers with no silent local fallback.",
+            },
+            {
+                "step_name": "warhead/binder retrieval",
+                "selected_tool_or_method": "Warhead mining; local curated binders; PubChem lookup wrapper available separately",
+                "tool_status": f"{label('Warhead mining')}; PubChem lookup: {'executable only if wrapper exists and succeeds' if pubchem_status['executable'] else 'registered but not executable'}",
+                "output_type": "list[BinderRecord]",
+                "real_output_generated": bool(state.retrieved_binders),
+                "stub_or_heuristic": "local_demo" if state.retrieved_binders else "not_connected",
+                "evidence": evidence("Warhead mining", f"binders={len(state.retrieved_binders)}"),
+                "limitation": "BindingDB is not connected; PubChem is not claimed unless its wrapper is explicitly called and succeeds.",
+                "next_integration_needed": "Connect ChEMBL/BindingDB executable mining and provenance filtering.",
+            },
+            {
+                "step_name": "E3 ligand selection",
+                "selected_tool_or_method": "E3 ligase selection from local curated E3 ligand table",
+                "tool_status": label("E3 ligase selection"),
+                "output_type": "list[E3LigandRecord]",
+                "real_output_generated": bool(state.selected_e3_ligands),
+                "stub_or_heuristic": "local_demo" if state.selected_e3_ligands else "not_connected",
+                "evidence": evidence("E3 ligase selection", f"e3_ligands={len(state.selected_e3_ligands)}"),
+                "limitation": "No HPA/DepMap/ProteomicsDB/E3Net expression or context query is run.",
+                "next_integration_needed": "Add tissue/cell-line-aware E3 expression and ligand source checks.",
+            },
+            {
+                "step_name": "linker generation",
+                "selected_tool_or_method": "Linker design using curated CSV plus rule-based enumeration",
+                "tool_status": label("Linker design"),
+                "output_type": "list[LinkerRecord]",
+                "real_output_generated": bool(state.generated_linkers),
+                "stub_or_heuristic": "local_demo" if state.generated_linkers else "not_connected",
+                "evidence": evidence("Linker design", f"linkers={len(state.generated_linkers)}"),
+                "limitation": "LinkInvent/DiffLinker/DeLinker are registered but not executed.",
+                "next_integration_needed": "Connect generative linker tools and 3D constraints.",
+            },
+            {
+                "step_name": "assembly",
+                "selected_tool_or_method": "Assembly Agent using local dummy-atom/RDKit join when possible",
+                "tool_status": f"{label('Assembly Agent')}; {label('RDKit')}",
+                "output_type": "list[CandidateRecord]",
+                "real_output_generated": bool(state.valid_candidates),
+                "stub_or_heuristic": "local_demo" if state.valid_candidates else "not_connected",
+                "evidence": evidence("Assembly Agent", f"valid_candidates={len(state.valid_candidates)}"),
+                "limitation": "Named assembly strategies still share scaffold logic; no retrosynthetic route proof.",
+                "next_integration_needed": "Use validated RDKit/RDChiral reactions with atom mapping and route checks.",
+            },
+            {
+                "step_name": "DC50/Dmax prediction",
+                "selected_tool_or_method": "Heuristic SynGlue-demo degradation predictor",
+                "tool_status": label("DC50/Dmax prediction"),
+                "output_type": "list[DegradationPrediction]",
+                "real_output_generated": False,
+                "stub_or_heuristic": "heuristic_stub",
+                "evidence": evidence("DC50/Dmax prediction", f"degradation_predictions={len(state.degradation_predictions)}"),
+                "limitation": "Predicted DC50/Dmax values are heuristic demo outputs, not trained model outputs.",
+                "next_integration_needed": "Load validated SynGlue/DeepPROTACs/PROTAC-STAN/Chemprop models with uncertainty.",
+            },
+            {
+                "step_name": "ADME/Tox prediction",
+                "selected_tool_or_method": "ADMET backend orchestrator (local_model/api/descriptor_rule_based/heuristic_stub)",
+                "tool_status": f"RDKit descriptors: {'executable' if status_for('RDKit')['executable'] else 'not executable'}; ADME/Tox backend={admet_backend}",
+                "output_type": "list[ADMETPrediction]",
+                "real_output_generated": admet_real,
+                "stub_or_heuristic": admet_backend if admet_backends else "not_connected",
+                "evidence": evidence("ADME/Tox skill", f"admet_records={len(state.admet_predictions)} backend={admet_backend}"),
+                "limitation": "Descriptor-rule output is not ML endpoint prediction; API/model paths depend on config.",
+                "next_integration_needed": "Add validated local ADMET models and configured external endpoints for full endpoint coverage.",
+            },
+            {
+                "step_name": "novelty/IP",
+                "selected_tool_or_method": "Novelty/IP check against local known-PROTAC set",
+                "tool_status": label("Novelty/IP check"),
+                "output_type": "list[NoveltyResult]",
+                "real_output_generated": bool(state.novelty_results),
+                "stub_or_heuristic": "local_demo" if state.novelty_results else "not_connected",
+                "evidence": evidence("Novelty/IP check", f"novelty_records={len(state.novelty_results)}"),
+                "limitation": "Patent/PubChem/ChEMBL/SureChEMBL/Lens novelty searches are not run.",
+                "next_integration_needed": "Add exact/similarity/substructure searches across public and patent databases.",
+            },
+            {
+                "step_name": "retrosynthesis",
+                "selected_tool_or_method": "Synthesis planning / retrosynthesis feasibility filter",
+                "tool_status": label("Synthesis planning"),
+                "output_type": "synthetic_feasibility_score",
+                "real_output_generated": False,
+                "stub_or_heuristic": "heuristic_stub",
+                "evidence": evidence("Synthesis planning", "route_planner_run=False"),
+                "limitation": "AiZynthFinder/ASKCOS/IBM RXN/RAscore are not run.",
+                "next_integration_needed": "Connect route planning and purchasable building-block checks.",
+            },
+            {
+                "step_name": "ternary feasibility",
+                "selected_tool_or_method": "Ternary complex modeling; GNINA docking registered but not run",
+                "tool_status": f"{label('Ternary complex modeling')}; GNINA docking: {'executable' if docking_status['executable'] else 'registered but not executable'}",
+                "output_type": "list[TernaryFeasibilityResult]",
+                "real_output_generated": False,
+                "stub_or_heuristic": "heuristic_stub" if state.ternary_feasibility_results else "not_connected",
+                "evidence": evidence("Ternary complex modeling", f"ternary_records={len(state.ternary_feasibility_results)}; docking_run=False"),
+                "limitation": "No docking engine, PRosettaC/HADDOCK/GNINA, or MD refinement is run.",
+                "next_integration_needed": "Connect protein prep, docking/ternary modeling, and interface scoring.",
+            },
+            {
+                "step_name": "ranking",
+                "selected_tool_or_method": "Ranking skill using weighted deterministic score over current outputs",
+                "tool_status": label("Ranking skill"),
+                "output_type": "list[RankingResult]",
+                "real_output_generated": bool(state.ranking_results),
+                "stub_or_heuristic": "heuristic" if state.ranking_results else "not_connected",
+                "evidence": evidence("Ranking skill", f"ranked={len(state.ranking_results)}"),
+                "limitation": "Ranking inherits limitations of heuristic/local upstream outputs.",
+                "next_integration_needed": "Add calibrated gates, uncertainty-aware ranking, and real model/tool provenance.",
+            },
+            {
+                "step_name": "final report",
+                "selected_tool_or_method": "Report generation from current WorkflowState",
+                "tool_status": label("Report generation"),
+                "output_type": "markdown/json/csv report artifacts",
+                "real_output_generated": bool(state.report),
+                "stub_or_heuristic": "real_report_over_mixed_quality_inputs" if state.report else "not_connected",
+                "evidence": evidence("Report generation", f"report_chars={len(state.report)}"),
+                "limitation": "Report is real as an artifact, but scientific claims remain limited by upstream status labels.",
+                "next_integration_needed": "Keep report labels synchronized with executable tool provenance.",
+            },
+        ]
+        return rows
+
+    def generate_markdown_report(self, state: WorkflowState, top_n: int = 10) -> str:
+        state.pipeline_status = self.generate_pipeline_status_table(state)
+        table = self.generate_candidate_table(
+            state.final_ranked_candidates or state.valid_candidates[:top_n],
+            state.ranking_results,
+            state.degradation_predictions,
+            state.admet_predictions,
+            state.novelty_results,
+            state.ternary_feasibility_results,
+        )
+        lines = [
+            "# SynGlue-Agent PROTAC Design Report",
+            "",
+            "SynGlue-Agent is a tool-augmented, memory-enabled, workflow-orchestrated agentic AI framework for component-aware PROTAC design.",
+            "",
+            "## Objective",
+            f"- User request: {state.user_request}",
+            f"- Target: {state.parsed_objective.target_name or 'unresolved'}",
+            f"- E3 ligase: {state.parsed_objective.e3_ligase or 'CRBN and VHL comparison'}",
+            f"- Candidate target count: {state.parsed_objective.candidate_count}",
+            "",
+            "## Workflow Summary",
+            f"- Binders retrieved: {len(state.retrieved_binders)}",
+            f"- Warheads selected: {len(state.selected_warheads)}",
+            f"- E3 ligands selected: {len(state.selected_e3_ligands)}",
+            f"- Linkers generated: {len(state.generated_linkers)}",
+            f"- Construction attempts: {len(state.construction_attempts)}",
+            f"- Valid or unverified candidates: {len(state.valid_candidates)}",
+            f"- Evolved candidates: {len(state.evolved_candidates)}",
+            "",
+            "## Scientific Guardrails",
+            "- Values are computational predictions, not experimental validation.",
+            "- Model version is reported for degradation predictions.",
+            "- Human medicinal chemistry and safety review is required before synthesis or wet-lab testing.",
+        ]
+        if state.warnings:
+            lines.extend(["", "## Warnings"])
+            lines.extend(f"- {warning}" for warning in state.warnings)
+        if table:
+            lines.extend(["", "## Top Ranked Candidates", ""])
+            headers = [
+                "Rank",
+                "Tier",
+                "Target",
+                "E3 ligase",
+                "Warhead name",
+                "Linker class",
+                "Predicted DC50 nM",
+                "Predicted Dmax %",
+                "hERG risk",
+                "Novelty score",
+                "Final priority score",
+                "Warning flags",
+            ]
+            lines.append("| " + " | ".join(headers) + " |")
+            lines.append("| " + " | ".join(["---"] * len(headers)) + " |")
+            for row in table[:top_n]:
+                lines.append("| " + " | ".join(str(row.get(header, "")) for header in headers) + " |")
+        lines.extend(["", "## Agent Workflow Table", ""])
+        workflow_rows = self.generate_agent_workflow_table(state)
+        headers = [
+            "Agent type",
+            "Selected tool",
+            "Tool status",
+            "Real output generated",
+            "Integration note",
+            "Data sources/tools",
+            "Query parameters",
+            "Quantitative outputs",
+            "Processing time",
+        ]
+        lines.append("| " + " | ".join(headers) + " |")
+        lines.append("| " + " | ".join(["---"] * len(headers)) + " |")
+        for row in workflow_rows:
+            lines.append("| " + " | ".join(str(row.get(header, "")).replace("|", "/") for header in headers) + " |")
+        lines.extend(["", "## Pipeline Status Labels", ""])
+        status_headers = [
+            "step_name",
+            "selected_tool_or_method",
+            "tool_status",
+            "output_type",
+            "real_output_generated",
+            "stub_or_heuristic",
+            "limitation",
+            "next_integration_needed",
+        ]
+        lines.append("| " + " | ".join(status_headers) + " |")
+        lines.append("| " + " | ".join(["---"] * len(status_headers)) + " |")
+        for row in state.pipeline_status:
+            lines.append("| " + " | ".join(str(row.get(header, "")).replace("|", "/") for header in status_headers) + " |")
+        return "\n".join(lines)
+
+    def export_csv(self, rows: Sequence[Dict[str, Any]], path: Path) -> Path:
+        if not rows:
+            path.write_text("", encoding="utf-8")
+            return path
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rows)
+        return path
+
+    def export_json(self, payload: Any, path: Path) -> Path:
+        path.write_text(json.dumps(model_to_dict(payload), indent=2), encoding="utf-8")
+        return path
+
+    def write_workflow_memory(self, state: WorkflowState) -> Dict[str, Any]:
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        run_id = _stable_id("run", state.user_request, timestamp)
+        path = WORKFLOW_LOG_DIR / f"{run_id}.json"
+        payload = {
+            "run_id": run_id,
+            "timestamp": timestamp,
+            "user_request": state.user_request,
+            "target": state.parsed_objective.target_name,
+            "final_candidate_ids": [candidate.candidate_id for candidate in state.final_ranked_candidates],
+            "warnings": state.warnings,
+            "errors": state.errors,
+            "workflow_log": model_to_dict(state.workflow_log),
+        }
+        path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return {"run_id": run_id, "path": str(path)}
+
+    def add_trace(self, state: WorkflowState, agent: str, thought: str, action: str, observation: str, elapsed: float) -> None:
+        state.workflow_log.append(
+            AgentTrace(
+                agent=agent,
+                thought=thought,
+                action=action,
+                observation=observation,
+                processing_time_s=round(elapsed, 4),
+            )
+        )

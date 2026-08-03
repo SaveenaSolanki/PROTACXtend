@@ -1,0 +1,13 @@
+.git
+.pytest_cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.venv/
+venv/
+node_modules/
+synglue_agent/outputs/
+synglue_agent/memory/workflow_logs/
+

@@ -1,0 +1,13 @@
+name,smiles,linker_class,source,graph_length,effective_length,rotatable_bonds,tpsa_contribution,hbd,hba,synthetic_feasibility_proxy,generation_method
+PEG2,[*:1]CCOCC[*:2],PEG,curated_demo_linker,5,5.5,5,9.2,0,1,0.74,curated_library
+PEG3,[*:1]CCOCCOCC[*:2],PEG,curated_demo_linker,8,8.4,8,18.4,0,2,0.70,curated_library
+PEG4,[*:1]CCOCCOCCOCC[*:2],PEG,curated_demo_linker,11,11.2,11,27.6,0,3,0.64,curated_library
+ALKYL3,[*:1]CCC[*:2],alkyl,curated_demo_linker,3,3.5,3,0.0,0,0,0.78,curated_library
+ALKYL4,[*:1]CCCC[*:2],alkyl,curated_demo_linker,4,4.5,4,0.0,0,0,0.76,curated_library
+ALKYL6,[*:1]CCCCCC[*:2],alkyl,curated_demo_linker,6,6.5,6,0.0,0,0,0.70,curated_library
+PIPERAZINE_ETHYL,[*:1]CCN1CCN(CC1)CC[*:2],piperazine,curated_demo_linker,8,7.0,6,12.0,0,2,0.62,curated_library
+PIPERAZINE_AMIDE,[*:1]CCNC(=O)N1CCN(CC1)CC[*:2],piperazine,curated_demo_linker,10,8.5,7,41.0,1,3,0.54,curated_library
+TRIAZOLE_ETHYL,[*:1]CCn1nncc1CC[*:2],triazole,curated_demo_linker,8,6.8,5,38.0,0,3,0.57,curated_library
+AMIDE_POLAR,[*:1]CCNC(=O)CCOCC[*:2],amide,curated_demo_linker,9,8.1,8,38.0,1,3,0.58,curated_library
+RIGID_AROMATIC,[*:1]Cc1ccc(C[*:2])cc1,rigid aromatic,curated_demo_linker,7,6.0,3,0.0,0,0,0.52,curated_library
+MIXED_POLAR,[*:1]CCOCCNC(=O)CC[*:2],mixed polar,curated_demo_linker,10,9.0,8,47.0,1,3,0.56,curated_library

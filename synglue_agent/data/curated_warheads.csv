@@ -1,0 +1,7 @@
+name,target,smiles,activity_type,activity_nM,assay_confidence,source,year,derivatization_score,exit_vector_confidence,source_confidence
+BRD4_demo_JQ1_like,BRD4,COc1cc([*:1])cc(C(=O)N2CCN(CC2)c2ccc(Cl)cc2)c1,IC50,65,0.80,local_demo_jq1_like_warhead,2024,0.78,0.88,0.70
+BRD4_demo_triazolobenzodiazepine_like,BRD4,Cc1cc([*:1])nc(NC(=O)c2ccccc2)c1,IC50,120,0.72,local_demo_bromodomain_warhead,2024,0.68,0.72,0.62
+BRD4_demo_quinazoline_like,BRD4,COc1ccc(Nc2ncnc3cc([*:1])ccc23)cc1,Kd,210,0.68,local_demo_brd4_binder,2024,0.62,0.66,0.58
+GSPT1_demo_glue_like,GSPT1,NCC(=O)N1CCN(CC1)c1ccc([*:1])cc1,EC50,180,0.62,local_demo_gspt1_component,2024,0.54,0.61,0.52
+EGFR_demo_gefitinib_like,EGFR,COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1OCC[*:1],IC50,45,0.82,local_demo_egfr_warhead,2024,0.74,0.80,0.70
+EGFR_demo_erlotinib_like,EGFR,COCCOc1cc2ncnc(Nc3cccc([*:1])c3)c2cc1OCC,IC50,80,0.76,local_demo_egfr_warhead,2024,0.70,0.74,0.66

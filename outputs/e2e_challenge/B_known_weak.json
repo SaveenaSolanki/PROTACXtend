@@ -1,0 +1,136 @@
+{
+  "case": "B_known_weak",
+  "request": "Design/evaluate a PROTAC for CD147 using CRBN.",
+  "note": "known weak degrader (published DC50=16840.0 nM)",
+  "start_ts": "2026-08-04T00:13:58",
+  "node_path": [
+    "e3_context_engine",
+    "ternary_geometric_proxy",
+    "degradation_endpoint",
+    "retrosynthesis",
+    "pareto_ranking"
+  ],
+  "tool_calls": [
+    {
+      "tool": "e3_context_engine",
+      "input": {
+        "e3s": [
+          "CRBN",
+          "VHL"
+        ]
+      },
+      "output": {
+        "best": "CRBN",
+        "explanation": "CRBN preferred over VHL because CRBN has higher expression (1.00 vs 0.20) and stronger contextual support (0.91 vs 0.57) despite VHL having better structural availability (1.00 vs 0.90)"
+      }
+    },
+    {
+      "tool": "degradation_endpoint",
+      "input": {
+        "smiles": "COC(=O)C1=CC[C@]23CC[C@@H]([C@@]2(OC(C)=O)CC1)[C@@](C)(/C=C/",
+        "cell_line": "MM1.S"
+      },
+      "output": {
+        "dc50_nM": 334.5,
+        "dmax": 85.4,
+        "class": "inactive",
+        "verdict": "high_confidence"
+      }
+    }
+  ],
+  "repair_history": [],
+  "model_outputs": {
+    "ternary_geometric": {
+      "score": 0.453,
+      "ok": true,
+      "tool": "geometric_proxy"
+    },
+    "degradation": {
+      "candidate_id": "B_known_weak",
+      "dc50_nM": 334.5,
+      "log_dc50": 1.6702,
+      "dmax_pct": 85.4,
+      "activity_class": "inactive",
+      "uncertainty_log10": 1.4115,
+      "ad_status": "in_domain",
+      "nn_tanimoto": 0.7619,
+      "context": {
+        "cell_line": "MM1.S",
+        "target": "CD147",
+        "e3_ligase": "CRBN",
+        "target_expression": "high",
+        "e3_expression": "high",
+        "subcellular_match": true,
+        "context_id": "MM1.S|CD147|CRBN",
+        "evidence_refs": [
+          "Ito et al. 2010 / Zhu et al. 2019 (curated)"
+        ]
+      },
+      "context_gated": false,
+      "context_note": "",
+      "verdict": "high_confidence",
+      "confidence": 0.85,
+      "model": "chemprop_multitarget",
+      "provenance": {
+        "dc50_dmax": "chemprop_multitarget",
+        "uncertainty": "chemprop_ensemble_conformal",
+        "context": "Ito et al. 2010 / Zhu et al. 2019 (curated)"
+      },
+      "degraded_fallback": false,
+      "note": ""
+    },
+    "retrosynthesis": {
+      "candidate_id": "B_known_weak",
+      "route_found": false,
+      "route_count": 0,
+      "shortest_route_steps": null,
+      "rascore": 0.4644,
+      "route_confidence": 0.1393,
+      "purchasable_fraction": 0.0,
+      "unresolved_precursors": [
+        "COC(=O)C1=CC[C@]23CC[C@@H]([C@@]2(OC(C)=O)CC1)[C@@](C)(/C=C/C=C(\\C)C(=O)NC1CCN(C2=CC=CC4=C2C(=O)N(C2CCC(=O)NC2=O)C4=O)CC1)OC3=O"
+      ],
+      "incompatible_reactions": [],
+      "route_files": [],
+      "status": "tool_failed",
+      "tools_used": [
+        "sascore_proxy",
+        "aizynthfinder:disabled"
+      ],
+      "provenance": {
+        "prescreen": "sascore_proxy",
+        "route_search": "none"
+      },
+      "prescreen_tool": "sascore_proxy",
+      "note": "AiZynthFinder unavailable \u2014 RAscore-only assessment"
+    }
+  },
+  "human_decisions": [],
+  "runtime_s": 19.41,
+  "gpu": {
+    "gpus": [
+      "NVIDIA RTX 5000 Ada Generation, 13040 MiB, 32760 MiB",
+      "NVIDIA GeForce RTX 3090, 372 MiB, 24576 MiB"
+    ]
+  },
+  "api_calls": {
+    "llm": 0,
+    "external_api": 0
+  },
+  "final_ranked_candidates": [
+    {
+      "candidate_id": "B_known_weak",
+      "objectives": {
+        "log_dc50": 0.334,
+        "dmax_inverted": 0.146,
+        "admet_penalty": 0.2,
+        "synthesis_difficulty": 0.5356,
+        "ternary_penalty": 0.547
+      },
+      "pareto_rank": 0,
+      "crowding_distance": Infinity,
+      "on_front": true,
+      "pareto_score": -1.0
+    }
+  ]
+}

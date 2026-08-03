@@ -214,3 +214,33 @@ geometrically screened against 3600 MegaDock poses.
   restored rdkit 2026.3.5 and relinked cuik_molmaker's 158 hash-named RDKit
   libs to the current rdkit.libs (predictions verified correct).
 - Full suite: 247 passed (11 skipped, slow deselected).
+
+## 2026-08-04 — Roadmap: Tasks 4-8 (endpoint, E3-context, LLM validation, memory, e2e+benchmark)
+- **Task 4 — Degradation endpoint**: multi-target Chemprop (logDC50 + Dmax, 1,126
+  rows, scaffold split), active/inactive classification (DC50≤100nM & Dmax≥50%),
+  cellular-context gate (E3 expression veto: VHL-low in MM1.S → chemistry score
+  downgraded to low_confidence with explanation), uncertainty + AD retained.
+  10 tests.
+- **Task 5 — E3-context engine**: deterministic evidence-based scoring
+  (expression/colocalization/ligand/structural/resistance with per-component
+  evidence refs). Headline requirement verified verbatim: "CRBN preferred over
+  VHL because CRBN has higher expression (1.00 vs 0.20) ... despite VHL having
+  better structural availability (1.00 vs 0.90)". 8 tests.
+- **Task 6 — LLM role validation harness**: scripts/eval_llm_roles.py — 6 roles
+  × metrics (valid output, unsupported tools=0, SMILES edits=0, hallucination=0,
+  human-gate recall, context overflow). Live gpt-oss:20b: safety metrics all
+  perfect; GENUINE findings: repair chose retry for OOD (deterministic layer
+  overrides), report dropped a number (templates insert numbers). CI-safe
+  deterministic tests. 8 tests + findings doc.
+- **Task 7 — Memory unification**: three separate stores (RunStateStore,
+  EvidenceStore, LearningStore) in memory/stores.py + MemoryHub. Learning
+  retrieval sequence (failure signature → validated match → suggestion →
+  deterministic validation → outcome recording); failed repairs reduce
+  priority; human corrections separate from model decisions; memory cannot
+  override validators (tested). 10 tests.
+- **Task 8 — e2e challenge + formal benchmark**: scripts/e2e_challenge.py ran
+  A (known potent → active), B (known weak → inactive), C (HMGB2-ICM → active
+  chem vs SE3 ternary ~0 → AMBIGUOUS → human gate; cross-layer disagreement
+  documented). Full records in outputs/e2e_challenge/. 8-system benchmark
+  harness (scripts/agentic_benchmark.py) running; formal report scaffold at
+  outputs/benchmark/FORMAL_BENCHMARK_REPORT.md.

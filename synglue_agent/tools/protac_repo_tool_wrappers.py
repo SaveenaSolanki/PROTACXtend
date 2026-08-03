@@ -245,7 +245,7 @@ def list_bellerophon_assets() -> dict[str, Any]:
     }
 
 
-def split_protac_with_safe_wrapper(smiles: str, timeout: float = 30.0) -> dict[str, Any]:
+def split_protac_with_safe_wrapper(smiles: str, timeout: float = 120.0) -> dict[str, Any]:
     """Try PROTAC-Splitter's no-model heuristic path, with honest fallback."""
 
     validation = validate_smiles(smiles)

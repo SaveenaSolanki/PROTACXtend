@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from synglue_agent.agentic.orchestration import run_agentic_design
+from synglue_agent.agents.runtime import run_protacpilot  # unified entry point
 from synglue_agent.agents.graph import run_syn_glue_workflow
 from synglue_agent.backend.config import CANDIDATE_DIR, REPORT_DIR, ensure_directories
 from synglue_agent.backend.mode_router import run_mode

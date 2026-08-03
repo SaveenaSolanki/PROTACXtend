@@ -16,11 +16,19 @@ from synglue_agent.tools.report_generator import generate_candidate_table
 from synglue_agent.tools.ternary_feasibility import assess_ternary_feasibility
 
 
-VALID_MODES = {"ask", "design", "validate", "ternary", "report"}
+VALID_MODES = {"ask", "design", "validate", "ternary", "report", "agentic"}
 
 
 def _run_workflow_from_request(user_request: str):
+    """Deterministic v0.1 path — unchanged behavior (agentic_mode=False)."""
     return run_syn_glue_workflow(user_request)
+
+
+def _run_agentic_from_request(user_request: str, config=None):
+    """Unified v0.3 agentic path via the single runtime entry point."""
+    from synglue_agent.agents.runtime import run_protacpilot
+    result = run_protacpilot(user_request, mode="agentic", config=config or {})
+    return result
 
 
 def _summarize_state(state: Any) -> dict[str, Any]:
@@ -178,6 +186,11 @@ def run_mode(payload: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(f"Unknown mode '{mode}'. Valid modes: {sorted(VALID_MODES)}")
     if mode == "ask":
         return _run_ask_mode(payload)
+    if mode == "agentic":
+        return _run_agentic_from_request(
+            payload.get("request") or payload.get("user_request") or "",
+            config=payload.get("config"),
+        )
     if mode == "design":
         return _run_design_mode(payload)
     if mode == "validate":

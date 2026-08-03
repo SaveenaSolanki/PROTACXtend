@@ -1,6 +1,5 @@
-"""Agentic control layer for ProtacAutopilot."""
+"""LEGACY scaffold (v0.2-era). Superseded by agents/agentic_core.py + agents/runtime.py.
 
-from synglue_agent.agentic.orchestration import run_agentic_design
-
-__all__ = ["run_agentic_design"]
-
+Kept importable for reference only. DO NOT build on this package.
+Canonical agentic path: synglue_agent.agents.runtime.run_protacpilot(mode='agentic').
+"""

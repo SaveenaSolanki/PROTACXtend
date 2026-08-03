@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from synglue_agent.agentic.orchestration import run_agentic_design
+from synglue_agent.agents.runtime import run_protacpilot  # unified entry point (agentic mode)
 from synglue_agent.backend.main import run_workflow_from_request, summarize_state
 from synglue_agent.backend.mode_router import run_mode
 from synglue_agent.backend.schemas import model_to_dict
@@ -69,7 +69,9 @@ def get_app():
 
     @app.post("/agentic-design")
     def agentic_design(req: AgenticDesignRequest):
-        return model_to_dict(run_agentic_design(req.request, config=req.config or {}))
+        result = run_protacpilot(req.request, mode="agentic", config=req.config or {})
+        # Return the state for backward compatibility (plus runtime envelope)
+        return model_to_dict(result)
 
     @app.post("/mode")
     def mode(req: ModeRequest):

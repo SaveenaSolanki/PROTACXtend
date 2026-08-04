@@ -1,0 +1,8 @@
+{
+  "run_id": "trace_test",
+  "status": "ok",
+  "runtime_s": 0.0,
+  "events": 5,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/trace_test/trace.jsonl",
+  "mode": "agentic"
+}

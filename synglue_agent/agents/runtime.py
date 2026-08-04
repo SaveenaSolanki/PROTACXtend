@@ -47,12 +47,44 @@ def run_protacpilot(
     run_id = config.get("run_id") or f"run_{uuid.uuid4().hex[:8]}"
     t0 = time.time()
 
-    if mode == "deterministic":
-        result = _run_deterministic(user_request, config)
-    else:
-        result = _run_agentic(user_request, config)
+    # Central tracing: every run writes outputs/runs/<run_id>/trace.jsonl
+    try:
+        from synglue_agent.observability.tracing import TraceSession
+        trace = TraceSession(run_id=run_id, meta={"mode": mode, "request": user_request[:120]})
+    except Exception:
+        trace = None
+
+    try:
+        if mode == "deterministic":
+            result = _run_deterministic(user_request, config)
+        else:
+            result = _run_agentic(user_request, config)
+    except Exception as exc:
+        if trace:
+            trace.error("runtime", str(exc))
+            trace.end(status="failed")
+        raise
 
     runtime_s = round(time.time() - t0, 2)
+    if trace:
+        trace.tool_call("runtime.run_protacpilot",
+                        {"mode": mode, "run_id": run_id},
+                        result_summary={"status": result.get("status"),
+                                        "n_decisions": result.get("summary", {}).get("n_decisions")},
+                        elapsed_s=runtime_s)
+        trace.end(status=result.get("status", "unknown"))
+        result["trace"] = {"run_id": run_id,
+                           "summary": trace.summary() if hasattr(trace, 'summary') else None}
+
+    trace_info = None
+    if trace is not None:
+        trace_info = {
+            "run_id": run_id,
+            "trace_file": str(trace.dir / "trace.jsonl"),
+            "summary_file": str(trace.dir / "summary.json"),
+            "events": trace._events,
+        }
+
     return {
         "request": user_request,
         "mode": mode,
@@ -63,6 +95,7 @@ def run_protacpilot(
         "summary": result.get("summary", {}),
         "artifacts": result.get("artifacts", {}),
         "state": result.get("state"),
+        "trace": trace_info,
     }
 
 
@@ -87,11 +120,20 @@ def _run_agentic(user_request: str, config: Dict[str, Any]) -> Dict[str, Any]:
     enabled and reachable, evidence/repair decisions go through the gated
     gateway with deterministic validators + fallback; otherwise the
     deterministic adaptive graph runs unchanged (safe default).
+
+    Runs under a PERSISTENT checkpointer (interrupt/resume capable):
+      - a run_id maps to a thread_id
+      - human gates interrupt; the run resumes via Command(resume=...) on
+        the same thread_id
     """
     from synglue_agent.agents.agentic_core import run_agentic_workflow
 
     llm_enabled = config.get("llm_enabled", False)
-    state = run_agentic_workflow(user_request)
+    run_id = config.get("run_id") or f"run_{uuid.uuid4().hex[:8]}"
+    state = run_agentic_workflow(user_request, thread_id=run_id)
+
+    # A human gate may have interrupted the run (persistent checkpointer).
+    interrupted = bool(state.get("__interrupt__"))
 
     # Learning persistence is part of the live graph output (Task 7 base)
     try:
@@ -102,14 +144,38 @@ def _run_agentic(user_request: str, config: Dict[str, Any]) -> Dict[str, Any]:
         artifacts = {"error": str(exc)}
 
     return {
-        "status": state.get("status", "ok"),
+        "status": "needs_human" if interrupted else state.get("status", "ok"),
         "summary": {
             "n_candidates": len(state.get("valid_candidates", [])),
             "n_decisions": len(state.get("decision_log", [])),
             "llm_enabled": llm_enabled,
+            "interrupted": interrupted,
+            "resume_thread": run_id,
         },
         "artifacts": artifacts,
         "state": state,
+    }
+
+
+def resume_agentic_run(run_id: str, resume_value: Any, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Resume an interrupted agentic run on the persistent checkpointer.
+
+    After a human gate interrupts (status needs_human), call this with the
+    human's decision (e.g. "approve" / "abort") to continue the same thread.
+    """
+    from synglue_agent.agents.checkpointer import (
+        get_checkpointer, run_id_thread, resume_command,
+    )
+    from synglue_agent.agents.agentic_core import build_agentic_graph
+
+    graph = build_agentic_graph().compile(checkpointer=get_checkpointer())
+    command = resume_command(resume_value)
+    result = graph.invoke(command, config={"configurable": {"thread_id": run_id_thread(run_id)}})
+    return {
+        "run_id": run_id,
+        "status": result.get("status", "ok"),
+        "state": result,
+        "resumed_with": resume_value,
     }
 
 

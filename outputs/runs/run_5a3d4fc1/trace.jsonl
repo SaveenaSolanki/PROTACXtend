@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1785817686.5807397, "elapsed_s": 0.0, "run_id": "run_5a3d4fc1", "meta": {"mode": "agentic", "request": "Design CRBN-based PROTACs for HMGB2."}}
+{"event": "tool_call", "ts": 1785817690.5579972, "elapsed_s": 4.02, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "run_5a3d4fc1"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1785817690.5580692, "elapsed_s": 3.9773, "status": "ok", "summary": {}, "events": 2}

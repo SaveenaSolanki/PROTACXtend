@@ -1,0 +1,94 @@
+# ProtacPilot production services (item 2)
+# =========================================
+#   api           — FastAPI backend (unified runtime + /llm + /mode endpoints)
+#   worker        — job queue consumer (P4ward, retrosynthesis, degradation)
+#   postgres      — persistent LangGraph checkpointer + evidence store
+#   redis         — job queue broker
+#   ollama        — local LLM (gpt-oss:20b) with healthcheck
+#
+# Usage:
+#   docker compose up -d postgres redis ollama          # infra
+#   docker compose up -d api worker                     # app
+#   docker compose ps                                   # health
+#
+# The local Ollama (port 11435, user-space 0.32.x) is used by default when
+# the container one is not needed; set OLLAMA_HOST accordingly.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${PROTACPILOT_PG_PASSWORD:-protacpilot}
+      POSTGRES_DB: protacpilot
+    ports:
+      - "5433:5432"
+    volumes:
+      - protacpilot_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      PROTACPILOT_CHECKPOINT_URL: postgresql://postgres:protacpilot@postgres:5432/protacpilot
+      PROTACPILOT_REDIS_URL: redis://redis:6379/0
+      PROTACPILOT_LLM_BASE_URL: http://ollama:11434
+      PROTACPILOT_LLM_PROVIDER: ollama
+      PROTACPILOT_LLM_MODEL: gpt-oss:20b
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    command: ["python", "deploy/p4ward_worker.py"]
+    environment:
+      PROTACPILOT_CHECKPOINT_URL: postgresql://postgres:protacpilot@postgres:5432/protacpilot
+      PROTACPILOT_REDIS_URL: redis://redis:6379/0
+      PROTACPILOT_LLM_BASE_URL: http://ollama:11434
+    volumes:
+      - ../data:/app/data          # models, checkpoints, evidence
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  protacpilot_pgdata:
+  ollama_models:

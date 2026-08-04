@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System deps (rdkit C++ libs needed by chemprop cuik_molmaker)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxrender1 libxext6 libssl3 && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY synglue_agent/ ./synglue_agent/
+COPY scripts/ ./scripts/
+COPY deploy/ ./deploy/
+
+# Trained models + evidence (mounted in production via volume)
+ENV PROTACPILOT_CHECKPOINT_URL=postgresql://postgres:protacpilot@postgres:5432/protacpilot
+ENV PROTACPILOT_REDIS_URL=redis://redis:6379/0
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "synglue_agent.backend.api_routes:get_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

@@ -708,6 +708,7 @@ def route_after_repair(state: AgenticWorkflowState) -> str:
 
 def build_agentic_graph(
     legacy_nodes: Optional[Dict[str, Callable]] = None,
+    checkpointer=None,
 ) -> "StateGraph":
     """Build the adaptive LangGraph workflow.
 
@@ -986,6 +987,8 @@ def build_agentic_graph(
     if "report" in available:
         builder.add_edge("report", END)
 
+    if checkpointer is not None:
+        return builder.compile(checkpointer=checkpointer)
     return builder.compile()
 
 
@@ -996,6 +999,7 @@ def build_agentic_graph(
 def run_agentic_workflow(
     user_request: str,
     legacy_agents: Optional[Dict[str, Callable]] = None,
+    thread_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run the adaptive agentic workflow.
 
@@ -1010,7 +1014,14 @@ def run_agentic_workflow(
     """
     if legacy_agents is None:
         legacy_agents = _default_stub_agents()
-    graph = build_agentic_graph(legacy_nodes=legacy_agents)
+    # Persistent checkpointer (interrupt/resume capable) when a thread_id is given.
+    checkpointer = None
+    invoke_config = None
+    if thread_id:
+        from synglue_agent.agents.checkpointer import get_checkpointer, run_id_thread
+        checkpointer = get_checkpointer()
+        invoke_config = {"configurable": {"thread_id": run_id_thread(thread_id)}}
+    graph = build_agentic_graph(legacy_nodes=legacy_agents, checkpointer=checkpointer)
     initial_state: AgenticWorkflowState = {
         "user_request": user_request,
         "decision_log": [],
@@ -1028,7 +1039,7 @@ def run_agentic_workflow(
         "ternary_feasibility": {},
         "ranking_results": [],
     }
-    result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state, config=invoke_config)
     return result
 
 

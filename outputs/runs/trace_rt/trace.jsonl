@@ -1,0 +1,21 @@
+{"event": "run_start", "ts": 1785817505.7851489, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785817510.2927816, "elapsed_s": 4.54, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1785817510.292831, "elapsed_s": 4.5077, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785817530.643007, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785817535.106274, "elapsed_s": 4.46, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "36"}}
+{"event": "run_end", "ts": 1785817535.1063228, "elapsed_s": 4.4633, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785817563.3928807, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785817567.1872396, "elapsed_s": 3.79, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "54"}}
+{"event": "run_end", "ts": 1785817567.1873128, "elapsed_s": 3.7944, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785817594.0328312, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785817598.1624355, "elapsed_s": 4.13, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "72"}}
+{"event": "run_end", "ts": 1785817598.1624827, "elapsed_s": 4.1297, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785817890.948049, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785817894.594725, "elapsed_s": 3.65, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "90"}}
+{"event": "run_end", "ts": 1785817894.594792, "elapsed_s": 3.6467, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785818243.9838538, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785818251.59297, "elapsed_s": 7.61, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "108"}}
+{"event": "run_end", "ts": 1785818251.5930429, "elapsed_s": 7.6092, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785818750.2783594, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785818751.8425086, "elapsed_s": 1.56, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "126"}}
+{"event": "run_end", "ts": 1785818751.8425496, "elapsed_s": 1.5642, "status": "ok", "summary": {}, "events": 2}

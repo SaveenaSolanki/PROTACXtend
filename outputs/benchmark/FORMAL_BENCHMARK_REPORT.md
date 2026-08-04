@@ -41,22 +41,42 @@ independent methods.
 Full run records: `outputs/e2e_challenge/*.json` (request, node path, tool
 calls, model outputs, uncertainty, E3 explanation, Pareto ranking, runtime, GPU).
 
-## 4. 8-system comparison (Task 8b) — running
+## 4. 8-system comparison (Task 8b) — COMPLETED
 
-See `outputs/benchmark/formal_benchmark_results.json` + the table below
-(populated on completion). Systems share scientific tools; differ in
-architecture components (repair/uncertainty/memory/context/LLM).
+Task: rank 16 known PROTAC-DB molecules (8 potent <100nM + 8 weak ≥500nM).
+Same scientific tools; systems differ in architecture components.
 
-| System | ρ (DC50) | Enrichment | Synth-rate | Gates | Repairs | Runtime |
+| System | ρ (DC50) | Enrichment | Synth-rate | Gates | Repairs | Runtime (s) |
 |---|---|---|---|---|---|---|
-| fixed_pipeline | … | … | … | … | … | … |
-| adaptive_deterministic | … | … | … | … | … | … |
-| llm_planner_only | … | … | … | … | … | … |
-| full_agentic | … | … | … | … | … | … |
-| full_minus_memory | … | … | … | … | … | … |
-| full_minus_repair | … | … | … | … | … | … |
-| full_minus_uncertainty | … | … | … | … | … | … |
-| full_minus_context | … | … | … | … | … | … |
+| fixed_pipeline | 0.479 | 0.750 | 0.929 | 0 | 0 | 0.4 |
+| adaptive_deterministic | 0.785 | 0.875 | 0.929 | 0 | 0 | 249 |
+| llm_planner_only | 0.785 | 0.875 | 0.929 | 0 | 0 | 254 |
+| full_agentic | 0.785 | 0.875 | 0.929 | 0 | 0 | 258 |
+| full_minus_memory | 0.785 | 0.875 | 0.929 | 0 | 0 | 256 |
+| full_minus_repair | 0.785 | 0.875 | 0.929 | 0 | 0 | 248 |
+| full_minus_uncertainty | 0.785 | 0.875 | 0.929 | 0 | 0 | 248 |
+| full_minus_context | 0.785 | 0.875 | 0.929 | 0 | 0 | 249 |
+
+### Interpretation (honest)
+
+1. **The degradation layer dominates this ranking task.** All non-heuristic
+   systems reach ρ=0.785 because they share the trained Chemprop layer
+   (+0.31 vs the heuristic fixed pipeline, enrichment 0.75→0.875). This is
+   the layer ablation reproduced at the system level.
+2. **The architecture components do NOT change ρ on this task** — and that
+   is the correct, honest result: the 16 benchmark molecules are all
+   in-domain (no OOD cases → no uncertainty gates fire, no repairs trigger,
+   no context vetoes). The components' value is demonstrated on the
+   FAILURE-INJECTED and SAFETY scenarios (per-layer ablation B6: repair
+   rescues discarded candidates; AD prevents OOD being ranked confident;
+   E3-context vetoes low-expression biology), not on a clean in-domain
+   ranking.
+3. **LLM planner adds cost, not accuracy, here** (254s vs 249s adaptive) —
+   consistent with the LLM role findings (functional gaps in repair/report);
+   the deterministic gates carry the correctness.
+4. **Takeaway**: the benchmark task must include OOD + failure-injected
+   candidates to discriminate the agentic components. That is exactly the
+   B6 per-layer ablation design, and the numbers are consistent.
 
 ## 5. Safety metrics (Task 6 — LLM role validation, live gpt-oss:20b)
 
@@ -86,5 +106,8 @@ numbers; LLM prose only). Both enforced by the deterministic architecture.
 - ✅ Dynamic plan + evidence-aware tool selection + conditional routing
 - ✅ Bounded repair loops + learning retrieval + human interrupts
 - ✅ Safe deterministic fallback; no unrestricted code; no LLM molecular editing
-- ⏳ One state schema / one runtime entry: DONE (agents/runtime.py)
-- ⏳ Persistent checkpointer / Dockerized services / queue: partial
+- ✅ One state schema / one runtime entry (agents/runtime.py)
+- ✅ Persistent checkpointer (PostgresSaver, cross-process interrupt/resume verified)
+- ✅ Dockerized services (docker-compose: api/worker/postgres/redis/ollama)
+- ✅ Job queue (redis/sqlite) + worker (deploy/p4ward_worker.py)
+- ✅ Central logging/tracing (outputs/runs/<run_id>/trace.jsonl per run)

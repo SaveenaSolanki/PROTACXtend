@@ -244,3 +244,28 @@ geometrically screened against 3600 MegaDock poses.
   documented). Full records in outputs/e2e_challenge/. 8-system benchmark
   harness (scripts/agentic_benchmark.py) running; formal report scaffold at
   outputs/benchmark/FORMAL_BENCHMARK_REPORT.md.
+
+## 2026-08-04 — Production wiring (checkpointer / queue / tracing / docker / benchmark table)
+- **Persistent LangGraph checkpointer**: agents/checkpointer.py — postgres
+  (checkpoint-4.x-native; verified CROSS-PROCESS interrupt/resume with
+  dockerized postgres) → sqlite → memory fallback. run_agentic_workflow
+  accepts thread_id; runtime.run_protacpilot surfaces __interrupt__ and
+  runtime.resume_agentic_run resumes the same thread. Discovered: sqlite
+  backend 3.1.1 is incompatible with langgraph 1.2.10's checkpoint 4.x
+  serialization; postgres is the production path; invoke returns
+  {'__interrupt__': [...]} rather than raising in langgraph 1.2.10.
+- **Job queue**: synglue_agent/queue/job_queue.py — redis (if available) /
+  sqlite fallback; submit/claim/complete/fail/needs_human lifecycle;
+  deploy/p4ward_worker.py consumes jobs (retrosynthesis/degradation done,
+  p4ward → needs_human budget gate). Verified end-to-end (2 jobs → done).
+- **Central logging/tracing**: observability/tracing.py — per-run trace.jsonl
+  (node_start/end, tool_call, decision, error, run_end) + summary.json;
+  wired into runtime so EVERY run is auditable (outputs/runs/<run_id>/).
+- **Dockerized services**: deploy/docker-compose.yml (api/worker/postgres/
+  redis/ollama) + Dockerfile.api; compose validated.
+- **8-system benchmark COMPLETED + interpreted**: fixed_pipeline ρ=0.479 vs
+  all chemprop-based systems ρ=0.785 (enrichment 0.75→0.875). Honest
+  interpretation: the degradation layer dominates in-domain ranking; the
+  agentic components' value shows on failure/safety scenarios (per-layer
+  ablation B6), not on clean in-domain ranking. Report table filled.
+- 10 production-wiring tests; full suite 293 passed.

@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# System deps (rdkit C++ libs needed by chemprop cuik_molmaker)
+# System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 libxext6 libssl3 && rm -rf /var/lib/apt/lists/*
 
@@ -13,9 +13,15 @@ COPY synglue_agent/ ./synglue_agent/
 COPY scripts/ ./scripts/
 COPY deploy/ ./deploy/
 
+# NOTE: aizynthfinder (retrosynthesis) is NOT in the container image — it
+# hard-requires numpy<2 which conflicts with the validated chemprop stack.
+# The retrosynthesis layer degrades to RAscore/SAScore-proxy mode per spec
+# ('tool unavailable → RAscore only, downgraded confidence'); the full
+# AiZynthFinder stack runs on the host worker.
+
 # ABI fix: chemprop 2.3.0's cuik_molmaker expects rdkit 2023.9.6 hash-named
 # shared libs; relink them to the installed rdkit (verified working locally).
-RUN python -c "
+RUN <<'PYEOF'
 from pathlib import Path
 import glob
 rlib = Path('/usr/local/lib/python3.11/site-packages/rdkit.libs')
@@ -27,12 +33,12 @@ if rlib.exists() and cuik.exists():
         base = name.split('-')[0] + '.so.1'
         link = cuik / base
         if not link.exists():
-            link.symlink_to(target); n += 1
+            link.symlink_to(target)
+            n += 1
     print('ABI symlinks created:', n)
 else:
-    print('rdkit.libs or cuik_molmaker not found — skipping ABI fix')
-"
-
+    print('rdkit.libs or cuik_molmaker not found - skipping ABI fix')
+PYEOF
 
 # Trained models + evidence (mounted in production via volume)
 ENV PROTACPILOT_CHECKPOINT_URL=postgresql://postgres:protacpilot@postgres:5432/protacpilot

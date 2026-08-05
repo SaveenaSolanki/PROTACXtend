@@ -306,3 +306,24 @@ geometrically screened against 3600 MegaDock poses.
 - **Docker compose build in progress** (requirements.txt expanded to full
   runtime set: torch/chemprop/aizynthfinder/psycopg/redis/LLM clients) —
   full-stack boot test pending build completion.
+
+## 2026-08-06 — Full compose stack boot-tested end-to-end + LLM case bank at 17
+- **Full stack boots and works**: api (host 8001) + worker + postgres + redis +
+  ollama all healthy via docker compose. Containerized verification passed:
+  /health, /llm/status, /agentic-design (20 checkpoints persisted to the
+  COMPOSE postgres for the run's thread), /mode validate (RDKit chemistry),
+  queue job through compose redis → worker → done.
+- **Real degradation quality in the container**: chemprop_multitarget model
+  (DC50=33.9 nM, Dmax=80%, class=active) with AD correctly flagging
+  out_of_domain — fixed the GPU assumption (auto accelerator: container has
+  no CUDA → cpu) that silently fell back to heuristics.
+- **Container build fixes** (each surfaced by the real boot test): psycopg-binary
+  (PostgresSaver), openpyxl (PROTAC-DB xlsx), libexpat1 (cuik_molmaker; needed
+  a dedicated apt RUN + separate worker image rebuild), aizynthfinder omitted
+  (numpy<2 conflict → RAscore-only retrosynthesis degradation per spec),
+  rdkit pinned 2026.3.4 (cuik-molmaker-pin match), ABI fix as script
+  (heredoc needs syntax directive).
+- **LLM case bank expanded 9 → 17 cases** (supervisor 4, evidence 4, critic 3,
+  repair 4, report 2): live gpt-oss:20b now passes 17/17 (100%) with all
+  safety metrics perfect; 4 checker fixes + prompt hardening + 1 genuine
+  supervisor gap fixed (plan validation inference).

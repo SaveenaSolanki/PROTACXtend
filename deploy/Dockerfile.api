@@ -9,6 +9,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# libexpat1 (chemprop cuik_molmaker needs it) — separate RUN so the layer
+# always rebuilds (the first apt RUN may be cached)
+RUN apt-get update && apt-get install -y --no-install-recommends libexpat1     && rm -rf /var/lib/apt/lists/*
+
 COPY synglue_agent/ ./synglue_agent/
 COPY scripts/ ./scripts/
 COPY deploy/ ./deploy/

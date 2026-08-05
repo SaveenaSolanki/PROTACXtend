@@ -76,12 +76,17 @@ def _run_chemprop_predict(smiles_list: List[str], model_paths: List[Path],
         out_csv = tmpdir / "preds.csv"
         pd.DataFrame({"smiles": valid_smi}).to_csv(in_csv, index=False)
 
+        try:
+            import torch
+            accel = "gpu" if torch.cuda.is_available() else "cpu"
+        except Exception:
+            accel = "cpu"
         cmd = [
             chemprop_bin, "predict",
             "-i", str(in_csv), "-s", "smiles",
             "--model-paths", *[str(p) for p in model_paths],
             "--uncertainty-method", uncertainty_method,
-            "--accelerator", "gpu", "--devices", "1",
+            "--accelerator", accel, "--devices", "1",
             "-o", str(out_csv),
         ]
         if cal_path is not None and cal_path.exists():

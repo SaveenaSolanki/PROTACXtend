@@ -156,6 +156,27 @@ def apply_context_gate(ctx: CellContext) -> Dict[str, Any]:
     return {"gated": gated, "notes": notes}
 
 
+def _pick_accelerator() -> str:
+    """Choose gpu/cpu by availability (containers may lack CUDA)."""
+    import os
+    forced = os.environ.get("PROTACPILOT_ACCELERATOR", "")
+    if forced in ("gpu", "cpu", "auto"):
+        return "cpu" if forced == "cpu" else ("gpu" if forced == "gpu" else _auto_accel())
+    try:
+        import torch
+        return "gpu" if torch.cuda.is_available() else "cpu"
+    except Exception:
+        return "cpu"
+
+
+def _auto_accel() -> str:
+    try:
+        import torch
+        return "gpu" if torch.cuda.is_available() else "cpu"
+    except Exception:
+        return "cpu"
+
+
 # ── Multi-target prediction ───────────────────────────────────────────
 
 def _run_multitarget(smiles_list: List[str]) -> Dict[str, Any]:
@@ -179,13 +200,14 @@ def _run_multitarget(smiles_list: List[str]) -> Dict[str, Any]:
     if not valid:
         return {"ok": True, "rows": [None] * len(smiles_list), "n_valid": 0}
 
+    accel = _pick_accelerator()
     with tempfile.TemporaryDirectory(prefix="mt_pred_") as tmp:
         in_csv = Path(tmp) / "in.csv"
         out_csv = Path(tmp) / "out.csv"
         pd.DataFrame({"smiles": valid}).to_csv(in_csv, index=False)
         cmd = [chemprop_bin, "predict", "-i", str(in_csv), "-s", "smiles",
                "--model-paths", str(MULTITARGET_MODEL),
-               "--accelerator", "gpu", "--devices", "1", "-o", str(out_csv)]
+               "--accelerator", accel, "--devices", "1", "-o", str(out_csv)]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600,
                               cwd=str(ROOT))
         if proc.returncode != 0 or not out_csv.exists():

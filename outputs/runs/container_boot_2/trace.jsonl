@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1785959636.4058783, "elapsed_s": 0.0, "run_id": "container_boot_2", "meta": {"mode": "agentic", "request": "Design PROTACs for BRD4"}}
+{"event": "tool_call", "ts": 1785959637.078593, "elapsed_s": 0.67, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "container_boot_2"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1785959637.0786748, "elapsed_s": 0.6728, "status": "ok", "summary": {}, "events": 2}

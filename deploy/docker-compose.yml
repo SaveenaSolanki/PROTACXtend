@@ -38,7 +38,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6378:6379"   # host 6379 is held by system redis — use 6378
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -57,7 +57,7 @@ services:
       PROTACPILOT_LLM_MODEL: gpt-oss:20b
       SYNGLUE_DIR: /app/SynGlue_Py
     ports:
-      - "8000:8000"
+      - "8001:8000"   # host 8000 is held by the legacy synglue-api container
     # Model artifacts (500MB+): mounted, not baked into the image
     volumes:
       - ../data:/app/data
@@ -97,8 +97,9 @@ services:
     image: ollama/ollama:latest
     volumes:
       - ollama_models:/root/.ollama
-    ports:
-      - "11434:11434"
+    # no host port: host ollama (11435) is the LLM; container one is optional
+    expose:
+      - "11434"
     healthcheck:
       test: ["CMD", "ollama", "list"]
       interval: 10s

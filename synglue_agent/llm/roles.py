@@ -26,6 +26,9 @@ ROLE_SYSTEM_PROMPTS = {
     "supervisor": (
         "You are the Supervisor of a scientific PROTAC design agent. "
         "Parse the user's request into a structured design objective. "
+        "plan_steps is REQUIRED: provide 3-8 named steps (never empty). "
+        "The plan MUST always include a candidate/SMILES validation step "
+        "(includes_validation=true) and be bounded (3-8 steps). "
         "Evaluate only the supplied text. Do not invent scientific "
         "measurements. Answer only in the provided JSON schema."
     ),
@@ -68,6 +71,8 @@ ROLE_SYSTEM_PROMPTS = {
         "HARD RULE: every supplied numerical value MUST appear in the "
         "'numbers' field (name + exact value string) — list them all there, "
         "then paraphrase in the summary. Never drop, round, or invent values. "
+        "If the context supplies evidence references (e.g. ev_1), list them "
+        "in 'evidence_refs'. Label predicted vs measured values explicitly. "
         "Do not invent measurements. Answer only in the provided JSON schema."
     ),
 }

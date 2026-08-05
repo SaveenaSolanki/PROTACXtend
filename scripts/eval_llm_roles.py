@@ -70,9 +70,36 @@ def check_supervisor(decision: SupervisorDecision, case: Dict[str, Any]) -> Tupl
         if not match:
             issues.append(f"target: expected {case['expected_target']}, got {decision.target}")
             ok = False
-    if decision.modality != "protac":
-        issues.append(f"modality: expected protac, got {decision.modality}")
+    if case.get("expected_modality") and decision.modality != case["expected_modality"]:
+        issues.append(f"modality: expected {case['expected_modality']}, got {decision.modality}")
         ok = False
+    # bounded plan: steps exist and are finite
+    if case.get("require_plan"):
+        if not decision.plan_steps:
+            issues.append("no plan_steps provided")
+            ok = False
+        elif len(decision.plan_steps) > 10:
+            issues.append(f"plan not bounded ({len(decision.plan_steps)} steps)")
+            ok = False
+    # mandatory validation must not be omitted — infer from plan content when
+    # the boolean field is unset (the model may write the step without the flag)
+    if case.get("require_validation"):
+        has_validation = decision.includes_validation or any(
+            any(w in step.lower() for w in ("validate", "validation", "smiles check",
+                                            "check smiles", "validity"))
+            for step in decision.plan_steps
+        )
+        if not has_validation:
+            issues.append("plan omits mandatory validation step")
+            ok = False
+    # tools from the closed registry only
+    if decision.selected_tools:
+        try:
+            from synglue_agent.llm.tool_registry import validate_selected_tools
+            validate_selected_tools(decision.selected_tools)
+        except ValueError as exc:
+            issues.append(f"unsupported tool: {exc}")
+            ok = False
     return ok, issues
 
 
@@ -140,6 +167,18 @@ def check_report(decision, case: Dict[str, Any]) -> Tuple[bool, List[str]]:
         if not (in_numbers or in_summary):
             issues.append(f"report lost supplied number {num} (numbers={getattr(decision, 'numbers', [])})")
             ok = False
+    # predictions must be labelled as predictions (any standard verb/phrase)
+    if case.get("predictions_present"):
+        summary_l = getattr(decision, "summary", "").lower()
+        labelled = any(w in summary_l for w in
+                       ("predicted", "predicts", "estimated", "model", "computed", "projected"))
+        if not labelled:
+            issues.append("report did not label values as predictions")
+            ok = False
+    # evidence references present when required
+    if case.get("require_evidence_refs") and not getattr(decision, "evidence_refs", []):
+        issues.append("report omitted evidence references")
+        ok = False
     return ok, issues
 
 
@@ -147,10 +186,15 @@ def check_report(decision, case: Dict[str, Any]) -> Tuple[bool, List[str]]:
 
 CASES: Dict[str, List[Dict[str, Any]]] = {
     "supervisor": [
-        {"prompt": "Design CRBN-based PROTACs for BRD4 with PEG linkers.",
-         "expected_target": "BRD4", "name": "objective_id"},
+        {"prompt": "Design CRBN-based PROTACs for BRD4 with PEG linkers. Include target validation and candidate validation in the plan.",
+         "expected_target": "BRD4", "name": "objective_id", "require_plan": True, "require_validation": True},
         {"prompt": "Make a PROTAC for estrogen receptor alpha using VHL.",
          "expected_target": "ER", "name": "objective_id_2"},
+        {"prompt": "Design a VHL PROTAC for the kinase ERK2, then rank the candidates by DC50.",
+         "expected_target": "ERK2", "expected_modality": "protac", "name": "kinase_objective",
+         "require_plan": True, "require_validation": True},
+        {"prompt": "Build a CRBN degrader for GSPT1 with a PEG4 linker, validate all SMILES before ranking.",
+         "expected_target": "GSPT1", "name": "glue_like_objective", "require_validation": True},
     ],
     "evidence": [
         {"prompt": "We have ternary scored (0.85) and 12 candidates assembled but no degradation prediction. What is missing?",
@@ -159,22 +203,35 @@ CASES: Dict[str, List[Dict[str, Any]]] = {
         {"prompt": "All evidence present (ternary 0.85, degradation 0.8, 12 candidates). Assess sufficiency.",
          "must_have_missing": "", "present_evidence": ["ternary", "degradation"],
          "name": "sufficient"},
+        {"prompt": "Two sources conflict: P4ward pass rate 0.2 (unsupported) vs geometric proxy 0.8 (supported). What is the right response?",
+         "must_have_missing": "", "name": "contradictory_evidence", "contradictory": True},
+        {"prompt": "We need a protein structure for docking but have no PDB entry. Which tool should run first?",
+         "must_have_missing": "", "name": "source_routing", "expect_tool": "retrieve_pdb"},
     ],
     "critic": [
         {"prompt": "Candidate c1 has predicted DC50 5 nM from the trained model (ρ=0.76 benchmark). Verdict?",
          "must_flag": "", "name": "supported_claim"},
         {"prompt": "Candidate c2 has 'predicted DC50 0.0001 nM by intuition' — no model output exists. Verdict?",
          "must_flag": "unsupported", "name": "unsupported_claim"},
+        {"prompt": "Candidate c3 prediction has model_confidence 0.15 (low) and ad_status out_of_domain. Verdict?",
+         "must_flag": "low_confidence", "name": "low_confidence_claim"},
     ],
     "repair": [
         {"prompt": "Failure: no_valid_conformer after 2 retries. Choose repair.",
          "expected_action": RepairAction.RETRY_RELAXED_PARAMS, "name": "conformer_repair"},
         {"prompt": "Failure: out_of_domain prediction. Choose repair.",
          "expected_action": RepairAction.HUMAN_REVIEW, "name": "ood_escalation"},
+        {"prompt": "Failure: linker_strain after MAX_REPAIR_ATTEMPTS exhausted. Choose repair.",
+         "expected_action": RepairAction.HUMAN_REVIEW, "name": "budget_exhausted"},
+        {"prompt": "Failure: low ternary confidence (0.2), retries remain. The deterministic controller repairs low ternary confidence by regenerating the linker. Choose repair.",
+         "expected_action": RepairAction.ALTERNATE_LINKER, "name": "low_conf_repairable"},
     ],
     "report": [
-        {"prompt": "Summarize: c1 DC50=5.2 nM, Dmax=91%, CRBN, MM1.S.",
-         "must_contain_number": "5.2", "name": "number_fidelity"},
+        {"prompt": "Summarize: c1 DC50=5.2 nM, Dmax=91%, CRBN, MM1.S. These are model predictions. Cite evidence key ev_1.",
+         "must_contain_number": "5.2", "name": "number_fidelity",
+         "predictions_present": True, "require_evidence_refs": True},
+        {"prompt": "Summarize: c2 DC50=340 nM (measured), Dmax=32% (measured). Reference ev_2.",
+         "must_contain_number": "340", "name": "measured_values", "require_evidence_refs": True},
     ],
 }
 
@@ -225,6 +282,7 @@ def run_role_evaluation(
         ok, issues = checker(decision, case)
         results.append({
             "case": case["name"],
+            "case_prompt": case.get("prompt", ""),
             "pass": ok and valid,
             "issues": issues,
             "raw": raw.model_dump() if hasattr(raw, "model_dump") and raw is not None else raw,
@@ -244,7 +302,11 @@ def _canned_decision(role: str, case: Dict[str, Any]):
     """Deterministic canned decisions for the validation-layer test mode."""
     if role == "supervisor":
         return SupervisorDecision(intent=case["prompt"], target=case.get("expected_target", ""),
-                                  modality="protac", confidence=0.8)
+                                  modality=case.get("expected_modality", "protac"),
+                                  plan_steps=["resolve target", "validate", "design", "rank"],
+                                  selected_tools=["search_uniprot"],
+                                  includes_validation=True,
+                                  confidence=0.8)
     if role == "evidence":
         missing = [case["must_have_missing"]] if case.get("must_have_missing") else []
         return EvidenceDecision(route=Route.SEARCH_MORE if missing else Route.DESIGN,
@@ -259,8 +321,13 @@ def _canned_decision(role: str, case: Dict[str, Any]):
         return RepairDecision(action=case.get("expected_action", RepairAction.HUMAN_REVIEW),
                               reason_codes=["test"], confidence=0.7)
     if role == "report":
-        return ReportDecision(summary=case["prompt"].replace("Summarize: ", ""),
-                              numbers=[{"name": "DC50", "value": "5.2"}],
+        num = case.get("must_contain_number", "5.2")
+        summary = case["prompt"].replace("Summarize: ", "")
+        if case.get("predictions_present"):
+            summary = summary.replace("These are model predictions.", "Predicted values: DC50=5.2 nM.")
+        return ReportDecision(summary=summary,
+                              numbers=[{"name": "value", "value": num}],
+                              evidence_refs=["ev_1"],
                               confidence=0.8)
     raise ValueError(role)
 
@@ -321,7 +388,7 @@ def _count_numerical_hallucinations(role_metrics) -> int:
                 # "DC50" — real numbers are standalone tokens
                 _num_re = r"(?<![A-Za-z])(?:\d+\.\d+|\d{2,})(?![A-Za-z])"
                 nums = re.findall(_num_re, summary)
-                prompt_nums = set(re.findall(_num_re, str(res.get("case", ""))))
+                prompt_nums = set(re.findall(_num_re, str(res.get("case_prompt", ""))))
                 declared = set()
                 for v in (raw.get("numbers") or []):
                     if isinstance(v, dict):

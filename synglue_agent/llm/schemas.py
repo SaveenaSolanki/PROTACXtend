@@ -104,6 +104,10 @@ class SupervisorDecision(BaseModel):
     modality: str = "protac"
     e3_ligase: str = ""
     constraints: List[str] = Field(default_factory=list)
+    # bounded plan: ordered steps; must include validation; tools from registry
+    plan_steps: List[str] = Field(default_factory=list)
+    selected_tools: List[str] = Field(default_factory=list)
+    includes_validation: bool = False
     confidence: float = Field(ge=0.0, le=1.0)
 
 
@@ -114,6 +118,8 @@ class ReportDecision(BaseModel):
     # Every supplied numerical value must be reproduced here exactly
     # (name + value string) — makes number fidelity machine-checkable.
     numbers: List[Dict[str, str]] = Field(default_factory=list)
+    # predictions must be labelled as predictions (vs measured) in the summary
+    evidence_refs: List[str] = Field(default_factory=list)
     top_candidates: List[str] = Field(default_factory=list)
     open_risks: List[str] = Field(default_factory=list)
     confidence: float = Field(ge=0.0, le=1.0)

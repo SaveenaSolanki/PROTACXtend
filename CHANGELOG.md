@@ -290,3 +290,19 @@ geometrically screened against 3600 MegaDock poses.
   - **All 5 roles pass at 100%; metrics: 1.0 valid output, 0 tools, 0 SMILES
     edits, 0 hallucinations, 1.0 human-gate recall, 0 context overflow.**
 - Findings doc + formal benchmark report updated to reflect the fixes.
+
+## 2026-08-04 — LLM case bank expanded 9 → 17 + full compose build attempt
+- **Case bank expanded per spec** (supervisor 4, evidence 4, critic 3, repair 4,
+  report 2): bounded-plan + mandatory-validation, contradictory evidence, source
+  routing, low-confidence claim, budget exhaustion, prediction-labelling,
+  evidence-refs. SupervisorDecision gained plan_steps/selected_tools/
+  includes_validation; ReportDecision gained evidence_refs.
+- **Live model now passes 17/17 (100%)** with all safety metrics perfect. The
+  expansion surfaced and fixed: 4 checker bugs (validation inferred from plan
+  content not just the boolean; hallucination regex boundary-aware + uses the
+  actual prompt; prediction-labelling accepts standard verbs; repair expected
+  action matched to the deterministic controller's actual linker-regeneration
+  policy), plus prompt hardening (plan_steps required, evidence_refs filling).
+- **Docker compose build in progress** (requirements.txt expanded to full
+  runtime set: torch/chemprop/aizynthfinder/psycopg/redis/LLM clients) —
+  full-stack boot test pending build completion.

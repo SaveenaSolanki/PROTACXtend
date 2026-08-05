@@ -75,7 +75,7 @@ class TestDeterministicEvaluation:
     def test_role_specific(self):
         res = run_role_evaluation("repair", live=False)
         assert res["pass_rate"] == 1.0
-        assert len(res["results"]) == 2
+        assert len(res["results"]) == 4
 
 
 class TestToolRegistrySafety:

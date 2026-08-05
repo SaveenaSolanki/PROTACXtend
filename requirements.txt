@@ -1,6 +1,6 @@
 # ProtacPilot api/worker runtime dependencies (container build)
 # Scientific core
-rdkit>=2026.3.2
+rdkit==2026.3.5
 numpy>=2.0
 pandas>=2.2
 scipy>=1.11

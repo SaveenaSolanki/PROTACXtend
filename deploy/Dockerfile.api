@@ -13,6 +13,27 @@ COPY synglue_agent/ ./synglue_agent/
 COPY scripts/ ./scripts/
 COPY deploy/ ./deploy/
 
+# ABI fix: chemprop 2.3.0's cuik_molmaker expects rdkit 2023.9.6 hash-named
+# shared libs; relink them to the installed rdkit (verified working locally).
+RUN python -c "
+from pathlib import Path
+import glob
+rlib = Path('/usr/local/lib/python3.11/site-packages/rdkit.libs')
+cuik = Path('/usr/local/lib/python3.11/site-packages/cuik_molmaker/lib')
+if rlib.exists() and cuik.exists():
+    n = 0
+    for target in glob.glob(str(rlib / 'libRDKit*.so.1')):
+        name = Path(target).name
+        base = name.split('-')[0] + '.so.1'
+        link = cuik / base
+        if not link.exists():
+            link.symlink_to(target); n += 1
+    print('ABI symlinks created:', n)
+else:
+    print('rdkit.libs or cuik_molmaker not found — skipping ABI fix')
+"
+
+
 # Trained models + evidence (mounted in production via volume)
 ENV PROTACPILOT_CHECKPOINT_URL=postgresql://postgres:protacpilot@postgres:5432/protacpilot
 ENV PROTACPILOT_REDIS_URL=redis://redis:6379/0

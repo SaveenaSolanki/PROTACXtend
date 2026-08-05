@@ -1,7 +1,7 @@
 {
   "run_id": "trace_rt",
   "status": "ok",
-  "runtime_s": 1.56,
+  "runtime_s": 1.75,
   "events": 3,
   "trace_file": "/storage/saveena/protacpilot/outputs/runs/trace_rt/trace.jsonl",
   "mode": "agentic",

@@ -6,13 +6,18 @@
 #   redis         — job queue broker
 #   ollama        — local LLM (gpt-oss:20b) with healthcheck
 #
+# MODEL ARTIFACTS (500MB+) are mounted as volumes, NOT baked into the image:
+#   ../data     — AiZynthFinder models, PROTAC-DB, AD cache, expression context
+#   ../outputs  — trained Chemprop models (degradation + multitarget endpoint)
+#   ../SynGlue_Py — SynGlue transformer/GROVER weights (degradation fallback)
+#
 # Usage:
 #   docker compose up -d postgres redis ollama          # infra
 #   docker compose up -d api worker                     # app
 #   docker compose ps                                   # health
 #
-# The local Ollama (port 11435, user-space 0.32.x) is used by default when
-# the container one is not needed; set OLLAMA_HOST accordingly.
+# Local Ollama (port 11435) is the default when the container one is unused;
+# set PROTACPILOT_LLM_BASE_URL accordingly.
 
 services:
   postgres:
@@ -50,8 +55,15 @@ services:
       PROTACPILOT_LLM_BASE_URL: http://ollama:11434
       PROTACPILOT_LLM_PROVIDER: ollama
       PROTACPILOT_LLM_MODEL: gpt-oss:20b
+      SYNGLUE_DIR: /app/SynGlue_Py
     ports:
       - "8000:8000"
+    # Model artifacts (500MB+): mounted, not baked into the image
+    volumes:
+      - ../data:/app/data
+      - ../outputs:/app/outputs
+      - ../SynGlue_Py:/app/SynGlue_Py:ro
+      - ../data/retrosynthesis:/app/data/retrosynthesis
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,8 +81,12 @@ services:
       PROTACPILOT_CHECKPOINT_URL: postgresql://postgres:protacpilot@postgres:5432/protacpilot
       PROTACPILOT_REDIS_URL: redis://redis:6379/0
       PROTACPILOT_LLM_BASE_URL: http://ollama:11434
+      SYNGLUE_DIR: /app/SynGlue_Py
     volumes:
-      - ../data:/app/data          # models, checkpoints, evidence
+      - ../data:/app/data
+      - ../outputs:/app/outputs
+      - ../SynGlue_Py:/app/SynGlue_Py:ro
+      - ../data/retrosynthesis:/app/data/retrosynthesis
     depends_on:
       postgres:
         condition: service_healthy

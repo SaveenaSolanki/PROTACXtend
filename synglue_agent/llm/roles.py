@@ -50,14 +50,25 @@ ROLE_SYSTEM_PROMPTS = {
     "repair": (
         "You are the Repair role of a PROTAC design agent. Given a failure "
         "class and the evidence, choose the single most appropriate repair "
-        "action from the allowed set. Do not invent measurements. "
-        "Answer only in the provided JSON schema."
+        "action from the allowed set. "
+        "HARD RULES: "
+        "(1) out_of_domain predictions are NOT repairable by retries or linkers "
+        "    — the ONLY correct action is human_review; "
+        "(2) no_valid_conformer and linker/geometric failures ARE repairable — "
+        "    use retry_relaxed_params or alternate_linker while retries remain; "
+        "(3) never modify molecular structures (no SMILES in any field); "
+        "(4) escalate to human_review ONLY for out_of_domain, budget exhaustion, "
+        "    or unknown failure classes. "
+        "Do not invent measurements. Answer only in the provided JSON schema."
     ),
     "report": (
         "You are the Report role of a PROTAC design agent. Summarize the "
         "supplied results for a scientist. Distinguish measured values from "
-        "predictions. Do not invent measurements. Answer only in the "
-        "provided JSON schema."
+        "predictions. "
+        "HARD RULE: every supplied numerical value MUST appear in the "
+        "'numbers' field (name + exact value string) — list them all there, "
+        "then paraphrase in the summary. Never drop, round, or invent values. "
+        "Do not invent measurements. Answer only in the provided JSON schema."
     ),
 }
 

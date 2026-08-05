@@ -89,9 +89,11 @@ Same scientific tools; systems differ in architecture components.
 | Context overflow | 0 |
 | Functional pass (supervisor/evidence/critic) | 100% each |
 
-Genuine findings: repair role chose retry for OOD (deterministic layer
-overrides → human gate); report role dropped a number (templates insert
-numbers; LLM prose only). Both enforced by the deterministic architecture.
+Genuine findings, now FIXED at the model level (2026-08-04):
+repair role now escalates OOD → human_review (prompt hard rules) and report
+role preserves every supplied number via a machine-checkable `numbers` field.
+All 5 roles pass at 100% on the case bank; deterministic layers remain the
+safety net.
 
 ## 6. Production checklist status
 

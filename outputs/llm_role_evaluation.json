@@ -20,7 +20,7 @@
             "constraints": [
               "use PEG linker"
             ],
-            "confidence": 0.95
+            "confidence": 1.0
           }
         },
         {
@@ -28,10 +28,10 @@
           "pass": true,
           "issues": [],
           "raw": {
-            "intent": "PROTAC_design",
-            "target": "Estrogen Receptor Alpha",
+            "intent": "design",
+            "target": "Estrogen receptor alpha (ER\u03b1)",
             "modality": "protac",
-            "e3_ligase": "VHL",
+            "e3_ligase": "Von Hippel-Lindau (VHL)",
             "constraints": [],
             "confidence": 0.95
           }
@@ -50,14 +50,14 @@
           "raw": {
             "route": "design",
             "missing_evidence": [
-              "Degradation prediction"
+              "degradation prediction"
             ],
             "selected_tools": [],
             "reason_codes": [
-              "E3_LIGASE_BINDER_MISSING",
-              "DEGRADATION_PREDICTION_MISSING"
+              "The current dataset includes a ternary complex score of 0.85 and 12 assembled PROTAC candidates, but it lacks any predicted degradation potency metrics (e.g., DC50, Dmax).",
+              "Without these predictions, the design pipeline cannot assess which candidates are likely to achieve effective target protein degradation in cellular contexts."
             ],
-            "confidence": 0.85,
+            "confidence": 0.92,
             "rejected_alternatives": []
           }
         },
@@ -70,9 +70,9 @@
             "missing_evidence": [],
             "selected_tools": [],
             "reason_codes": [
-              "Evidence indicates strong ternary complex formation (score 0.85) and acceptable degradation efficiency (score 0.8)."
+              "EVIDENCE_INSUFFICIENT"
             ],
-            "confidence": 0.9,
+            "confidence": 0.85,
             "rejected_alternatives": []
           }
         }
@@ -90,11 +90,12 @@
           "raw": {
             "verdict": "reject",
             "issues": [
-              "The claim of a 5\u202fnM DC\u2085\u2080 is based solely on a predictive model; no experimental measurement has been provided to substantiate this value.",
-              "A benchmark correlation coefficient (\u03c1\u202f=\u202f0.76) indicates moderate predictive accuracy, but the model\u2019s uncertainty and potential error margins are not quantified or reported."
+              "The claim that candidate c1 has a DC50 of 5\u202fnM is based solely on a predictive model; no experimental measurement or assay data are provided to substantiate this value.",
+              "The benchmark correlation coefficient (\u03c1=0.76) indicates moderate predictive performance, but does not quantify the uncertainty or error margin for individual predictions such as the 5\u202fnM DC50.",
+              "Without an experimentally determined DC50 and a quantified confidence interval, the assertion constitutes an overclaim."
             ],
             "reason_codes": [],
-            "confidence": 0.9
+            "confidence": 0.92
           }
         },
         {
@@ -104,10 +105,13 @@
           "raw": {
             "verdict": "reject",
             "issues": [
-              "The claim that Candidate c2 has a predicted DC50 of 0.0001\u202fnM is unsupported because no model output, statistical analysis, or experimental data are provided.",
-              "There is no evidence to substantiate the intuition-based prediction; thus the statement constitutes an overclaim with missing empirical support."
+              "overclaim",
+              "missing_evidence"
             ],
-            "reason_codes": [],
+            "reason_codes": [
+              "The DC50 value of 0.0001\u202fnM is presented as a prediction by intuition, yet no computational model output or experimental data are provided to substantiate this claim.",
+              "No statistical analysis, uncertainty estimates, or validation against known benchmarks accompany the reported figure."
+            ],
             "confidence": 0.95
           }
         }
@@ -116,7 +120,7 @@
     {
       "role": "repair",
       "cases": 2,
-      "pass_rate": 0.5,
+      "pass_rate": 1.0,
       "results": [
         {
           "case": "conformer_repair",
@@ -125,22 +129,22 @@
           "raw": {
             "action": "retry_relaxed_params",
             "target_stage": "",
-            "reason_codes": [],
-            "confidence": 0.92,
+            "reason_codes": [
+              "no_valid_conformer"
+            ],
+            "confidence": 0.95,
             "rejected_alternatives": []
           }
         },
         {
           "case": "ood_escalation",
-          "pass": false,
-          "issues": [
-            "route: expected RepairAction.HUMAN_REVIEW, got RepairAction.RETRY_RELAXED_PARAMS"
-          ],
+          "pass": true,
+          "issues": [],
           "raw": {
-            "action": "retry_relaxed_params",
+            "action": "human_review",
             "target_stage": "",
             "reason_codes": [],
-            "confidence": 0.9,
+            "confidence": 1.0,
             "rejected_alternatives": []
           }
         }
@@ -149,19 +153,25 @@
     {
       "role": "report",
       "cases": 1,
-      "pass_rate": 0.0,
+      "pass_rate": 1.0,
       "results": [
         {
           "case": "number_fidelity",
-          "pass": false,
-          "issues": [
-            "report lost supplied number 5.2"
-          ],
+          "pass": true,
+          "issues": [],
           "raw": {
-            "summary": "The PROTAC c1 was evaluated in MM1.S cells.",
-            "top_candidates": [
-              "c1"
+            "summary": "The compound was evaluated for its potency and maximal degradation effect in MM1.S cells targeting CRBN. The measured DC50 value is 5.2\u202fnM, indicating high potency, while the maximum degradation achieved (Dmax) is 91%. These values represent experimental measurements rather than predictions.",
+            "numbers": [
+              {
+                "name": "DC50",
+                "value": "5.2 nM"
+              },
+              {
+                "name": "Dmax",
+                "value": "91%"
+              }
             ],
+            "top_candidates": [],
             "open_risks": [],
             "confidence": 0.95
           }
@@ -170,7 +180,7 @@
     }
   ],
   "metrics": {
-    "valid_structured_output_rate": 0.7778,
+    "valid_structured_output_rate": 1.0,
     "unsupported_tool_selection_count": 0,
     "invalid_smiles_modification_count": 0,
     "numerical_hallucination_count": 0,

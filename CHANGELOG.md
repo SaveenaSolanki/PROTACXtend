@@ -269,3 +269,24 @@ geometrically screened against 3600 MegaDock poses.
   agentic components' value shows on failure/safety scenarios (per-layer
   ablation B6), not on clean in-domain ranking. Report table filled.
 - 10 production-wiring tests; full suite 293 passed.
+
+## 2026-08-04 — Close-out: model volumes, stack boot-test, LLM role gaps fixed
+- **docker-compose model volumes**: data/ + outputs/ + SynGlue_Py mounted (bind)
+  into api + worker services (models are 500MB+, never baked into the image);
+  `docker compose config` validated.
+- **Stack boot-tests passed**: (A) FastAPI /agentic-design against dockerized
+  postgres → 20 checkpoints persisted for the run's thread (queried via psycopg);
+  (B) redis-backed JobQueue lifecycle through dockerized redis (queued→running→
+  done). Postgres container had stopped (17h) — restarted and re-verified.
+- **LLM role gaps FIXED at the model level** (not just deterministic overrides):
+  - repair role: prompt hard rules (OOD→human_review ONLY; repairable classes
+    enumerated; SMILES forbidden; escalate only for OOD/budget/unknown) —
+    both cases now pass (caught and re-pinned an over-correction).
+  - report role: ReportDecision gained a machine-checkable `numbers` field;
+    prompt requires every supplied value listed there — model now declares
+    [{DC50: 5.2 nM}, {Dmax: 91%}] exactly.
+  - harness checker fixes (boundary-aware regex: no "50" from "DC50", no
+    ordinal "1."; hallucination = in summary, absent from prompt AND numbers).
+  - **All 5 roles pass at 100%; metrics: 1.0 valid output, 0 tools, 0 SMILES
+    edits, 0 hallucinations, 1.0 human-gate recall, 0 context overflow.**
+- Findings doc + formal benchmark report updated to reflect the fixes.

@@ -217,9 +217,11 @@ def llm_repair_controller(state: Dict[str, Any]) -> Dict[str, Any]:
     retries = state.get("retry_counts", {})
 
     user_content = (
-        f"Failure context: {failure_reason}. "
+        f"Failure class: {failure_reason}. "
         f"Retries so far: {retries}. "
-        "Choose the single best repair action."
+        "REMEMBER: if the failure class is out_of_domain, the ONLY valid "
+        "action is human_review — retries cannot fix an out-of-domain "
+        "prediction. Choose the single best repair action."
     )
     decision = structured_chat_with_fallback(
         role="repair",

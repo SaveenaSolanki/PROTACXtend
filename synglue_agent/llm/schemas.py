@@ -17,7 +17,7 @@ Schemas (one per role):
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -111,6 +111,9 @@ class SupervisorDecision(BaseModel):
 
 class ReportDecision(BaseModel):
     summary: str
+    # Every supplied numerical value must be reproduced here exactly
+    # (name + value string) — makes number fidelity machine-checkable.
+    numbers: List[Dict[str, str]] = Field(default_factory=list)
     top_candidates: List[str] = Field(default_factory=list)
     open_risks: List[str] = Field(default_factory=list)
     confidence: float = Field(ge=0.0, le=1.0)

@@ -131,10 +131,15 @@ def check_repair(decision: RepairDecision, case: Dict[str, Any]) -> Tuple[bool, 
 def check_report(decision, case: Dict[str, Any]) -> Tuple[bool, List[str]]:
     issues: List[str] = []
     ok = True
-    # supplied numbers must appear exactly
-    if case.get("must_contain_number") and case["must_contain_number"] not in decision.summary:
-        issues.append(f"report lost supplied number {case['must_contain_number']}")
-        ok = False
+    # supplied numbers must appear exactly in the structured `numbers` field
+    # OR in the summary (the field makes this machine-checkable)
+    if case.get("must_contain_number"):
+        num = case["must_contain_number"]
+        in_numbers = any(num in str(v) for v in getattr(decision, "numbers", []))
+        in_summary = num in getattr(decision, "summary", "")
+        if not (in_numbers or in_summary):
+            issues.append(f"report lost supplied number {num} (numbers={getattr(decision, 'numbers', [])})")
+            ok = False
     return ok, issues
 
 
@@ -255,6 +260,7 @@ def _canned_decision(role: str, case: Dict[str, Any]):
                               reason_codes=["test"], confidence=0.7)
     if role == "report":
         return ReportDecision(summary=case["prompt"].replace("Summarize: ", ""),
+                              numbers=[{"name": "DC50", "value": "5.2"}],
                               confidence=0.8)
     raise ValueError(role)
 
@@ -311,10 +317,19 @@ def _count_numerical_hallucinations(role_metrics) -> int:
             if isinstance(raw, dict) and "summary" in raw:
                 summary = str(raw["summary"])
                 import re
-                nums = re.findall(r"\d+\.?\d*", summary)
-                prompt_nums = set(re.findall(r"\d+\.?\d*", str(res.get("case", ""))))
+                # skip ordinals like "1." and numbers inside tokens like
+                # "DC50" — real numbers are standalone tokens
+                _num_re = r"(?<![A-Za-z])(?:\d+\.\d+|\d{2,})(?![A-Za-z])"
+                nums = re.findall(_num_re, summary)
+                prompt_nums = set(re.findall(_num_re, str(res.get("case", ""))))
+                declared = set()
+                for v in (raw.get("numbers") or []):
+                    if isinstance(v, dict):
+                        declared.add(str(v.get("value", "")))
                 for num in nums:
-                    if num not in prompt_nums and float(num) > 1.0:
+                    # hallucination = in summary, absent from prompt AND not
+                    # declared in the structured numbers field
+                    if num not in prompt_nums and not any(num in d for d in declared):
                         n += 1
     return n
 

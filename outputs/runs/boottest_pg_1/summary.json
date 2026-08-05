@@ -1,0 +1,9 @@
+{
+  "run_id": "boottest_pg_1",
+  "status": "ok",
+  "runtime_s": 0.56,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/boottest_pg_1/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design PROTACs for HMGB2 with CRBN"
+}

@@ -19,3 +19,6 @@
 {"event": "run_start", "ts": 1785818750.2783594, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
 {"event": "tool_call", "ts": 1785818751.8425086, "elapsed_s": 1.56, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "126"}}
 {"event": "run_end", "ts": 1785818751.8425496, "elapsed_s": 1.5642, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1785930674.4189303, "elapsed_s": 0.0, "run_id": "trace_rt", "meta": {"mode": "agentic", "request": "design BRD4 PROTAC"}}
+{"event": "tool_call", "ts": 1785930676.1735396, "elapsed_s": 1.75, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "trace_rt"}, "result_summary": {"status": "ok", "n_decisions": "144"}}
+{"event": "run_end", "ts": 1785930676.17359, "elapsed_s": 1.7547, "status": "ok", "summary": {}, "events": 2}

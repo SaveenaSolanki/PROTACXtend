@@ -327,3 +327,14 @@ geometrically screened against 3600 MegaDock poses.
   repair 4, report 2): live gpt-oss:20b now passes 17/17 (100%) with all
   safety metrics perfect; 4 checker fixes + prompt hardening + 1 genuine
   supervisor gap fixed (plan validation inference).
+
+## 2026-08-06 — RELEASE v0.3.0-agentic-core
+- Tag `v0.3.0-agentic-core` created on `release/v0.3-agentic-core` (commit 66c42849).
+- `RELEASE_CLOSURE_REPORT.md` — definitive closure report (architecture, 293
+  tests, benchmark tables, container boot-test, LLM validation 17/17, e2e
+  cases, model versions, commit, limitations, reproduction, PASS/FAIL).
+- `RELEASE_NOTES_v0.3.0.md` — added features / scientific models / safety /
+  infrastructure / validation / known limitations.
+- Statement: SynGlue v0.3-agentic-core satisfies the predefined functional,
+  scientific-safety, persistence, deployment and observability requirements
+  for a research-grade agentic PROTAC design platform.

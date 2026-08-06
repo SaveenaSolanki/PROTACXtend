@@ -1651,11 +1651,40 @@ def _render_sidebar(st: Any) -> None:
     # ── LLM provider control (any API backend; Ollama default) ──
     _render_llm_provider_control(st)
 
+    # ── HERUKA.AI channel (export/push auditable run bundles) ──
+    _render_heruka_control(st)
+
     st.sidebar.divider()
     if st.sidebar.button("Log out", width="stretch"):
         for key in ["user", "chat_id"]:
             st.session_state.pop(key, None)
         st.rerun()
+
+
+def _render_heruka_control(st: Any) -> None:
+    """Sidebar widget: export/push the latest run to the HERUKA frontend."""
+    import requests as _requests
+    st.sidebar.markdown("#### HERUKA.AI channel")
+    run_id = st.session_state.get("last_run_id", "")
+    if not run_id:
+        st.sidebar.caption("No run yet — run a design first.")
+        return
+    st.sidebar.caption(f"Run: `{run_id}`")
+    col1, col2 = st.sidebar.columns(2)
+    if col1.button("Export bundle", use_container_width=True):
+        try:
+            from synglue_agent.integrations.heruka import export_bundle
+            p = export_bundle(run_id)
+            st.sidebar.success(f"Exported: {p.name}")
+        except Exception as exc:
+            st.sidebar.error(str(exc)[:100])
+    if col2.button("Push to HERUKA", use_container_width=True):
+        try:
+            from synglue_agent.integrations.heruka import push_bundle
+            r = push_bundle(run_id)
+            st.sidebar.success("Pushed" if r.get("ok") else f"Saved locally ({r.get('error', 'no endpoint')})")
+        except Exception as exc:
+            st.sidebar.error(str(exc)[:100])
 
 
 def _render_llm_provider_control(st: Any) -> None:

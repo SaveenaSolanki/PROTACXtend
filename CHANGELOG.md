@@ -338,3 +338,14 @@ geometrically screened against 3600 MegaDock poses.
 - Statement: SynGlue v0.3-agentic-core satisfies the predefined functional,
   scientific-safety, persistence, deployment and observability requirements
   for a research-grade agentic PROTAC design platform.
+
+## 2026-08-07 — PUBLISHED to GitHub (controlled)
+- Repo: github.com/SaveenaSolanki/Protac_Pilot (private).
+- History hygiene: filter-repo purge (7.93 GiB → 100.79 MiB); virtualenvs,
+  cloned deps, big data dumps, runtime DBs removed from history + gitignored.
+- Git identity fixed: Saveena Solanki <113490997+SaveenaSolanki@users.noreply.github.com>.
+- Branches: `main` + `release/v0.3-agentic-core` @ 7d1dc18 (release history
+  + MIT LICENSE adopted + uploaded v0.3 snapshot preserved as ancestor).
+- Tag `v0.3.0-agentic-core` → 7d1dc18; GitHub Release created from RELEASE_NOTES.
+- Branch protection on both branches: 1 required review, linear history,
+  force-push/deletion disabled, admins enforced.

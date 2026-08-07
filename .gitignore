@@ -47,3 +47,7 @@ data/retrosynthesis/models/
 *.pt
 *.onnx
 *.sdf
+# Runtime state DBs + cloned synthesis repos
+*.sqlite3
+*.sqlite
+data/synthesis_prediction/repos/

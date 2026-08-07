@@ -4,7 +4,7 @@ _Author: ProtacPilot engineering (Feynman agent)_
 _Date: 2026-08-06_
 _Branch: `release/v0.3-agentic-core`_
 _Tag: `v0.3.0-agentic-core`_
-_Commit: `66c42849` (HEAD at closure)_
+_Commit: `66c42849` (HEAD at closure; rewritten as `1c02183` on 2026-08-07 — see §8 note)_
 
 ---
 
@@ -158,6 +158,13 @@ Branch:  release/v0.3-agentic-core
 Tag:     v0.3.0-agentic-core
 Commit:  66c42849 — Full compose stack boot-tested: real degradation in
           container, postgres/redis/queue verified, LLM case bank 17/17
+
+> **2026-08-07 history hygiene note**: the release history was rewritten with
+> `git filter-repo` to strip virtualenvs, cloned dependency repos, large data
+> dumps and runtime DBs (7.93 GiB → 100.79 MiB) for the controlled GitHub
+> publication under `github.com/SaveenaSolanki/protacpilot`. The rewritten
+> release commit is `1c02183` (same content; new SHAs by design). Tag
+> `v0.3.0-agentic-core` now points at the rewritten release commit.
 ```
 
 ## 9. Known limitations

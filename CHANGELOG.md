@@ -329,7 +329,7 @@ geometrically screened against 3600 MegaDock poses.
   supervisor gap fixed (plan validation inference).
 
 ## 2026-08-06 — RELEASE v0.3.0-agentic-core
-- Tag `v0.3.0-agentic-core` created on `release/v0.3-agentic-core` (commit 66c42849).
+- Tag `v0.3.0-agentic-core` created on `release/v0.3-agentic-core` (commit 66c42849; rewritten as 1c02183 after 7.93 GiB → 100.79 MiB filter-repo hygiene for GitHub publication).
 - `RELEASE_CLOSURE_REPORT.md` — definitive closure report (architecture, 293
   tests, benchmark tables, container boot-test, LLM validation 17/17, e2e
   cases, model versions, commit, limitations, reproduction, PASS/FAIL).

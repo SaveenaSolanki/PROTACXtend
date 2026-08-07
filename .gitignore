@@ -51,3 +51,6 @@ data/retrosynthesis/models/
 *.sqlite3
 *.sqlite
 data/synthesis_prediction/repos/
+
+# Logs (secrets can hide here)
+*.log

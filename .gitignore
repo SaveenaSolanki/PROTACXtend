@@ -8,8 +8,11 @@ venv/
 
 # Data (large, cloned repos, models — never commit)
 data/protac_repos/repos/
-SynGlue_Py/data/
-SynGlue_Py/models/
+SynGlue_Py/data/*
+!SynGlue_Py/data/grover_e3.csv
+!SynGlue_Py/data/grover_warhead.csv
+SynGlue_Py/models/*
+!SynGlue_Py/models/multitask_transformer.pt
 data/benchmark/_ad_cache/
 outputs/benchmark/chemprop_*/
 outputs/benchmark/*.log

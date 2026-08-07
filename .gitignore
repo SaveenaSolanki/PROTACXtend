@@ -27,3 +27,23 @@ nohup.out
 
 # OS
 .DS_Store
+
+# --- v0.3 controlled GitHub hygiene (added 2026-08-07) ---
+# Virtualenvs / runtime dirs (never commit)
+.venvs/
+data/synthesis_prediction/envs/
+data/synthesis_prediction/install_logs/
+
+# Cloned upstream dependency repos + generated outputs
+SynGlue_Py/repos/
+SynGlue_Py/reinvent/
+SynGlue_Py/outputs/
+SynGlue_Py/data_copy/
+
+# Large data/model binaries (re-downloadable; see README/DOCS)
+data/retrosynthesis/models/
+*.hdf5
+*.pkl
+*.pt
+*.onnx
+*.sdf

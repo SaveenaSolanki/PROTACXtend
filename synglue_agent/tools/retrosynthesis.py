@@ -123,13 +123,38 @@ def sascore_proxy(smiles: str) -> float:
 
 # ── AiZynthFinder route search ────────────────────────────────────────
 
+def _aizynth_policy_config(cfg_dir: Path) -> Dict[str, Any]:
+    """Expansion-policy config: ONNX set preferred, figshare hdf5 set fallback."""
+    onnx_policy = cfg_dir / "uspto_model.onnx"
+    if onnx_policy.exists():
+        return {
+            "type": "TemplateBasedExpansionStrategy",
+            "model": str(onnx_policy),
+            "onnx": True,
+            "template": str(cfg_dir / "uspto_templates.csv.gz"),
+            "use_rdchiral": True,
+        }
+    return {
+        "type": "TemplateBasedExpansionStrategy",
+        "model": str(cfg_dir / "uspto_policy.hdf5"),
+        "onnx": False,
+        "template": str(cfg_dir / "uspto_templates.hdf5"),
+        "use_rdchiral": True,
+    }
+
+
 def _aizynth_config_available() -> bool:
-    """True when a policy+stock+templates config exists for AiZynthFinder."""
+    """True when a policy+stock+templates config exists for AiZynthFinder.
+
+    Accepts either the ONNX set (uspto_model.onnx + uspto_templates.csv.gz)
+    or the figshare bootstrap set (uspto_policy.hdf5 + uspto_templates.hdf5);
+    both need zinc_stock.hdf5. See scripts/bootstrap_assets.sh.
+    """
     cfg_dir = MODEL_DIR / "aizynth"
-    policy = cfg_dir / "uspto_model.onnx"
-    templates = cfg_dir / "uspto_templates.csv.gz"
     stock = cfg_dir / "zinc_stock.hdf5"
-    return policy.exists() and templates.exists() and stock.exists()
+    onnx_ok = (cfg_dir / "uspto_model.onnx").exists() and (cfg_dir / "uspto_templates.csv.gz").exists()
+    hdf5_ok = (cfg_dir / "uspto_policy.hdf5").exists() and (cfg_dir / "uspto_templates.hdf5").exists()
+    return stock.exists() and (onnx_ok or hdf5_ok)
 
 
 def aizynth_route_search(smiles: str, timeout_s: int = 300) -> Dict[str, Any]:
@@ -146,15 +171,7 @@ def aizynth_route_search(smiles: str, timeout_s: int = 300) -> Dict[str, Any]:
         from aizynthfinder.aizynthfinder import AiZynthFinder
 
         configdict = {
-            "expansion": {
-                "policy": {
-                    "type": "TemplateBasedExpansionStrategy",
-                    "model": str(MODEL_DIR / "aizynth" / "uspto_model.onnx"),
-                    "onnx": True,
-                    "template": str(MODEL_DIR / "aizynth" / "uspto_templates.csv.gz"),
-                    "use_rdchiral": True,
-                }
-            },
+            "expansion": {"policy": _aizynth_policy_config(MODEL_DIR / "aizynth")},
             "stock": {
                 "stock": {
                     "type": "InMemoryInchiKeyQuery",

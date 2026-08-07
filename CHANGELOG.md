@@ -349,3 +349,21 @@ geometrically screened against 3600 MegaDock poses.
 - Tag `v0.3.0-agentic-core` → 7d1dc18; GitHub Release created from RELEASE_NOTES.
 - Branch protection on both branches: 1 required review, linear history,
   force-push/deletion disabled, admins enforced.
+
+## 2026-08-07 — REPRODUCIBILITY & CI hardening (review items 5-8, 10)
+- Secret scan: gitleaks 8.30.1 over full history — 1 real finding (Jupyter
+  token in M1.log) purged from all history; 11 remaining = verified false
+  positives (conda build hashes) recorded in .gitleaksignore. *.log gitignored.
+- ASSET_MANIFEST.md + scripts/bootstrap_assets.sh: provenance matrix + one-shot
+  asset restore (figshare USPTO hdf5 set + Zenodo ONNX stereo model + SE3 clone)
+  with SHA-256 recording (ASSET_MANIFEST.checksums.json) and dry-run mode.
+- Real AiZynthFinder route search verified with bootstrapped ONNX models
+  (aspirin -> 1-step purchasable route). retrosynthesis.py now supports both
+  ONNX and hdf5 policy sets.
+- Committed production assets that fit GitHub limits: multitask_transformer.pt
+  (35MB), grover_e3.csv, grover_warhead.csv (58MB). grover_fixed.pt (409MB)
+  stays excluded (documented).
+- scripts/ci_smoke.py (8/8 asset-free checks) + .github/workflows/ci.yml
+  (compileall + smoke + fast unit tests, full fast suite job).
+- scripts/install_gitleaks_hook.sh: pre-commit secret guard (staged).
+- Fixed pre-existing Python 3.11 SyntaxError in scripts/verify_all_repo_installs.py.

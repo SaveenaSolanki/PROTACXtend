@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main, release/*]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install runtime dependencies (fast subset)
+        run: |
+          python -m pip install --upgrade pip
+          pip install rdkit pydantic fastapi uvicorn langgraph langchain \
+            joblib openpyxl requests pytest
+
+      - name: Compile check
+        run: python -m compileall -q synglue_agent scripts
+
+      - name: Asset-free smoke test
+        run: python scripts/ci_smoke.py
+
+      - name: Fast unit tests (asset-free subset)
+        run: |
+          python -m pytest -q \
+            synglue_agent/tests/test_heruka_integration.py \
+            synglue_agent/tests/test_retrosynthesis.py -m "not slow" \
+            synglue_agent/tests/test_rdkit_chemistry.py \
+            synglue_agent/tests/test_pareto_ranking.py \
+            synglue_agent/tests/test_memory_stores.py \
+            synglue_agent/tests/test_mode_router.py
+
+  full-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    needs: smoke
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install full runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest-timeout
+
+      - name: Full fast test suite (slow real-tool tests excluded)
+        run: |
+          python -m pytest synglue_agent/tests/ synglue_agent/agents/test_ternary_stage.py \
+            -m "not slow" -q --timeout 300

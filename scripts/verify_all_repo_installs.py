@@ -127,10 +127,9 @@ def pip_check(python_path: str, env: dict[str, str]) -> tuple[bool, str]:
 
 
 def import_check(python_path: str, env: dict[str, str], module: str, version_expr: str = "") -> str:
-    code = (
-        f"import {module}\n"
-        f"print({version_expr or f'getattr({module}, \"__version__\", \"import_ok\")'!s})\n"
-    )
+    default_expr = f'getattr({module}, "__version__", "import_ok")'
+    expr = version_expr or default_expr
+    code = f"import {module}\nprint({expr})\n"
     result = run([python_path, "-c", code], env=env, timeout=45)
     if result.returncode == 0:
         return "ok: " + one_line_output(result, limit=200)

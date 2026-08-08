@@ -11,6 +11,7 @@ data/protac_repos/repos/
 SynGlue_Py/data/*
 !SynGlue_Py/data/grover_e3.csv
 !SynGlue_Py/data/grover_warhead.csv
+!SynGlue_Py/data/e3_ligand.csv
 SynGlue_Py/models/*
 !SynGlue_Py/models/multitask_transformer.pt
 data/benchmark/_ad_cache/

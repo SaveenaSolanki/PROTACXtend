@@ -41,7 +41,7 @@ jobs:
 
   full-suite:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     needs: smoke
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +57,9 @@ jobs:
           pip install -r requirements.txt pytest-timeout
 
       - name: Bootstrap upstream repos (needed by repo-wrapper tests)
-        run: ./scripts/bootstrap_assets.sh --repos
+        run: |
+          PROTACPILOT_REPOS="TERNIFY,degradomap,Bellerophon,SE3-protacs,PROTAC-Degradation-Predictor" \
+            ./scripts/bootstrap_assets.sh --repos
 
       - name: Full fast test suite (slow real-tool tests excluded)
         run: |

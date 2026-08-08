@@ -151,9 +151,13 @@ if [ "$MODE" = "--repos" ] || [ "$MODE" = "all" ]; then
   echo "== [9] upstream PROTAC repos (clone from registry) =="
   REGISTRY="$ROOT/data/protac_repos/protac_repo_registry.csv"
   if [ -f "$REGISTRY" ]; then
+    WANT="${PROTACPILOT_REPOS:-}"
     n=0
     while IFS=',' read -r name url localpath rest; do
       if [[ "$url" == https* ]]; then
+        if [ -n "$WANT" ] && ! [[ ",$WANT," == *",$name,"* ]]; then
+          continue
+        fi
         target="$ROOT/$localpath"
         if [ -d "$target/.git" ]; then
           echo "  [skip] $name (already cloned)"

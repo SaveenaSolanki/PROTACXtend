@@ -56,6 +56,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pytest-timeout
 
+      - name: Bootstrap upstream repos (needed by repo-wrapper tests)
+        run: ./scripts/bootstrap_assets.sh --repos
+
       - name: Full fast test suite (slow real-tool tests excluded)
         run: |
           python -m pytest synglue_agent/tests/ synglue_agent/agents/test_ternary_stage.py \

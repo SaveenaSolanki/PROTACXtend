@@ -28,8 +28,8 @@ predictions directly from it if the RF models can't be loaded.
 SOURCES
 -------
 All model weights, GROVER embeddings, and training data are at:
-    /storage/saveena/protacpilot/SynGlue_Py/models/
-    /storage/saveena/protacpilot/SynGlue_Py/data/
+    <repo>/SynGlue_Py/models/
+    <repo>/SynGlue_Py/data/
 
 Reference: SynGlue — https://github.com/the-ahuja-lab/SynGlue
 License: MIT
@@ -55,7 +55,7 @@ logger = logging.getLogger("protacpilot.synglue")
 
 SYNGLUE_DIR = Path(os.environ.get(
     "PROTACPILOT_SYNGLUE_DIR",
-    "/storage/saveena/protacpilot/SynGlue_Py",
+    str(Path(__file__).resolve().parents[2] / "SynGlue_Py"),
 ))
 
 MODEL_DIR = SYNGLUE_DIR / "models"

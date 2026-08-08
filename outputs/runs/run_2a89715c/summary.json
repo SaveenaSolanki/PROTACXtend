@@ -1,0 +1,9 @@
+{
+  "run_id": "run_2a89715c",
+  "status": "ok",
+  "runtime_s": 34.14,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/run_2a89715c/trace.jsonl",
+  "mode": "deterministic",
+  "request": "Design CRBN-based PROTACs for BRD4 with PEG linkers."
+}

@@ -146,3 +146,27 @@ if not ok:
 PYEOF
 echo ""
 echo "== bootstrap finished =="
+
+if [ "$MODE" = "--repos" ] || [ "$MODE" = "all" ]; then
+  echo "== [9] upstream PROTAC repos (clone from registry) =="
+  REGISTRY="$ROOT/data/protac_repos/protac_repo_registry.csv"
+  if [ -f "$REGISTRY" ]; then
+    n=0
+    while IFS=',' read -r name url localpath rest; do
+      if [[ "$url" == https* ]]; then
+        target="$ROOT/$localpath"
+        if [ -d "$target/.git" ]; then
+          echo "  [skip] $name (already cloned)"
+        else
+          echo "  [get]  $name <- $url"
+          mkdir -p "$(dirname "$target")"
+          git clone -q --depth 1 "$url" "$target" || echo "    WARN: clone failed for $name"
+          n=$((n+1))
+        fi
+      fi
+    done < "$REGISTRY"
+    echo "  cloned $n new repos"
+  else
+    echo "  registry missing: $REGISTRY"
+  fi
+fi

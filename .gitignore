@@ -57,3 +57,6 @@ data/synthesis_prediction/repos/
 
 # Logs (secrets can hide here)
 *.log
+
+# Machine-local paths (absolute) — never commit
+env/protacpilot_config.json

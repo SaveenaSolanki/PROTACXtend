@@ -25,7 +25,7 @@ def hmgb2_pdb():
     """Path to a test HMGB2 structure."""
     # Try a few locations
     candidates = [
-        Path("/storage/saveena/protacpilot/test_data/hmgb2.pdb"),
+        Path(__file__).resolve().parents[2] / "test_data" / "hmgb2.pdb",
         Path("/tmp/hmgb2_alphafold.pdb"),
         Path("/tmp/hmgb2.pdb"),
     ]
@@ -46,7 +46,7 @@ def inflachromene_smiles():
 def crbn_pdb():
     """Path to CRBN PDB for E3 ligand preparation."""
     candidates = [
-        Path("/storage/saveena/protacpilot/test_data/4ci3.pdb"),
+        Path(__file__).resolve().parents[2] / "test_data" / "4ci3.pdb",
         Path("/tmp/4ci3.pdb"),
     ]
     for p in candidates:

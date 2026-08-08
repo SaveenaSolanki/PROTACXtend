@@ -1000,8 +1000,8 @@ def discover_synglue_models() -> Dict[str, Any]:
     
     search_dirs = [
         os.environ.get("PROTACPILOT_MODEL_DIR", ""),
-        "/storage/saveena/protacpilot/data/protac_repos/repos/PROTAC-Degradation-Predictor/reports",
-        "/storage/saveena/protacpilot/data/protac_repos/repos/SE3-protacs/model",
+        str(_P4WARD_ROOT / "data/protac_repos/repos/PROTAC-Degradation-Predictor/reports"),
+        str(_P4WARD_ROOT / "data/protac_repos/repos/SE3-protacs/model"),
         "/tmp/pi-github-repos/the-ahuja-lab/SynGlue/models",
     ]
     

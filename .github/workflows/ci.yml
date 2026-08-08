@@ -21,7 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install rdkit pydantic fastapi uvicorn langgraph langchain \
-            joblib openpyxl requests pytest
+            joblib openpyxl requests pytest pandas numpy
 
       - name: Compile check
         run: python -m compileall -q synglue_agent scripts
@@ -48,7 +48,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"   # matches numpy==2.4.6 pin (Requires-Python >=3.12)
           cache: pip
 
       - name: Install full runtime dependencies

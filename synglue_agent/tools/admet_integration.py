@@ -161,7 +161,7 @@ def predict_admet_properties(smiles: str) -> dict[str, Any]:
     # --- adme-py predictions ---
     if ADME_AVAILABLE:
         try:
-            adme_calc = ADME()
+            ADME()  # instantiated to verify availability; per-property funcs used below
 
             # Lipophilicity
             log_data = lipophilicity.predict(smiles)
@@ -221,7 +221,7 @@ def _analyze_protac_properties(props: dict[str, Any]) -> dict[str, Any]:
     mw = props.get("MW", 0)
     logp = props.get("cLogP", 0)
     tpsa = props.get("TPSA", 0)
-    hbd = props.get("HBD", 0)
+    _hbd = props.get("HBD", 0)  # reserved for future rule additions
     rotb = props.get("RotB", 0)
 
     alerts = []

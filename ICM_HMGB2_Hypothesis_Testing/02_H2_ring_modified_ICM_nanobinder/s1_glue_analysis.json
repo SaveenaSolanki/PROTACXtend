@@ -1,0 +1,28 @@
+{
+  "binding_site": "residues 78-86",
+  "site_charge": 1,
+  "site_exposure_mean_A": 1.1,
+  "lysine_count": 40,
+  "lysines_near_site": [
+    76,
+    82,
+    85,
+    86,
+    88,
+    89,
+    90
+  ],
+  "candidate_e3": [
+    "DCAF1",
+    "DCAF15",
+    "RNF114",
+    "VHL"
+  ],
+  "glue_precedents": [
+    "Indisulam-DCAF15-RBM39",
+    "CDKi-RNF114",
+    "CR8-DDB1-CUL4-CDK12"
+  ],
+  "verdict": "FEA_SIBLE - basic nuclear surface with accessible lysines; COOH adds neosurface",
+  "test": "Cellular degradation \u00b1 MG132 \u00b1 DCAF1/RNF114 siRNA"
+}

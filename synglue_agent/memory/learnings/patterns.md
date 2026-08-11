@@ -1,6 +1,6 @@
 # ProtacPilot Learning Patterns
 
-_Generated 2026-08-08T04:19:57.966036+00:00 — 3 learnings, 3 validated._
+_Generated 2026-08-11T09:52:39.523909+00:00 — 3 learnings, 3 validated._
 
 ## Why statements (from validated learnings)
 

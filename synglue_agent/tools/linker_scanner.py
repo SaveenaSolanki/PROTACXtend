@@ -322,6 +322,21 @@ def load_linker_library(linker_types: Optional[List[str]] = None) -> List[Dict]:
                     "source": "builtin",
                 })
 
+    # Fragment-combination enrichment (diversity beyond the curated panel).
+    # Toggle off with PROTACPILOT_FRAGMENT_LINKERS=0. Bounded; the scanner's
+    # max_linkers cap still limits total assembly work downstream.
+    if os.environ.get("PROTACPILOT_FRAGMENT_LINKERS", "1") != "0":
+        try:
+            from synglue_agent.tools.linker_generator import generate_fragment_combination_linkers
+            for lk in generate_fragment_combination_linkers(max_linkers=48):
+                linkers.append({
+                    "name": lk.name, "smiles": lk.smiles, "type": lk.linker_class,
+                    "heavy_atoms": lk.graph_length, "effective_length_A": lk.effective_length,
+                    "source": "fragment_combination",
+                })
+        except Exception:
+            pass
+
     # Repair rows with missing/zero effective length — the CSV column is
     # `effective_length`; if still zero, estimate from the SMILES topochemical
     # distance between the two attachment dummies (fallback: heavy-atom count

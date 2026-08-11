@@ -29,6 +29,53 @@ try:
 except ImportError:
     OPENADMET_AVAILABLE = False
 
+# ADMET-AI (isolated venv subprocess — keeps torch>=2.8 out of the main env)
+import json as _json
+import os as _os
+import subprocess as _subprocess
+import tempfile
+from pathlib import Path as _Path
+
+ADMET_AI_VENV_PY = _Path(__file__).resolve().parents[2] / ".venvs" / "admet" / "bin" / "python"
+ADMET_AI_RUNNER = _Path(__file__).resolve().parents[2] / "scripts" / "run_admet_ai.py"
+ADMET_AI_READY = ADMET_AI_VENV_PY.exists() and ADMET_AI_RUNNER.exists()
+
+ADMET_AI_KEY_ENDPOINTS = [
+    "hERG", "AMES", "DILI", "ClinTox", "CYP3A4_Veith", "CYP2D6_Veith",
+    "Clearance_Hepatocyte_AZ", "LD50_Zhu", "Solubility_AqSolDB",
+    "BBB_Martins", "PPBR_AZ", "Bioavailability_Ma", "Pgp_Broccatelli",
+]
+
+
+def _run_admet_ai(smiles_list: List[str], timeout_s: int = 600) -> Optional[List[Dict[str, Any]]]:
+    """Call the isolated ADMET-AI venv. Returns endpoint dicts or None."""
+    if not ADMET_AI_READY:
+        return None
+    if not smiles_list:
+        return None
+    tmp = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
+    tmp.close()
+    try:
+        cmd = [str(ADMET_AI_VENV_PY), str(ADMET_AI_RUNNER), "--out", tmp.name] + list(smiles_list)
+        proc = _subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
+        if proc.returncode != 0:
+            logger.warning("admet_ai subprocess failed: %s", (proc.stderr or "")[-300:])
+            return None
+        with open(tmp.name, encoding="utf-8") as fh:
+            payload = _json.load(fh)
+        if not payload.get("ok"):
+            logger.warning("admet_ai error: %s", payload.get("error", "?"))
+            return None
+        return payload.get("results", [])
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("admet_ai call failed: %s", exc)
+        return None
+    finally:
+        try:
+            _os.unlink(tmp.name)
+        except OSError:
+            pass
+
 
 # ---------------------------------------------------------------------------
 # Core ADMET prediction
@@ -59,12 +106,14 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
     result = {
         "smiles": smiles,
         "source": "rdkit_only",
+        "prediction_source": "rules",
         "physicochemical": {},
         "lipophilicity": {},
         "solubility": {},
         "druglikeness": {},
         "pk": {},
         "permeability": {},
+        "admet_ai": None,
         "warnings": [],
     }
 
@@ -151,6 +200,18 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
     # --- PROTAC-specific bRo5 analysis ---
     protac_analysis = _analyze_protac_properties(result["physicochemical"])
     result["protac_specific"] = protac_analysis
+
+    # --- ADMET-AI ML layer (isolated venv; best-effort) ---
+    ml = _run_admet_ai([smiles], timeout_s=600)
+    if ml:
+        endpoints = ml[0].get("endpoints", {})
+        result["admet_ai"] = {k: endpoints.get(k) for k in ADMET_AI_KEY_ENDPOINTS if k in endpoints}
+        result["prediction_source"] = "admet_ai+rules"
+        result["source"] = "admet_ai+rdkit"
+    else:
+        result["warnings"].append(
+            "ADMET-AI unavailable (bootstrap with: ./scripts/bootstrap_assets.sh --admet)"
+        )
 
     return result
 

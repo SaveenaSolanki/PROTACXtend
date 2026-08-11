@@ -27,14 +27,18 @@ labels 9 agents `heuristic_stub`, 4 `local_demo_data_only`, 4
 | Ranking | NSGA-II Pareto (7 tests) | `test_pareto_ranking.py` |
 | Report / safety | Real artifact generation; local rules (human-gate wired) | e2e cases |
 
-### 🟡 Partially functional (bounded/heuristic by design or missing deps)
-| Agent | What works | What's missing | Cause |
-|---|---|---|---|
-| Linker generation | Curated panel + rule enumeration (cap 50) + strain proxy + bounded repair | exhaustive linker space | **NP-hard** (see §3.3) |
-| Binder retrieval | ChEMBL/PubChem/BindingDB API wrappers + **local curated fallback** | live DB reliability / API keys / DrugBank license | external deps |
-| Evolution/reflection | Deterministic critique + linker/E3/exit-vector replacement (2–8 candidates) | real generative optimization | **NP-hard** + deps |
-| ADME/Tox | Lipinski/Veber/Pfizer rule triage (`admet_integration.py:100`) | QSAR/pkCSM-class models, metabolic sites | external deps |
-| Novelty/IP | Local fingerprint similarity only | patent/claims DB (Google Patents, etc.) | external deps |
+### ✅ Unblocked 2026-08-08 (make-it-all-workable pass)
+| Agent | Now backed by | Verified |
+|---|---|---|
+| Binder retrieval | Live ChEMBL `/activity` (2-call fetch, unit-normalized nM/pIC50, provenance metadata); PubChem enrichment; BindingDB key-gated | 90 BRD4 binders in 9 s; `test_binder_live.py` 4/4 |
+| ADME/Tox | ADMET-AI ML (106 endpoints: hERG, AMES, DILI, clearance…) in isolated venv + rule fallback, labelled provenance | aspirin → hERG 0.021, AMES 0.080; `test_unblocked_agents.py` |
+| Novelty/IP | Live PubChem PUG-View patent cross-reference + local similarity | aspirin → 14 patents; mocked + live tests |
+| Linker generation | + fragment-combination vocabulary (8 cores × spacers, RDKit-validated, Butina-style diversity selection, 64 linkers) feeding the scanner library | `test_unblocked_agents.py` |
+| Evolution/reflection | + SMILES mutation (C↔N↔O, retry-safe) + BRICS-fragment crossover + generation tracking | valid offspring; `test_unblocked_agents.py` |
+
+Remaining by-design bounds (NP-hard classes, §3): retrosynthesis MCTS, docking/ternary
+escalation, linker enumeration cap, evolution local search — all still bounded
+approximations with human gates (as they must be).
 
 ## 3. The NP-hardness question — why "fully functional" is the wrong bar
 
@@ -114,18 +118,20 @@ These are fixable with credentials/compute — they are **not** NP-hardness.
   the scientifically appropriate response, and each bounded decision is traced
   and gated (trace.jsonl, human checkpoints).
 
-## 6. What would change the status of each partial agent
+## 6. Residual unblock list (2026-08-08 update)
 
-| Agent | Unblock requires |
-|---|---|
-| Binder retrieval | Live BindingDB/ChEMBL keys + DrugBank license, or snapshot DB committed |
-| ADME/Tox | Install QSAR stack (e.g., SwissADME/pkCSM-style) or train on ADMETlab data |
-| Novelty/IP | Google Patents / SureChEMBL snapshot or licensed DB |
-| Linker | More compute per candidate + better surrogate (or accept bounded design) |
-| Evolution | Generative model (e.g., REINVENT) for real de-novo edits |
-| Registry executability | Install the 27 repo envs (env_specs/) or mark them `requires_asset` |
+| Agent | Status now | Remaining |
+|---|---|---|
+| Binder retrieval | ✅ live ChEMBL/PubChem | Optional: BindingDB API key (`BINDINGDB_API_KEY`), DrugBank license |
+| ADME/Tox | ✅ ADMET-AI + rules | venv is machine-local: `bootstrap_assets.sh --admet` on each new host |
+| Novelty/IP | ✅ PubChem patents + local sim | Optional: licensed patent DB for coverage beyond PubChem |
+| Linker | ✅ fragment combos + curated + BRICS | NP-hard bound stays: enumeration cap is the design |
+| Evolution | ✅ mutation + crossover + linker replacement | NP-hard bound stays: bounded local search by design |
+| Registry executability | — | `Agent_Toolkit.xlsx` statuses still conservative; wrapper-level `evidence` fields now carry real availability |
+| Full-upstream envs | — | 27 repos' conda envs only needed for repo-wrapper tests that CI bootstraps (5 repos, shallow) |
 
-_Evidence: `data/toolkit/protac_agent_gap_audit.csv`, `synglue_agent/toolkit/status.py`,
+_Evidence (updated 2026-08-08): `test_binder_live.py`, `test_unblocked_agents.py` (10 passed),
+313-test regression green; `data/toolkit/protac_agent_gap_audit.csv`, `synglue_agent/toolkit/status.py`,
 `synglue_agent/tools/{retrosynthesis,admet_integration}.py`,
 `synglue_agent/agents/{linker_stage,ternary_stage,evolution_agent,binder_agent,novelty_agent}.py`,
 test suite (299 passed), CI run 5604c30 (green)._

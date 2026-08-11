@@ -174,3 +174,15 @@ if [ "$MODE" = "--repos" ] || [ "$MODE" = "all" ]; then
     echo "  registry missing: $REGISTRY"
   fi
 fi
+
+if [ "$MODE" = "--admet" ] || [ "$MODE" = "all" ]; then
+  echo "== ADMET-AI isolated venv =="
+  if [ -x "$ROOT/.venvs/admet/bin/python" ]; then
+    echo "  [skip] .venvs/admet already present"
+  else
+    echo "  [get]  creating .venvs/admet + pip install admet_ai==2.0.1 (~2 GB, once)"
+    python3 -m venv "$ROOT/.venvs/admet"
+    "$ROOT/.venvs/admet/bin/pip" install -q --upgrade pip
+    "$ROOT/.venvs/admet/bin/pip" install -q admet_ai==2.0.1
+  fi
+fi

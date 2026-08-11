@@ -205,6 +205,7 @@ class ConstructionAttempt(BaseModel):
 
 class CandidateRecord(BaseModel):
     candidate_id: str = ""
+    evolution_generation: int = 0
     target: str = ""
     e3_ligase: str = ""
     warhead_name: str = ""
@@ -271,6 +272,10 @@ class NoveltyResult(BaseModel):
     scaffold_novelty: float = 0.0
     component_novelty: float = 0.0
     linker_novelty: float = 0.0
+    # Live patent cross-reference evidence (PubChem PUG-View "Patents" section)
+    patent_count: int = 0
+    patent_ids: List[str] = Field(default_factory=list)
+    patent_source: str = "unavailable"  # pubchem_patents | unavailable
 
 
 class ApplicabilityDomainResult(BaseModel):

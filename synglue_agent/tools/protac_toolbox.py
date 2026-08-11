@@ -1091,6 +1091,60 @@ class ProtacDesignToolbox:
             return "medium"
         return "low"
 
+    def _pubchem_patents(self, smiles: str) -> Tuple[int, List[str]]:
+        """Live patent cross-reference: SMILES -> PubChem CID -> PUG-View Patents.
+
+        Returns (patent_count, patent_ids). Never raises; any failure -> (0, []).
+        """
+        import hashlib
+        import json as _json
+        import urllib.error
+        import urllib.parse
+        import urllib.request
+
+        cache_key = "patents_" + hashlib.md5(smiles.encode()).hexdigest()
+        if hasattr(self, "_patent_cache") and cache_key in self._patent_cache:
+            return self._patent_cache[cache_key]
+        if not hasattr(self, "_patent_cache"):
+            self._patent_cache = {}
+
+        try:
+            cid_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{urllib.parse.quote(smiles)}/cids/JSON"
+            with urllib.request.urlopen(urllib.request.Request(cid_url, headers={"User-Agent": "ProtacPilot/1.0"}), timeout=20) as resp:
+                cid_data = _json.loads(resp.read().decode())
+            cids = cid_data.get("IdentifierList", {}).get("CID", [])
+            if not cids:
+                self._patent_cache[cache_key] = (0, [])
+                return 0, []
+            cid = cids[0]
+            view_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/{cid}/JSON?heading=Patents"
+            with urllib.request.urlopen(urllib.request.Request(view_url, headers={"User-Agent": "ProtacPilot/1.0"}), timeout=30) as resp:
+                view = _json.loads(resp.read().decode())
+            patents: List[str] = []
+
+            def walk(items):
+                for it in items:
+                    if "StringValue" in it and len(str(it["StringValue"])) < 40:
+                        patents.append(str(it["StringValue"]))
+                    for sub in it.get("Section", []):
+                        walk(sub.get("Information", []))
+                    v = it.get("Value")
+                    if v and "StringWithMarkup" in v:
+                        for m in v["StringWithMarkup"]:
+                            st = m.get("String", "")
+                            if st and len(st) < 40:
+                                patents.append(st)
+
+            for sec in view.get("Record", {}).get("Section", []):
+                if sec.get("TOCHeading") == "Patents":
+                    walk(sec.get("Information", []))
+            patents = list(dict.fromkeys(patents))
+            self._patent_cache[cache_key] = (len(patents), patents)
+            return len(patents), patents
+        except Exception:
+            self._patent_cache[cache_key] = (0, [])
+            return 0, []
+
     def check_novelty(self, candidates: Sequence[CandidateRecord]) -> List[NoveltyResult]:
         known = self.load_known_protacs()
         known_smiles = [(row.get("name", row.get("protac_id", "known")), row.get("smiles", "")) for row in known if row.get("smiles")]
@@ -1118,6 +1172,15 @@ class ProtacDesignToolbox:
                     linker_novelty=0.35 if candidate.linker_name.lower().startswith("known") else 0.65,
                 )
             )
+        # Live patent cross-reference (PubChem PUG-View) — best-effort, bounded.
+        for result in results[:10]:
+            candidate = next((c for c in candidates if c.candidate_id == result.candidate_id), None)
+            if candidate is None:
+                continue
+            n_pat, pat_ids = self._pubchem_patents(candidate.full_protac_smiles)
+            result.patent_count = n_pat
+            result.patent_ids = pat_ids[:8]
+            result.patent_source = "pubchem_patents" if n_pat else "unavailable"
         return results
 
     def calculate_similarity(self, smiles_a: str, smiles_b: str) -> float:
@@ -1372,6 +1435,94 @@ class ProtacDesignToolbox:
             )
         return reviews
 
+    def _smiles_mutate(self, smiles: str, rng=None) -> Optional[str]:
+        """Single-point SMILES mutation with retries.
+
+        Only swaps aliphatic non-ring atoms (C<->N<->O) so sanitization holds;
+        up to 10 attempts. Returns None when no valid mutant is found.
+        """
+        if not self.rdkit_available:
+            return None
+        import random as _random
+        rng = rng or _random.Random()
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None or mol.GetNumAtoms() < 4:
+            return None
+        for _ in range(10):
+            editable = Chem.RWMol(mol)
+            candidates = [
+                i for i in range(editable.GetNumAtoms())
+                if not editable.GetAtomWithIdx(i).GetIsAromatic()
+                and editable.GetAtomWithIdx(i).GetTotalDegree() <= 2
+            ]
+            if not candidates:
+                return None
+            atom_idx = rng.choice(candidates)
+            atom = editable.GetAtomWithIdx(atom_idx)
+            z = atom.GetAtomicNum()
+            if z == 6:
+                atom.SetAtomicNum(rng.choice([7, 8]))
+            elif z == 7:
+                atom.SetAtomicNum(rng.choice([6, 8]))
+            elif z == 8:
+                atom.SetAtomicNum(rng.choice([6, 7]))
+            else:
+                continue
+            try:
+                new_mol = editable.GetMol()
+                Chem.SanitizeMol(new_mol)
+                out = Chem.MolToSmiles(new_mol)
+                if out and out != smiles:
+                    return out
+            except Exception:
+                continue
+        return None
+
+    def _smiles_crossover(self, a: str, b: str, rng=None) -> Optional[str]:
+        """BRICS-fragment crossover: exchange one BRICS fragment between parents.
+
+        Uses RDKit's BRICS decomposition (fragments carry dummy attachment
+        atoms) and recombines via a single bond at the dummy positions.
+        Returns None when the recombination fails to sanitize.
+        """
+        if not self.rdkit_available:
+            return None
+        import random as _random
+        rng = rng or _random.Random()
+        try:
+            from rdkit.Chem import BRICS
+            ma, mb = Chem.MolFromSmiles(a), Chem.MolFromSmiles(b)
+            if ma is None or mb is None:
+                return None
+            fa = [frag for frag in BRICS.BRICSDecompose(ma) if "[*" in frag]
+            fb = [frag for frag in BRICS.BRICSDecompose(mb) if "[*" in frag]
+            if not fa or not fb:
+                return None
+            frag_a, frag_b = rng.choice(fa), rng.choice(fb)
+            mol_a = Chem.MolFromSmiles(frag_a)
+            mol_b = Chem.MolFromSmiles(frag_b)
+            if mol_a is None or mol_b is None:
+                return None
+            da = [at for at in mol_a.GetAtoms() if at.GetAtomicNum() == 0]
+            db = [at for at in mol_b.GetAtoms() if at.GetAtomicNum() == 0]
+            if not da or not db:
+                return None
+            combo = Chem.CombineMols(mol_a, mol_b)
+            rw = Chem.RWMol(combo)
+            off = mol_a.GetNumAtoms()
+            rw.AddBond(da[0].GetIdx(), off + db[0].GetIdx(), Chem.BondType.SINGLE)
+            # remove the two dummy atoms (indices shift after first removal)
+            hi = max(da[0].GetIdx(), off + db[0].GetIdx())
+            lo = min(da[0].GetIdx(), off + db[0].GetIdx())
+            rw.RemoveAtom(hi)
+            rw.RemoveAtom(lo)
+            mol = rw.GetMol()
+            Chem.SanitizeMol(mol)
+            out = Chem.MolToSmiles(mol)
+            return out if out not in (a, b) else None
+        except Exception:
+            return None
+
     def evolve_candidates(
         self,
         candidates: Sequence[CandidateRecord],
@@ -1442,6 +1593,23 @@ class ProtacDesignToolbox:
                 seen.add(variant.full_protac_smiles)
                 evolved.append(variant)
                 break
+        # Genetic diversity pass (bounded): mutate/crossover the best parents.
+        if len(evolved) < max_new:
+            import random as _random
+            rng = _random.Random(sum(ord(ch) for ch in parent_pool[0].candidate_id))
+            for parent in parent_pool[:3]:
+                for _ in range(4):
+                    if len(evolved) >= max_new:
+                        break
+                    child_smiles = self._smiles_mutate(parent.full_protac_smiles, rng)
+                    if not child_smiles or child_smiles in seen:
+                        continue
+                    child = parent.model_copy(deep=True)
+                    child.candidate_id = f"{parent.candidate_id}_mut{len(evolved)}"
+                    child.full_protac_smiles = child_smiles
+                    child.evolution_generation = getattr(child, "evolution_generation", 0) + 1
+                    evolved.append(child)
+                    seen.add(child_smiles)
         return evolved
 
     def assess_ternary_feasibility(

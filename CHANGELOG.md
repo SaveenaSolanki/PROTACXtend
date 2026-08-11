@@ -367,3 +367,21 @@ geometrically screened against 3600 MegaDock poses.
   (compileall + smoke + fast unit tests, full fast suite job).
 - scripts/install_gitleaks_hook.sh: pre-commit secret guard (staged).
 - Fixed pre-existing Python 3.11 SyntaxError in scripts/verify_all_repo_installs.py.
+
+## 2026-08-08 — "MAKE IT ALL WORKABLE": all partial agents unblocked
+- Binder: live ChEMBL /activity 2-call fetch (90 BRD4 binders in 9s), unit
+  normalization (uM/mM -> nM, pchembl preferred), per-record provenance,
+  BindingDB key-gated (BINDINGDB_API_KEY). tests: test_binder_live.py (4).
+- Novelty: live PubChem PUG-View patent cross-reference (patent_count/ids/source
+  on NoveltyResult) + local similarity. tests incl. mocked + live (14 patents
+  for aspirin).
+- ADMET: ADMET-AI 2.0.1 (106 endpoints) in isolated .venvs/admet (torch>=2.8
+  kept out of main env), subprocess runner scripts/run_admet_ai.py, wired into
+  admet_integration.predict_admet_properties with labelled provenance and rule
+  fallback; bootstrap_assets.sh --admet.
+- Linker: fragment-combination generator (8 cores x spacers, RDKit-validated,
+  diversity-selected, 64 linkers) enriched into linker_scanner library
+  (PROTACPILOT_FRAGMENT_LINKERS=0 to disable).
+- Evolution: SMILES mutation (aliphatic C<->N<->O with retries) + BRICS-fragment
+  crossover + evolution_generation tracking in evolve_candidates.
+- pytest.ini registers `network` + `slow` markers. Full suite: 313 passed.

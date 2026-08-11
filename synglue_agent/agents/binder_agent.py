@@ -113,12 +113,17 @@ class TargetBinderRetrievalAgent(ReActAgent):
             if ok2:
                 sources_used.append("PubChem")
 
-        # 3. BindingDB (best for measured affinities)
+        # 3. BindingDB (best for measured affinities; REST requires an API key
+        #    since 2023 — wrapper stays for when BINDINGDB_API_KEY is set)
         if uniprot_id:
             bdb_binders, ok3 = self._search_bindingdb(uniprot_id)
             all_binders.extend(bdb_binders)
             if ok3:
                 sources_used.append("BindingDB")
+            elif self._bindingdb_needs_key():
+                state.warnings.append(
+                    "BindingDB REST needs an API key (BINDINGDB_API_KEY); ChEMBL covers binding data."
+                )
 
         # 4. Fall back to local curated data
         if not all_binders:
@@ -148,65 +153,8 @@ class TargetBinderRetrievalAgent(ReActAgent):
         return state
 
     # ── ChEMBL ─────────────────────────────────
-    def _search_chembl(self, target_name: str, uniprot_id: str) -> Tuple[List[BinderRecord], bool]:
-        binders: List[BinderRecord] = []
-        # Step 1: resolve target ChEMBL ID
-        chembl_id = self._resolve_chembl_target(target_name, uniprot_id)
-        if not chembl_id:
-            return binders, False
-
-        # Step 2: fetch compounds with activity data
-        url = f"{CHEMBL_BASE}/assay.json?target_chembl_id={chembl_id}&limit=20"
-        data = _cached_request(url, f"chembl_assay_{chembl_id}")
-        if not data:
-            return binders, False
-
-        for assay in data.get("assays", []):
-            assay_id = assay.get("assay_chembl_id", "")
-            if not assay_id:
-                continue
-            
-            # Fetch activities for this assay
-            act_url = f"{CHEMBL_BASE}/assay/{assay_id}/activity.json?limit=50"
-            act_data = _cached_request(act_url, f"chembl_act_{assay_id}")
-            if not act_data:
-                continue
-
-            for act in act_data.get("activities", []):
-                smiles = (act.get("molecule_chembl_id", "") or "")
-                # ChEMBL activity data usually needs molecule lookup
-                mol_url = f"{CHEMBL_BASE}/molecule/{smiles}.json" if smiles else ""
-                if mol_url:
-                    mol_data = _cached_request(mol_url, f"chembl_mol_{smiles}")
-                    if mol_data:
-                        smiles = mol_data.get("molecule_structures", {}).get("canonical_smiles", "") or ""
-                
-                if not smiles:
-                    continue
-
-                try:
-                    activity_nM = float(act.get("standard_value", 0) or 0)
-                    activity_type = act.get("standard_type", "IC50") or "IC50"
-                    p_act = self.toolbox.compute_p_activity(activity_nM) if activity_nM > 0 else None
-                except (ValueError, TypeError):
-                    activity_nM = 0.0
-                    p_act = None
-
-                record = BinderRecord(
-                    name=act.get("molecule_chembl_id", f"CHEMBL_{len(binders)}"),
-                    target=target_name,
-                    smiles=smiles,
-                    activity_type=activity_type,
-                    activity_nM=activity_nM if activity_nM > 0 else None,
-                    p_activity=p_act,
-                    assay_confidence=0.5,
-                    source=f"ChEMBL (assay {assay_id})",
-                )
-                binders.append(record)
-
-        return binders, len(binders) > 0
-
     def _resolve_chembl_target(self, target_name: str, uniprot_id: str) -> Optional[str]:
+        """Resolve a target to its ChEMBL target id via UniProt accession or name."""
         query = uniprot_id if uniprot_id else target_name
         url = f"{CHEMBL_BASE}/target/search.json?q={urllib.parse.quote(query)}"
         data = _cached_request(url, f"chembl_tgt_{query}")
@@ -215,6 +163,76 @@ class TargetBinderRetrievalAgent(ReActAgent):
             if targets:
                 return targets[0].get("target_chembl_id", "")
         return None
+
+    def _search_chembl(self, target_name: str, uniprot_id: str) -> Tuple[List[BinderRecord], bool]:
+        """Fetch measured binder activities from ChEMBL.
+
+        Uses the /activity endpoint (which embeds canonical_smiles and
+        pchembl_value) — 2 HTTP calls total, not one per assay/activity.
+        """
+        binders: List[BinderRecord] = []
+        chembl_id = self._resolve_chembl_target(target_name, uniprot_id)
+        if not chembl_id:
+            return binders, False
+
+        url = (
+            f"{CHEMBL_BASE}/activity.json?target_chembl_id={chembl_id}"
+            "&limit=100&order_by=pchembl_value"
+        )
+        data = _cached_request(url, f"chembl_activity_{chembl_id}")
+        if not data:
+            return binders, False
+
+        for act in data.get("activities", []):
+            smiles = act.get("canonical_smiles") or ""
+            if not smiles:
+                continue
+            # Unit normalization: prefer pchembl_value (-log10 M) when present.
+            activity_nM = None
+            p_act = None
+            try:
+                pchembl = act.get("pchembl_value")
+                if pchembl:
+                    p_act = float(pchembl)
+                    activity_nM = 10.0 ** (9.0 - p_act)
+                else:
+                    raw = float(act.get("standard_value", 0) or 0)
+                    units = (act.get("standard_units") or "nM").lower().replace("\u00b5", "u")
+                    mult = {"nm": 1.0, "um": 1e3, "mm": 1e6, "m": 1e9}.get(units, 1.0)
+                    activity_nM = raw * mult if raw > 0 else None
+                    p_act = self.toolbox.compute_p_activity(activity_nM) if activity_nM else None
+            except (ValueError, TypeError):
+                activity_nM, p_act = None, None
+
+            assay_id = act.get("assay_chembl_id", "")
+            record = BinderRecord(
+                name=act.get("molecule_chembl_id", f"CHEMBL_{len(binders)}"),
+                target=target_name,
+                smiles=smiles,
+                activity_type=act.get("standard_type", "IC50") or "IC50",
+                activity_nM=activity_nM,
+                p_activity=p_act,
+                assay_confidence=0.5,
+                source=f"ChEMBL (assay {assay_id})",
+                metadata={
+                    "source_db": "ChEMBL",
+                    "assay_chembl_id": assay_id,
+                    "target_chembl_id": chembl_id,
+                    "standard_units": act.get("standard_units"),
+                    "evidence_type": "measured_activity",
+                    "record_url": f"https://www.ebi.ac.uk/chembl/assay_report_card/{assay_id}/"
+                    if assay_id else "",
+                },
+            )
+            binders.append(record)
+
+        # Deduplicate by canonical SMILES, keep the strongest activity
+        seen: dict = {}
+        for b in binders:
+            key = b.smiles.strip()
+            if key not in seen or (b.p_activity or 0) > (seen[key].p_activity or 0):
+                seen[key] = b
+        return list(seen.values()), len(seen) > 0
 
     # ── PubChem ─────────────────────────────────
     def _enrich_from_pubchem(self, binders: List[BinderRecord]) -> Tuple[List[BinderRecord], bool]:
@@ -235,9 +253,17 @@ class TargetBinderRetrievalAgent(ReActAgent):
         return enriched, len(enriched) > 0
 
     # ── BindingDB ───────────────────────────────
+    def _bindingdb_needs_key(self) -> bool:
+        """True when the BindingDB REST layer requires an API key (2023+ policy)."""
+        import os as _os
+        return not _os.environ.get("BINDINGDB_API_KEY")
+
     def _search_bindingdb(self, uniprot_id: str) -> Tuple[List[BinderRecord], bool]:
         binders: List[BinderRecord] = []
+        api_key = os.environ.get("BINDINGDB_API_KEY", "")
         url = f"{BINDINGDB_BASE}/getLigandsByUniprot?uniprot={uniprot_id};100&response=application/json"
+        if api_key:
+            url += f"&api_key={api_key}"
         data = _cached_request(url, f"bdb_{uniprot_id}")
         if not data:
             return binders, False

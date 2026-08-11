@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786449896.0293984, "elapsed_s": 0.0, "run_id": "dbg2", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4"}}
+{"event": "error", "ts": 1786449901.2885194, "elapsed_s": 5.2591, "node": "runtime", "error": "'str' object has no attribute 'get'"}
+{"event": "run_end", "ts": 1786449901.288714, "elapsed_s": 5.2593, "status": "failed", "summary": {}, "events": 2}

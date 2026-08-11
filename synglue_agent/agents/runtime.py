@@ -66,6 +66,21 @@ def run_protacpilot(
         raise
 
     runtime_s = round(time.time() - t0, 2)
+
+    # Canonical AgentRunRecord (auditable run artifact set)
+    try:
+        if mode == "agentic" and config.get("record_run", True):
+            from synglue_agent.run_records import build_agent_run_record, write_run_record, OUTPUT_ROOT
+            record = build_agent_run_record(result, run_id, user_request, runtime_s)
+            run_dir = OUTPUT_ROOT / run_id
+            run_json = write_run_record(
+                run_dir, record, result.get("state") or {},
+                report_text=(result.get("state") or {}).get("report", ""),
+            )
+            result["run_record"] = {"run_id": run_id, "dir": str(run_dir), "file": str(run_json)}
+    except Exception as exc:
+        logger.warning("run record write failed: %s", exc)
+
     if trace:
         trace.tool_call("runtime.run_protacpilot",
                         {"mode": mode, "run_id": run_id},
@@ -130,7 +145,19 @@ def _run_agentic(user_request: str, config: Dict[str, Any]) -> Dict[str, Any]:
 
     llm_enabled = config.get("llm_enabled", False)
     run_id = config.get("run_id") or f"run_{uuid.uuid4().hex[:8]}"
-    state = run_agentic_workflow(user_request, thread_id=run_id)
+    # REAL graph nodes (scientific tools), not stubs — the agentic mode is a
+    # working scientific pipeline: live ChEMBL binders, chemprop degradation,
+    # ADMET-AI, fragment linkers, BRICS construction, NSGA-II ranking.
+    try:
+        from synglue_agent.agents.real_nodes import real_nodes
+        nodes = real_nodes()
+    except Exception as exc:
+        logger.warning("real_nodes unavailable (%s) — falling back to stubs", exc)
+        nodes = None
+    # e2e/offline runs use the in-memory checkpointer (no sqlite lock contention);
+    # production API runs keep persistence (interrupt/resume).
+    thread_id = run_id if config.get("persistent", True) else None
+    state = run_agentic_workflow(user_request, legacy_agents=nodes, thread_id=thread_id)
 
     # A human gate may have interrupted the run (persistent checkpointer).
     interrupted = bool(state.get("__interrupt__"))

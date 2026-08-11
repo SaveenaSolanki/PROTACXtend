@@ -58,7 +58,14 @@ def _cached_request(url: str, cache_key: str = "") -> Optional[Dict[str, Any]]:
                 data = json.loads(resp.read().decode())
                 _cache[cache_key] = data
                 return data
-        except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError) as e:
+        except urllib.error.HTTPError as e:
+            last_error = e
+            if e.code == 429:  # rate limited — respect Retry-After
+                retry_after = float(e.headers.get("Retry-After", 5)) if e.headers.get("Retry-After") else 5.0
+                time.sleep(min(retry_after, 20.0))
+            elif attempt < MAX_RETRIES:
+                time.sleep(DELAY * (2 ** attempt))  # exponential backoff
+        except (urllib.error.URLError, OSError, json.JSONDecodeError) as e:
             last_error = e
             if attempt < MAX_RETRIES:
                 time.sleep(DELAY * (2 ** attempt))  # exponential backoff

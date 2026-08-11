@@ -135,3 +135,11 @@ _Evidence (updated 2026-08-08): `test_binder_live.py`, `test_unblocked_agents.py
 `synglue_agent/tools/{retrosynthesis,admet_integration}.py`,
 `synglue_agent/agents/{linker_stage,ternary_stage,evolution_agent,binder_agent,novelty_agent}.py`,
 test suite (299 passed), CI run 5604c30 (green)._
+
+## 2026-08-11 addendum — E2E scientific-agent milestone
+
+The agentic graph previously ran **stub nodes** by default (the benchmark's
+"full_agentic" was a scoring harness, not the graph). Now wired to real tools
+via `real_nodes.py`; canonical `AgentRunRecord` written per run; 5-scenario E2E
+suite passes (BRD4 full-chain, BTK/KRAS/HMGB2 gated on low-confidence evidence
+as designed, impossible input safe-fails). See CHANGELOG 2026-08-11.

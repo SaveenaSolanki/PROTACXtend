@@ -1,0 +1,1056 @@
+{
+  "run_id": "e2e_20260811_KRAS_evidence_limited",
+  "timestamp": "2026-08-11T13:42:52.892624Z",
+  "user_objective": "Design a PROTAC against KRAS G12C, an evidence-limited target. Flag low-confidence evidence and do not over-claim.",
+  "parsed_objective": {
+    "target_name": "KRAS",
+    "e3": null,
+    "objectives": [],
+    "raw_request": "Design a PROTAC against KRAS G12C, an evidence-limited target. Flag low-confidence evidence and do not over-claim."
+  },
+  "execution_plan": [
+    {}
+  ],
+  "tools_requested": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "RepairController",
+    "HumanApprovalGate"
+  ],
+  "tools_executed": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "RepairController",
+    "HumanApprovalGate"
+  ],
+  "evidence_records": [
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "evidence_degradation",
+      "degradation_confidence": 0.2,
+      "n_candidates": 32,
+      "n_low_confidence": 32,
+      "status": "ok"
+    }
+  ],
+  "candidates_generated": 32,
+  "candidates_valid": 32,
+  "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "RepairController",
+    "HumanApprovalGate"
+  ],
+  "repair_events": [
+    {
+      "node": "RepairController",
+      "decision_type": "escalate",
+      "reason_codes": [
+        "LOW_DEGRADATION_CONFIDENCE",
+        "ESCALATE_LOW_CONFIDENCE"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.3,
+      "next_proposed_node": "human_gate",
+      "elapsed_s": 0.001
+    }
+  ],
+  "human_interventions": [
+    {
+      "node": "HumanApprovalGate",
+      "decision_type": "escalate",
+      "reason_codes": [
+        "ESCALATE_PRE_SYNTHESIS"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.0,
+      "next_proposed_node": "report",
+      "elapsed_s": 0.001
+    }
+  ],
+  "final_candidates": [
+    {
+      "candidate_id": "cand_0",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 7,
+      "heavy_atoms": 34
+    },
+    {
+      "candidate_id": "cand_1",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 37
+    },
+    {
+      "candidate_id": "cand_2",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 35
+    },
+    {
+      "candidate_id": "cand_3",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 38
+    },
+    {
+      "candidate_id": "cand_4",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG2",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 36
+    },
+    {
+      "candidate_id": "cand_5",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG2",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 10,
+      "heavy_atoms": 39
+    },
+    {
+      "candidate_id": "cand_6",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCOCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 12,
+      "heavy_atoms": 39
+    },
+    {
+      "candidate_id": "cand_7",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCOCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 13,
+      "heavy_atoms": 42
+    },
+    {
+      "candidate_id": "cand_8",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCCCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL6",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 10,
+      "heavy_atoms": 37
+    },
+    {
+      "candidate_id": "cand_9",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCCCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL6",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 11,
+      "heavy_atoms": 40
+    },
+    {
+      "candidate_id": "cand_10",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCOCCOCCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 15,
+      "heavy_atoms": 42
+    },
+    {
+      "candidate_id": "cand_11",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCOCCOCCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 16,
+      "heavy_atoms": 45
+    },
+    {
+      "candidate_id": "cand_12",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCN3CCN(CCCc4[nH]c5ccccc5c4Cc4nc5ccccc5[nH]4)CC3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PIPERAZINE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 41
+    },
+    {
+      "candidate_id": "cand_13",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCN1CCN(CCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)CC1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "PIPERAZINE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 10,
+      "heavy_atoms": 44
+    },
+    {
+      "candidate_id": "cand_14",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCc3cnnn3CCCc3[nH]c4ccccc4c3Cc3nc4ccccc4[nH]3)ccc21",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "TRIAZOLE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 40
+    },
+    {
+      "candidate_id": "cand_15",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCc1cnnn1CCCc1[nH]c3ccccc3c1Cc1nc3ccccc3[nH]1)C2=O",
+      "warhead_name": "CHEMBL2396993",
+      "e3_ligase": "CRBN",
+      "linker_name": "TRIAZOLE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 10,
+      "heavy_atoms": 43
+    },
+    {
+      "candidate_id": "cand_16",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 6,
+      "heavy_atoms": 33
+    },
+    {
+      "candidate_id": "cand_17",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 7,
+      "heavy_atoms": 36
+    },
+    {
+      "candidate_id": "cand_18",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 7,
+      "heavy_atoms": 34
+    },
+    {
+      "candidate_id": "cand_19",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 37
+    },
+    {
+      "candidate_id": "cand_20",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG2",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 35
+    },
+    {
+      "candidate_id": "cand_21",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG2",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 38
+    },
+    {
+      "candidate_id": "cand_22",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCOCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 11,
+      "heavy_atoms": 38
+    },
+    {
+      "candidate_id": "cand_23",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCOCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG3",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 12,
+      "heavy_atoms": 41
+    },
+    {
+      "candidate_id": "cand_24",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCCCCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL6",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 36
+    },
+    {
+      "candidate_id": "cand_25",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCCCCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "ALKYL6",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 10,
+      "heavy_atoms": 39
+    },
+    {
+      "candidate_id": "cand_26",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCOCCOCCOCCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 14,
+      "heavy_atoms": 41
+    },
+    {
+      "candidate_id": "cand_27",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCOCCOCCOCCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PEG4",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 15,
+      "heavy_atoms": 44
+    },
+    {
+      "candidate_id": "cand_28",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCN3CCN(CCc4ccc5c(Cc6nc7ccncc7[nH]6)c[nH]c5c4)CC3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PIPERAZINE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 40
+    },
+    {
+      "candidate_id": "cand_29",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCN1CCN(CCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)CC1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "PIPERAZINE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 43
+    },
+    {
+      "candidate_id": "cand_30",
+      "full_protac_smiles": "O=C1NC(=O)c2cc(CCc3cnnn3CCc3ccc4c(Cc5nc6ccncc6[nH]5)c[nH]c4c3)ccc21",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "TRIAZOLE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 8,
+      "heavy_atoms": 39
+    },
+    {
+      "candidate_id": "cand_31",
+      "full_protac_smiles": "NC(=O)c1ccc2c(c1)C(=O)N(CCc1cnnn1CCc1ccc3c(Cc4nc5ccncc5[nH]4)c[nH]c3c1)C2=O",
+      "warhead_name": "CHEMBL2086791",
+      "e3_ligase": "CRBN",
+      "linker_name": "TRIAZOLE_ETHYL",
+      "construction_note": "assembled_with_rdkit_dummy_atom_join",
+      "rotatable_bonds": 9,
+      "heavy_atoms": 42
+    }
+  ],
+  "pareto_front": [],
+  "llm_model": null,
+  "llm_calls": 0,
+  "llm_failures": 0,
+  "scientific_tool_versions": {
+    "rdkit": "2026.03.5",
+    "langgraph": "?",
+    "torch": "2.6.0+cu126",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "chemprop": "2.3.0",
+    "aizynthfinder": "?"
+  },
+  "warnings": [
+    "degradation_prediction: 32/32 candidates low-confidence",
+    "RepairController: low degradation confidence — escalating",
+    "HumanApprovalGate: paused for human review. 32 candidate(s) escalated."
+  ],
+  "errors": [],
+  "runtime_seconds": 14.48,
+  "reproducibility_hash": "cef0a574087a559fb8fc2d76ef8e59fe48ec182fac51f60b035769507765bb3d"
+}

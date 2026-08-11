@@ -1,0 +1,9 @@
+{
+  "run_id": "btk_exact_prompt",
+  "status": "ok",
+  "runtime_s": 9.26,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/btk_exact_prompt/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design VHL-recruiting PROTAC candidates against BTK, prioritizing cellular degradation potency and avoiding known warhea"
+}

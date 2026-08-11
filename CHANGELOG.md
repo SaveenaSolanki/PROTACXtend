@@ -385,3 +385,26 @@ geometrically screened against 3600 MegaDock poses.
 - Evolution: SMILES mutation (aliphatic C<->N<->O with retries) + BRICS-fragment
   crossover + evolution_generation tracking in evolve_candidates.
 - pytest.ini registers `network` + `slow` markers. Full suite: 313 passed.
+
+## 2026-08-11 — E2E SCIENTIFIC-AGENT MILESTONE (v0.3.0-agentic-core re-tagged)
+- CRITICAL FIX: agentic graph now runs REAL nodes (real_nodes.py) — the
+  runtime previously defaulted to `_default_stub_agents()` (stub candidates
+  everywhere). The benchmark's "full_agentic" never ran the graph (it was a
+  per-molecule scoring harness). Now: live ChEMBL binders, fragment linkers,
+  BRICS construction, ternary ensemble, chemprop degradation, ADMET-AI,
+  patent novelty, NSGA-II ranking — all wired through the adaptive graph.
+- Canonical AgentRunRecord (synglue_agent/run_records.py): run.json +
+  decisions.jsonl + evidence.jsonl + candidates.parquet + pareto_front.csv +
+  structures/ + docking/ + report.md per run, with reproducibility hash.
+- E2E suite (scripts/e2e_agentic.py): 5 scenarios PASS —
+  BRD4 (full chain, ranked recommendation), BTK (32 candidates → low-confidence
+  gate), KRAS (evidence-limited → repair → gate), HMGB2 (novel → gate),
+  impossible input (safe failure). 0 failed.
+- Graph fixes found by e2e: evidence gate accepted real ternary key (was
+  infinite repair loop); HARD_ERROR reason code registered; ADMET composite
+  penalty (0.50*AMES+0.30*DILI+0.20*hERG) + threshold 0.65; warhead SMILES
+  validation (regex prose bug); memory checkpointer for e2e (17.7GB sqlite
+  checkpoint bloat deleted); ChEMBL 429 Retry-After backoff.
+- CI restructured: smoke + full-offline (+ e2e) + security (gitleaks, ruff,
+  artifact availability, bootstrap dry-run); python-app.yml deleted;
+  required checks on main = CI/smoke, CI/full-offline, CI/security.

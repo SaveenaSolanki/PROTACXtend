@@ -101,6 +101,8 @@ class AgenticWorkflowState(TypedDict, total=False):
 # ── Controlled vocabulary for reason_codes ──
 
 REASON_CODES = [
+    # Internal infrastructure (node crash, wrapped by _wrap_legacy)
+    "HARD_ERROR",
     # Evidence sufficiency
     "INSUFFICIENT_TARGET_EVIDENCE",
     "INSUFFICIENT_WARHEAD_EVIDENCE",
@@ -348,9 +350,12 @@ def evidence_sufficiency_gate(state: AgenticWorkflowState) -> Dict[str, Any]:
     next_node = "ranking"
     status = "ok"
 
-    # Minimum evidence requirements for reporting a score
-    has_ternary = any(
-        isinstance(ev, dict) and ev.get("ternary_confidence") is not None
+    # Minimum evidence requirements for reporting a score.
+    # Accept both the legacy stub key (ternary_confidence) and the real node
+    # key (ternary_plausibility_score in state.ternary_feasibility).
+    has_ternary = bool(state.get("ternary_feasibility")) or any(
+        isinstance(ev, dict)
+        and (ev.get("ternary_confidence") is not None or ev.get("ternary_plausibility_score") is not None)
         for ev in evidence.values()
     )
     has_degradation = bool(state.get("degradation_predictions"))
@@ -403,7 +408,8 @@ def evidence_sufficiency_gate(state: AgenticWorkflowState) -> Dict[str, Any]:
 # Thresholds (tunable, not hardcoded in conditionals)
 TERNARY_CONFIDENCE_THRESHOLD = 0.45
 DEGRADATION_CONFIDENCE_THRESHOLD = 0.40
-ADMET_PENALTY_THRESHOLD = 0.45
+ADMET_PENALTY_THRESHOLD = 0.65  # gate only egregious ADMET risk (composite:
+                                  # 0.45*hERG + 0.30*DILI + 0.25*AMES from ADMET-AI)
 MAX_REPAIR_ATTEMPTS = 3
 
 def repair_controller(state: AgenticWorkflowState) -> Dict[str, Any]:
@@ -618,6 +624,10 @@ def route_after_ternary(state: AgenticWorkflowState) -> str:
 
     # Check ternary confidence per candidate
     ternary_results = state.get("ternary_feasibility", {})
+    if __debug__ and not isinstance(ternary_results, dict):
+        print("DEBUG router ternary_feasibility type:", type(ternary_results), str(ternary_results)[:120], flush=True)
+    elif __debug__ and any(not isinstance(v, dict) for v in ternary_results.values()):
+        print("DEBUG router ternary_feasibility values:", {k: type(v).__name__ for k, v in ternary_results.items()}, flush=True)
     confidence_values = [
         tr.get("ternary_plausibility_score", 0.0)
         for tr in ternary_results.values()

@@ -1,0 +1,9 @@
+{
+  "run_id": "state_probe_1",
+  "status": "ok",
+  "runtime_s": 6.84,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/state_probe_1/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design CRBN-recruiting PROTAC candidates against BRD4"
+}

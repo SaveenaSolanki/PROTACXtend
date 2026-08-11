@@ -32,7 +32,7 @@ from langgraph.errors import GraphRecursionError
 # Thresholds mirrored from agentic_core (kept in sync manually)
 TERNARY_CONFIDENCE_THRESHOLD = 0.45
 DEGRADATION_CONFIDENCE_THRESHOLD = 0.40
-ADMET_PENALTY_THRESHOLD = 0.45
+ADMET_PENALTY_THRESHOLD = 0.65  # mirror of agentic_core (composite AMES/DILI/hERG)
 MAX_REPAIR_ATTEMPTS = 3
 
 

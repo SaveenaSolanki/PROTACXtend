@@ -1,0 +1,59 @@
+{
+  "run_id": "state_probe_2",
+  "timestamp": "2026-08-11T11:57:43.430629Z",
+  "user_objective": "Design CRBN PROTACs against BRD4",
+  "parsed_objective": {},
+  "execution_plan": [
+    {}
+  ],
+  "tools_requested": [],
+  "tools_executed": [],
+  "evidence_records": [],
+  "candidates_generated": 0,
+  "candidates_valid": 1,
+  "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "ranking",
+    "report"
+  ],
+  "repair_events": [],
+  "human_interventions": [],
+  "final_candidates": [],
+  "pareto_front": [
+    {
+      "confidence": 0.85,
+      "candidate_id": "stub_top"
+    }
+  ],
+  "llm_model": null,
+  "llm_calls": 0,
+  "llm_failures": 0,
+  "scientific_tool_versions": {
+    "rdkit": "2026.03.5",
+    "langgraph": "?",
+    "torch": "2.6.0+cu126",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "chemprop": "2.3.0",
+    "aizynthfinder": "?"
+  },
+  "warnings": [],
+  "errors": [],
+  "runtime_seconds": 2.22,
+  "reproducibility_hash": "e3ad7e66812fba3fde68ad3cc95003efc8c2b7d91627c20b6b7d434cc9300168"
+}

@@ -6,6 +6,7 @@ on:
   pull_request:
 
 jobs:
+  # ── FAST GATE: install, compile, asset-free smoke, unit tests ──────
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -37,11 +38,14 @@ jobs:
             synglue_agent/tests/test_rdkit_chemistry.py \
             synglue_agent/tests/test_pareto_ranking.py \
             synglue_agent/tests/test_memory_stores.py \
-            synglue_agent/tests/test_mode_router.py
+            synglue_agent/tests/test_mode_router.py \
+            synglue_agent/tests/test_unblocked_agents.py -m "not network" \
+            synglue_agent/tests/test_binder_live.py -m "not network"
 
-  full-suite:
+  # ── FULL OFFLINE SUITE: full fast tests + agentic E2E (no LLM) ─────
+  full-offline:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 240
     needs: smoke
     steps:
       - uses: actions/checkout@v4
@@ -66,3 +70,55 @@ jobs:
         run: |
           python -m pytest synglue_agent/tests/ synglue_agent/agents/test_ternary_stage.py \
             -m "not slow and not network" -q --timeout 300
+
+      - name: End-to-end agentic suite (5 scenarios, real graph, offline LLM)
+        run: python scripts/e2e_agentic.py --offline
+
+  # ── SECURITY: secrets in history + artifact availability + lint ────
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Gitleaks full-history secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Lint (ruff)
+        run: |
+          pip install ruff
+          ruff check synglue_agent/agents/real_nodes.py synglue_agent/run_records.py \
+            synglue_agent/tools/admet_integration.py scripts/e2e_agentic.py \
+            scripts/ci_smoke.py scripts/run_admet_ai.py --ignore E501
+
+      - name: Artifact / model availability checks (committed assets present)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          needed = [
+              "Synglue_Py/models/multitask_transformer.pt",   # SynGlue transformer
+              "Synglue_Py/data/grover_e3.csv",
+              "Synglue_Py/data/grover_warhead.csv",
+              "Synglue_Py/data/e3_ligand.csv",
+              "data/benchmark/PROTAC-DB_3.0_protacs.xlsx",
+              "outputs/benchmark/chemprop_multitarget/model_0/best.pt",
+              "ASSET_MANIFEST.md",
+              "scripts/bootstrap_assets.sh",
+          ]
+          missing = [p for p in needed if not Path(p).exists()]
+          if missing:
+              raise SystemExit(f"MISSING COMMITTED ARTIFACTS: {missing}")
+          print("artifact availability: OK (%d checked)" % len(needed))
+          PY
+
+      - name: Bootstrap dry-run (external asset URLs live)
+        run: ./scripts/bootstrap_assets.sh --dry-run

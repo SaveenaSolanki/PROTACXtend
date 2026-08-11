@@ -63,3 +63,8 @@
 {"event": "node_end", "ts": 1786441958.1421494, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
 {"event": "decision", "ts": 1786441958.1421814, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
 {"event": "run_end", "ts": 1786441958.1422126, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786456013.4873219, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786456013.4874022, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786456013.4874356, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786456013.4874597, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786456013.4874864, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}

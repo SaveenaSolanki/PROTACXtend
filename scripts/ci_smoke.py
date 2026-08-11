@@ -40,8 +40,8 @@ def smoke():
     def t_imports():
         import synglue_agent  # noqa: F401
         from synglue_agent.agents import runtime  # noqa: F401
-        from synglue_agent.tools import retrosynthesis  # noqa: F401
         from synglue_agent.integrations import heruka  # noqa: F401
+        from synglue_agent.tools import retrosynthesis  # noqa: F401
     check("imports", t_imports)
 
     # 2. config parsing
@@ -53,9 +53,11 @@ def smoke():
 
     # 3. agent registry
     def t_agents():
-        from synglue_agent.agents import graph  # noqa: F401
-        from synglue_agent.agents import agentic_core  # noqa: F401
-        from synglue_agent.agents import runtime  # noqa: F401
+        from synglue_agent.agents import (
+            agentic_core,  # noqa: F401
+            graph,  # noqa: F401
+            runtime,  # noqa: F401
+        )
     check("agent modules import", t_agents)
 
     # 4. tool registry
@@ -69,8 +71,8 @@ def smoke():
 
     # 5. pydantic schemas
     def t_schemas():
-        from synglue_agent.schemas.tool_schema import ToolResult, NextAction
         from synglue_agent.schemas.agentic_schema import DesignGoal
+        from synglue_agent.schemas.tool_schema import ToolResult
         g = DesignGoal(target="BRD4", e3="CRBN")
         assert g.target == "BRD4"
         r = ToolResult(tool="test", status="ok", payload={})
@@ -94,6 +96,7 @@ def smoke():
     # 8. API startup
     def t_api():
         from fastapi.testclient import TestClient
+
         from synglue_agent.backend.api_routes import get_app
         app = get_app()
         c = TestClient(app)

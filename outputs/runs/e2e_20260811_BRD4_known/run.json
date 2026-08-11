@@ -1,6 +1,6 @@
 {
   "run_id": "e2e_20260811_BRD4_known",
-  "timestamp": "2026-08-11T13:42:25.124675Z",
+  "timestamp": "2026-08-11T14:23:58.252560Z",
   "user_objective": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic feasibility as a secondary objective.",
   "parsed_objective": {
     "target_name": "BRD4",
@@ -246,6 +246,6 @@
     "ranking degraded: 'ParetoResult' object has no attribute 'rank'"
   ],
   "errors": [],
-  "runtime_seconds": 75.87,
-  "reproducibility_hash": "559940ff7c5ca96af734075633a97548291efeb7c8c92591f0890b16831a06d1"
+  "runtime_seconds": 72.37,
+  "reproducibility_hash": "bf781fd8fac808efa28b016ff15e65b199856a48909a9ad3ceadb7d9ba2310af"
 }

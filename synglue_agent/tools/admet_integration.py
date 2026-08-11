@@ -10,13 +10,13 @@ Usage:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger("protacpilot.admet")
 
 # Try importing adme_py
 try:
-    from adme_py import ADME, druglikeness, lipophilicity, solubility, pharmacokinetics
+    from adme_py import ADME, druglikeness, lipophilicity, pharmacokinetics, solubility
     ADME_AVAILABLE = True
 except ImportError:
     ADME_AVAILABLE = False
@@ -47,7 +47,7 @@ ADMET_AI_KEY_ENDPOINTS = [
 ]
 
 
-def _run_admet_ai(smiles_list: List[str], timeout_s: int = 600) -> Optional[List[Dict[str, Any]]]:
+def _run_admet_ai(smiles_list: list[str], timeout_s: int = 600) -> list[dict[str, Any]] | None:
     """Call the isolated ADMET-AI venv. Returns endpoint dicts or None."""
     if not ADMET_AI_READY:
         return None
@@ -81,7 +81,7 @@ def _run_admet_ai(smiles_list: List[str], timeout_s: int = 600) -> Optional[List
 # Core ADMET prediction
 # ---------------------------------------------------------------------------
 
-def predict_admet_properties(smiles: str) -> Dict[str, Any]:
+def predict_admet_properties(smiles: str) -> dict[str, Any]:
     """Predict full ADMET profile for a compound.
 
     Uses adme-py for physicochemical properties and simple ADME predictions.
@@ -162,7 +162,7 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
     if ADME_AVAILABLE:
         try:
             adme_calc = ADME()
-            
+
             # Lipophilicity
             log_data = lipophilicity.predict(smiles)
             if log_data and isinstance(log_data, dict):
@@ -170,7 +170,7 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
                     "cLogP": log_data.get("MLogP", round(logp, 2)),
                     "cLogD": log_data.get("LogD", None),
                 }
-            
+
             # Solubility
             sol_data = solubility.predict(smiles)
             if sol_data and isinstance(sol_data, dict):
@@ -179,7 +179,7 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
                     "LogS": sol_data.get("LogS", None),
                     "Solubility_mg_L": sol_data.get("Solubility", None),
                 }
-            
+
             # Pharmacokinetics
             pk_data = pharmacokinetics.predict(smiles)
             if pk_data and isinstance(pk_data, dict):
@@ -190,9 +190,9 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
                     "CYP2D6_inhibitor": pk_data.get("CYP2D6", None),
                     "CYP3A4_inhibitor": pk_data.get("CYP3A4", None),
                 }
-            
+
             result["source"] = "adme_py"
-            
+
         except Exception as e:
             logger.debug(f"adme-py prediction failed: {e}")
             result["warnings"].append(f"adme-py error: {e}")
@@ -216,7 +216,7 @@ def predict_admet_properties(smiles: str) -> Dict[str, Any]:
     return result
 
 
-def _analyze_protac_properties(props: Dict[str, Any]) -> Dict[str, Any]:
+def _analyze_protac_properties(props: dict[str, Any]) -> dict[str, Any]:
     """Analyze properties specific to PROTAC bRo5 space."""
     mw = props.get("MW", 0)
     logp = props.get("cLogP", 0)
@@ -231,22 +231,22 @@ def _analyze_protac_properties(props: Dict[str, Any]) -> Dict[str, Any]:
         alerts.append("MW > 900 Da: high, permeability likely limited")
     elif mw > 700:
         alerts.append("MW 700-900 Da: typical PROTAC range")
-    
+
     if logp > 7:
         alerts.append("cLogP > 7: very lipophilic, solubility risk")
     elif logp > 5:
         alerts.append("cLogP > 5: lipophilic, monitor solubility")
-    
+
     if tpsa > 200:
         alerts.append("TPSA > 200 Å²: poor membrane permeability expected")
     elif tpsa > 140:
         alerts.append("TPSA 140-200 Å²: moderate permeability expected")
-    
+
     if rotb > 20:
         alerts.append("RotB > 20: very flexible, entropic penalty for target binding")
     elif rotb > 15:
         alerts.append("RotB 15-20: typical for PROTACs")
-    
+
     return {
         "bRo5_space": mw > 500,
         "chameleonic_potential": "high" if tpsa > 140 and logp > 3 else "moderate" if tpsa > 100 else "low",
@@ -255,15 +255,15 @@ def _analyze_protac_properties(props: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def batch_predict(smiles_list: List[str]) -> List[Dict[str, Any]]:
+def batch_predict(smiles_list: list[str]) -> list[dict[str, Any]]:
     """Predict ADMET properties for multiple compounds."""
     return [predict_admet_properties(smi) for smi in smiles_list]
 
 
-def protac_admet_summary(protac_smiles: str, name: str = "") -> Dict[str, Any]:
+def protac_admet_summary(protac_smiles: str, name: str = "") -> dict[str, Any]:
     """Generate a concise ADMET summary suitable for PROTAC prioritization."""
     props = predict_admet_properties(protac_smiles)
-    
+
     summary = {
         "name": name,
         "smiles": protac_smiles,
@@ -277,7 +277,7 @@ def protac_admet_summary(protac_smiles: str, name: str = "") -> Dict[str, Any]:
         "alerts": props.get("protac_specific", {}).get("alerts", []),
         "source": props.get("source", "rdkit_only"),
     }
-    
+
     return summary
 
 

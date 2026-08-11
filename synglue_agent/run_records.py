@@ -24,7 +24,7 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -36,30 +36,30 @@ class AgentRunRecord(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     user_objective: str
-    parsed_objective: Dict[str, Any] = Field(default_factory=dict)
+    parsed_objective: dict[str, Any] = Field(default_factory=dict)
 
-    execution_plan: List[Dict[str, Any]] = Field(default_factory=list)
-    tools_requested: List[str] = Field(default_factory=list)
-    tools_executed: List[str] = Field(default_factory=list)
+    execution_plan: list[dict[str, Any]] = Field(default_factory=list)
+    tools_requested: list[str] = Field(default_factory=list)
+    tools_executed: list[str] = Field(default_factory=list)
 
-    evidence_records: List[Dict[str, Any]] = Field(default_factory=list)
+    evidence_records: list[dict[str, Any]] = Field(default_factory=list)
     candidates_generated: int = 0
     candidates_valid: int = 0
 
-    routing_path: List[str] = Field(default_factory=list)
-    repair_events: List[Dict[str, Any]] = Field(default_factory=list)
-    human_interventions: List[Dict[str, Any]] = Field(default_factory=list)
+    routing_path: list[str] = Field(default_factory=list)
+    repair_events: list[dict[str, Any]] = Field(default_factory=list)
+    human_interventions: list[dict[str, Any]] = Field(default_factory=list)
 
-    final_candidates: List[Dict[str, Any]] = Field(default_factory=list)
-    pareto_front: List[Dict[str, Any]] = Field(default_factory=list)
+    final_candidates: list[dict[str, Any]] = Field(default_factory=list)
+    pareto_front: list[dict[str, Any]] = Field(default_factory=list)
 
-    llm_model: Optional[str] = None
+    llm_model: str | None = None
     llm_calls: int = 0
     llm_failures: int = 0
 
-    scientific_tool_versions: Dict[str, str] = Field(default_factory=dict)
-    warnings: List[str] = Field(default_factory=list)
-    errors: List[str] = Field(default_factory=list)
+    scientific_tool_versions: dict[str, str] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
 
     runtime_seconds: float = 0.0
     reproducibility_hash: str = ""
@@ -73,8 +73,8 @@ class AgentRunRecord(BaseModel):
 
 
 # ── version fingerprint ───────────────────────────────────────────────
-def scientific_tool_versions() -> Dict[str, str]:
-    versions: Dict[str, str] = {}
+def scientific_tool_versions() -> dict[str, str]:
+    versions: dict[str, str] = {}
     for module in ("rdkit", "langgraph", "torch", "numpy", "pandas", "scikit-learn"):
         try:
             mod = __import__(module)
@@ -103,14 +103,14 @@ def _as_list(value: Any) -> list:
 
 
 def build_agent_run_record(
-    result: Dict[str, Any],
+    result: dict[str, Any],
     run_id: str,
     user_request: str,
     runtime_s: float,
 ) -> AgentRunRecord:
     """Extract a canonical record from a runtime result (agentic mode)."""
-    state: Dict[str, Any] = result.get("state") or {}
-    summary: Dict[str, Any] = result.get("summary") or {}
+    state: dict[str, Any] = result.get("state") or {}
+    summary: dict[str, Any] = result.get("summary") or {}
 
     # decision log (graph) + trace tool calls
     decision_log = _as_list(state.get("decision_log"))
@@ -137,7 +137,7 @@ def build_agent_run_record(
         or d.get("requires_human")
     ]
 
-    evidence_records: List[Dict[str, Any]] = []
+    evidence_records: list[dict[str, Any]] = []
     for binders in _as_list(state.get("retrieved_binders")):
         evidence_records.append({
             "type": "binder", "source": getattr(binders, "source", "?"),
@@ -221,7 +221,7 @@ def build_agent_run_record(
 
 
 # ── writer ────────────────────────────────────────────────────────────
-def write_run_record(run_dir: Path, record: AgentRunRecord, state: Dict[str, Any], report_text: str = "") -> Path:
+def write_run_record(run_dir: Path, record: AgentRunRecord, state: dict[str, Any], report_text: str = "") -> Path:
     """Write the canonical run artifact set. Returns run.json path."""
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "structures").mkdir(exist_ok=True)

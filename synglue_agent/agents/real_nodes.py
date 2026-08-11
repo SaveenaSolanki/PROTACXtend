@@ -25,7 +25,8 @@ Every node degrades gracefully (records errors, never crashes the graph).
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Dict, List
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger("protacpilot.real_nodes")
 
@@ -38,11 +39,11 @@ _REQUIRED_STATE_KEYS = [
 
 
 # ── helpers ───────────────────────────────────────────────────────────
-def _d(state: Dict[str, Any], key: str, default: Any = None) -> Any:
+def _d(state: dict[str, Any], key: str, default: Any = None) -> Any:
     return state.get(key, default)
 
 
-def _safe(fn, state, error_key: str, default: Dict[str, Any]):
+def _safe(fn, state, error_key: str, default: dict[str, Any]):
     try:
         return fn(state) or {}
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +56,7 @@ def _safe(fn, state, error_key: str, default: Dict[str, Any]):
 
 
 # ── nodes ─────────────────────────────────────────────────────────────
-def _planner(state: Dict[str, Any]) -> Dict[str, Any]:
+def _planner(state: dict[str, Any]) -> dict[str, Any]:
     """Parse the natural-language objective into structured fields."""
     req = _d(state, "user_request", "").lower()
     parsed = {
@@ -78,7 +79,7 @@ def _planner(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"parsed_objective": parsed}
 
 
-def _target(state: Dict[str, Any]) -> Dict[str, Any]:
+def _target(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.binder_agent import TargetBinderRetrievalAgent
     parsed = _d(state, "parsed_objective", {}) or {}
     target = parsed.get("target_name")
@@ -89,7 +90,7 @@ def _target(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"target_record": {"name": target, "chembl_id": chembl_id}}
 
 
-def _binder(state: Dict[str, Any]) -> Dict[str, Any]:
+def _binder(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.binder_agent import TargetBinderRetrievalAgent
     parsed = _d(state, "parsed_objective", {}) or {}
     target = parsed.get("target_name")
@@ -105,13 +106,14 @@ def _binder(state: Dict[str, Any]) -> Dict[str, Any]:
             "evidence": {"binder": {"status": "chembl", "count": len(binders)}}}
 
 
-def _warhead(state: Dict[str, Any]) -> Dict[str, Any]:
+def _warhead(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
     toolbox = ProtacDesignToolbox()
     binders = _d(state, "retrieved_binders", []) or []
     user_warhead = ""
     req = _d(state, "user_request", "")
     import re as _re
+
     from rdkit import Chem as _Chem
     m = _re.search(r"(?:warhead|binder)\s+(?:smiles\s+)?([A-Za-z0-9@+\-\[\]()=#.%\\/]+)", req)
     if m:
@@ -133,7 +135,7 @@ def _warhead(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"selected_warheads": [w.model_dump() if hasattr(w, "model_dump") else w for w in wh]}
 
 
-def _e3(state: Dict[str, Any]) -> Dict[str, Any]:
+def _e3(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
     parsed = _d(state, "parsed_objective", {}) or {}
     toolbox = ProtacDesignToolbox()
@@ -144,19 +146,19 @@ def _e3(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"selected_e3_ligands": [l.model_dump() if hasattr(l, "model_dump") else l for l in ligs]}
 
 
-def _linker(state: Dict[str, Any]) -> Dict[str, Any]:
+def _linker(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.linker_generator import generate_linkers_for_pair
     linkers = generate_linkers_for_pair(max_linkers=24)
     return {"generated_linkers": [l.model_dump() if hasattr(l, "model_dump") else l for l in linkers]}
 
 
-def _construction(state: Dict[str, Any]) -> Dict[str, Any]:
+def _construction(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
     toolbox = ProtacDesignToolbox()
     warheads = _d(state, "selected_warheads", []) or []
     linkers = _d(state, "generated_linkers", []) or []
     e3s = _d(state, "selected_e3_ligands", []) or []
-    candidates: List[Dict[str, Any]] = []
+    candidates: list[dict[str, Any]] = []
     seen_smiles: set = set()
 
     def with_marker(smiles: str, marker: str, suffix: bool = False) -> str:
@@ -195,7 +197,7 @@ def _construction(state: Dict[str, Any]) -> Dict[str, Any]:
             "evidence": {"construction": {"status": "ok", "attempts": len(candidates)}}}
 
 
-def _validation(state: Dict[str, Any]) -> Dict[str, Any]:
+def _validation(state: dict[str, Any]) -> dict[str, Any]:
     from rdkit import Chem
     attempts = _d(state, "assembled_candidates", []) or []
     from rdkit.Chem.rdMolDescriptors import CalcNumRotatableBonds
@@ -211,7 +213,7 @@ def _validation(state: Dict[str, Any]) -> Dict[str, Any]:
             "evidence": {"validation": {"status": "ok", "valid": len(valid), "total": len(attempts)}}}
 
 
-def _ternary(state: Dict[str, Any]) -> Dict[str, Any]:
+def _ternary(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.ternary_stage import run_ternary_ensemble
     candidates = _d(state, "valid_candidates", []) or []
     target = _d(state, "target_info", {}) or {}
@@ -250,12 +252,12 @@ def _ternary(state: Dict[str, Any]) -> Dict[str, Any]:
     }}
 
 
-def _degradation(state: Dict[str, Any]) -> Dict[str, Any]:
+def _degradation(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.degradation_node import degradation_prediction_node
     return degradation_prediction_node(state)  # real chemprop, uncertainty-aware
 
 
-def _admet(state: Dict[str, Any]) -> Dict[str, Any]:
+def _admet(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.admet_integration import predict_admet_properties
     candidates = _d(state, "valid_candidates", []) or []
     preds = []
@@ -281,9 +283,9 @@ def _admet(state: Dict[str, Any]) -> Dict[str, Any]:
             "evidence": {"admet": {"status": "ok", "count": len(preds)}}}
 
 
-def _novelty(state: Dict[str, Any]) -> Dict[str, Any]:
-    from synglue_agent.tools.novelty_checker import check_novelty
+def _novelty(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.backend.schemas import CandidateRecord
+    from synglue_agent.tools.novelty_checker import check_novelty
     candidates = _d(state, "valid_candidates", []) or []
     recs = [CandidateRecord(candidate_id=c.get("candidate_id", ""), full_protac_smiles=c.get("full_protac_smiles", "")) for c in candidates]
     try:
@@ -293,7 +295,7 @@ def _novelty(state: Dict[str, Any]) -> Dict[str, Any]:
         return {"novelty_results": [], "warnings": [f"novelty check degraded: {exc}"]}
 
 
-def _ranking(state: Dict[str, Any]) -> Dict[str, Any]:
+def _ranking(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.pareto_ranking import pareto_rank_candidates
     candidates = _d(state, "valid_candidates", []) or []
     if not candidates:
@@ -328,7 +330,7 @@ def _ranking(state: Dict[str, Any]) -> Dict[str, Any]:
         return {"ranking_results": [], "final_ranked_candidates": scored, "warnings": [f"ranking degraded: {exc}"]}
 
 
-def _report(state: Dict[str, Any]) -> Dict[str, Any]:
+def _report(state: dict[str, Any]) -> dict[str, Any]:
     candidates = _d(state, "final_ranked_candidates", []) or _d(state, "valid_candidates", []) or []
     lines = [
         "# Agentic PROTAC Run Report",
@@ -346,7 +348,7 @@ def _report(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"report": "\n".join(lines)}
 
 
-def real_nodes() -> Dict[str, Callable]:
+def real_nodes() -> dict[str, Callable]:
     """Map node name → real implementation for the agentic graph."""
     return {
         "supervisor": lambda s: {"status": "ok"},

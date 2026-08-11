@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from synglue_agent.agents.runtime import run_protacpilot  # noqa: E402
+from synglue_agent.agents.runtime import run_protacpilot
 
 SCENARIOS = [
     {
@@ -123,7 +123,7 @@ def run_scenario(scenario: dict, live: bool) -> dict:
             )
             ok = True
             if scenario["expect"] == "positive_control" and not (result.get("state") or {}).get("valid_candidates"):
-                print(f"    (positive control produced 0 candidates — retrying once)", flush=True)
+                print("    (positive control produced 0 candidates — retrying once)", flush=True)
                 continue
             break
         except Exception as exc:  # noqa: BLE001

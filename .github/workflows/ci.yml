@@ -61,7 +61,8 @@ jobs:
           PROTACPILOT_REPOS="TERNIFY,degradomap,Bellerophon,SE3-protacs,PROTAC-Degradation-Predictor" \
             ./scripts/bootstrap_assets.sh --repos
 
-      - name: Full fast test suite (slow real-tool tests excluded)
+      - name: Full fast test suite (slow + live-network tests excluded; live
+          API tests verified manually, e.g. test_binder_live, patent cross-ref)
         run: |
           python -m pytest synglue_agent/tests/ synglue_agent/agents/test_ternary_stage.py \
-            -m "not slow" -q --timeout 300
+            -m "not slow and not network" -q --timeout 300

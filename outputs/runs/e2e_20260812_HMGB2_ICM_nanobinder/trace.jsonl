@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786528309.0949478, "elapsed_s": 0.0, "run_id": "e2e_20260812_HMGB2_ICM_nanobinder", "meta": {"mode": "agentic", "request": "Design CRBN PROTACs for the HMGB2-ICM system using the ICM nanobinder warhead; verify the ternary hypothesis and gate an"}}
+{"event": "tool_call", "ts": 1786528326.2497845, "elapsed_s": 17.15, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260812_HMGB2_ICM_nanobinder"}, "result_summary": {"status": "needs_human", "n_decisions": "15"}}
+{"event": "run_end", "ts": 1786528326.2498293, "elapsed_s": 17.1549, "status": "needs_human", "summary": {}, "events": 2}

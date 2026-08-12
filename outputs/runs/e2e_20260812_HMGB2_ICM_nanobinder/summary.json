@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260812_HMGB2_ICM_nanobinder",
+  "status": "ok",
+  "runtime_s": 17.15,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260812_HMGB2_ICM_nanobinder/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design CRBN PROTACs for the HMGB2-ICM system using the ICM nanobinder warhead; verify the ternary hypothesis and gate an"
+}

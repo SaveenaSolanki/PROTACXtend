@@ -1,10 +1,10 @@
 {
   "run_id": "trace_rt",
-  "timestamp": "2026-08-11T13:47:50.384405Z",
+  "timestamp": "2026-08-12T10:02:33.003812Z",
   "user_objective": "design BRD4 PROTAC",
   "parsed_objective": {
     "target_name": "BRD4",
-    "e3": null,
+    "e3": "CRBN",
     "objectives": [],
     "raw_request": "design BRD4 PROTAC"
   },
@@ -59,6 +59,24 @@
   "candidates_generated": 16,
   "candidates_valid": 16,
   "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "ranking",
+    "report",
     "supervisor",
     "planner",
     "safety",
@@ -240,9 +258,10 @@
     "aizynthfinder": "?"
   },
   "warnings": [
+    "ranking degraded: 'ParetoResult' object has no attribute 'rank'",
     "ranking degraded: 'ParetoResult' object has no attribute 'rank'"
   ],
   "errors": [],
-  "runtime_seconds": 56.89,
-  "reproducibility_hash": "51acd8ea0a87f96d219596407dfb1d9ec1bb9ec506d6643f7188f43d7bc3a418"
+  "runtime_seconds": 50.62,
+  "reproducibility_hash": "8414e118b13f2670ff83b9bf918bafb2532373235cf0ca46087f404112127217"
 }

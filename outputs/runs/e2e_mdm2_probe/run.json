@@ -1,0 +1,157 @@
+{
+  "run_id": "e2e_mdm2_probe",
+  "timestamp": "2026-08-12T09:48:48.224639Z",
+  "user_objective": "Design MDM2-recruiting PROTAC candidates against p53 using the MDM2 E3 ligase, prioritizing cellular degradation.",
+  "parsed_objective": {
+    "target_name": null,
+    "e3": "MDM2",
+    "objectives": [
+      "cellular_degradation"
+    ],
+    "raw_request": "Design MDM2-recruiting PROTAC candidates against p53 using the MDM2 E3 ligase, prioritizing cellular degradation."
+  },
+  "execution_plan": [
+    {}
+  ],
+  "tools_requested": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "RepairController",
+    "HumanApprovalGate"
+  ],
+  "tools_executed": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "RepairController",
+    "HumanApprovalGate"
+  ],
+  "evidence_records": [
+    {
+      "type": "evidence_validation",
+      "status": "ok",
+      "valid": 0,
+      "total": 0
+    }
+  ],
+  "candidates_generated": 0,
+  "candidates_valid": 0,
+  "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "RepairController",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "RepairController",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "RepairController",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "HumanApprovalGate"
+  ],
+  "repair_events": [
+    {
+      "node": "RepairController",
+      "decision_type": "repair",
+      "reason_codes": [
+        "RETRY_ALTERNATE_LINKER"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.6,
+      "next_proposed_node": "linker_generation",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "RepairController",
+      "decision_type": "repair",
+      "reason_codes": [
+        "RETRY_ALTERNATE_LINKER"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.6,
+      "next_proposed_node": "linker_generation",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "RepairController",
+      "decision_type": "repair",
+      "reason_codes": [
+        "RETRY_ALTERNATE_LINKER"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.6,
+      "next_proposed_node": "linker_generation",
+      "elapsed_s": 0.001
+    }
+  ],
+  "human_interventions": [
+    {
+      "node": "HumanApprovalGate",
+      "decision_type": "escalate",
+      "reason_codes": [
+        "ESCALATE_PRE_SYNTHESIS"
+      ],
+      "evidence_refs": [],
+      "tool_version": "ProtacPilot:v0.2",
+      "confidence": 0.0,
+      "next_proposed_node": "report",
+      "elapsed_s": 0.001
+    }
+  ],
+  "final_candidates": [],
+  "pareto_front": [],
+  "llm_model": null,
+  "llm_calls": 0,
+  "llm_failures": 0,
+  "scientific_tool_versions": {
+    "rdkit": "2026.03.5",
+    "langgraph": "?",
+    "torch": "2.6.0+cu126",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "chemprop": "2.3.0",
+    "aizynthfinder": "?"
+  },
+  "warnings": [
+    "no target name parsed",
+    "no target for binder retrieval",
+    "RepairController: repair ternary → linker_generation (attempt 1/3)",
+    "RepairController: repair ternary → linker_generation (attempt 2/3)",
+    "RepairController: repair ternary → linker_generation (attempt 3/3)",
+    "HumanApprovalGate: paused for human review. 0 candidate(s) escalated."
+  ],
+  "errors": [],
+  "runtime_seconds": 0.83,
+  "reproducibility_hash": "2d1f35e5f263ec812c1b1da718c711e5917f8447bb5e22bdbfc673cead0c34f1"
+}

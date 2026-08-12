@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786528266.1940498, "elapsed_s": 0.0, "run_id": "e2e_20260812_BTK_VHL", "meta": {"mode": "agentic", "request": "Design VHL-recruiting PROTAC candidates against BTK, prioritizing cellular degradation potency and avoiding known warhea"}}
+{"event": "tool_call", "ts": 1786528285.4399211, "elapsed_s": 19.24, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260812_BTK_VHL"}, "result_summary": {"status": "needs_human", "n_decisions": "15"}}
+{"event": "run_end", "ts": 1786528285.4399636, "elapsed_s": 19.2459, "status": "needs_human", "summary": {}, "events": 2}

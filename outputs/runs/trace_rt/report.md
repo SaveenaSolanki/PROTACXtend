@@ -11,4 +11,4 @@ Candidates valid: 16
 4. cand_3 — Cc1c(CCCCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N
 5. cand_4 — Cc1c(CCCOCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H
 
-Warnings: 1 | Errors: 0
+Warnings: 2 | Errors: 0

@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786528122.2642467, "elapsed_s": 0.0, "run_id": "e2e_mdm2_probe", "meta": {"mode": "agentic", "request": "Design MDM2-recruiting PROTAC candidates against p53 using the MDM2 E3 ligase, prioritizing cellular degradation."}}
+{"event": "tool_call", "ts": 1786528128.226306, "elapsed_s": 0.83, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_mdm2_probe"}, "result_summary": {"status": "needs_human", "n_decisions": "28"}}
+{"event": "run_end", "ts": 1786528128.2263484, "elapsed_s": 5.9621, "status": "needs_human", "summary": {}, "events": 2}

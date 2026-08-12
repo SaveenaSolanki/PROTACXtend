@@ -143,3 +143,21 @@ The agentic graph previously ran **stub nodes** by default (the benchmark's
 via `real_nodes.py`; canonical `AgentRunRecord` written per run; 5-scenario E2E
 suite passes (BRD4 full-chain, BTK/KRAS/HMGB2 gated on low-confidence evidence
 as designed, impossible input safe-fails). See CHANGELOG 2026-08-11.
+
+## 2026-08-12 addendum — E3 ligase expansion + thin-agent notes
+
+- E3 selection was limited to CRBN/VHL despite 600+ E3 ligases in biology and
+  23 E3 groups in PROTAC-DB. Fixed: multi-E3 library (114 rows / 19 groups,
+  cited ligands with DOI+UniProt+activity provenance), arbitrary-E3 parsing
+  from prompts, e2e scenario 6 (MDM2/BRD4) passes. PROTAC-DB itself contains
+  23 E3 annotations (CRBN 10862, VHL 3947, cIAP1 152, MDM2 87, DCAF11 86,
+  RNF126 62, KLHL20 54, XIAP 49, DCAF16 32, KEAP1 12, AhR 9, FEM1B 9, SKP1 8,
+  DCAF15 5, RNF114 4 …).
+- LLM gating evidence: 17/17 live role-validation cases with 0 safety
+  violations (unsupported tools, SMILES edits, numerical hallucination);
+  every LLM decision passes deterministic validators; no raw chain-of-thought
+  stored. This is verified, not aspirational.
+- Thin-agent honesty: patent coverage = PubChem PUG-View (keyless); SureChEMBL
+  REST is retired (redirects to a web UI); BindingDB REST requires an API key
+  (`BINDINGDB_API_KEY`); DrugBank is licensed. These are documented gaps, not
+  hidden ones.

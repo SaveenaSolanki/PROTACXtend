@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260812_BRD4_known",
+  "status": "ok",
+  "runtime_s": 99.65,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260812_BRD4_known/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"
+}

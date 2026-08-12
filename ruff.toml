@@ -17,5 +17,6 @@ ignore = [
     "RUF100",
     "E402",
     "E741",
+    "UP035",  # legacy typing.Dict/List in protac_toolbox kept for compatibility
     "F401",
 ]

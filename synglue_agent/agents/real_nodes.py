@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Optional
 
 logger = logging.getLogger("protacpilot.real_nodes")
 
@@ -135,15 +135,42 @@ def _warhead(state: dict[str, Any]) -> dict[str, Any]:
     return {"selected_warheads": [w.model_dump() if hasattr(w, "model_dump") else w for w in wh]}
 
 
+def _detect_e3_from_prompt(req: str) -> Optional[str]:
+    """Pull an E3 name from natural language: 'MDM2-recruiting', 'recruit KEAP1', etc."""
+    import re as _re
+
+    from synglue_agent.tools.protac_toolbox import E3_ALIASES
+    text = req.lower()
+    m = _re.search(r"([a-z0-9]+)[- ]?recruit(?:ing)?\s+(?:the\s+)?([a-z0-9]+)", text)
+    if m:
+        for token in (m.group(1), m.group(2)):
+            norm = E3_ALIASES.get(token, "")
+            if norm:
+                return norm
+    for alias, canon in sorted(E3_ALIASES.items(), key=lambda kv: -len(kv[0])):
+        if _re.search(rf"\b{_re.escape(alias)}\b", text):
+            return canon
+    return None
+
+
 def _e3(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
     parsed = _d(state, "parsed_objective", {}) or {}
     toolbox = ProtacDesignToolbox()
+    e3_requested = parsed.get("e3") or _detect_e3_from_prompt(_d(state, "user_request", ""))
     try:
-        ligs = toolbox.select_e3_ligands(e3_ligase=parsed.get("e3"), max_ligands_per_e3=3)
+        ligs = toolbox.select_e3_ligands(e3_ligase=e3_requested, max_ligands_per_e3=3)
     except Exception:
         ligs = []
-    return {"selected_e3_ligands": [l.model_dump() if hasattr(l, "model_dump") else l for l in ligs]}
+    if not ligs:
+        return {"selected_e3_ligands": [],
+                "evidence": {"e3": {"status": "no_ligands", "requested": e3_requested}},
+                "warnings": [f"no E3 ligand in library for {e3_requested}; defaulting to CRBN"],
+                "parsed_objective": {**(parsed or {}), "e3": "CRBN"}}
+    return {"selected_e3_ligands": [l.model_dump() if hasattr(l, "model_dump") else l for l in ligs],
+            "evidence": {"e3": {"status": "ok", "requested": e3_requested, "count": len(ligs)},
+                         "e3_ligands": [l.provenance.get("article_doi", "") for l in ligs if l.provenance.get("article_doi")]},
+            "parsed_objective": {**(parsed or {}), "e3": e3_requested or "CRBN"}}
 
 
 def _linker(state: dict[str, Any]) -> dict[str, Any]:

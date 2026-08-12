@@ -14,8 +14,9 @@ import math
 import re
 import time
 from collections import defaultdict
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from synglue_agent.backend.config import (
     DATA_DIR,
@@ -25,6 +26,21 @@ from synglue_agent.backend.config import (
     WORKFLOW_LOG_DIR,
     ensure_directories,
 )
+
+E3_ALIASES = {
+    "crbn": "CRBN", "cereblon": "CRBN",
+    "vhl": "VHL", "pvh1": "VHL", "vonhippellindau": "VHL",
+    "ciap1": "cIAP1", "birc2": "cIAP1", "iap1": "cIAP1",
+    "ciap2": "cIAP2", "birc3": "cIAP2",
+    "xiap": "XIAP", "birc4": "XIAP", "iap": "IAP",
+    "mdm2": "MDM2", "hdm2": "MDM2",
+    "dcaf15": "DCAF15", "dcaf16": "DCAF16", "dcaf11": "DCAF11", "dcaf1": "DCAF1",
+    "keap1": "KEAP1",
+    "rnf114": "RNF114", "znf313": "RNF114", "rnf4": "RNF4", "rnf126": "RNF126",
+    "klhl20": "KLHL20", "klhdc2": "KLHDC2",
+    "fem1b": "FEM1B", "fbxo22": "FBXO22", "ahr": "AhR", "skp1": "SKP1",
+}
+
 from synglue_agent.backend.schemas import (
     ADMETPrediction,
     AgentTrace,
@@ -49,14 +65,14 @@ from synglue_agent.backend.schemas import (
 )
 from synglue_agent.tools.chemistry_core import (
     analyze_protac_like_properties,
-    compute_descriptors as compute_core_descriptors,
     detect_attachment_points,
 )
-
+from synglue_agent.tools.chemistry_core import (
+    compute_descriptors as compute_core_descriptors,
+)
 
 try:  # pragma: no cover - optional scientific dependency.
-    from rdkit import Chem
-    from rdkit import rdBase
+    from rdkit import Chem, rdBase
     from rdkit.Chem import AllChem, Crippen, Descriptors, Lipinski, rdMolDescriptors
 
     RDKIT_AVAILABLE = True
@@ -94,7 +110,7 @@ def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     return max(low, min(high, value))
 
 
-def _norm_name(value: Optional[str]) -> str:
+def _norm_name(value: str | None) -> str:
     return (value or "").strip().upper()
 
 
@@ -130,29 +146,29 @@ class ProtacDesignToolbox:
     # ------------------------------------------------------------------
     # Data loading
     # ------------------------------------------------------------------
-    def load_table(self, filename: str) -> List[Dict[str, str]]:
+    def load_table(self, filename: str) -> list[dict[str, str]]:
         path = self.data_dir / filename
         if not path.exists():
             return []
         with path.open("r", newline="", encoding="utf-8") as handle:
             return [dict(row) for row in csv.DictReader(handle)]
 
-    def load_curated_targets(self) -> List[Dict[str, str]]:
+    def load_curated_targets(self) -> list[dict[str, str]]:
         return self.load_table("curated_targets.csv")
 
-    def load_curated_warheads(self) -> List[Dict[str, str]]:
+    def load_curated_warheads(self) -> list[dict[str, str]]:
         return self.load_table("curated_warheads.csv")
 
-    def load_external_warhead_seed(self) -> List[Dict[str, str]]:
+    def load_external_warhead_seed(self) -> list[dict[str, str]]:
         return self.load_table("warhead_seed_metaboglue_gold.csv")
 
-    def load_curated_e3_ligands(self) -> List[Dict[str, str]]:
+    def load_curated_e3_ligands(self) -> list[dict[str, str]]:
         return self.load_table("curated_e3_ligands.csv")
 
-    def load_curated_linkers(self) -> List[Dict[str, str]]:
+    def load_curated_linkers(self) -> list[dict[str, str]]:
         return self.load_table("curated_linkers.csv")
 
-    def load_known_protacs(self) -> List[Dict[str, str]]:
+    def load_known_protacs(self) -> list[dict[str, str]]:
         rows = self.load_table("known_protac_smiles.csv")
         if rows:
             return rows
@@ -204,7 +220,7 @@ class ProtacDesignToolbox:
         if count_match:
             candidate_count = max(1, min(500, int(count_match.group(1))))
 
-        admet_constraints: Dict[str, Any] = {}
+        admet_constraints: dict[str, Any] = {}
         if "HERG" in upper:
             admet_constraints["avoid_hERG"] = True
         if "DILI" in upper:
@@ -258,7 +274,7 @@ class ProtacDesignToolbox:
     # ------------------------------------------------------------------
     # Target and binder tools
     # ------------------------------------------------------------------
-    def resolve_target(self, target_name: str, uniprot_id: Optional[str] = None) -> TargetRecord:
+    def resolve_target(self, target_name: str, uniprot_id: str | None = None) -> TargetRecord:
         query = _norm_name(uniprot_id or target_name)
         targets = self.load_curated_targets()
         target_rows = []
@@ -271,7 +287,9 @@ class ProtacDesignToolbox:
         uniprot_error = None
         if query:
             try:
-                from synglue_agent.backend.uniprot_client import resolve_target_via_uniprot
+                from synglue_agent.backend.uniprot_client import (
+                    resolve_target_via_uniprot,
+                )
 
                 api_record, api_result = resolve_target_via_uniprot(target_name, uniprot_id, timeout=4.0)
                 if api_record is not None:
@@ -288,7 +306,10 @@ class ProtacDesignToolbox:
 
         if not target_rows:
             try:
-                from synglue_agent.tools.online_ligand_miner import resolve_target_from_chembl, retrieve_gcoupler_biology_context
+                from synglue_agent.tools.online_ligand_miner import (
+                    resolve_target_from_chembl,
+                    retrieve_gcoupler_biology_context,
+                )
 
                 online_record, online_warnings = resolve_target_from_chembl(target_name)
                 if online_record is not None:
@@ -354,10 +375,10 @@ class ProtacDesignToolbox:
         target_record: TargetRecord,
         potency_threshold_nM: float = 1000.0,
         activity_types: Sequence[str] = ("IC50", "Ki", "Kd", "EC50"),
-    ) -> List[BinderRecord]:
+    ) -> list[BinderRecord]:
         rows = self.load_curated_warheads()
         target_values = {_norm_name(target_record.target_name), _norm_name(target_record.gene_symbol), _norm_name(target_record.uniprot_id)}
-        binders: List[BinderRecord] = []
+        binders: list[BinderRecord] = []
         for row in rows:
             if _norm_name(row.get("target")) not in target_values:
                 continue
@@ -390,13 +411,13 @@ class ProtacDesignToolbox:
         target_record: TargetRecord,
         potency_threshold_nM: float,
         activity_types: Sequence[str],
-    ) -> List[BinderRecord]:
+    ) -> list[BinderRecord]:
         rows = self.load_external_warhead_seed()
         if not rows:
             return []
         query_values = {_norm_name(target_record.uniprot_id), _norm_name(target_record.gene_symbol), _norm_name(target_record.target_name)}
         allowed_types = {item.upper() for item in activity_types}
-        binders: List[BinderRecord] = []
+        binders: list[BinderRecord] = []
         seen: set[str] = set()
         for row in rows:
             uniprot = _norm_name(row.get("uniprot_id"))
@@ -432,7 +453,7 @@ class ProtacDesignToolbox:
             )
         return binders
 
-    def mine_external_binders(self, target_record: TargetRecord) -> Tuple[List[BinderRecord], List[str]]:
+    def mine_external_binders(self, target_record: TargetRecord) -> tuple[list[BinderRecord], list[str]]:
         try:
             from synglue_agent.tools.online_ligand_miner import (
                 load_local_drugbank_binders,
@@ -442,8 +463,8 @@ class ProtacDesignToolbox:
         except Exception as exc:
             return [], [f"External binder-mining tools are unavailable: {exc}"]
 
-        binders: List[BinderRecord] = []
-        warnings: List[str] = []
+        binders: list[BinderRecord] = []
+        warnings: list[str] = []
         drugbank_binders, drugbank_warnings = load_local_drugbank_binders(target_record)
         chembl_binders, chembl_warnings = retrieve_chembl_bioactive_ligands(target_record)
         binders.extend(drugbank_binders)
@@ -472,11 +493,11 @@ class ProtacDesignToolbox:
     # ------------------------------------------------------------------
     def select_warheads(
         self,
-        target_record: Optional[TargetRecord],
+        target_record: TargetRecord | None,
         binders: Sequence[BinderRecord],
-        user_warhead_smiles: Optional[str] = None,
+        user_warhead_smiles: str | None = None,
         max_warheads: int = 6,
-    ) -> List[WarheadRecord]:
+    ) -> list[WarheadRecord]:
         if user_warhead_smiles:
             validity = self.validate_smiles(user_warhead_smiles)
             return [
@@ -495,7 +516,7 @@ class ProtacDesignToolbox:
             ]
 
         rows_by_name = {row.get("name", ""): row for row in self.load_curated_warheads()}
-        warheads: List[WarheadRecord] = []
+        warheads: list[WarheadRecord] = []
         for binder in binders:
             row = rows_by_name.get(binder.name, {})
             needs_exit_vector_hypothesis = bool(binder.metadata.get("needs_exit_vector_hypothesis"))
@@ -530,17 +551,17 @@ class ProtacDesignToolbox:
         warheads.sort(key=lambda item: item.potency_score + item.derivatization_score + item.exit_vector_confidence, reverse=True)
         return warheads[:max_warheads]
 
-    def score_warhead_potency(self, activity_nM: Optional[float]) -> float:
+    def score_warhead_potency(self, activity_nM: float | None) -> float:
         if activity_nM is None:
             return 0.45
         return _clamp((7.0 - math.log10(max(activity_nM, 1e-6))) / 4.0)
 
     def select_e3_ligands(
         self,
-        e3_ligase: Optional[str] = None,
-        e3_ligand_smiles: Optional[str] = None,
+        e3_ligase: str | None = None,
+        e3_ligand_smiles: str | None = None,
         max_ligands_per_e3: int = 3,
-    ) -> List[E3LigandRecord]:
+    ) -> list[E3LigandRecord]:
         if e3_ligand_smiles:
             ligase = e3_ligase or "user_specified"
             return [
@@ -559,7 +580,7 @@ class ProtacDesignToolbox:
 
         requested = [_norm_name(e3_ligase)] if e3_ligase else DEFAULT_E3_LIGASES
         rows = [row for row in self.load_curated_e3_ligands() if _norm_name(row.get("e3_ligase")) in requested]
-        grouped: Dict[str, List[E3LigandRecord]] = defaultdict(list)
+        grouped: dict[str, list[E3LigandRecord]] = defaultdict(list)
         for row in rows:
             ligand = E3LigandRecord(
                 name=row.get("name", ""),
@@ -571,19 +592,25 @@ class ProtacDesignToolbox:
                 stereochemistry_valid=row.get("stereochemistry_valid", "true").lower() != "false",
                 source_confidence=_safe_float(row.get("source_confidence"), 0.75),
                 diversity_score=_safe_float(row.get("diversity_score"), 0.5),
-                provenance={"known_degrader_usage": row.get("known_degrader_usage", "")},
+                provenance={
+                    "known_degrader_usage": row.get("known_degrader_usage", ""),
+                    "article_doi": row.get("article_doi", ""),
+                    "uniprot": row.get("uniprot", ""),
+                    "activity_nM": row.get("activity_nM", ""),
+                    "attachment_point": row.get("attachment_point", "baked-in marker"),
+                },
             )
             grouped[_norm_name(ligand.e3_ligase)].append(ligand)
 
-        selected: List[E3LigandRecord] = []
+        selected: list[E3LigandRecord] = []
         for ligase in requested:
             ligands = grouped.get(ligase, [])
             ligands.sort(key=lambda item: item.exit_vector_confidence + item.source_confidence + item.diversity_score, reverse=True)
             selected.extend(ligands[:max_ligands_per_e3])
         return selected
 
-    def detect_exit_vectors(self, molecules: Sequence[Any], role: str) -> List[ExitVectorRecord]:
-        vectors: List[ExitVectorRecord] = []
+    def detect_exit_vectors(self, molecules: Sequence[Any], role: str) -> list[ExitVectorRecord]:
+        vectors: list[ExitVectorRecord] = []
         for molecule in molecules:
             smiles = getattr(molecule, "smiles", "")
             name = getattr(molecule, "name", "molecule")
@@ -622,13 +649,13 @@ class ProtacDesignToolbox:
     # ------------------------------------------------------------------
     def generate_linkers(
         self,
-        linker_types: Optional[Sequence[str]] = None,
-        length_range: Tuple[int, int] = (3, 14),
+        linker_types: Sequence[str] | None = None,
+        length_range: tuple[int, int] = (3, 14),
         max_linkers: int = 64,
-    ) -> List[LinkerRecord]:
+    ) -> list[LinkerRecord]:
         requested = {_norm_name(item) for item in (linker_types or DEFAULT_LINKER_TYPES)}
         rows = self.load_curated_linkers()
-        linkers: List[LinkerRecord] = []
+        linkers: list[LinkerRecord] = []
         for row in rows:
             linker_class = row.get("linker_class", "")
             if requested and _norm_name(linker_class) not in requested:
@@ -658,7 +685,7 @@ class ProtacDesignToolbox:
         linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
         return linkers[:max_linkers]
 
-    def generate_rule_based_linkers(self, linker_types: Sequence[str], max_linkers: int = 32) -> List[LinkerRecord]:
+    def generate_rule_based_linkers(self, linker_types: Sequence[str], max_linkers: int = 32) -> list[LinkerRecord]:
         patterns = {
             "PEG": ["[*:1]CCOCC[*:2]", "[*:1]CCOCCOCC[*:2]", "[*:1]CCOCCOCCOCC[*:2]"],
             "ALKYL": ["[*:1]CCC[*:2]", "[*:1]CCCC[*:2]", "[*:1]CCCCC[*:2]"],
@@ -667,7 +694,7 @@ class ProtacDesignToolbox:
             "AMIDE": ["[*:1]CCNC(=O)CC[*:2]"],
             "MIXED POLAR": ["[*:1]CCOCCNC(=O)CC[*:2]"],
         }
-        linkers: List[LinkerRecord] = []
+        linkers: list[LinkerRecord] = []
         for linker_type in linker_types:
             for idx, smiles in enumerate(patterns.get(_norm_name(linker_type), []), start=1):
                 props = self.compute_basic_properties(smiles)
@@ -690,9 +717,9 @@ class ProtacDesignToolbox:
                 )
         return linkers[:max_linkers]
 
-    def remove_duplicate_linkers(self, linkers: Sequence[LinkerRecord]) -> List[LinkerRecord]:
+    def remove_duplicate_linkers(self, linkers: Sequence[LinkerRecord]) -> list[LinkerRecord]:
         seen = set()
-        unique: List[LinkerRecord] = []
+        unique: list[LinkerRecord] = []
         for linker in linkers:
             key = self.canonicalize_smiles(linker.smiles)
             if key in seen:
@@ -701,7 +728,7 @@ class ProtacDesignToolbox:
             unique.append(linker)
         return unique
 
-    def state_of_the_art_tool_catalog(self) -> List[Dict[str, str]]:
+    def state_of_the_art_tool_catalog(self) -> list[dict[str, str]]:
         from synglue_agent.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox
 
         return ProtacAutopilotToolbox(self).catalog_as_rows()
@@ -711,18 +738,18 @@ class ProtacDesignToolbox:
         warheads: Sequence[WarheadRecord],
         e3_ligands: Sequence[E3LigandRecord],
         linkers: Sequence[LinkerRecord],
-        target_record: Optional[TargetRecord],
+        target_record: TargetRecord | None,
         candidate_count: int = 50,
         use_retrosynthesis_filtering: bool = False,
-    ) -> Tuple[List[ConstructionAttempt], List[CandidateRecord]]:
+    ) -> tuple[list[ConstructionAttempt], list[CandidateRecord]]:
         strategies = [
             ("curated_template", "amide_or_ether_coupling"),
             ("reaction_smarts", "generic_single_bond_join"),
             ("known_linker_grafting", "known_linker_graft"),
             ("matched_linker_replacement", "component_matched_replacement"),
         ]
-        attempts: List[ConstructionAttempt] = []
-        candidates: List[CandidateRecord] = []
+        attempts: list[ConstructionAttempt] = []
+        candidates: list[CandidateRecord] = []
         seen_smiles = set()
         target = target_record.gene_symbol if target_record else "target"
 
@@ -810,7 +837,7 @@ class ProtacDesignToolbox:
                             break
         return attempts, candidates
 
-    def assemble_components(self, warhead_smiles: str, linker_smiles: str, e3_smiles: str) -> Tuple[Optional[str], str]:
+    def assemble_components(self, warhead_smiles: str, linker_smiles: str, e3_smiles: str) -> tuple[str | None, str]:
         if not all(_has_attachment(item) for item in [warhead_smiles, linker_smiles, e3_smiles]):
             return None, "missing_attachment_marker"
         if not self.rdkit_available:
@@ -829,7 +856,7 @@ class ProtacDesignToolbox:
         except Exception as exc:  # pragma: no cover - depends on RDKit.
             return None, f"rdkit_assembly_failed:{exc}"
 
-    def _find_dummy_idx(self, mol: Any, atom_map: int) -> Optional[int]:  # pragma: no cover - depends on RDKit.
+    def _find_dummy_idx(self, mol: Any, atom_map: int) -> int | None:  # pragma: no cover - depends on RDKit.
         for atom in mol.GetAtoms():
             if atom.GetAtomicNum() == 0 and atom.GetAtomMapNum() == atom_map:
                 return atom.GetIdx()
@@ -892,7 +919,7 @@ class ProtacDesignToolbox:
             return smiles
         return Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
 
-    def compute_basic_properties(self, smiles: str) -> Dict[str, Any]:
+    def compute_basic_properties(self, smiles: str) -> dict[str, Any]:
         descriptor = compute_core_descriptors(smiles)
         if descriptor.descriptor_status == "success":
             return {
@@ -938,8 +965,8 @@ class ProtacDesignToolbox:
             "rotatable_bonds": int(rotors),
         }
 
-    def validate_candidates(self, candidates: Sequence[CandidateRecord]) -> List[CandidateRecord]:
-        valid: List[CandidateRecord] = []
+    def validate_candidates(self, candidates: Sequence[CandidateRecord]) -> list[CandidateRecord]:
+        valid: list[CandidateRecord] = []
         for candidate in candidates:
             status = self.validate_smiles(candidate.full_protac_smiles)
             candidate.validity_status = status
@@ -967,9 +994,9 @@ class ProtacDesignToolbox:
                 valid.append(candidate)
         return self.remove_duplicate_candidates(valid)
 
-    def remove_duplicate_candidates(self, candidates: Sequence[CandidateRecord]) -> List[CandidateRecord]:
+    def remove_duplicate_candidates(self, candidates: Sequence[CandidateRecord]) -> list[CandidateRecord]:
         seen = set()
-        unique: List[CandidateRecord] = []
+        unique: list[CandidateRecord] = []
         for candidate in candidates:
             key = candidate.full_protac_smiles
             if key in seen:
@@ -984,11 +1011,11 @@ class ProtacDesignToolbox:
     def predict_degradation(
         self,
         candidates: Sequence[CandidateRecord],
-        target_record: Optional[TargetRecord],
-        cell_line: Optional[str] = None,
-        assay_context: Optional[str] = None,
-    ) -> List[DegradationPrediction]:
-        predictions: List[DegradationPrediction] = []
+        target_record: TargetRecord | None,
+        cell_line: str | None = None,
+        assay_context: str | None = None,
+    ) -> list[DegradationPrediction]:
+        predictions: list[DegradationPrediction] = []
         tractability = target_record.tractability_score if target_record else 0.35
         for candidate in candidates:
             props = self.compute_basic_properties(candidate.full_protac_smiles)
@@ -1026,10 +1053,13 @@ class ProtacDesignToolbox:
             )
         return predictions
 
-    def predict_admet(self, candidates: Sequence[CandidateRecord]) -> List[ADMETPrediction]:
-        from synglue_agent.tools.admet_predictors import calculate_protac_admet_descriptors, predict_admet
+    def predict_admet(self, candidates: Sequence[CandidateRecord]) -> list[ADMETPrediction]:
+        from synglue_agent.tools.admet_predictors import (
+            calculate_protac_admet_descriptors,
+            predict_admet,
+        )
 
-        rows: List[ADMETPrediction] = []
+        rows: list[ADMETPrediction] = []
         for candidate in candidates:
             admet = predict_admet(candidate.full_protac_smiles, backend="auto")
             descriptor_result = calculate_protac_admet_descriptors(candidate.full_protac_smiles)
@@ -1091,7 +1121,7 @@ class ProtacDesignToolbox:
             return "medium"
         return "low"
 
-    def _pubchem_patents(self, smiles: str) -> Tuple[int, List[str]]:
+    def _pubchem_patents(self, smiles: str) -> tuple[int, list[str]]:
         """Live patent cross-reference: SMILES -> PubChem CID -> PUG-View Patents.
 
         Returns (patent_count, patent_ids). Never raises; any failure -> (0, []).
@@ -1120,7 +1150,7 @@ class ProtacDesignToolbox:
             view_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/{cid}/JSON?heading=Patents"
             with urllib.request.urlopen(urllib.request.Request(view_url, headers={"User-Agent": "ProtacPilot/1.0"}), timeout=30) as resp:
                 view = _json.loads(resp.read().decode())
-            patents: List[str] = []
+            patents: list[str] = []
 
             def walk(items):
                 for it in items:
@@ -1145,10 +1175,10 @@ class ProtacDesignToolbox:
             self._patent_cache[cache_key] = (0, [])
             return 0, []
 
-    def check_novelty(self, candidates: Sequence[CandidateRecord]) -> List[NoveltyResult]:
+    def check_novelty(self, candidates: Sequence[CandidateRecord]) -> list[NoveltyResult]:
         known = self.load_known_protacs()
         known_smiles = [(row.get("name", row.get("protac_id", "known")), row.get("smiles", "")) for row in known if row.get("smiles")]
-        results: List[NoveltyResult] = []
+        results: list[NoveltyResult] = []
         for candidate in candidates:
             nearest_name = None
             nearest_sim = 0.0
@@ -1207,7 +1237,7 @@ class ProtacDesignToolbox:
             return 0.0
         return len(grams_a & grams_b) / len(grams_a | grams_b)
 
-    def compute_applicability_domain(self, candidates: Sequence[CandidateRecord]) -> List[ApplicabilityDomainResult]:
+    def compute_applicability_domain(self, candidates: Sequence[CandidateRecord]) -> list[ApplicabilityDomainResult]:
         return [
             ApplicabilityDomainResult(
                 candidate_id=candidate.candidate_id,
@@ -1247,9 +1277,9 @@ class ProtacDesignToolbox:
         admet_predictions: Sequence[ADMETPrediction],
         novelty_results: Sequence[NoveltyResult],
         domain_results: Sequence[ApplicabilityDomainResult],
-        ternary_results: Optional[Sequence[TernaryFeasibilityResult]] = None,
-        ranking_weights: Optional[Dict[str, float]] = None,
-    ) -> List[RankingResult]:
+        ternary_results: Sequence[TernaryFeasibilityResult] | None = None,
+        ranking_weights: dict[str, float] | None = None,
+    ) -> list[RankingResult]:
         weights = dict(DEFAULT_RANKING_WEIGHTS)
         if ranking_weights:
             weights.update(ranking_weights)
@@ -1259,7 +1289,7 @@ class ProtacDesignToolbox:
         domain_by_id = {item.candidate_id: item for item in domain_results}
         ternary_by_id = {item.candidate_id: item for item in (ternary_results or [])}
 
-        rows: List[RankingResult] = []
+        rows: list[RankingResult] = []
         for candidate in candidates:
             deg = degradation_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
             admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction(candidate_id=candidate.candidate_id))
@@ -1320,12 +1350,12 @@ class ProtacDesignToolbox:
             row.tier = self.assign_candidate_tier(row.final_priority_score, row.confidence)
         return rows
 
-    def compute_dc50_score(self, dc50_nM: Optional[float]) -> float:
+    def compute_dc50_score(self, dc50_nM: float | None) -> float:
         if dc50_nM is None or dc50_nM <= 0:
             return 0.0
         return _clamp((4.0 - math.log10(dc50_nM)) / 3.5)
 
-    def compute_dmax_score(self, dmax_percent: Optional[float]) -> float:
+    def compute_dmax_score(self, dmax_percent: float | None) -> float:
         if dmax_percent is None:
             return 0.0
         return _clamp(dmax_percent / 100.0)
@@ -1337,8 +1367,8 @@ class ProtacDesignToolbox:
             return "Tier 2"
         return "Tier 3"
 
-    def cluster_candidates(self, candidates: Sequence[CandidateRecord], threshold: float = 0.62) -> List[DiversityCluster]:
-        clusters: List[List[CandidateRecord]] = []
+    def cluster_candidates(self, candidates: Sequence[CandidateRecord], threshold: float = 0.62) -> list[DiversityCluster]:
+        clusters: list[list[CandidateRecord]] = []
         for candidate in candidates:
             placed = False
             for cluster in clusters:
@@ -1348,7 +1378,7 @@ class ProtacDesignToolbox:
                     break
             if not placed:
                 clusters.append([candidate])
-        result: List[DiversityCluster] = []
+        result: list[DiversityCluster] = []
         total = max(1, len(candidates))
         for idx, cluster in enumerate(clusters, start=1):
             redundancy = max(0.0, (len(cluster) - 1) / total)
@@ -1368,10 +1398,10 @@ class ProtacDesignToolbox:
         candidates: Sequence[CandidateRecord],
         rankings: Sequence[RankingResult],
         max_count: int,
-    ) -> List[CandidateRecord]:
+    ) -> list[CandidateRecord]:
         ranking_by_id = {item.candidate_id: item for item in rankings}
         ordered = sorted(candidates, key=lambda item: ranking_by_id.get(item.candidate_id, RankingResult()).final_priority_score, reverse=True)
-        selected: List[CandidateRecord] = []
+        selected: list[CandidateRecord] = []
         for candidate in ordered:
             if len(selected) >= max_count:
                 break
@@ -1392,12 +1422,12 @@ class ProtacDesignToolbox:
         degradation_predictions: Sequence[DegradationPrediction],
         admet_predictions: Sequence[ADMETPrediction],
         novelty_results: Sequence[NoveltyResult],
-    ) -> List[ReflectionReview]:
+    ) -> list[ReflectionReview]:
         ranking_by_id = {item.candidate_id: item for item in rankings}
         deg_by_id = {item.candidate_id: item for item in degradation_predictions}
         admet_by_id = {item.candidate_id: item for item in admet_predictions}
         novelty_by_id = {item.candidate_id: item for item in novelty_results}
-        reviews: List[ReflectionReview] = []
+        reviews: list[ReflectionReview] = []
         for candidate in candidates:
             ranking = ranking_by_id.get(candidate.candidate_id, RankingResult())
             deg = deg_by_id.get(candidate.candidate_id, DegradationPrediction())
@@ -1435,7 +1465,7 @@ class ProtacDesignToolbox:
             )
         return reviews
 
-    def _smiles_mutate(self, smiles: str, rng=None) -> Optional[str]:
+    def _smiles_mutate(self, smiles: str, rng=None) -> str | None:
         """Single-point SMILES mutation with retries.
 
         Only swaps aliphatic non-ring atoms (C<->N<->O) so sanitization holds;
@@ -1478,7 +1508,7 @@ class ProtacDesignToolbox:
                 continue
         return None
 
-    def _smiles_crossover(self, a: str, b: str, rng=None) -> Optional[str]:
+    def _smiles_crossover(self, a: str, b: str, rng=None) -> str | None:
         """BRICS-fragment crossover: exchange one BRICS fragment between parents.
 
         Uses RDKit's BRICS decomposition (fragments carry dummy attachment
@@ -1528,9 +1558,9 @@ class ProtacDesignToolbox:
         candidates: Sequence[CandidateRecord],
         rankings: Sequence[RankingResult],
         admet_predictions: Sequence[ADMETPrediction],
-        target_record: Optional[TargetRecord],
+        target_record: TargetRecord | None,
         max_new: int = 8,
-    ) -> List[CandidateRecord]:
+    ) -> list[CandidateRecord]:
         if not candidates:
             return []
         admet_by_id = {item.candidate_id: item for item in admet_predictions}
@@ -1544,7 +1574,7 @@ class ProtacDesignToolbox:
             reverse=True,
         )[: max(3, max_new)]
         short_linkers = [item for item in self.generate_linkers(["alkyl", "PEG", "triazole"], max_linkers=12) if item.graph_length <= 7]
-        evolved: List[CandidateRecord] = []
+        evolved: list[CandidateRecord] = []
         seen = {item.full_protac_smiles for item in candidates}
         for parent in parent_pool:
             if len(evolved) >= max_new:
@@ -1615,10 +1645,10 @@ class ProtacDesignToolbox:
     def assess_ternary_feasibility(
         self,
         candidates: Sequence[CandidateRecord],
-        target_record: Optional[TargetRecord],
+        target_record: TargetRecord | None,
         top_n: int = 12,
-    ) -> List[TernaryFeasibilityResult]:
-        results: List[TernaryFeasibilityResult] = []
+    ) -> list[TernaryFeasibilityResult]:
+        results: list[TernaryFeasibilityResult] = []
         structure_available = bool(target_record and (target_record.structures or target_record.alphafold_id))
         for candidate in list(candidates)[:top_n]:
             length = max(1.0, float(candidate.rotatable_bonds or 10) + float(len(candidate.linker_smiles)) / 12.0)
@@ -1651,14 +1681,14 @@ class ProtacDesignToolbox:
         admet_predictions: Sequence[ADMETPrediction],
         novelty_results: Sequence[NoveltyResult],
         ternary_results: Sequence[TernaryFeasibilityResult],
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         ranking_by_id = {item.candidate_id: item for item in rankings}
         deg_by_id = {item.candidate_id: item for item in degradation_predictions}
         admet_by_id = {item.candidate_id: item for item in admet_predictions}
         novelty_by_id = {item.candidate_id: item for item in novelty_results}
         ternary_by_id = {item.candidate_id: item for item in ternary_results}
         ordered = sorted(candidates, key=lambda item: ranking_by_id.get(item.candidate_id, RankingResult()).rank or 999999)
-        rows: List[Dict[str, Any]] = []
+        rows: list[dict[str, Any]] = []
         for candidate in ordered:
             ranking = ranking_by_id.get(candidate.candidate_id, RankingResult(candidate_id=candidate.candidate_id))
             deg = deg_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
@@ -1707,7 +1737,7 @@ class ProtacDesignToolbox:
             )
         return rows
 
-    def generate_agent_workflow_table(self, state: WorkflowState) -> List[Dict[str, Any]]:
+    def generate_agent_workflow_table(self, state: WorkflowState) -> list[dict[str, Any]]:
         target = state.target_record.gene_symbol if state.target_record else state.parsed_objective.target_name
         from synglue_agent.toolkit.registry import get_tool_status
 
@@ -1730,7 +1760,7 @@ class ProtacDesignToolbox:
             processing_time: str,
             real_output: str,
             integration_note: str = "",
-        ) -> Dict[str, Any]:
+        ) -> dict[str, Any]:
             tool_status = status_label(selected_tool)
             if not integration_note and tool_status != "executable":
                 integration_note = "planned integration"
@@ -1885,10 +1915,10 @@ class ProtacDesignToolbox:
             ),
         ]
 
-    def generate_pipeline_status_table(self, state: WorkflowState) -> List[Dict[str, Any]]:
+    def generate_pipeline_status_table(self, state: WorkflowState) -> list[dict[str, Any]]:
         from synglue_agent.toolkit.status import get_tool_status
 
-        def status_for(name: str) -> Dict[str, Any]:
+        def status_for(name: str) -> dict[str, Any]:
             return get_tool_status(name)
 
         def label(name: str, override: str | None = None) -> str:
@@ -2153,7 +2183,7 @@ class ProtacDesignToolbox:
             lines.append("| " + " | ".join(str(row.get(header, "")).replace("|", "/") for header in status_headers) + " |")
         return "\n".join(lines)
 
-    def export_csv(self, rows: Sequence[Dict[str, Any]], path: Path) -> Path:
+    def export_csv(self, rows: Sequence[dict[str, Any]], path: Path) -> Path:
         if not rows:
             path.write_text("", encoding="utf-8")
             return path
@@ -2167,7 +2197,7 @@ class ProtacDesignToolbox:
         path.write_text(json.dumps(model_to_dict(payload), indent=2), encoding="utf-8")
         return path
 
-    def write_workflow_memory(self, state: WorkflowState) -> Dict[str, Any]:
+    def write_workflow_memory(self, state: WorkflowState) -> dict[str, Any]:
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         run_id = _stable_id("run", state.user_request, timestamp)
         path = WORKFLOW_LOG_DIR / f"{run_id}.json"

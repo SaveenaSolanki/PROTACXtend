@@ -408,3 +408,18 @@ geometrically screened against 3600 MegaDock poses.
 - CI restructured: smoke + full-offline (+ e2e) + security (gitleaks, ruff,
   artifact availability, bootstrap dry-run); python-app.yml deleted;
   required checks on main = CI/smoke, CI/full-offline, CI/security.
+
+## 2026-08-12 — MULTI-E3 LIGASE EXPANSION (beyond CRBN/VHL)
+- E3 library expanded from 7 rows (CRBN/VHL/IAP/MDM2 demos) to 114 rows /
+  19 E3 groups, generated reproducibly from the cited e3_ligand.csv dataset
+  (scripts/build_e3_library.py): cIAP1, cIAP2, XIAP, MDM2 (Nutlin-3, RG7388,
+  RG7112), DCAF1/11/15/16, KEAP1 (KI-696, piperlongumine), RNF4/114/126,
+  KLHL20 (BTR2000), KLHDC2, FEM1B, FBXO22, AhR, SKP1, UBR box + CRBN/VHL.
+- E3LigandRecord provenance now carries article DOI, UniProt, activity (nM)
+  and attachment-point note per ligand.
+- E3LigandSelectionAgent/graph node parse ANY E3 from natural language
+  ("MDM2-recruiting", "recruit KEAP1", "the AhR E3 ligase") via E3_ALIASES
+  (30+ synonyms), with graceful CRBN default when unknown.
+- New e2e scenario: MDM2-recruiting PROTACs vs BRD4 — full chain PASS (ok,
+  Nutlin-derived candidates). E2E suite now 6/6.
+- Tests: test_e3_library.py (20) — full regression 333 passed.

@@ -64,6 +64,14 @@ SCENARIOS = [
         "expect": "novel_repair",
     },
     {
+        "name": "MDM2_nonclassical_e3",
+        "prompt": (
+            "Design MDM2-recruiting PROTAC candidates against BRD4 using the "
+            "MDM2 E3 ligase (not CRBN/VHL), prioritizing cellular degradation."
+        ),
+        "expect": "positive_control",
+    },
+    {
         "name": "impossible_input",
         "prompt": (
             "Design a PROTAC against the nonexistent target QZYX123 using an "

@@ -135,7 +135,7 @@ def _warhead(state: dict[str, Any]) -> dict[str, Any]:
     return {"selected_warheads": [w.model_dump() if hasattr(w, "model_dump") else w for w in wh]}
 
 
-def _detect_e3_from_prompt(req: str) -> Optional[str]:
+def _detect_e3_from_prompt(req: str) -> str | None:
     """Pull an E3 name from natural language: 'MDM2-recruiting', 'recruit KEAP1', etc."""
     import re as _re
 

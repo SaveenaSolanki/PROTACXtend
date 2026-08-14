@@ -20,7 +20,7 @@ locally generated with a documented procedure.
 | 10 | PROTAC-DB 3.0 dataset | **committed to git** (6 MB xlsx) | `data/benchmark/PROTAC-DB_3.0_protacs.xlsx` | PROTAC-DB 3.0 (15,502 PROTACs); in-repo |
 | 11 | E3 expression evidence | builtin curated table in `synglue_agent/tools/e3_context_engine.py` (CSV optional) | `data/benchmark/e3_expression_evidence.csv` (optional) | literature/CCLE-derived; engine falls back to builtin |
 | 12 | Conda environments (.venvs, envs) | NOT downloadable — created from specs | `.venvs/*`, `data/synthesis_prediction/envs/*` | `conda env create -f data/protac_repos/env_specs/<name>__environment.yml` per env (see INSTALL_STATUS.md) |
-| 13 | SynGlue large trie dumps (Lean_MagnetDB_Trie.pkl, Clean_Metadata_Hash.pkl) | NOT hosted — generated artifacts (upstream has only builder scripts) | `SynGlue_Py/data_copy/` | re-generate via SynGlue_Py `Architecture_Code/03_TRIE_Index_build_trie.py`; used by SynGlue training notebooks only — NOT needed by synglue_agent runtime |
+| 13 | SynGlue large trie dumps (Lean_MagnetDB_Trie.pkl, Clean_Metadata_Hash.pkl) | NOT hosted — generated artifacts (upstream has only builder scripts) | `SynGlue_Py/data_copy/` | re-generate via the upstream builder: https://github.com/the-ahuja-lab/SynGlue/blob/main/Architecture_Code/03_TRIE_Index_build_trie.py (not present in the local SynGlue_Py subset — use the upstream file); used by SynGlue training notebooks only — NOT needed by synglue_agent runtime |
 | 14 | (superseded by #3b) | — | — | — |
 
 ## Checksum policy

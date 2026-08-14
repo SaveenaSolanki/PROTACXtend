@@ -1015,43 +1015,88 @@ class ProtacDesignToolbox:
         cell_line: str | None = None,
         assay_context: str | None = None,
     ) -> list[DegradationPrediction]:
+        """Degradation prediction through the TRAINED Chemprop ensemble.
+
+        v0.3 fix: the agent previously used a pure MW/TPSA heuristic formula.
+        Now calls predict_degradation_endpoint (single-target conformal ensemble
+        for DC50/uncertainty + multi-target head for Dmax + AD + context gate);
+        the heuristic remains ONLY as a labelled fallback when the model path
+        fails (model_version starts with 'heuristic_proxy').
+        """
+        from synglue_agent.tools.degradation_endpoint import predict_degradation_endpoint
         predictions: list[DegradationPrediction] = []
-        tractability = target_record.tractability_score if target_record else 0.35
         for candidate in candidates:
-            props = self.compute_basic_properties(candidate.full_protac_smiles)
-            mw = float(props.get("mw", candidate.mw or 900.0))
-            tpsa = float(props.get("tpsa", candidate.tpsa or 160.0))
-            rotors = float(props.get("rotatable_bonds", candidate.rotatable_bonds or 12))
-            linker_bonus = {"PEG": 0.05, "alkyl": -0.02, "piperazine": 0.04, "triazole": 0.02}.get(candidate.linker_class, 0.0)
-            e3_bonus = {"CRBN": 0.08, "VHL": 0.04, "IAP": 0.02, "MDM2": 0.0}.get(candidate.e3_ligase.upper(), 0.0)
-            size_penalty = _clamp((mw - 850.0) / 600.0)
-            tpsa_penalty = _clamp((tpsa - 170.0) / 180.0)
-            flexibility_penalty = _clamp((rotors - 18.0) / 18.0)
-            activity_signal = _clamp(0.40 + 0.35 * tractability + linker_bonus + e3_bonus - 0.12 * size_penalty - 0.12 * tpsa_penalty)
-            logdc50 = 3.0 - 1.8 * activity_signal + 0.25 * flexibility_penalty
-            dc50 = round(10 ** logdc50, 2)
-            dmax = round(_clamp(35.0 + 55.0 * activity_signal - 12.0 * tpsa_penalty - 8.0 * size_penalty, 5.0, 98.0), 1)
-            domain = self.compute_applicability_domain_score(candidate)
-            confidence = _clamp(0.45 + 0.30 * domain + 0.20 * tractability + (0.05 if self.rdkit_available else -0.08))
-            warning = None
-            if domain < 0.35:
-                warning = "Exploratory prediction: candidate outside demo model applicability domain."
-            if not self.rdkit_available:
-                warning = (warning + " " if warning else "") + "RDKit not installed; descriptors are approximate."
-            predictions.append(
-                DegradationPrediction(
+            try:
+                ep = predict_degradation_endpoint(
+                    candidate.full_protac_smiles,
                     candidate_id=candidate.candidate_id,
-                    predicted_dc50_nM=dc50,
-                    predicted_logdc50=round(logdc50, 3),
-                    predicted_dmax_percent=dmax,
-                    degradation_probability=round(activity_signal, 3),
-                    model_confidence=round(confidence, 3),
-                    applicability_domain_score=round(domain, 3),
-                    model_version="SynGlue-demo-heuristic-v0.1",
-                    warning=warning,
+                    cell_line=cell_line or "default",
+                    target=(target_record.gene_symbol if target_record else ""),
+                    e3_ligase=candidate.e3_ligase or "CRBN",
                 )
-            )
+                conf_map = {"high_confidence": 0.85, "medium_confidence": 0.55,
+                            "low_confidence": 0.25}
+                confidence = conf_map.get(ep.verdict, 0.25)
+                prob_map = {"active": 0.85, "inactive": 0.20, "unknown": 0.40}
+                warnings = []
+                if ep.ad_status == "out_of_domain":
+                    warnings.append("candidate outside model applicability domain")
+                if ep.context_gated:
+                    warnings.append(f"context gate: {ep.context_note}")
+                predictions.append(
+                    DegradationPrediction(
+                        candidate_id=candidate.candidate_id,
+                        predicted_dc50_nM=ep.dc50_nM,
+                        predicted_logdc50=ep.log_dc50,
+                        predicted_dmax_percent=ep.dmax_pct,
+                        degradation_probability=prob_map.get(ep.activity_class, 0.4),
+                        model_confidence=confidence,
+                        applicability_domain_score=ep.nn_tanimoto or 0.0,
+                        model_version="chemprop-ensemble-v0.3 (conformal, single+multi target)",
+                        warning=("; ".join(warnings) if warnings else None),
+                    )
+                )
+            except Exception as exc:
+                predictions.append(
+                    self._predict_degradation_heuristic(candidate, target_record, cell_line)
+                    .model_copy(update={"warning": f"chemprop unavailable ({exc}); heuristic proxy"}),
+                )
         return predictions
+
+    def _predict_degradation_heuristic(
+        self,
+        candidate: CandidateRecord,
+        target_record: TargetRecord | None,
+        cell_line: str | None = None,
+    ) -> DegradationPrediction:
+        """Labelled heuristic fallback (only used when the trained model path fails)."""
+        tractability = target_record.tractability_score if target_record else 0.35
+        props = self.compute_basic_properties(candidate.full_protac_smiles)
+        mw = float(props.get("mw", candidate.mw or 900.0))
+        tpsa = float(props.get("tpsa", candidate.tpsa or 160.0))
+        rotors = float(props.get("rotatable_bonds", candidate.rotatable_bonds or 12))
+        linker_bonus = {"PEG": 0.05, "alkyl": -0.02, "piperazine": 0.04, "triazole": 0.02}.get(candidate.linker_class, 0.0)
+        e3_bonus = {"CRBN": 0.08, "VHL": 0.04, "IAP": 0.02, "MDM2": 0.0}.get(candidate.e3_ligase.upper(), 0.0)
+        size_penalty = _clamp((mw - 850.0) / 600.0)
+        tpsa_penalty = _clamp((tpsa - 170.0) / 180.0)
+        flexibility_penalty = _clamp((rotors - 18.0) / 18.0)
+        activity_signal = _clamp(0.40 + 0.35 * tractability + linker_bonus + e3_bonus - 0.12 * size_penalty - 0.12 * tpsa_penalty)
+        logdc50 = 3.0 - 1.8 * activity_signal + 0.25 * flexibility_penalty
+        dc50 = round(10 ** logdc50, 2)
+        dmax = round(_clamp(35.0 + 55.0 * activity_signal - 12.0 * tpsa_penalty - 8.0 * size_penalty, 5.0, 98.0), 1)
+        domain = self.compute_applicability_domain_score(candidate)
+        confidence = _clamp(0.45 + 0.30 * domain + 0.20 * tractability + (0.05 if self.rdkit_available else -0.08))
+        return DegradationPrediction(
+            candidate_id=candidate.candidate_id,
+            predicted_dc50_nM=dc50,
+            predicted_logdc50=logdc50,
+            predicted_dmax_percent=dmax,
+            degradation_probability=_clamp(0.35 + 0.35 * domain + 0.30 * tractability),
+            model_confidence=confidence,
+            applicability_domain_score=domain,
+            model_version="heuristic_proxy-v0.1 (fallback)",
+            warning="Exploratory prediction: candidate outside demo model applicability domain." if domain < 0.35 else None,
+        )
 
     def predict_admet(self, candidates: Sequence[CandidateRecord]) -> list[ADMETPrediction]:
         from synglue_agent.tools.admet_predictors import (

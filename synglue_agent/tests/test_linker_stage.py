@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import pytest
+from pathlib import Path
 
 from synglue_agent.agents.state import WorkflowState, ReasonCode
 from synglue_agent.agents.linker_stage import (
@@ -224,3 +225,18 @@ class TestEvidenceGate:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
+
+
+class TestGenerativeLinkers:
+    def test_generative_source_in_library(self):
+        from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+        links = ProtacDesignToolbox().generate_linkers(max_linkers=24)
+        gen = [l for l in links if l.source == "generative_linker_model"]
+        assert gen, "generative linker source missing"
+        from rdkit import Chem
+        assert all(Chem.MolFromSmiles(l.smiles.replace("[*:1]", "[*]").replace("[*:2]", "[*]")) for l in gen)
+
+    def test_fallback_without_checkpoint(self, monkeypatch):
+        import synglue_agent.tools.generative_linker as gl
+        monkeypatch.setattr(gl, "_GENERATOR", gl.LinkerGenerator(Path("/nonexistent/linker_generator.pt")))
+        assert gl.generate_generative_linkers() == []

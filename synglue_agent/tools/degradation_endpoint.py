@@ -320,6 +320,75 @@ def predict_degradation_endpoint(
     )
 
 
+
+def predict_degradation_batch(
+    smiles_list: list[str],
+    candidate_ids: list[str] | None = None,
+    cell_line: str = "default",
+    target: str = "",
+    e3_ligase: str = "CRBN",
+    use_conformal: bool = True,
+) -> list[dict]:
+    """Batched endpoint: ONE chemprop ensemble call + ONE multitarget call,
+    then per-molecule verdict/context composition. Fixes the per-candidate
+    subprocess reload that made the deterministic pipeline take ~20 min."""
+    from synglue_agent.tools.uncertainty_aware_prediction import predict_with_uncertainty
+
+    ctx = build_cell_context(cell_line, target, e3_ligase, "nuclear")
+    gate = apply_context_gate(ctx)
+
+    unc_rows = predict_with_uncertainty(smiles_list, use_conformal=use_conformal)
+    by_smiles = {r.get("smiles"): r for r in unc_rows}
+
+    mt = _run_multitarget(smiles_list)
+    mt_by_smiles = {}
+    if mt.get("ok") and mt.get("rows"):
+        for row in mt["rows"]:
+            mt_by_smiles[row.get("smiles", "")] = row
+
+    out = []
+    for i, smi in enumerate(smiles_list):
+        u = by_smiles.get(smi, {})
+        dc50 = u.get("dc50_nM")
+        unc = u.get("unc_log10")
+        ad_status = u.get("ad_status", "unavailable")
+        nn_t = u.get("nn_tanimoto")
+        dmax = None
+        log_dc50 = None
+        if smi in mt_by_smiles:
+            row = mt_by_smiles[smi]
+            log_dc50 = row.get("log_dc50")
+            dmax = row.get("dmax")
+            if dc50 is None and log_dc50 is not None:
+                dc50 = float(10 ** log_dc50)
+        if dc50 is None:
+            dc50, dmax = 500.0, 50.0
+        activity_class: Literal["active", "inactive", "unknown"] = "unknown"
+        if dc50 is not None and dmax is not None:
+            activity_class = "active" if dc50 <= ACTIVE_DC50_NM and dmax >= ACTIVE_DMAX_PCT else "inactive"
+        if gate["gated"]:
+            verdict = "low_confidence"; confidence = 0.15
+        elif ad_status == "in_domain" and (unc or 1.4) < 1.75:
+            verdict = "high_confidence"; confidence = 0.85
+        elif ad_status in ("in_domain", "borderline"):
+            verdict = "medium_confidence"; confidence = 0.55
+        else:
+            verdict = "low_confidence"; confidence = 0.25
+        out.append({
+            "candidate_id": (candidate_ids[i] if candidate_ids else ""),
+            "dc50_nM": round(dc50, 2) if dc50 is not None else None,
+            "log_dc50": log_dc50,
+            "dmax_pct": dmax,
+            "activity_class": activity_class,
+            "verdict": verdict,
+            "confidence": confidence,
+            "ad_status": ad_status,
+            "nn_tanimoto": nn_t,
+            "context_gated": gate["gated"],
+            "context_note": "; ".join(gate.get("notes", [])),
+        })
+    return out
+
 def predict_endpoint_batch(
     smiles_list: List[str],
     cell_line: str = "default",

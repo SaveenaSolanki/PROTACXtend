@@ -11,9 +11,12 @@ import csv
 import hashlib
 import json
 import math
+import logging
 import re
 import time
 from collections import defaultdict
+
+logger = logging.getLogger("protacpilot.toolbox")
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -681,7 +684,18 @@ class ProtacDesignToolbox:
                 )
             )
         if not linkers:
-            return self.generate_rule_based_linkers(linker_types or DEFAULT_LINKER_TYPES, max_linkers=max_linkers)
+            linkers = self.generate_rule_based_linkers(linker_types or DEFAULT_LINKER_TYPES, max_linkers=max_linkers)
+        # Generative layer: char-GRU linker model trained on PROTAC-DB linkers
+        # (ADMET-scored + diversity-selected). Toggle: PROTACPILOT_GENERATIVE_LINKERS=0.
+        import os as _os
+        if _os.environ.get("PROTACPILOT_GENERATIVE_LINKERS", "1") != "0":
+            try:
+                from synglue_agent.tools.generative_linker import generate_generative_linkers
+                gen = generate_generative_linkers(max_linkers=max(6, max_linkers // 2))
+                existing = {l.smiles for l in linkers}
+                linkers.extend([g for g in gen if g.smiles not in existing])
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("generative linkers unavailable: %s", exc)
         linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
         return linkers[:max_linkers]
 
@@ -1023,44 +1037,49 @@ class ProtacDesignToolbox:
         the heuristic remains ONLY as a labelled fallback when the model path
         fails (model_version starts with 'heuristic_proxy').
         """
-        from synglue_agent.tools.degradation_endpoint import predict_degradation_endpoint
-        predictions: list[DegradationPrediction] = []
-        for candidate in candidates:
-            try:
-                ep = predict_degradation_endpoint(
-                    candidate.full_protac_smiles,
-                    candidate_id=candidate.candidate_id,
-                    cell_line=cell_line or "default",
-                    target=(target_record.gene_symbol if target_record else ""),
-                    e3_ligase=candidate.e3_ligase or "CRBN",
+        from synglue_agent.tools.degradation_endpoint import predict_degradation_batch
+        smiles = [c.full_protac_smiles for c in candidates]
+        ids = [c.candidate_id for c in candidates]
+        try:
+            rows = predict_degradation_batch(
+                smiles, candidate_ids=ids,
+                cell_line=cell_line or "default",
+                target=(target_record.gene_symbol if target_record else ""),
+                e3_ligase=(candidates[0].e3_ligase or "CRBN") if candidates else "CRBN",
+            )
+        except Exception as exc:  # noqa: BLE001
+            rows = []
+            logger.warning("degradation batch failed (%s); using heuristic fallback", exc)
+        conf_map = {"high_confidence": 0.85, "medium_confidence": 0.55, "low_confidence": 0.25}
+        prob_map = {"active": 0.85, "inactive": 0.20, "unknown": 0.40}
+        predictions = []
+        for ep in rows:
+            warnings = []
+            if ep["ad_status"] == "out_of_domain":
+                warnings.append("candidate outside model applicability domain")
+            if ep["context_gated"]:
+                warnings.append(f"context gate: {ep['context_note']}")
+            predictions.append(
+                DegradationPrediction(
+                    candidate_id=ep["candidate_id"],
+                    predicted_dc50_nM=ep["dc50_nM"],
+                    predicted_logdc50=ep["log_dc50"],
+                    predicted_dmax_percent=ep["dmax_pct"],
+                    degradation_probability=prob_map.get(ep["activity_class"], 0.4),
+                    model_confidence=conf_map.get(ep["verdict"], 0.25),
+                    applicability_domain_score=ep["nn_tanimoto"] or 0.0,
+                    model_version="chemprop-ensemble-v0.3 (conformal, single+multi target)",
+                    warning=("; ".join(warnings) if warnings else None),
                 )
-                conf_map = {"high_confidence": 0.85, "medium_confidence": 0.55,
-                            "low_confidence": 0.25}
-                confidence = conf_map.get(ep.verdict, 0.25)
-                prob_map = {"active": 0.85, "inactive": 0.20, "unknown": 0.40}
-                warnings = []
-                if ep.ad_status == "out_of_domain":
-                    warnings.append("candidate outside model applicability domain")
-                if ep.context_gated:
-                    warnings.append(f"context gate: {ep.context_note}")
-                predictions.append(
-                    DegradationPrediction(
-                        candidate_id=candidate.candidate_id,
-                        predicted_dc50_nM=ep.dc50_nM,
-                        predicted_logdc50=ep.log_dc50,
-                        predicted_dmax_percent=ep.dmax_pct,
-                        degradation_probability=prob_map.get(ep.activity_class, 0.4),
-                        model_confidence=confidence,
-                        applicability_domain_score=ep.nn_tanimoto or 0.0,
-                        model_version="chemprop-ensemble-v0.3 (conformal, single+multi target)",
-                        warning=("; ".join(warnings) if warnings else None),
-                    )
-                )
-            except Exception as exc:
-                predictions.append(
-                    self._predict_degradation_heuristic(candidate, target_record, cell_line)
-                    .model_copy(update={"warning": f"chemprop unavailable ({exc}); heuristic proxy"}),
-                )
+            )
+        if not predictions and candidates:
+            # full batch failure -> labelled heuristic fallback per candidate
+            err_note = "chemprop unavailable; heuristic proxy"
+            predictions = [
+                self._predict_degradation_heuristic(c, target_record, cell_line)
+                .model_copy(update={"warning": err_note})
+                for c in candidates
+            ]
         return predictions
 
     def _predict_degradation_heuristic(

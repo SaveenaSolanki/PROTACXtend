@@ -436,3 +436,27 @@ geometrically screened against 3600 MegaDock poses.
 - Verified: agent path returns chemprop-ensemble-v0.3 (DC50 79.9 nM, Dmax
   80.5%, AD 0.15 → honest OOD warning for aspirin). 2 new tests
   (uses-chemprop + labelled-fallback). 48 affected tests pass.
+
+## 2026-08-12 — Generative linker model (LinkerGeneration upgrade)
+- New char-GRU linker generator (SMILES-RNN style) trained on 241 PROTAC-DB 3.0
+  BRICS-extracted linkers + curated/fragment linkers (scripts/build_linker_dataset.py,
+  scripts/train_linker_generator.py; checkpoint data/linkers/linker_generator.pt).
+- tools/generative_linker.py: sample -> RDKit validate/filter (3-20 heavy atoms,
+  rotatable<=8, wrapped-SMILES validity) -> BATCHED ADMET-AI scoring (AMES/DILI/hERG
+  composite, one subprocess for all) -> greedy diversity selection (Tanimoto>0.35).
+- Wired into toolbox.generate_linkers (source="generative_linker_model", toggle
+  PROTACPILOT_GENERATIVE_LINKERS=0) -> flows into LinkerGenerationAgent + agentic
+  graph node + linker scanner. 9s for the full library (was >300s with per-mol ADMET).
+- REINVENT/Link-INVENT prior exists locally (SynGlue_Py/repos/reinvent/models/
+  linkinvent.prior) but requires a separate REINVENT v3 env (absent) — the own-model
+  path was chosen as the reproducible alternative; Link-INVENT can be added later.
+- Tests: test_linker_stage.py +2 (generative source present + graceful fallback);
+  11 passed. md/09 spec updated.
+
+## 2026-08-12 — Deterministic pipeline batching (18x faster, real model)
+- Root cause: DegradationPredictionAgent looped predict_degradation_endpoint
+  per candidate -> one chemprop CLI subprocess (model reload ~20s) each:
+  58 candidates = ~34 min. Added predict_degradation_batch (ONE ensemble call +
+  ONE multitarget call + per-molecule verdict composition); toolbox.
+  predict_degradation now batched: 112 s (was 2029 s), all predictions from the
+  trained chemprop ensemble. ADMET path already local/rules.

@@ -120,7 +120,7 @@ class TestAgentUsesTrainedModel:
         from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
         from synglue_agent.backend.schemas import CandidateRecord
         import synglue_agent.tools.degradation_endpoint as dep
-        monkeypatch.setattr(dep, "predict_degradation_endpoint", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("model down")))
+        monkeypatch.setattr(dep, "predict_degradation_batch", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("model down")))
         t = ProtacDesignToolbox()
         c = CandidateRecord(candidate_id="c2", full_protac_smiles="CCCOCCC", e3_ligase="CRBN")
         p = t.predict_degradation([c], None)[0]

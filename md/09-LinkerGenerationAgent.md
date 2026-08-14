@@ -92,3 +92,17 @@ Item 1 is small and unblocked and should happen first. Item 5 is a scanning-poli
 also small, and directly encodes the project's most important scientific finding into the
 search. Items 2 and 3 are medium and are where this node stops being a lookup and starts
 being a design tool.
+
+## 2026-08-12 — Link-INVENT-style scoring + optimization added
+- `tools/linker_scoring.py`: faithful Link-INVENT recipe — reverse-sigmoid
+  components (LGL, LEL, Flex, HBD, MW, TPSA) × weights [2,2,2,1,2,2], weighted
+  product, + batched ADMET-AI penalty (AMES/DILI/hERG). `rank_linkers` scores
+  & ranks any linker library (curated/rules/fragment/generative).
+- `tools/linker_optimizer.py`: REINFORCE-style policy refinement of the char-GRU
+  linker policy (reward = Link-INVENT score × (1−ADMET risk), baseline-subtracted
+  gradient, bounded rounds). Persist via linker_generator.optimized.pt.
+- Wired: `toolbox.generate_linkers` ranks with `rank_linkers` (default on);
+  optimizer behind PROTACPILOT_LINKER_OPTIMIZE=1.
+- Effective length = attachment-point bond-path distance (fixes rigid-linker
+  zeroing). MW/TPSA bands adapted to isolated linkers (documented deviation:
+  Link-INVENT scores these on the full PROTAC).

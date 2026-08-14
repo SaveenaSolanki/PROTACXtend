@@ -460,3 +460,15 @@ geometrically screened against 3600 MegaDock poses.
   ONE multitarget call + per-molecule verdict composition); toolbox.
   predict_degradation now batched: 112 s (was 2029 s), all predictions from the
   trained chemprop ensemble. ADMET path already local/rules.
+
+## 2026-08-12 — Link-INVENT-style linker scoring + RL optimization
+- tools/linker_scoring.py: reverse-sigmoid components (LGL/LEL/Flex/HBD/MW/TPSA,
+  weights 2,2,2,1,2,2) aggregated as weighted product + batched ADMET penalty;
+  effective length = attachment bond-path distance; rank_linkers used by
+  generate_linkers (default on; PROTACPILOT_LINKER_SCORING=0 to disable).
+- tools/linker_optimizer.py: REINFORCE-style policy-gradient refinement of the
+  char-GRU linker policy (reward = score*(1-admet_risk), baseline update,
+  bounded rounds; persist optional). PROTACPILOT_LINKER_OPTIMIZE=1 to run in
+  generate_linkers. Verified: optimized output = clean amide/PEG linkers.
+- Tests +4 (scoring band, length preference, ranking, optimizer validity):
+  15 linker tests pass.

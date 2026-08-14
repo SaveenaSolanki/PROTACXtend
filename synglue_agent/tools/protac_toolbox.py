@@ -696,7 +696,29 @@ class ProtacDesignToolbox:
                 linkers.extend([g for g in gen if g.smiles not in existing])
             except Exception as exc:  # noqa: BLE001
                 logger.warning("generative linkers unavailable: %s", exc)
-        linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
+        # Link-INVENT-style ranking (reverse-sigmoid components x weights,
+        # weighted product, batched ADMET penalty). Toggle: PROTACPILOT_LINKER_SCORING=0.
+        import os as _os
+        if _os.environ.get("PROTACPILOT_LINKER_SCORING", "1") != "0":
+            try:
+                from synglue_agent.tools.linker_scoring import rank_linkers
+                linkers = rank_linkers(linkers)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("linker scoring unavailable: %s", exc)
+                linkers.sort(key=lambda item: item.synthetic_feasibility_proxy, reverse=True)
+        else:
+            linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
+        # RL-style optimization pass (Link-INVENT-like policy refinement).
+        # PROTACPILOT_LINKER_OPTIMIZE=1 runs a bounded REINFORCE loop and adds
+        # refined linkers; off by default for speed.
+        if _os.environ.get("PROTACPILOT_LINKER_OPTIMIZE", "0") == "1":
+            try:
+                from synglue_agent.tools.linker_optimizer import optimize_linkers
+                refined = optimize_linkers(rounds=2, batch=32, keep=max(6, max_linkers // 3))
+                existing = {l.smiles for l in linkers}
+                linkers.extend([r for r in refined if r.smiles not in existing])
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("linker optimization unavailable: %s", exc)
         return linkers[:max_linkers]
 
     def generate_rule_based_linkers(self, linker_types: Sequence[str], max_linkers: int = 32) -> list[LinkerRecord]:

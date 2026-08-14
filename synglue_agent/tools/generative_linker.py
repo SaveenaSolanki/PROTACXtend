@@ -108,6 +108,8 @@ class LinkerGenerator:
         valid: List[Dict[str, Any]] = []
         seen: set = set()
         for smi in self.sample(candidates, temperature):
+            if "[" in smi:  # attachment/dummy tokens learned from corpus — reject
+                continue
             mol = Chem.MolFromSmiles(smi)
             if mol is None:
                 continue

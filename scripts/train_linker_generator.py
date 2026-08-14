@@ -35,6 +35,16 @@ class CharGRU(nn.Module):
         out, hidden = self.gru(e, hidden)
         return self.out(out), hidden
 
+    def log_prob(self, seq: torch.Tensor) -> torch.Tensor:
+        """Log-probability of a full sequence (for policy-gradient updates)."""
+        if len(seq) < 2:
+            return torch.tensor(0.0)
+        x = seq[:-1].unsqueeze(0)
+        target = seq[1:]
+        logits, _ = self.forward(x)
+        logp = torch.log_softmax(logits, dim=-1).squeeze(0)
+        return logp.gather(1, target.unsqueeze(1)).sum()
+
 
 def load_corpus() -> list[str]:
     seqs = []
@@ -44,14 +54,19 @@ def load_corpus() -> list[str]:
             seqs.append(s)
     # curated + fragment-combination linkers as extra training examples
     import csv
+    import re as _re
     from rdkit import Chem
     if CURATED.exists():
         for row in csv.DictReader(open(CURATED)):
             smi = (row.get("smiles") or "").strip()
             if smi:
-                mol = Chem.MolFromSmiles(smi)
+                cleaned = _re.sub(r"\[\*:?\d*\]|\[\d\*\]", "", smi)
+                cleaned = _re.sub(r"\(\)", "", cleaned)
+                mol = Chem.MolFromSmiles(cleaned)
                 if mol:
-                    seqs.append(Chem.MolToSmiles(mol).replace("[*:1]", "").replace("[*:2]", ""))
+                    seqs.append(Chem.MolToSmiles(mol))
+    # hard corpus hygiene: drop anything containing dummy tokens
+    seqs = [x for x in seqs if "[" not in x]
     return list(dict.fromkeys(seqs))
 
 

@@ -1102,6 +1102,24 @@ class ProtacDesignToolbox:
                 .model_copy(update={"warning": err_note})
                 for c in candidates
             ]
+        # TACK-model second opinion (trained on the TACK benchmark dataset,
+        # 6,561 endpoints). Never blocks; fills tack_* fields when available.
+        try:
+            from synglue_agent.tools.tack_degradation import predict_tack_batch
+            tack_entries = [
+                {"smiles": c.full_protac_smiles, "e3": c.e3_ligase or "CRBN",
+                 "cell": cell_line or "default",
+                 "poi": (target_record.gene_symbol if target_record else "")}
+                for c in candidates
+            ]
+            tack_rows = predict_tack_batch(tack_entries)
+            for pred, tr in zip(predictions, tack_rows):
+                if tr:
+                    pred.tack_dc50_nM = tr["dc50_nM"]
+                    pred.tack_dmax_pct = tr["dmax_pct"]
+                    pred.tack_active = tr["active"]
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("TACK cross-check unavailable: %s", exc)
         return predictions
 
     def _predict_degradation_heuristic(

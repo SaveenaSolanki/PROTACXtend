@@ -472,3 +472,17 @@ geometrically screened against 3600 MegaDock poses.
   generate_linkers. Verified: optimized output = clean amide/PEG linkers.
 - Tests +4 (scoring band, length preference, ranking, optimizer validity):
   15 linker tests pass.
+
+## 2026-08-12 — TACK-model degradation cross-check
+- TACK = TArgeting Chimeras Knowledge (Ribes/Dunlop/Mercado, KDD AI4Science '26;
+  arXiv 2605.19579): curated 3,514 PROTACs / 6,561 endpoints from TPDdb +
+  PROTAC-DB + PROTACpedia. Official HF weights (TACK-Model-DC50/Bin) are
+  GATED; dataset is public.
+- trained TACK-STYLE models on the public dataset (scripts/build_tack_model.py,
+  scaffold split): DC50 log-regression rho=0.800 (val n=876), Dmax rho=0.738,
+  binary active (DC50<100nM) acc 0.846 / AUC 0.917.
+- synglue_agent/tools/tack_degradation.py: inference (Morgan 1024 + descriptors
+  + E3/cell/POI one-hot) with provenance; batch API.
+- DegradationPrediction schema += tack_dc50_nM / tack_dmax_pct / tack_active;
+  toolbox.predict_degradation fills them as a second opinion (never blocking).
+- Tests +2 (tack populated + tool): 14 degradation-endpoint tests pass.

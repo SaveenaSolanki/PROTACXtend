@@ -241,6 +241,10 @@ class DegradationPrediction(BaseModel):
     applicability_domain_score: float = 0.0
     model_version: str = "SynGlue-demo-heuristic-v0.1"
     warning: Optional[str] = None
+    # TACK-model cross-check (second opinion; None when TACK models absent)
+    tack_dc50_nM: Optional[float] = None
+    tack_dmax_pct: Optional[float] = None
+    tack_active: Optional[bool] = None
 
 
 class ADMETPrediction(BaseModel):

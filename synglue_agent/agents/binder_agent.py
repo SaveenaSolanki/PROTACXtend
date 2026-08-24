@@ -187,6 +187,12 @@ class TargetBinderRetrievalAgent(ReActAgent):
             "&limit=100&order_by=pchembl_value"
         )
         data = _cached_request(url, f"chembl_activity_{chembl_id}")
+        # Census: ChEMBL reports the total hit count in the response envelope
+        # BEFORE the records — the recall denominator the architecture spec needs.
+        self._last_census = {
+            "source": "chembl", "query": url, "n_reported_total":
+            (data or {}).get("meta", {}).get("total_count") if data else None,
+        }
         if not data:
             return binders, False
 
@@ -233,13 +239,23 @@ class TargetBinderRetrievalAgent(ReActAgent):
             )
             binders.append(record)
 
-        # Deduplicate by canonical SMILES, keep the strongest activity
+        # Deduplicate by full InChIKey (stereo-aware) — same molecule from
+        # three sources must count once (AGENT_ARCHITECTURE_UPDATE §0.1/§1.1).
+        from rdkit import Chem
+        from rdkit.Chem.inchi import MolToInchiKey
         seen: dict = {}
         for b in binders:
-            key = b.smiles.strip()
+            mol = Chem.MolFromSmiles(b.smiles.strip()) if b.smiles else None
+            key = MolToInchiKey(mol) if mol is not None else b.smiles.strip()
             if key not in seen or (b.p_activity or 0) > (seen[key].p_activity or 0):
                 seen[key] = b
-        return list(seen.values()), len(seen) > 0
+        deduped = list(seen.values())
+        if hasattr(self, "_last_census") and self._last_census:
+            self._last_census["n_fetched"] = len(binders)
+            self._last_census["n_after_dedup"] = len(deduped)
+            self._last_census["n_returned"] = len(deduped)
+            self._last_census["selection_rule"] = "pchembl_desc"
+        return deduped, len(deduped) > 0
 
     # ── PubChem ─────────────────────────────────
     def _enrich_from_pubchem(self, binders: List[BinderRecord]) -> Tuple[List[BinderRecord], bool]:

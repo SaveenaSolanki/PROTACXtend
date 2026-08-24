@@ -281,7 +281,20 @@ def _ternary(state: dict[str, Any]) -> dict[str, Any]:
 
 def _degradation(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.degradation_node import degradation_prediction_node
-    return degradation_prediction_node(state)  # real chemprop, uncertainty-aware
+    out = degradation_prediction_node(state)  # real chemprop, uncertainty-aware
+    # 12'-style revision: consume the ternary outcome (the graph runs ternary
+    # BEFORE degradation, so the revision uses what it already sees).
+    try:
+        from synglue_agent.agents.ternary_stage import revise_degradation_from_ternary
+        revised = revise_degradation_from_ternary(
+            list(out.get("degradation_predictions", [])),
+            state.get("ternary_feasibility", {}) or {})
+        if revised:
+            out["degradation_predictions"] = revised
+            out["revised_degradation"] = revised
+    except Exception as exc:  # noqa: BLE001
+        out["warnings"] = list(out.get("warnings", [])) + [f"ternary revision skipped: {exc}"]
+    return out
 
 
 def _admet(state: dict[str, Any]) -> dict[str, Any]:

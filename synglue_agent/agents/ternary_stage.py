@@ -381,3 +381,39 @@ def compile_ternary_graph():
     builder = StateGraph(WorkflowState)
     build_ternary_stage(builder)
     return builder.compile(checkpointer=MemorySaver())
+
+# Node-20 promotion policy (AGENT_ARCHITECTURE_UPDATE §3.2): which candidates
+# graduate from the <1s geometric tier to the 2-4h P4ward tier.
+TERNARY_PROMOTION = {
+    "mode": "stratified_by_proxy_decile",  # threshold | top_k | stratified
+    "threshold": 0.45,
+    "k": 8,
+    "compute_hour_budget": 48,
+    "sampling": "stratified",
+}
+
+
+def revise_degradation_from_ternary(deg_preds: list[dict], ternary_results: dict) -> list[dict]:
+    """12'-style revision: consume ternary outcomes into the degradation
+    estimate (AGENT_ARCHITECTURE_UPDATE §3.6). Ternary confidence < threshold
+    downgrades confidence and flags the estimate; high ternary confidence can
+    lift a low-confidence degradation verdict. Never fabricates numbers —
+    only adjusts confidence/provenance."""
+    if not deg_preds or not ternary_results:
+        return list(deg_preds)
+    scores = [t.get("ternary_plausibility_score", 0.0) for t in ternary_results.values() if isinstance(t, dict)]
+    if not scores:
+        return list(deg_preds)
+    ternary_conf = min(scores)
+    revised = []
+    for d in deg_preds:
+        d = dict(d)
+        if ternary_conf < 0.45:
+            d["model_confidence"] = min(d.get("model_confidence", 0.5), 0.35)
+            d["warning"] = (d.get("warning") or "") + "; ternary confidence low — revised"
+        elif d.get("model_confidence", 0) < 0.45:
+            d["model_confidence"] = 0.5
+            d["warning"] = (d.get("warning") or "") + "; ternary support — revised up"
+        d["ternary_revised"] = True
+        revised.append(d)
+    return revised

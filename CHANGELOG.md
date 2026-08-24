@@ -486,3 +486,20 @@ geometrically screened against 3600 MegaDock poses.
 - DegradationPrediction schema += tack_dc50_nM / tack_dmax_pct / tack_active;
   toolbox.predict_degradation fills them as a second opinion (never blocking).
 - Tests +2 (tack populated + tool): 14 degradation-endpoint tests pass.
+
+## 2026-08-12 — AGENT_ARCHITECTURE_UPDATE implemented (nodes 5/19/20)
+- Node 5 census: chem_identity (full InChIKey, stereo-aware), InChIKey dedup in
+  binder retrieval, RetrievalCensus with ChEMBL n_reported_total recorded,
+  state.retrieval_census/retrieval_status fields.
+- Node 19 memory: evolve_with_generations — SeenSet (InChIKey) + GenerationRecord
+  (n_produced/n_novel vs ALL prior gens, novelty_ratio, best/mean, operators) +
+  termination (max_gens 10, novelty_floor 0.10, patience 2, reason recorded);
+  CandidateRecord.parent_ids/operator_applied fields; FitnessSpec
+  (label_source now truthfully "trained" — O-1 closed).
+- Node 20: TERNARY_PROMOTION policy + CalibrationRecord schema + revise_
+  degradation_from_ternary (12' folded in — graph already runs ternary before
+  degradation; verified confidence revision 0.8->0.35 on low ternary).
+- Deliverables: Sabeel/AGENT_ARCHITECTURE_IMPLEMENTATION_STATUS.md (spec marked
+  per section), TOOL_AUDIT.xlsx (8 sheets: overview/agents/tools/models/
+  integrations/CI/docs/gaps) + scripts/build_audit_xls.py, RUN_AND_FRONTEND.md
+  (how to run, frontend access, stage map), tests/test_architecture_update.py (5).

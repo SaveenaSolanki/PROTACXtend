@@ -206,6 +206,8 @@ class ConstructionAttempt(BaseModel):
 class CandidateRecord(BaseModel):
     candidate_id: str = ""
     evolution_generation: int = 0
+    parent_ids: List[str] = Field(default_factory=list)
+    operator_applied: str = ""
     target: str = ""
     e3_ligase: str = ""
     warhead_name: str = ""
@@ -245,6 +247,52 @@ class DegradationPrediction(BaseModel):
     tack_dc50_nM: Optional[float] = None
     tack_dmax_pct: Optional[float] = None
     tack_active: Optional[bool] = None
+
+
+class RetrievalCensus(BaseModel):
+    """Node-5 evidence accounting: how much was looked at vs returned (AGENT_ARCHITECTURE_UPDATE §1.2)."""
+    source: str = ""
+    query: str = ""
+    n_reported_total: Optional[int] = None
+    n_fetched: int = 0
+    n_after_dedup: int = 0
+    n_after_quality: int = 0
+    n_returned: int = 0
+    truncated: bool = False
+    selection_rule: str = ""
+    cache_hit: bool = False
+
+
+class GenerationRecord(BaseModel):
+    """Node-19 per-generation record (AGENT_ARCHITECTURE_UPDATE §2.2)."""
+    generation: int = 0
+    n_produced: int = 0
+    n_novel: int = 0
+    novelty_ratio: float = 0.0
+    best_score: float = 0.0
+    mean_score: float = 0.0
+    operator_counts: Dict[str, int] = Field(default_factory=dict)
+    fitness_spec_id: str = ""
+
+
+class CalibrationRecord(BaseModel):
+    """Node-20 proxy-vs-P4ward calibration point (AGENT_ARCHITECTURE_UPDATE §3.5)."""
+    candidate_inchikey: str = ""
+    proxy_score: float = 0.0
+    p4ward_pass_rate: Optional[float] = None
+    n_passed: int = 0
+    n_poses: int = 0
+    plddt_min: Optional[float] = None
+    plddt_mean: Optional[float] = None
+    compute_hours: float = 0.0
+    label_source: str = "p4ward"
+
+
+class FitnessSpec(BaseModel):
+    score_field: str = "final_priority_score"
+    weights: Dict[str, float] = Field(default_factory=dict)
+    config_hash: str = ""
+    label_source: str = "heuristic"  # heuristic|published|p4ward|trained
 
 
 class ADMETPrediction(BaseModel):
@@ -360,6 +408,14 @@ class WorkflowState(BaseModel):
     warnings: List[str] = Field(default_factory=list)
     errors: List[str] = Field(default_factory=list)
     memory_updates: List[Dict[str, Any]] = Field(default_factory=list)
+
+    # AGENT_ARCHITECTURE_UPDATE additions (observability of what was NOT done)
+    retrieval_census: List[RetrievalCensus] = Field(default_factory=list)
+    retrieval_status: str = "ok"          # ok | sparse | empty
+    seen_inchikeys: set[str] = Field(default_factory=set)
+    generation_records: List[GenerationRecord] = Field(default_factory=list)
+    fitness_spec: Optional[FitnessSpec] = None
+    revised_degradation: List[DegradationPrediction] = Field(default_factory=list)
 
 
 def model_to_dict(value: Any) -> Any:

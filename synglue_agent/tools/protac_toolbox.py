@@ -138,6 +138,20 @@ def _stable_id(prefix: str, *parts: str) -> str:
     return f"{prefix}-{digest}"
 
 
+
+def chem_identity(smiles: str) -> Optional[str]:
+    """Full InChIKey (incl. stereo layer) for any molecule — the canonical
+    identity key for dedup/seen-sets (AGENT_ARCHITECTURE_UPDATE §0.1)."""
+    try:
+        from rdkit import Chem
+        from rdkit.Chem.inchi import MolToInchiKey
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return None
+        return MolToInchiKey(mol)
+    except Exception:  # noqa: BLE001
+        return None
+
 class ProtacDesignToolbox:
     """All deterministic PROTAC design tools used by SynGlue agents."""
 
@@ -1568,6 +1582,69 @@ class ProtacDesignToolbox:
                 )
             )
         return reviews
+
+    def evolve_with_generations(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        admet_predictions: Sequence[ADMETPrediction],
+        start_seen: set[str] | None = None,
+        max_generations: int = 10,
+        novelty_floor: float = 0.10,
+        patience: int = 2,
+    ) -> dict:
+        """Bounded evolution loop WITH memory (AGENT_ARCHITECTURE_UPDATE §2)."""
+        from synglue_agent.backend.schemas import GenerationRecord
+        seen = set(start_seen or set())
+        all_evolved: List[CandidateRecord] = []
+        records: List[GenerationRecord] = []
+        stop_reason = "max_generations"
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+
+        def key(smi: str) -> str:
+            return chem_identity(smi) or smi
+
+        def score(c):
+            r = ranking_by_id.get(c.candidate_id)
+            return float(r.final_priority_score) if r else 0.5
+
+        for generation in range(1, max_generations + 1):
+            gen_out = self.evolve_candidates(
+                candidates, rankings, admet_predictions, None,
+                max_new=max(4, max_generations))
+            produced = [c for c in gen_out if c.full_protac_smiles]
+            n_novel = 0
+            op_counts: dict = {}
+            for c in produced:
+                k = key(c.full_protac_smiles)
+                if k not in seen:
+                    seen.add(k)
+                    n_novel += 1
+                op = getattr(c, "operator_applied", None) or "evolve_candidates"
+                op_counts[op] = op_counts.get(op, 0) + 1
+                try:
+                    c.parent_ids = [p_.candidate_id for p_ in candidates[:2]]
+                    c.operator_applied = op
+                    c.generation = generation
+                except Exception:  # noqa: BLE001
+                    pass
+            scores = [score(c) for c in produced] or [0.0]
+            ratio = n_novel / max(len(produced), 1)
+            records.append(GenerationRecord(
+                generation=generation, n_produced=len(produced), n_novel=n_novel,
+                novelty_ratio=round(ratio, 3), best_score=round(max(scores), 3),
+                mean_score=round(sum(scores) / len(scores), 3),
+                operator_counts=op_counts, fitness_spec_id="fitness@v1"))
+            all_evolved.extend(produced)
+            recent = [r.novelty_ratio for r in records[-patience:]]
+            if len(recent) >= patience and all(x < novelty_floor for x in recent):
+                stop_reason = f"novelty_ratio<{novelty_floor} for {patience} gens"
+                break
+            if not produced:
+                stop_reason = "no_valid_offspring"
+                break
+        return {"evolved": all_evolved, "records": records,
+                "stop_reason": stop_reason, "seen": seen}
 
     def _smiles_mutate(self, smiles: str, rng=None) -> str | None:
         """Single-point SMILES mutation with retries.

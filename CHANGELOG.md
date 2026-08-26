@@ -503,3 +503,14 @@ geometrically screened against 3600 MegaDock poses.
   per section), TOOL_AUDIT.xlsx (8 sheets: overview/agents/tools/models/
   integrations/CI/docs/gaps) + scripts/build_audit_xls.py, RUN_AND_FRONTEND.md
   (how to run, frontend access, stage map), tests/test_architecture_update.py (5).
+
+## 2026-08-13 — §3.3/3.7/coverage_cell implemented
+- §3.3 P4ward checkpointing: batch_run writes batch_checkpoint.json + per-run
+  P4wardRunResult.json; resume skips completed runs (48h campaign survives crash).
+- §3.7 pLDDT gate: CandidateRecord.plddt_min/mean; plddt_gate() flag/block modes
+  (unknown-safe) wired into the agentic ternary node before P4ward spend.
+- coverage_cell tables: tools/coverage_matrix.py — CoverageCell rows (warhead×E3×
+  linker, InChIKey keyed), append-only outputs/coverage/coverage_cells.jsonl,
+  summary (fraction touched), best_pass_rate NULL-until-measured discipline;
+  wired into runtime (result["coverage"]).
+- tests +3 (plddt gate, coverage record/no-backfill): 8 architecture tests pass.

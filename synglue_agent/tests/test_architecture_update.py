@@ -58,3 +58,39 @@ class TestEvolutionMemory:
         for c in res["evolved"]:
             assert getattr(c, "operator_applied", None) is not None
             assert getattr(c, "parent_ids", None) is not None
+
+
+class TestPlddtGate:
+    def test_gate_flag_and_pass(self):
+        from synglue_agent.agents.ternary_stage import plddt_gate
+        assert plddt_gate({"plddt_min": None})["reason"] == "plddt_unknown"
+        assert plddt_gate({"plddt_min": 0.55})["mode"] == "flag"
+        assert plddt_gate({"plddt_min": 0.85})["mode"] == "pass"
+
+
+class TestCoverageCells:
+    def test_record_and_summary(self, tmp_path):
+        import synglue_agent.tools.coverage_matrix as cm
+        from synglue_agent.backend.schemas import CoverageCell
+        # run against a temp coverage file
+        tmp = tmp_path / "coverage_cells.jsonl"
+        old = cm.COVERAGE_FILE
+        cm.COVERAGE_FILE = tmp
+        try:
+            c1 = CoverageCell(warhead_inchikey="A", e3="CRBN", linker_inchikey="L", n_evaluated=1)
+            entries = [c1]
+            with tmp.open("w") as fh:
+                for c in entries:
+                    fh.write(c.model_dump_json() + "\n")
+            snap = cm.summarize_coverage()
+            assert snap["distinct_cells_evaluated"] == 1
+            assert snap["measured_cells"] == 0  # pass-rate NULL discipline
+        finally:
+            cm.COVERAGE_FILE = old
+
+    def test_no_pass_rate_backfill(self):
+        from synglue_agent.backend.schemas import CoverageCell
+        c = CoverageCell(warhead_inchikey="A", e3="CRBN", linker_inchikey="L",
+                         best_proxy_score=0.9)
+        assert c.best_pass_rate is None
+        assert c.measured is False

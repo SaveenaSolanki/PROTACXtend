@@ -250,6 +250,21 @@ def _ternary(state: dict[str, Any]) -> dict[str, Any]:
             "applicability_domain": "in_domain",
             "status": "no_candidates",
         }}}
+    # §3.7 structure-quality gate: flag/block promotion of candidates whose
+    # binding pocket has low AlphaFold pLDDT (before any expensive P4ward spend).
+    try:
+        from synglue_agent.agents.ternary_stage import plddt_gate
+        gate_results = [plddt_gate(c) for c in candidates if c.get("plddt_min") is not None]
+        flagged = [g for g in gate_results if g["mode"] == "flag"]
+        if flagged:
+            return {"ternary_feasibility": {"flagged_plddt": {
+                "ternary_plausibility_score": 0.2,
+                "applicability_domain": "flagged",
+                "status": "flagged_plddt",
+                "note": "; ".join(g["reason"] for g in flagged[:5]),
+            }}, "warnings": [f"pLDDT gate: {len(flagged)} candidate(s) flagged for unreliable pockets"]}
+    except Exception:  # noqa: BLE001
+        pass
     try:
         from synglue_agent.backend.schemas import CandidateRecord
         record_candidates = [

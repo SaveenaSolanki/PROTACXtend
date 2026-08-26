@@ -208,6 +208,10 @@ class CandidateRecord(BaseModel):
     evolution_generation: int = 0
     parent_ids: List[str] = Field(default_factory=list)
     operator_applied: str = ""
+    # §3.7 structure-quality: AlphaFold pLDDT for the binding region (carried
+    # from target resolution; None until a structure source provides it)
+    plddt_min: Optional[float] = None
+    plddt_mean: Optional[float] = None
     target: str = ""
     e3_ligase: str = ""
     warhead_name: str = ""
@@ -247,6 +251,23 @@ class DegradationPrediction(BaseModel):
     tack_dc50_nM: Optional[float] = None
     tack_dmax_pct: Optional[float] = None
     tack_active: Optional[bool] = None
+
+
+class CoverageCell(BaseModel):
+    """One warhead x E3 x linker design cell (SEARCH_INSTRUMENTATION coverage
+    matrix). Discipline: best_pass_rate stays NULL until a P4ward measurement
+    exists — never backfilled from the uncalibrated proxy."""
+    warhead_inchikey: str = ""
+    e3: str = ""
+    linker_inchikey: str = ""
+    attach_pts: str = ""
+    n_evaluated: int = 0
+    best_proxy_score: Optional[float] = None
+    best_pass_rate: Optional[float] = None   # NULL until measured
+    n_passed: int = 0
+    n_poses: int = 0
+    last_run_id: str = ""
+    measured: bool = False
 
 
 class RetrievalCensus(BaseModel):

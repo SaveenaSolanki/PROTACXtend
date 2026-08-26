@@ -417,3 +417,34 @@ def revise_degradation_from_ternary(deg_preds: list[dict], ternary_results: dict
         d["ternary_revised"] = True
         revised.append(d)
     return revised
+
+
+# §3.7 pLDDT gate — spending 2-4h of P4ward compute on a low-confidence
+# AlphaFold pocket is the most expensive avoidable error in the system.
+PLDDT_GATE_THRESHOLD = 0.70
+PLDDT_GATE_MODE = "flag"          # "flag" (warn) | "block" (refuse promotion)
+
+
+def plddt_gate(candidate: dict, threshold: float = PLDDT_GATE_THRESHOLD) -> dict:
+    """Evaluate whether a candidate should be promoted to the expensive tier.
+
+    Returns {"ok": bool, "mode": str, "reason": str}.
+    - Unknown pLDDT (None) -> ok=True with reason "plddt_unknown" (flag only;
+      we never silently block on missing data, but the trace records it).
+    - plddt_min < threshold -> ok=False in "block" mode, ok=True + flag in
+      "flag" mode, reason carries the number so it reaches the report.
+    """
+    pmin = candidate.get("plddt_min")
+    if pmin is None:
+        return {"ok": True, "mode": "flag", "reason": "plddt_unknown",
+                "plddt_min": None}
+    if float(pmin) < threshold:
+        if PLDDT_GATE_MODE == "block":
+            return {"ok": False, "mode": "block",
+                    "reason": f"plddt_min {pmin:.2f} < {threshold} — pocket unreliable",
+                    "plddt_min": float(pmin)}
+        return {"ok": True, "mode": "flag",
+                "reason": f"plddt_min {pmin:.2f} < {threshold} — flagged",
+                "plddt_min": float(pmin)}
+    return {"ok": True, "mode": "pass", "reason": "plddt ok",
+            "plddt_min": float(pmin)}

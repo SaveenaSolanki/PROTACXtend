@@ -67,6 +67,21 @@ def run_protacpilot(
 
     runtime_s = round(time.time() - t0, 2)
 
+    # Coverage matrix (search instrumentation): record evaluated cells
+    try:
+        if mode == "agentic":
+            from synglue_agent.tools.coverage_matrix import coverage_snapshot
+            st = result.get("state") or {}
+            cands = [
+                {"full_protac_smiles": getattr(c, "full_protac_smiles", ""),
+                 "e3_ligase": getattr(c, "e3_ligase", ""),
+                 "linker_name": getattr(c, "linker_name", "")}
+                for c in st.get("valid_candidates", []) or []
+            ]
+            result["coverage"] = coverage_snapshot(cands, run_id)
+    except Exception as exc:
+        logger.warning("coverage snapshot failed: %s", exc)
+
     # Canonical AgentRunRecord (auditable run artifact set)
     try:
         if mode == "agentic" and config.get("record_run", True):

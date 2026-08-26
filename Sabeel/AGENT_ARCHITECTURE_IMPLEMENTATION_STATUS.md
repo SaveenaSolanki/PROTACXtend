@@ -40,11 +40,11 @@ _Companion to `AGENT_ARCHITECTURE_UPDATE.md` (Nodes 5, 19, 20). Status check 202
 |---|---|---|
 | 3.1 Stratified sampling for a curve | ⏳ | Policy constant supports `stratified_by_proxy_decile`; **the 8–12 P4ward calibration campaign has not been run** (16–48 h compute) |
 | 3.2 `ternary_promotion` explicit policy | ✅ | `TERNARY_PROMOTION` dict in ternary_stage {mode, threshold, k, compute_hour_budget, sampling} |
-| 3.3 Checkpointing / resumability | 🟡 | `p4ward_wrapper` writes per-batch outputs; no explicit resume-token contract — the wrapper's batch dirs partially cover it |
+| 3.3 Checkpointing / resumability | ✅ | `batch_run` now writes `batch_checkpoint.json` + per-run `P4wardRunResult.json`; re-entry with the same output_base resumes without repeating completed batches |
 | 3.4 Pass-rate output format | ✅ | Wrapper + ternary ensemble report pass counts (`0/3,600` style); `CalibrationRecord` schema uses `n_passed/n_poses/pass_rate` |
 | 3.5 `CalibrationRecord` | ✅ | Schema added (inchikey, proxy_score, pass_rate, plddt, compute_hours, label_source=p4ward); waiting on campaign data to fill rows |
 | 3.6 12′ second degradation pass | ✅ | **Our graph already runs ternary BEFORE degradation** (spec's Option A order) and the degradation node now **consumes** the ternary outcome via `revise_degradation_from_ternary` — confidence revision + flag, original estimate kept, revision stored in `revised_degradation`. Verified: low ternary conf 0.3 → confidence 0.8→0.35 + "revised" flag |
-| 3.7 Structure-quality (pLDDT) gate | ❌ | pLDDT not carried through candidate records; no gate before P4ward spend |
+| 3.7 Structure-quality (pLDDT) gate | ✅ | `CandidateRecord.plddt_min/mean`; `plddt_gate()` (flag/block modes, unknown-safe) wired into the agentic ternary node before any P4ward spend |
 | 3.8 Benchmark row 20 | ⏳ | Needs the calibration campaign (§3.1) + a harness |
 
 ## 4 · Graph delta
@@ -62,7 +62,7 @@ _Companion to `AGENT_ARCHITECTURE_UPDATE.md` (Nodes 5, 19, 20). Status check 202
 | 5.7 trace denominators block | 🟡 | Census block exists for node 5; generic trace `denominators` block not universal |
 | 5.8 failure behaviours | 🟡 | empty→fallback ✓; InChIKey dedup ✓; GA convergence ✓; coverage_cell hit-skip ❌; P4ward resume 🟡; pLDDT gate ❌ |
 | 5.9 the ten questions | 🟡 | 7/10 answered now (all but: coverage fraction, calibration, cost-block-universal) |
-| 5.10 coverage map | ❌ | `coverage_cell` table not built |
+| 5.10 coverage map | ✅ | `tools/coverage_matrix.py` — CoverageCell rows appended per run (`outputs/coverage/coverage_cells.jsonl`), summary/fraction-touched; best_pass_rate stays NULL until measured |
 | 5.11 report sentences | 🟡 | Binder census + evolution sentences now possible; calibration sentence pending campaign |
 | 5.12 downstream | 🟡 | B-4 novelty available; B-5 counterfactual coverage table ❌ |
 

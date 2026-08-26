@@ -100,3 +100,29 @@ class TestEndpointLive:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
+
+
+class TestAgentUsesTrainedModel:
+    """The DegradationPredictionAgent path must use the trained Chemprop
+    ensemble (model_version chemprop-...), with the heuristic only as a
+    labelled fallback."""
+
+    def test_predict_degradation_uses_chemprop(self):
+        from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+        from synglue_agent.backend.schemas import CandidateRecord
+        t = ProtacDesignToolbox()
+        c = CandidateRecord(candidate_id="c1", full_protac_smiles="CC(=O)Oc1ccccc1C(=O)O", e3_ligase="CRBN")
+        p = t.predict_degradation([c], None)[0]
+        assert p.model_version.startswith("chemprop"), p.model_version
+        assert p.predicted_dc50_nM is not None
+
+    def test_heuristic_fallback_labelled(self, monkeypatch):
+        from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+        from synglue_agent.backend.schemas import CandidateRecord
+        import synglue_agent.tools.degradation_endpoint as dep
+        monkeypatch.setattr(dep, "predict_degradation_endpoint", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("model down")))
+        t = ProtacDesignToolbox()
+        c = CandidateRecord(candidate_id="c2", full_protac_smiles="CCCOCCC", e3_ligase="CRBN")
+        p = t.predict_degradation([c], None)[0]
+        assert p.model_version.startswith("heuristic_proxy"), p.model_version
+        assert "chemprop unavailable" in (p.warning or "")

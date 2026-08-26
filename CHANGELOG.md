@@ -423,3 +423,16 @@ geometrically screened against 3600 MegaDock poses.
 - New e2e scenario: MDM2-recruiting PROTACs vs BRD4 — full chain PASS (ok,
   Nutlin-derived candidates). E2E suite now 6/6.
 - Tests: test_e3_library.py (20) — full regression 333 passed.
+
+## 2026-08-12 — DegradationPredictionAgent: heuristic → trained Chemprop (verified)
+- Root-cause: the md/ spec's "heuristic only" flag was CORRECT for the agent
+  path — DegradationPredictionAgent → toolbox.predict_degradation used a pure
+  MW/TPSA formula; the trained Chemprop (ρ=0.783) was only wired into the
+  agentic graph node + benchmark, not the agent itself.
+- Fix: predict_degradation now calls predict_degradation_endpoint (trained
+  single-target conformal ensemble → DC50/uncertainty + multi-target head →
+  Dmax + AD + context gate). Old formula kept ONLY as labelled fallback
+  (model_version="heuristic_proxy-v0.1 (fallback)").
+- Verified: agent path returns chemprop-ensemble-v0.3 (DC50 79.9 nM, Dmax
+  80.5%, AD 0.15 → honest OOD warning for aspirin). 2 new tests
+  (uses-chemprop + labelled-fallback). 48 affected tests pass.

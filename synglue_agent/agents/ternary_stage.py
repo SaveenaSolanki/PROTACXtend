@@ -381,3 +381,70 @@ def compile_ternary_graph():
     builder = StateGraph(WorkflowState)
     build_ternary_stage(builder)
     return builder.compile(checkpointer=MemorySaver())
+
+# Node-20 promotion policy (AGENT_ARCHITECTURE_UPDATE §3.2): which candidates
+# graduate from the <1s geometric tier to the 2-4h P4ward tier.
+TERNARY_PROMOTION = {
+    "mode": "stratified_by_proxy_decile",  # threshold | top_k | stratified
+    "threshold": 0.45,
+    "k": 8,
+    "compute_hour_budget": 48,
+    "sampling": "stratified",
+}
+
+
+def revise_degradation_from_ternary(deg_preds: list[dict], ternary_results: dict) -> list[dict]:
+    """12'-style revision: consume ternary outcomes into the degradation
+    estimate (AGENT_ARCHITECTURE_UPDATE §3.6). Ternary confidence < threshold
+    downgrades confidence and flags the estimate; high ternary confidence can
+    lift a low-confidence degradation verdict. Never fabricates numbers —
+    only adjusts confidence/provenance."""
+    if not deg_preds or not ternary_results:
+        return list(deg_preds)
+    scores = [t.get("ternary_plausibility_score", 0.0) for t in ternary_results.values() if isinstance(t, dict)]
+    if not scores:
+        return list(deg_preds)
+    ternary_conf = min(scores)
+    revised = []
+    for d in deg_preds:
+        d = dict(d)
+        if ternary_conf < 0.45:
+            d["model_confidence"] = min(d.get("model_confidence", 0.5), 0.35)
+            d["warning"] = (d.get("warning") or "") + "; ternary confidence low — revised"
+        elif d.get("model_confidence", 0) < 0.45:
+            d["model_confidence"] = 0.5
+            d["warning"] = (d.get("warning") or "") + "; ternary support — revised up"
+        d["ternary_revised"] = True
+        revised.append(d)
+    return revised
+
+
+# §3.7 pLDDT gate — spending 2-4h of P4ward compute on a low-confidence
+# AlphaFold pocket is the most expensive avoidable error in the system.
+PLDDT_GATE_THRESHOLD = 0.70
+PLDDT_GATE_MODE = "flag"          # "flag" (warn) | "block" (refuse promotion)
+
+
+def plddt_gate(candidate: dict, threshold: float = PLDDT_GATE_THRESHOLD) -> dict:
+    """Evaluate whether a candidate should be promoted to the expensive tier.
+
+    Returns {"ok": bool, "mode": str, "reason": str}.
+    - Unknown pLDDT (None) -> ok=True with reason "plddt_unknown" (flag only;
+      we never silently block on missing data, but the trace records it).
+    - plddt_min < threshold -> ok=False in "block" mode, ok=True + flag in
+      "flag" mode, reason carries the number so it reaches the report.
+    """
+    pmin = candidate.get("plddt_min")
+    if pmin is None:
+        return {"ok": True, "mode": "flag", "reason": "plddt_unknown",
+                "plddt_min": None}
+    if float(pmin) < threshold:
+        if PLDDT_GATE_MODE == "block":
+            return {"ok": False, "mode": "block",
+                    "reason": f"plddt_min {pmin:.2f} < {threshold} — pocket unreliable",
+                    "plddt_min": float(pmin)}
+        return {"ok": True, "mode": "flag",
+                "reason": f"plddt_min {pmin:.2f} < {threshold} — flagged",
+                "plddt_min": float(pmin)}
+    return {"ok": True, "mode": "pass", "reason": "plddt ok",
+            "plddt_min": float(pmin)}

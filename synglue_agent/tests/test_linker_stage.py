@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import pytest
+from pathlib import Path
 
 from synglue_agent.agents.state import WorkflowState, ReasonCode
 from synglue_agent.agents.linker_stage import (
@@ -224,3 +225,50 @@ class TestEvidenceGate:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
+
+
+class TestGenerativeLinkers:
+    def test_generative_source_in_library(self):
+        from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+        links = ProtacDesignToolbox().generate_linkers(max_linkers=24)
+        gen = [l for l in links if l.source == "generative_linker_model"]
+        assert gen, "generative linker source missing"
+        from rdkit import Chem
+        assert all(Chem.MolFromSmiles(l.smiles.replace("[*:1]", "[*]").replace("[*:2]", "[*]")) for l in gen)
+
+    def test_fallback_without_checkpoint(self, monkeypatch):
+        import synglue_agent.tools.generative_linker as gl
+        monkeypatch.setattr(gl, "_GENERATOR", gl.LinkerGenerator(Path("/nonexistent/linker_generator.pt")))
+        assert gl.generate_generative_linkers() == []
+
+
+class TestLinkInventScoring:
+    def test_reverse_sigmoid_band(self):
+        from synglue_agent.tools.linker_scoring import reverse_sigmoid
+        assert reverse_sigmoid(8, 12, 4, 0.5) == 1.0      # in band
+        assert reverse_sigmoid(2, 12, 4, 0.5) == 0.0      # far below
+        assert 0.0 <= reverse_sigmoid(24, 12, 4, 0.5) < 1.0
+
+    def test_scoring_prefers_ideal_length(self):
+        from synglue_agent.tools.linker_scoring import score_linker_smiles
+        ideal = score_linker_smiles("[*:1]CCCCCC[*:2]", use_admet=False).composite
+        long = score_linker_smiles("[*:1]CCCCCCCCCCCCCCCCCCCCCCCC[*:2]", use_admet=False).composite
+        assert ideal > long
+
+    def test_rank_linkers_sorted_and_scored(self):
+        from synglue_agent.tools.linker_scoring import rank_linkers
+        from synglue_agent.backend.schemas import LinkerRecord
+        links = [LinkerRecord(name="a", smiles="[*:1]CCCCCC[*:2]"),
+                 LinkerRecord(name="b", smiles="[*:1]CCCCCCCCCCCCCCCCCCCCCCCC[*:2]")]
+        ranked = rank_linkers(links, use_admet=False)
+        assert ranked[0].name == "a"
+        assert ranked[0].provenance.get("linkinvent_score", {}).get("composite", 0) > \
+               ranked[1].provenance.get("linkinvent_score", {}).get("composite", 1)
+
+    def test_optimizer_returns_valid_diverse(self):
+        from synglue_agent.tools.linker_optimizer import optimize_linkers
+        links = optimize_linkers(rounds=1, batch=16, keep=5, persist=False)
+        assert links, "optimizer should return linkers"
+        from rdkit import Chem
+        assert all(Chem.MolFromSmiles(l.smiles.replace("[*:1]", "[*]").replace("[*:2]", "[*]")) for l in links)
+        assert len({l.smiles for l in links}) == len(links)

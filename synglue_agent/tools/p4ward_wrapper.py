@@ -732,13 +732,43 @@ class P4wardWrapper:
         results = []
         base_path = Path(output_base)
         base_path.mkdir(parents=True, exist_ok=True)
+        manifest = base_path / "batch_checkpoint.json"
+
+        # §3.3 checkpointing/resumability: completed runs are recorded in a
+        # manifest keyed by run index; re-entry with the same output_base
+        # resumes without repeating finished batches (a 48h campaign survives
+        # a crash without losing the completed portion).
+        completed: Dict[str, Dict[str, Any]] = {}
+        if manifest.exists():
+            try:
+                completed = dict(json.loads(manifest.read_text()).get("completed", {}))
+                logger.info("resuming batch: %d/%d runs already completed",
+                            len(completed), len(configs))
+            except Exception:
+                completed = {}
 
         for i, cfg in enumerate(configs):
-            run_dir = base_path / f"run_{i:04d}"
+            key = f"run_{i:04d}"
+            run_dir = base_path / key
+            if key in completed and (run_dir / "P4wardRunResult.json").exists():
+                logger.info("skip completed %s", key)
+                try:
+                    results.append(P4wardRunResult(**completed[key]))
+                except Exception:
+                    continue
+                continue
             cfg["output_dir"] = str(run_dir)
-            logger.info(f"Batch run {i+1}/{len(configs)}: {cfg.get('linker_type', 'unknown')}")
+            logger.info("Batch run %d/%d: %s", i + 1, len(configs),
+                        cfg.get("linker_type", "unknown"))
             result = self.run(**cfg)
             results.append(result)
+            completed[key] = result.model_dump()
+            try:
+                (run_dir / "P4wardRunResult.json").write_text(result.model_dump_json(indent=2))
+                manifest.write_text(json.dumps(
+                    {"batch_config_hash": str(base_path), "completed": completed}, indent=2))
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("checkpoint write failed for %s: %s", key, exc)
 
         return results
 

@@ -11,9 +11,12 @@ import csv
 import hashlib
 import json
 import math
+import logging
 import re
 import time
 from collections import defaultdict
+
+logger = logging.getLogger("protacpilot.toolbox")
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -134,6 +137,20 @@ def _stable_id(prefix: str, *parts: str) -> str:
     digest = hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()[:12]
     return f"{prefix}-{digest}"
 
+
+
+def chem_identity(smiles: str) -> Optional[str]:
+    """Full InChIKey (incl. stereo layer) for any molecule — the canonical
+    identity key for dedup/seen-sets (AGENT_ARCHITECTURE_UPDATE §0.1)."""
+    try:
+        from rdkit import Chem
+        from rdkit.Chem.inchi import MolToInchiKey
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return None
+        return MolToInchiKey(mol)
+    except Exception:  # noqa: BLE001
+        return None
 
 class ProtacDesignToolbox:
     """All deterministic PROTAC design tools used by SynGlue agents."""
@@ -681,8 +698,41 @@ class ProtacDesignToolbox:
                 )
             )
         if not linkers:
-            return self.generate_rule_based_linkers(linker_types or DEFAULT_LINKER_TYPES, max_linkers=max_linkers)
-        linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
+            linkers = self.generate_rule_based_linkers(linker_types or DEFAULT_LINKER_TYPES, max_linkers=max_linkers)
+        # Generative layer: char-GRU linker model trained on PROTAC-DB linkers
+        # (ADMET-scored + diversity-selected). Toggle: PROTACPILOT_GENERATIVE_LINKERS=0.
+        import os as _os
+        if _os.environ.get("PROTACPILOT_GENERATIVE_LINKERS", "1") != "0":
+            try:
+                from synglue_agent.tools.generative_linker import generate_generative_linkers
+                gen = generate_generative_linkers(max_linkers=max(6, max_linkers // 2))
+                existing = {l.smiles for l in linkers}
+                linkers.extend([g for g in gen if g.smiles not in existing])
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("generative linkers unavailable: %s", exc)
+        # Link-INVENT-style ranking (reverse-sigmoid components x weights,
+        # weighted product, batched ADMET penalty). Toggle: PROTACPILOT_LINKER_SCORING=0.
+        import os as _os
+        if _os.environ.get("PROTACPILOT_LINKER_SCORING", "1") != "0":
+            try:
+                from synglue_agent.tools.linker_scoring import rank_linkers
+                linkers = rank_linkers(linkers)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("linker scoring unavailable: %s", exc)
+                linkers.sort(key=lambda item: item.synthetic_feasibility_proxy, reverse=True)
+        else:
+            linkers.sort(key=lambda item: (item.synthetic_feasibility_proxy, -abs(item.graph_length - 7)), reverse=True)
+        # RL-style optimization pass (Link-INVENT-like policy refinement).
+        # PROTACPILOT_LINKER_OPTIMIZE=1 runs a bounded REINFORCE loop and adds
+        # refined linkers; off by default for speed.
+        if _os.environ.get("PROTACPILOT_LINKER_OPTIMIZE", "0") == "1":
+            try:
+                from synglue_agent.tools.linker_optimizer import optimize_linkers
+                refined = optimize_linkers(rounds=2, batch=32, keep=max(6, max_linkers // 3))
+                existing = {l.smiles for l in linkers}
+                linkers.extend([r for r in refined if r.smiles not in existing])
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("linker optimization unavailable: %s", exc)
         return linkers[:max_linkers]
 
     def generate_rule_based_linkers(self, linker_types: Sequence[str], max_linkers: int = 32) -> list[LinkerRecord]:
@@ -1023,44 +1073,67 @@ class ProtacDesignToolbox:
         the heuristic remains ONLY as a labelled fallback when the model path
         fails (model_version starts with 'heuristic_proxy').
         """
-        from synglue_agent.tools.degradation_endpoint import predict_degradation_endpoint
-        predictions: list[DegradationPrediction] = []
-        for candidate in candidates:
-            try:
-                ep = predict_degradation_endpoint(
-                    candidate.full_protac_smiles,
-                    candidate_id=candidate.candidate_id,
-                    cell_line=cell_line or "default",
-                    target=(target_record.gene_symbol if target_record else ""),
-                    e3_ligase=candidate.e3_ligase or "CRBN",
+        from synglue_agent.tools.degradation_endpoint import predict_degradation_batch
+        smiles = [c.full_protac_smiles for c in candidates]
+        ids = [c.candidate_id for c in candidates]
+        try:
+            rows = predict_degradation_batch(
+                smiles, candidate_ids=ids,
+                cell_line=cell_line or "default",
+                target=(target_record.gene_symbol if target_record else ""),
+                e3_ligase=(candidates[0].e3_ligase or "CRBN") if candidates else "CRBN",
+            )
+        except Exception as exc:  # noqa: BLE001
+            rows = []
+            logger.warning("degradation batch failed (%s); using heuristic fallback", exc)
+        conf_map = {"high_confidence": 0.85, "medium_confidence": 0.55, "low_confidence": 0.25}
+        prob_map = {"active": 0.85, "inactive": 0.20, "unknown": 0.40}
+        predictions = []
+        for ep in rows:
+            warnings = []
+            if ep["ad_status"] == "out_of_domain":
+                warnings.append("candidate outside model applicability domain")
+            if ep["context_gated"]:
+                warnings.append(f"context gate: {ep['context_note']}")
+            predictions.append(
+                DegradationPrediction(
+                    candidate_id=ep["candidate_id"],
+                    predicted_dc50_nM=ep["dc50_nM"],
+                    predicted_logdc50=ep["log_dc50"],
+                    predicted_dmax_percent=ep["dmax_pct"],
+                    degradation_probability=prob_map.get(ep["activity_class"], 0.4),
+                    model_confidence=conf_map.get(ep["verdict"], 0.25),
+                    applicability_domain_score=ep["nn_tanimoto"] or 0.0,
+                    model_version="chemprop-ensemble-v0.3 (conformal, single+multi target)",
+                    warning=("; ".join(warnings) if warnings else None),
                 )
-                conf_map = {"high_confidence": 0.85, "medium_confidence": 0.55,
-                            "low_confidence": 0.25}
-                confidence = conf_map.get(ep.verdict, 0.25)
-                prob_map = {"active": 0.85, "inactive": 0.20, "unknown": 0.40}
-                warnings = []
-                if ep.ad_status == "out_of_domain":
-                    warnings.append("candidate outside model applicability domain")
-                if ep.context_gated:
-                    warnings.append(f"context gate: {ep.context_note}")
-                predictions.append(
-                    DegradationPrediction(
-                        candidate_id=candidate.candidate_id,
-                        predicted_dc50_nM=ep.dc50_nM,
-                        predicted_logdc50=ep.log_dc50,
-                        predicted_dmax_percent=ep.dmax_pct,
-                        degradation_probability=prob_map.get(ep.activity_class, 0.4),
-                        model_confidence=confidence,
-                        applicability_domain_score=ep.nn_tanimoto or 0.0,
-                        model_version="chemprop-ensemble-v0.3 (conformal, single+multi target)",
-                        warning=("; ".join(warnings) if warnings else None),
-                    )
-                )
-            except Exception as exc:
-                predictions.append(
-                    self._predict_degradation_heuristic(candidate, target_record, cell_line)
-                    .model_copy(update={"warning": f"chemprop unavailable ({exc}); heuristic proxy"}),
-                )
+            )
+        if not predictions and candidates:
+            # full batch failure -> labelled heuristic fallback per candidate
+            err_note = "chemprop unavailable; heuristic proxy"
+            predictions = [
+                self._predict_degradation_heuristic(c, target_record, cell_line)
+                .model_copy(update={"warning": err_note})
+                for c in candidates
+            ]
+        # TACK-model second opinion (trained on the TACK benchmark dataset,
+        # 6,561 endpoints). Never blocks; fills tack_* fields when available.
+        try:
+            from synglue_agent.tools.tack_degradation import predict_tack_batch
+            tack_entries = [
+                {"smiles": c.full_protac_smiles, "e3": c.e3_ligase or "CRBN",
+                 "cell": cell_line or "default",
+                 "poi": (target_record.gene_symbol if target_record else "")}
+                for c in candidates
+            ]
+            tack_rows = predict_tack_batch(tack_entries)
+            for pred, tr in zip(predictions, tack_rows):
+                if tr:
+                    pred.tack_dc50_nM = tr["dc50_nM"]
+                    pred.tack_dmax_pct = tr["dmax_pct"]
+                    pred.tack_active = tr["active"]
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("TACK cross-check unavailable: %s", exc)
         return predictions
 
     def _predict_degradation_heuristic(
@@ -1509,6 +1582,69 @@ class ProtacDesignToolbox:
                 )
             )
         return reviews
+
+    def evolve_with_generations(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        admet_predictions: Sequence[ADMETPrediction],
+        start_seen: set[str] | None = None,
+        max_generations: int = 10,
+        novelty_floor: float = 0.10,
+        patience: int = 2,
+    ) -> dict:
+        """Bounded evolution loop WITH memory (AGENT_ARCHITECTURE_UPDATE §2)."""
+        from synglue_agent.backend.schemas import GenerationRecord
+        seen = set(start_seen or set())
+        all_evolved: List[CandidateRecord] = []
+        records: List[GenerationRecord] = []
+        stop_reason = "max_generations"
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+
+        def key(smi: str) -> str:
+            return chem_identity(smi) or smi
+
+        def score(c):
+            r = ranking_by_id.get(c.candidate_id)
+            return float(r.final_priority_score) if r else 0.5
+
+        for generation in range(1, max_generations + 1):
+            gen_out = self.evolve_candidates(
+                candidates, rankings, admet_predictions, None,
+                max_new=max(4, max_generations))
+            produced = [c for c in gen_out if c.full_protac_smiles]
+            n_novel = 0
+            op_counts: dict = {}
+            for c in produced:
+                k = key(c.full_protac_smiles)
+                if k not in seen:
+                    seen.add(k)
+                    n_novel += 1
+                op = getattr(c, "operator_applied", None) or "evolve_candidates"
+                op_counts[op] = op_counts.get(op, 0) + 1
+                try:
+                    c.parent_ids = [p_.candidate_id for p_ in candidates[:2]]
+                    c.operator_applied = op
+                    c.generation = generation
+                except Exception:  # noqa: BLE001
+                    pass
+            scores = [score(c) for c in produced] or [0.0]
+            ratio = n_novel / max(len(produced), 1)
+            records.append(GenerationRecord(
+                generation=generation, n_produced=len(produced), n_novel=n_novel,
+                novelty_ratio=round(ratio, 3), best_score=round(max(scores), 3),
+                mean_score=round(sum(scores) / len(scores), 3),
+                operator_counts=op_counts, fitness_spec_id="fitness@v1"))
+            all_evolved.extend(produced)
+            recent = [r.novelty_ratio for r in records[-patience:]]
+            if len(recent) >= patience and all(x < novelty_floor for x in recent):
+                stop_reason = f"novelty_ratio<{novelty_floor} for {patience} gens"
+                break
+            if not produced:
+                stop_reason = "no_valid_offspring"
+                break
+        return {"evolved": all_evolved, "records": records,
+                "stop_reason": stop_reason, "seen": seen}
 
     def _smiles_mutate(self, smiles: str, rng=None) -> str | None:
         """Single-point SMILES mutation with retries.

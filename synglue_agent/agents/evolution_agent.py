@@ -12,14 +12,33 @@ class EvolutionRefinementAgent(ReActAgent):
     action = "evolution_refinement"
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
-        evolved = self.toolbox.evolve_candidates(
-            state.valid_candidates,
-            state.ranking_results,
-            state.admet_predictions,
-            state.target_record,
-            max_new=max(2, min(8, state.parsed_objective.candidate_count // 5)),
-        )
-        state.evolved_candidates = self.toolbox.validate_candidates(evolved)
+        # Node 19 upgrade (AGENT_ARCHITECTURE_UPDATE §2): bounded loop with
+        # memory — SeenSet (InChIKey), GenerationRecords, novelty termination.
+        try:
+            from synglue_agent.backend.schemas import FitnessSpec
+            res = self.toolbox.evolve_with_generations(
+                state.valid_candidates, state.ranking_results,
+                state.admet_predictions,
+                start_seen=set(getattr(state, "seen_inchikeys", set()) or set()),
+                max_generations=10, novelty_floor=0.10, patience=2)
+            state.evolved_candidates = self.toolbox.validate_candidates(res["evolved"])
+            state.generation_records = res["records"]
+            state.seen_inchikeys = res["seen"]
+            state.fitness_spec = FitnessSpec(
+                score_field="final_priority_score", label_source="trained",
+                config_hash="evolve@v1")
+            if res["stop_reason"] != "max_generations":
+                state.warnings.append(f"Evolution stopped: {res['stop_reason']}")
+            return state
+        except Exception:
+            evolved = self.toolbox.evolve_candidates(
+                state.valid_candidates,
+                state.ranking_results,
+                state.admet_predictions,
+                state.target_record,
+                max_new=max(2, min(8, state.parsed_objective.candidate_count // 5)),
+            )
+            state.evolved_candidates = self.toolbox.validate_candidates(evolved)
         if state.evolved_candidates:
             state.valid_candidates = self.toolbox.remove_duplicate_candidates(list(state.valid_candidates) + state.evolved_candidates)
             state.degradation_predictions = self.toolbox.predict_degradation(state.valid_candidates, state.target_record)

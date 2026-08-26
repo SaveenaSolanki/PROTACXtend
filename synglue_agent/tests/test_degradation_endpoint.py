@@ -120,9 +120,27 @@ class TestAgentUsesTrainedModel:
         from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
         from synglue_agent.backend.schemas import CandidateRecord
         import synglue_agent.tools.degradation_endpoint as dep
-        monkeypatch.setattr(dep, "predict_degradation_endpoint", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("model down")))
+        monkeypatch.setattr(dep, "predict_degradation_batch", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("model down")))
         t = ProtacDesignToolbox()
         c = CandidateRecord(candidate_id="c2", full_protac_smiles="CCCOCCC", e3_ligase="CRBN")
         p = t.predict_degradation([c], None)[0]
         assert p.model_version.startswith("heuristic_proxy"), p.model_version
         assert "chemprop unavailable" in (p.warning or "")
+
+
+class TestTackModel:
+    def test_tack_second_opinion_populated(self):
+        from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+        from synglue_agent.backend.schemas import CandidateRecord
+        t = ProtacDesignToolbox()
+        c = CandidateRecord(candidate_id="c9", full_protac_smiles="CCOCCOCC",
+                            e3_ligase="CRBN")
+        p = t.predict_degradation([c], None)[0]
+        assert p.tack_dc50_nM is not None, "TACK cross-check missing"
+        assert 0 < p.tack_dc50_nM
+
+    def test_tack_tool(self):
+        from synglue_agent.tools.tack_degradation import predict_tack_degradation
+        r = predict_tack_degradation("CCOCCOCC", e3="CRBN", cell="HEK293T", poi="BRD4")
+        assert r is not None
+        assert "provenance" in r and r["provenance"]["model"] == "tack-style-v1"

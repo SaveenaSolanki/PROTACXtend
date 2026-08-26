@@ -250,6 +250,21 @@ def _ternary(state: dict[str, Any]) -> dict[str, Any]:
             "applicability_domain": "in_domain",
             "status": "no_candidates",
         }}}
+    # §3.7 structure-quality gate: flag/block promotion of candidates whose
+    # binding pocket has low AlphaFold pLDDT (before any expensive P4ward spend).
+    try:
+        from synglue_agent.agents.ternary_stage import plddt_gate
+        gate_results = [plddt_gate(c) for c in candidates if c.get("plddt_min") is not None]
+        flagged = [g for g in gate_results if g["mode"] == "flag"]
+        if flagged:
+            return {"ternary_feasibility": {"flagged_plddt": {
+                "ternary_plausibility_score": 0.2,
+                "applicability_domain": "flagged",
+                "status": "flagged_plddt",
+                "note": "; ".join(g["reason"] for g in flagged[:5]),
+            }}, "warnings": [f"pLDDT gate: {len(flagged)} candidate(s) flagged for unreliable pockets"]}
+    except Exception:  # noqa: BLE001
+        pass
     try:
         from synglue_agent.backend.schemas import CandidateRecord
         record_candidates = [
@@ -281,7 +296,20 @@ def _ternary(state: dict[str, Any]) -> dict[str, Any]:
 
 def _degradation(state: dict[str, Any]) -> dict[str, Any]:
     from synglue_agent.agents.degradation_node import degradation_prediction_node
-    return degradation_prediction_node(state)  # real chemprop, uncertainty-aware
+    out = degradation_prediction_node(state)  # real chemprop, uncertainty-aware
+    # 12'-style revision: consume the ternary outcome (the graph runs ternary
+    # BEFORE degradation, so the revision uses what it already sees).
+    try:
+        from synglue_agent.agents.ternary_stage import revise_degradation_from_ternary
+        revised = revise_degradation_from_ternary(
+            list(out.get("degradation_predictions", [])),
+            state.get("ternary_feasibility", {}) or {})
+        if revised:
+            out["degradation_predictions"] = revised
+            out["revised_degradation"] = revised
+    except Exception as exc:  # noqa: BLE001
+        out["warnings"] = list(out.get("warnings", [])) + [f"ternary revision skipped: {exc}"]
+    return out
 
 
 def _admet(state: dict[str, Any]) -> dict[str, Any]:

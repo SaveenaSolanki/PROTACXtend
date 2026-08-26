@@ -436,3 +436,81 @@ geometrically screened against 3600 MegaDock poses.
 - Verified: agent path returns chemprop-ensemble-v0.3 (DC50 79.9 nM, Dmax
   80.5%, AD 0.15 → honest OOD warning for aspirin). 2 new tests
   (uses-chemprop + labelled-fallback). 48 affected tests pass.
+
+## 2026-08-12 — Generative linker model (LinkerGeneration upgrade)
+- New char-GRU linker generator (SMILES-RNN style) trained on 241 PROTAC-DB 3.0
+  BRICS-extracted linkers + curated/fragment linkers (scripts/build_linker_dataset.py,
+  scripts/train_linker_generator.py; checkpoint data/linkers/linker_generator.pt).
+- tools/generative_linker.py: sample -> RDKit validate/filter (3-20 heavy atoms,
+  rotatable<=8, wrapped-SMILES validity) -> BATCHED ADMET-AI scoring (AMES/DILI/hERG
+  composite, one subprocess for all) -> greedy diversity selection (Tanimoto>0.35).
+- Wired into toolbox.generate_linkers (source="generative_linker_model", toggle
+  PROTACPILOT_GENERATIVE_LINKERS=0) -> flows into LinkerGenerationAgent + agentic
+  graph node + linker scanner. 9s for the full library (was >300s with per-mol ADMET).
+- REINVENT/Link-INVENT prior exists locally (SynGlue_Py/repos/reinvent/models/
+  linkinvent.prior) but requires a separate REINVENT v3 env (absent) — the own-model
+  path was chosen as the reproducible alternative; Link-INVENT can be added later.
+- Tests: test_linker_stage.py +2 (generative source present + graceful fallback);
+  11 passed. md/09 spec updated.
+
+## 2026-08-12 — Deterministic pipeline batching (18x faster, real model)
+- Root cause: DegradationPredictionAgent looped predict_degradation_endpoint
+  per candidate -> one chemprop CLI subprocess (model reload ~20s) each:
+  58 candidates = ~34 min. Added predict_degradation_batch (ONE ensemble call +
+  ONE multitarget call + per-molecule verdict composition); toolbox.
+  predict_degradation now batched: 112 s (was 2029 s), all predictions from the
+  trained chemprop ensemble. ADMET path already local/rules.
+
+## 2026-08-12 — Link-INVENT-style linker scoring + RL optimization
+- tools/linker_scoring.py: reverse-sigmoid components (LGL/LEL/Flex/HBD/MW/TPSA,
+  weights 2,2,2,1,2,2) aggregated as weighted product + batched ADMET penalty;
+  effective length = attachment bond-path distance; rank_linkers used by
+  generate_linkers (default on; PROTACPILOT_LINKER_SCORING=0 to disable).
+- tools/linker_optimizer.py: REINFORCE-style policy-gradient refinement of the
+  char-GRU linker policy (reward = score*(1-admet_risk), baseline update,
+  bounded rounds; persist optional). PROTACPILOT_LINKER_OPTIMIZE=1 to run in
+  generate_linkers. Verified: optimized output = clean amide/PEG linkers.
+- Tests +4 (scoring band, length preference, ranking, optimizer validity):
+  15 linker tests pass.
+
+## 2026-08-12 — TACK-model degradation cross-check
+- TACK = TArgeting Chimeras Knowledge (Ribes/Dunlop/Mercado, KDD AI4Science '26;
+  arXiv 2605.19579): curated 3,514 PROTACs / 6,561 endpoints from TPDdb +
+  PROTAC-DB + PROTACpedia. Official HF weights (TACK-Model-DC50/Bin) are
+  GATED; dataset is public.
+- trained TACK-STYLE models on the public dataset (scripts/build_tack_model.py,
+  scaffold split): DC50 log-regression rho=0.800 (val n=876), Dmax rho=0.738,
+  binary active (DC50<100nM) acc 0.846 / AUC 0.917.
+- synglue_agent/tools/tack_degradation.py: inference (Morgan 1024 + descriptors
+  + E3/cell/POI one-hot) with provenance; batch API.
+- DegradationPrediction schema += tack_dc50_nM / tack_dmax_pct / tack_active;
+  toolbox.predict_degradation fills them as a second opinion (never blocking).
+- Tests +2 (tack populated + tool): 14 degradation-endpoint tests pass.
+
+## 2026-08-12 — AGENT_ARCHITECTURE_UPDATE implemented (nodes 5/19/20)
+- Node 5 census: chem_identity (full InChIKey, stereo-aware), InChIKey dedup in
+  binder retrieval, RetrievalCensus with ChEMBL n_reported_total recorded,
+  state.retrieval_census/retrieval_status fields.
+- Node 19 memory: evolve_with_generations — SeenSet (InChIKey) + GenerationRecord
+  (n_produced/n_novel vs ALL prior gens, novelty_ratio, best/mean, operators) +
+  termination (max_gens 10, novelty_floor 0.10, patience 2, reason recorded);
+  CandidateRecord.parent_ids/operator_applied fields; FitnessSpec
+  (label_source now truthfully "trained" — O-1 closed).
+- Node 20: TERNARY_PROMOTION policy + CalibrationRecord schema + revise_
+  degradation_from_ternary (12' folded in — graph already runs ternary before
+  degradation; verified confidence revision 0.8->0.35 on low ternary).
+- Deliverables: Sabeel/AGENT_ARCHITECTURE_IMPLEMENTATION_STATUS.md (spec marked
+  per section), TOOL_AUDIT.xlsx (8 sheets: overview/agents/tools/models/
+  integrations/CI/docs/gaps) + scripts/build_audit_xls.py, RUN_AND_FRONTEND.md
+  (how to run, frontend access, stage map), tests/test_architecture_update.py (5).
+
+## 2026-08-13 — §3.3/3.7/coverage_cell implemented
+- §3.3 P4ward checkpointing: batch_run writes batch_checkpoint.json + per-run
+  P4wardRunResult.json; resume skips completed runs (48h campaign survives crash).
+- §3.7 pLDDT gate: CandidateRecord.plddt_min/mean; plddt_gate() flag/block modes
+  (unknown-safe) wired into the agentic ternary node before P4ward spend.
+- coverage_cell tables: tools/coverage_matrix.py — CoverageCell rows (warhead×E3×
+  linker, InChIKey keyed), append-only outputs/coverage/coverage_cells.jsonl,
+  summary (fraction touched), best_pass_rate NULL-until-measured discipline;
+  wired into runtime (result["coverage"]).
+- tests +3 (plddt gate, coverage record/no-backfill): 8 architecture tests pass.

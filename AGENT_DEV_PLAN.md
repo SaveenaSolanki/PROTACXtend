@@ -1,24 +1,68 @@
 # Agent Development Plan — What I Need From You
 
+## Current NP-Hard Search Implementation
+
+The detailed implementation plan for solving the PROTAC NP-hard search bottlenecks through bounded agents is maintained in:
+
+- `PROTACPILOT_NP_HARD_FEATURE_PLAN.md`
+
+That document now specifies the exact agent order, per-agent input/output contracts, pruning rules, search budgets, cheap-filter thresholds, finalist-only expensive modeling policy, multi-objective ranking formula, uncertainty flags, resources, data requirements, and assay-feedback learning loop.
+
+The new section includes:
+
+- controlled linker/E3/exit-vector/stereoisomer generation rather than brute-force enumeration;
+- cheap filters before expensive biological or structural modeling;
+- finalist-only ternary modeling through `expensive_modeling_candidate_ids`;
+- stronger proxy cooperativity scoring with visible evidence labels;
+- concentration-dependent hook-effect modeling with proxy caveats;
+- explicit cell-line and E3-expression inputs;
+- active-learning assay feedback ingestion and retraining-readiness gates;
+- exact resources needed for RDKit, docking/P4ward, expression tables, measured alpha/Kd data, dose-response data, and model retraining.
+
+Core rule: PROTACXtend must not enumerate the full linker/E3/exit-vector/stereoisomer space. It must generate a controlled pool, cheaply filter it, run expensive ternary modeling only on finalists, preserve uncertainty labels, and feed assay results back into active-learning memory.
+
+Implemented code map:
+
+| Feature | Implementation |
+| --- | --- |
+| Controlled budgets | `ControlledSearchAgent`, `SearchPolicy`, `build_search_policy` |
+| Capped stereochemistry | `StereochemistryEnumerationAgent`, `expand_stereoisomers_controlled` |
+| Cheap filtering | `CheapFilterAgent`, `cheap_filter_candidates` |
+| Finalist selection | `ExpensiveModelingSelectionAgent`, `select_expensive_modeling_finalists` |
+| Cell context | `CellContextAgent`, `score_e3_context` |
+| Cooperativity | `CooperativityPredictionAgent`, `predict_cooperativity` |
+| Hook effect | `HookEffectPredictionAgent`, `predict_hook_effect` |
+| Active learning | `ActiveLearningAgent`, `assay_feedback.py`, `update_active_learning_from_feedback` |
+| Multi-objective ranking | `RankingAgent`, `rank_candidates` |
+
 ## Can Build Now (no API keys needed)
 
 | Agent | What it needs | Status |
 |-------|--------------|--------|
-| TargetResolverAgent | UniProt REST API (free, no key) | ✅ Build now |
-| WarheadSelectionAgent | Local curated_warheads.csv | ✅ Build now |
-| E3LigandSelectionAgent | Local curated_e3_ligands.csv | ✅ Build now |
-| ExitVectorDetectionAgent | RDKit (installed) | ✅ Build now |
-| LinkerGenerationAgent | Local curated_linkers.csv + RDKit | ✅ Build now |
-| MolecularConstructionAgent | RDKit | ✅ Build now |
-| CandidateValidationAgent | RDKit + property rules | ✅ Build now |
-| ADMETAgent | RDKit descriptors | ✅ Build now |
-| NoveltyAgent | Local known_protac_smiles.csv | ✅ Build now |
-| RankingAgent | Composite scoring | ✅ Build now |
-| ProximityDiversityAgent | RDKit fingerprints | ✅ Build now |
-| ReflectionReviewAgent | Rule-based critique | ✅ Build now |
-| SafetyAgent | Simple rule checks | ✅ Build now |
-| ReportAgent | Template + data | ✅ Build now |
-| DegradationPredictionAgent | Heuristic model | ✅ Build now |
+| TargetResolverAgent | UniProt REST API optional; local target data fallback | Implemented |
+| WarheadSelectionAgent | Local curated_warheads.csv | Implemented |
+| E3LigandSelectionAgent | Local curated_e3_ligands.csv | Implemented |
+| ExitVectorDetectionAgent | RDKit preferred | Implemented |
+| LinkerGenerationAgent | Local curated_linkers.csv + RDKit/generative fallback | Implemented with budget cap |
+| MolecularConstructionAgent | RDKit preferred | Implemented with construction cap |
+| StereochemistryEnumerationAgent | RDKit stereochemistry support | Implemented with cap |
+| CandidateValidationAgent | RDKit + property rules | Implemented |
+| CellContextAgent | Curated E3 context priors + user overrides | Implemented; needs real expression atlas next |
+| ADMETAgent | RDKit descriptors | Implemented |
+| NoveltyAgent | Local known_protac_smiles.csv | Implemented |
+| ApplicabilityDomainAgent | Local property/domain heuristics | Implemented |
+| CheapFilterAgent | Validity, property, ADMET, novelty, domain, context scores | Implemented |
+| DegradationPredictionAgent | Heuristic model | Implemented; trained model still needed |
+| RankingAgent | Multi-objective scoring | Implemented with new terms |
+| ExpensiveModelingSelectionAgent | Ranking + diversity finalist selection | Implemented |
+| TernaryFeasibilityAgent | Geometry proxy; P4ward path when configured | Implemented; calibration still needed |
+| CooperativityPredictionAgent | Ternary/linker/interface/lysine proxy | Implemented as proxy |
+| HookEffectPredictionAgent | Concentration-grid proxy | Implemented as proxy |
+| ActiveLearningAgent | Assay feedback rows + memory | Implemented ingestion; retraining job still needed |
+| ProximityDiversityAgent | RDKit fingerprints | Implemented |
+| ReflectionReviewAgent | Rule-based critique | Implemented |
+| SafetyAgent | Simple rule checks | Implemented |
+| ReportAgent | Template + data | Implemented with NP-hard caveats |
 
 ## Need API Keys From You
 
@@ -36,16 +80,23 @@
 
 ## Stereochemistry-Aware SMILES
 
-I need to implement:
-1. **Isomeric SMILES parser** — detect chiral centers, E/Z geometry from SMILES
-2. **Exit vector with stereochemistry** — identify which attachment vector is correct for each enantiomer
-3. **Linker attachment with stereo retention** — ensure linker doesn't invert chiral centers
-4. **Validation** — compare generated PROTAC SMILES with known isomeric PROTACs
+Implemented or partially implemented:
 
-All of this is RDKit-based and can be built now.
+1. **Isomeric SMILES parser** - RDKit-backed stereochemistry tools exist.
+2. **Controlled stereoisomer enumeration** - `StereochemistryEnumerationAgent` expands only within budget.
+3. **Linker attachment with stereo retention** - assembly and validation preserve stereoisomer-specific candidate records where possible.
+4. **Validation** - stereoisomer variants are not silently collapsed without warning.
+
+This path is RDKit-based and is now part of the implemented workflow.
 
 ---
 
-## Ready to Build
+## Remaining Build Work
 
-Give me the go-ahead and I'll implement all 15 agents plus the stereochemistry engine. The ones needing APIs will use public REST endpoints (no key needed for ChEMBL, UniProt, PDB, PubChem, BindingDB).
+The immediate implementation is present. The remaining work is production validation:
+
+- connect real cell-line expression tables;
+- fit hook-effect curves from measured dose-response data;
+- calibrate cooperativity against measured alpha/Kd or validated ternary-pose data;
+- run bounded P4ward/docking calibration on finalists;
+- add a reproducible model-training job, registry, and rollback path for active learning.

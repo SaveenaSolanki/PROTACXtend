@@ -8,8 +8,11 @@ from __future__ import annotations
 
 from typing import Callable, Iterable, List, Tuple
 
+from synglue_agent.agents.active_learning_agent import ActiveLearningAgent
 from synglue_agent.agents.admet_agent import ADMETAgent
 from synglue_agent.agents.binder_agent import TargetBinderRetrievalAgent
+from synglue_agent.agents.context_agent import CellContextAgent
+from synglue_agent.agents.cooperativity_agent import CooperativityPredictionAgent, HookEffectPredictionAgent
 from synglue_agent.agents.construction_agent import CandidateValidationAgent, MolecularConstructionAgent
 from synglue_agent.agents.design_planner_agent import DesignPlannerAgent
 from synglue_agent.agents.e3_agent import E3LigandSelectionAgent
@@ -23,6 +26,12 @@ from synglue_agent.agents.ranking_agent import RankingAgent
 from synglue_agent.agents.reflection_agent import ReflectionReviewAgent
 from synglue_agent.agents.report_agent import ReportAgent
 from synglue_agent.agents.safety_agent import SafetyAgent
+from synglue_agent.agents.search_control_agent import (
+    CheapFilterAgent,
+    ControlledSearchAgent,
+    ExpensiveModelingSelectionAgent,
+    StereochemistryEnumerationAgent,
+)
 from synglue_agent.agents.supervisor_agent import SupervisorAgent
 from synglue_agent.agents.target_agent import TargetResolverAgent
 from synglue_agent.agents.ternary_agent import TernaryFeasibilityAgent
@@ -57,6 +66,7 @@ class LocalSynGlueWorkflowGraph:
         self.nodes: List[Node] = [
             ("parse_user_request", SupervisorAgent().run),
             ("create_design_plan", DesignPlannerAgent().run),
+            ("control_np_hard_search", ControlledSearchAgent().run),
             ("safety_precheck", SafetyAgent().run),
             ("resolve_target", TargetResolverAgent().run),
             ("retrieve_target_binders", TargetBinderRetrievalAgent().run),
@@ -65,17 +75,24 @@ class LocalSynGlueWorkflowGraph:
             ("detect_exit_vectors", ExitVectorDetectionAgent().run),
             ("generate_linkers", LinkerGenerationAgent().run),
             ("construct_protacs", MolecularConstructionAgent().run),
+            ("expand_stereoisomers", StereochemistryEnumerationAgent().run),
             ("validate_protacs", CandidateValidationAgent().run),
-            ("predict_degradation", DegradationPredictionAgent().run),
+            ("score_cell_context", CellContextAgent().run),
             ("predict_admet", ADMETAgent().run),
             ("check_novelty", NoveltyAgent().run),
             ("assess_applicability_domain", ApplicabilityDomainAgent().run),
+            ("cheap_filter_candidates", CheapFilterAgent().run),
+            ("predict_degradation", DegradationPredictionAgent().run),
             ("initial_ranking", RankingAgent(final=False).run),
             ("diversity_clustering", ProximityDiversityAgent().run),
             ("reflection_review", ReflectionReviewAgent().run),
             ("evolution_refinement", EvolutionRefinementAgent().run),
+            ("select_expensive_modeling_finalists", ExpensiveModelingSelectionAgent().run),
             ("optional_ternary_feasibility", TernaryFeasibilityAgent().run),
+            ("predict_cooperativity", CooperativityPredictionAgent().run),
+            ("predict_hook_effect", HookEffectPredictionAgent().run),
             ("final_ranking", RankingAgent(final=True).run),
+            ("active_learning_update", ActiveLearningAgent().run),
             ("generate_report", ReportAgent().run),
             ("update_memory", MemoryUpdateAgent().run),
         ]

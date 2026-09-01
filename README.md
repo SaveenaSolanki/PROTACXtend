@@ -1,10 +1,17 @@
-# ProtacAutopilot
+# PROTACXtend
 
-ProtacAutopilot is a local, tool-augmented agent workflow for component-aware PROTAC design. The Python package is named `synglue_agent`; the user-facing app is ProtacAutopilot.
+PROTACXtend is a local, tool-augmented AI agent platform for component-aware PROTAC design, ternary complex feasibility modeling, and degradation prediction.
 
-The system takes a natural-language design objective, converts it into a structured workflow state, runs a sequence of specialist agents, builds candidate PROTAC records, scores them with local deterministic tools or configured model backends, ranks the candidates, and writes report/CSV/JSON outputs.
+- **GitHub Repository**: [`https://github.com/the-ahuja-lab/PROTACXtend`](https://github.com/the-ahuja-lab/PROTACXtend)
+- **Organization**: Ahuja Lab ([@the-ahuja-lab](https://github.com/the-ahuja-lab))
+- **Lead Developer**: Saveena Solanki ([@SaveenaSolanki](https://github.com/SaveenaSolanki))
+- **Web App**: See [`website/`](file:///storage/saveena/protacpilot/website/index.html) for the landing page & interactive workbench (inspired by [feynman.is](https://www.feynman.is/)).
+- **Documentation**: See [`documentation/`](file:///storage/saveena/protacpilot/documentation/README.md) for full guides on installation, 23-node architecture, workflows, API reference, and GitHub collaborator setup.
 
-This repository is currently a reproducible research scaffold. It is useful for workflow development, tool integration, UI/API demos, and provenance tracking. It is not yet a validated medicinal chemistry decision engine.
+The system takes a natural-language design objective, converts it into a structured workflow state, runs a sequence of 23 specialist agents, builds candidate PROTAC records, scores them with local deterministic tools or model backends, ranks candidates, and outputs reports, CSV, and JSON data.
+
+Quick start and backend map: [PROTACXTEND_README.md](PROTACXTEND_README.md) & [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md).
+
 
 ## Architecture
 
@@ -84,7 +91,7 @@ So the honest answer is: the project is LLM-ready and agentic, but the current c
 
 ## Seven Agentic Capabilities
 
-ProtacAutopilot now includes an additive seven-layer agentic wrapper around the deterministic chemistry workflow:
+PROTACXtend now includes an additive seven-layer agentic wrapper around the deterministic chemistry workflow:
 
 | Capability | Implementation | Purpose |
 | --- | --- | --- |

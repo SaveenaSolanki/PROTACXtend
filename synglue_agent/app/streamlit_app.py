@@ -1,4 +1,4 @@
-"""Light scientific workspace UI for ProtacAutopilot."""
+"""Light scientific workspace UI for PROTACXtend."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ from synglue_agent.tools.report_generator import generate_candidate_table
 from synglue_agent.tools.tool_registry import ToolRegistry
 
 
-APP_NAME = "PROTAC Autopilot"
+APP_NAME = "PROTACXtend"
 CHAT_DB_PATH = PROJECT_ROOT / "synglue_agent" / "memory" / "chat_history.sqlite3"
 HERO_BG_PATH = PROJECT_ROOT / "synglue_agent" / "app" / "assets" / "protac_degradation_hero_bg.png"
 CHALLENGE_INFOGRAPHIC_PATH = PROJECT_ROOT / "synglue_agent" / "app" / "assets" / "protac_challenge_infographic.png"
@@ -1349,7 +1349,7 @@ def _inject_css(st: Any, is_authenticated: bool = False) -> None:
 
 def _brand_mark() -> str:
     return textwrap.dedent("""
-    <div class="pa-brand-mark" aria-label="PROTAC Autopilot brand mark">
+    <div class="pa-brand-mark" aria-label="PROTACXtend brand mark">
         <svg viewBox="0 0 96 96" role="img">
             <defs>
                 <linearGradient id="pa-orange-link" x1="24" y1="48" x2="72" y2="48" gradientUnits="userSpaceOnUse">
@@ -1381,7 +1381,7 @@ def _site_header(st: Any, login_visible: bool = True) -> None:
                 <div class="pa-brand-lockup">
                     {_brand_mark()}
                     <div>
-                        <div class="pa-brand-word">PROTAC Autopilot</div>
+                        <div class="pa-brand-word">PROTACXtend</div>
                     </div>
                 </div>
             </div>
@@ -1531,7 +1531,7 @@ def _render_login(st: Any) -> None:
         <div class="pa-landing-hero">
             <div class="pa-hero-copy">
                 <div class="pa-kicker">Local degrader-engineering workspace</div>
-                <div class="pa-title">PROTAC Autopilot</div>
+                <div class="pa-title">PROTACXtend</div>
                 <div class="pa-subtitle">From target hypothesis to clinically relevant degrader candidates.</div>
                 <div class="pa-copy" style="margin-left:auto;margin-right:auto;">
                     A local, traceable research workspace for designing and prioritizing bifunctional degraders through target tractability, warhead evidence, E3 ligase context, linker geometry, ternary-complex feasibility, degradation endpoint ranking, and ADME/Tox-aware filtering.
@@ -1569,7 +1569,7 @@ def _render_login(st: Any) -> None:
         <div class="pa-section">
             <h2>One backend. Two ways to work.</h2>
             <div class="pa-section-intro">
-                PROTAC Autopilot exposes the same degrader-design engine through both a structured workspace and a chat interface. The chat is not a separate demo layer; it uses the same local session, candidate tables, tool registry, ranking logic, workflow trace, and report archive.
+                PROTACXtend exposes the same degrader-design engine through both a structured workspace and a chat interface. The chat is not a separate demo layer; it uses the same local session, candidate tables, tool registry, ranking logic, workflow trace, and report archive.
             </div>
             <div class="pa-card-grid-2">
         """
@@ -1586,7 +1586,7 @@ def _render_login(st: Any) -> None:
 
     _html(
         st,
-        "<div class='pa-section'><h2>Autopilot research capabilities</h2>"
+        "<div class='pa-section'><h2>PROTACXtend research capabilities</h2>"
         + "<div class='pa-section-intro'>Use natural language to drive the same local degrader-design workflow, inspect saved evidence, and retrieve session outputs without leaving the research workspace.</div>"
         + "<div class='pa-chat-capabilities'>"
         + "".join(f"<div>{escape(item)}</div>" for item in CHAT_SUPPORT)
@@ -1616,7 +1616,7 @@ def _render_sidebar(st: Any) -> None:
         <div class="pa-brand-lockup">
             {_brand_mark()}
             <div>
-                <div class="pa-brand-word">PROTAC Autopilot</div>
+                <div class="pa-brand-word">PROTACXtend</div>
                 <div class="pa-brand-sub">Research workspace</div>
             </div>
         </div>
@@ -1897,14 +1897,14 @@ def _registry_display_rows() -> list[dict[str, str]]:
 def _run_design(st: Any, request: str) -> None:
     chat_id = st.session_state["chat_id"]
     _save_message(chat_id, "user", request)
-    with st.spinner("Running ProtacAutopilot agent workflow..."):
+    with st.spinner("Running PROTACXtend agent workflow..."):
         state = run_workflow_from_request(request)
     summary = summarize_state(state)
     rows = generate_candidate_table(state)
     tool_counts = summary.get("tool_status_counts", {})
     status_note = ", ".join(f"{key}: {value}" for key, value in sorted(tool_counts.items())) or "tool availability recorded"
     response = (
-        f"Autopilot run complete: {summary.get('valid_candidates', 0)} candidate(s), "
+        f"PROTACXtend run complete: {summary.get('valid_candidates', 0)} candidate(s), "
         f"{summary.get('warheads_selected', 0)} selected warhead(s), top priority score {summary.get('top_score')}. "
         f"Synthesis feasibility, ADME/Tox signals, and ranking rationale are available below. Tool status: {status_note}."
     )
@@ -2026,7 +2026,7 @@ Additional notes:</div>
                 st.download_button(
                     "Download candidates CSV",
                     pd.DataFrame(rows).to_csv(index=False),
-                    "protacautopilot_candidates.csv",
+                    "protacxtend_candidates.csv",
                     "text/csv",
                     width="stretch",
                     key=f"download-candidates-csv-{run['created_at']}",
@@ -2035,7 +2035,7 @@ Additional notes:</div>
                 st.download_button(
                     "Download candidates JSON",
                     json.dumps(rows, indent=2),
-                    "protacautopilot_candidates.json",
+                    "protacxtend_candidates.json",
                     "application/json",
                     width="stretch",
                     key=f"download-candidates-json-{run['created_at']}",
@@ -2064,7 +2064,7 @@ Additional notes:</div>
         st.download_button(
             "Download Markdown report",
             run["report"],
-            "protacautopilot_report.md",
+            "protacxtend_report.md",
             "text/markdown",
             width="stretch",
             key=f"download-report-md-{run['created_at']}",
@@ -2087,7 +2087,7 @@ def _render_workspace(st: Any, pd: Any) -> None:
         <div class="pa-topbar">
             <div>
                 <div class="pa-kicker">Local degrader-design cockpit</div>
-                <h1>PROTAC Autopilot</h1>
+                <h1>PROTACXtend</h1>
                 <div class="pa-subtle">Structured workflow and chat interface share the same local session, backend workflow, candidate-ranking pipeline, trace history, and report-generation logic.</div>
                 <div class="pa-quick-row">
                     <span class="pa-quick-chip">Design</span>
@@ -2145,7 +2145,7 @@ def _render_workspace(st: Any, pd: Any) -> None:
                 placeholder="Low hERG risk, balanced cLogP/TPSA, low DC50, high Dmax, synthetic feasibility...",
                 height=110,
             )
-            submitted = st.form_submit_button("Start Autopilot run", type="primary", width="stretch")
+            submitted = st.form_submit_button("Start PROTACXtend run", type="primary", width="stretch")
         if submitted:
             brief = (
                 f"Design {e3}-based PROTAC candidates for {target or 'the provided target hypothesis'}. "
@@ -2170,7 +2170,7 @@ def _render_workspace(st: Any, pd: Any) -> None:
                 <div class="pa-chat-empty">
                     <div>
                         <div class="pa-kicker">Chat research interface</div>
-                        <h3 style="color:var(--card-foreground);margin:8px 0;">Ask Autopilot</h3>
+                        <h3 style="color:var(--card-foreground);margin:8px 0;">Ask PROTACXtend</h3>
                         <div>Describe a target and constraints, or paste PROTAC SMILES.</div>
                     </div>
                 </div>

@@ -80,9 +80,8 @@ class TernaryFeasibilityAgent(ReActAgent):
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
         if not state.parsed_objective.use_structure_aware_ranking:
-            logger.info("Structure-aware ranking not requested. Skipping.")
-            state.ternary_feasibility_results = []
-            return state
+            logger.info("Structure-aware ranking not requested. Running finalist geometry proxy only.")
+            return self._run_geometry_fallback(state)
 
         # Determine which tools are available
         can_dock = DOCKING_AVAILABLE and self._vina_available()
@@ -273,14 +272,15 @@ class TernaryFeasibilityAgent(ReActAgent):
 
     def _run_geometry_fallback(self, state: WorkflowState) -> WorkflowState:
         """Fallback: fast geometry and linker reachability scoring."""
-        ranking_ids = [
-            r.candidate_id for r in state.ranking_results[: min(12, len(state.ranking_results))]
+        budget = getattr(state.search_policy, "expensive_modeling_budget", 12)
+        ranking_ids = list(state.expensive_modeling_candidate_ids) or [
+            r.candidate_id for r in state.ranking_results[: min(budget, len(state.ranking_results))]
         ]
         top_candidates = [
             c for c in state.valid_candidates if c.candidate_id in ranking_ids
         ]
         state.ternary_feasibility_results = self.toolbox.assess_ternary_feasibility(
-            top_candidates, state.target_record, top_n=12
+            top_candidates, state.target_record, top_n=budget
         )
 
         # Mark as geometry proxy
@@ -357,8 +357,11 @@ class TernaryFeasibilityAgent(ReActAgent):
     def _collect_protac_smiles(self, state: WorkflowState) -> List[str]:
         """Collect all PROTAC SMILES from candidates."""
         smiles_set = set()
+        finalist_ids = set(state.expensive_modeling_candidate_ids or [])
         for c in state.valid_candidates:
-            smi = c.protac_smiles or self._build_protac_smiles(c)
+            if finalist_ids and c.candidate_id not in finalist_ids:
+                continue
+            smi = getattr(c, "full_protac_smiles", "") or self._build_protac_smiles(c)
             if smi and smi not in smiles_set:
                 smiles_set.add(smi)
         return list(smiles_set)
@@ -370,8 +373,11 @@ class TernaryFeasibilityAgent(ReActAgent):
         linker_map: Dict[str, List[str]] = {}
 
         # Map candidate SMILES back to their linker types
+        finalist_ids = set(state.expensive_modeling_candidate_ids or [])
         for c in state.valid_candidates:
-            smi = c.protac_smiles or self._build_protac_smiles(c)
+            if finalist_ids and c.candidate_id not in finalist_ids:
+                continue
+            smi = getattr(c, "full_protac_smiles", "") or self._build_protac_smiles(c)
             if smi and smi in protac_smiles:
                 linker_key = "custom"
                 if c.linker_smiles:
@@ -391,8 +397,8 @@ class TernaryFeasibilityAgent(ReActAgent):
 
     def _build_protac_smiles(self, candidate: CandidateRecord) -> Optional[str]:
         """Build a full PROTAC SMILES from component parts."""
-        if candidate.protac_smiles:
-            return candidate.protac_smiles
+        if getattr(candidate, "full_protac_smiles", ""):
+            return candidate.full_protac_smiles
 
         parts = []
         if candidate.warhead_smiles:

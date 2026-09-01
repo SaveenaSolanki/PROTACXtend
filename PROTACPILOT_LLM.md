@@ -1,4 +1,4 @@
-# ProtacPilot LLM Provider Layer — use ANY API, swap anytime
+# PROTACXtend LLM Provider Layer — use ANY API, swap anytime
 
 The decision layer talks to ONE interface (`llm/gateway.py`). The provider is
 configurable at boot (env) or at runtime (backend API / frontend sidebar).

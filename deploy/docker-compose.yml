@@ -1,4 +1,4 @@
-# ProtacPilot production services (item 2)
+# PROTACXtend production services (item 2)
 # =========================================
 #   api           — FastAPI backend (unified runtime + /llm + /mode endpoints)
 #   worker        — job queue consumer (P4ward, retrosynthesis, degradation)

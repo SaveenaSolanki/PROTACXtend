@@ -552,7 +552,7 @@ $$\text{E3 ligand available (Problem 2)}$$
 | GA/evolutionary search | Linker space exploration | Still limited by evaluation budget |
 | **Heuristic shortcuts** (our linker scanner) | Attachment point finding, fast scoring | Any thermodynamic property |
 
-### What we've built in ProtacPilot to address these
+### What we've built in PROTACXtend to address these
 
 | Module | Problem addressed | Status |
 |--------|-------------------|--------|

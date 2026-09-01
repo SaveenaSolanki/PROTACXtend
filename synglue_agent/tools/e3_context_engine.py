@@ -35,6 +35,7 @@ logger = logging.getLogger("protacpilot.e3context")
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_CSV = ROOT / "data" / "benchmark" / "e3_expression_evidence.csv"
+PACKAGE_EVIDENCE_CSV = ROOT / "synglue_agent" / "data" / "e3_expression_evidence.csv"
 
 # Weights (deterministic, documented)
 WEIGHTS = {
@@ -128,23 +129,65 @@ def _level_to_score(level: str) -> float:
     return {"high": 1.0, "medium": 0.6, "low": 0.2, "unknown": 0.4}.get(level, 0.4)
 
 
+def _canonical_cell(value: str) -> str:
+    return value.strip().upper().replace("_", "").replace("-", "").replace(" ", "")
+
+
+def _canonical_e3(value: str) -> str:
+    aliases = {
+        "CEREBLON": "CRBN",
+        "CRBN": "CRBN",
+        "VHL": "VHL",
+        "PVHL": "VHL",
+        "CIAP1": "cIAP1",
+        "BIRC2": "cIAP1",
+        "CIAP2": "cIAP2",
+        "BIRC3": "cIAP2",
+        "MDM2": "MDM2",
+        "DCAF15": "DCAF15",
+        "DCAF16": "DCAF16",
+    }
+    token = value.strip().upper()
+    return aliases.get(token, value.strip())
+
+
+def _expression_score(row: dict[str, str]) -> float:
+    explicit = row.get("expression_score", "")
+    if explicit not in ("", None):
+        try:
+            return max(0.0, min(1.0, float(explicit)))
+        except Exception:
+            pass
+    return _level_to_score(row.get("level", "unknown"))
+
+
 def _load_expression_table() -> Dict[str, Any]:
-    if not EVIDENCE_CSV.exists():
+    evidence_path = EVIDENCE_CSV if EVIDENCE_CSV.exists() else PACKAGE_EVIDENCE_CSV
+    if not evidence_path.exists():
         return _DEFAULT_EXPRESSION
     table: Dict[str, Dict[str, Dict[str, str]]] = {}
     try:
-        with open(EVIDENCE_CSV, newline="") as f:
+        with open(evidence_path, newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 cell = row.get("cell_line", "").strip()
-                e3 = row.get("e3", "").strip()
+                e3 = _canonical_e3(row.get("e3", "").strip())
                 if cell and e3:
-                    table.setdefault(cell, {})[e3] = {
+                    record = {
                         "level": row.get("level", "medium"),
                         "source": row.get("source", "curated"),
+                        "expression_score": str(_expression_score(row)),
+                        "evidence_type": row.get("evidence_type", "curated_expression"),
+                        "source_url": row.get("source_url", ""),
+                        "confidence": row.get("confidence", "0.7"),
                     }
+                    table.setdefault(cell, {})[e3] = record
+                    table.setdefault(_canonical_cell(cell), {})[e3] = record
     except Exception as exc:
         logger.warning("e3 evidence csv failed: %s", exc)
         return _DEFAULT_EXPRESSION
+    for cell, values in _DEFAULT_EXPRESSION.items():
+        table.setdefault(cell, values)
+        table.setdefault(_canonical_cell(cell), values)
     return table or _DEFAULT_EXPRESSION
 
 
@@ -156,9 +199,13 @@ def score_e3(
 ) -> E3ContextResult:
     """Score one E3 in a context. Deterministic, evidence-referenced."""
     table = _load_expression_table()
-    expr = table.get(cell_line, table["default"]).get(e3_ligase,
-                                                       table["default"].get(e3_ligase, {"level": "medium", "source": "default"}))
-    expression_score = _level_to_score(expr["level"])
+    e3_ligase = _canonical_e3(e3_ligase)
+    context_key = cell_line if cell_line in table else _canonical_cell(cell_line)
+    expr = table.get(context_key, table["default"]).get(
+        e3_ligase,
+        table["default"].get(e3_ligase, {"level": "medium", "source": "default", "expression_score": "0.6", "confidence": "0.5"}),
+    )
+    expression_score = _expression_score(expr)
 
     colocalization_score = 1.0 if (target_localization != "nuclear" or e3_ligase in _NUCLEAR_E3S) else 0.3
 
@@ -178,11 +225,13 @@ def score_e3(
     )
 
     evidence_refs = [
-        expr["source"],
+        f"expression:{expr.get('source', 'curated')}",
         f"ligand:{ligand['ligand']}",
         f"structure:{structural['pdb']}",
         f"resistance:{resistance['note']}",
     ]
+    if expr.get("source_url"):
+        evidence_refs.append(f"expression_url:{expr['source_url']}")
     contraindications: List[str] = []
     if expr["level"] == "low":
         contraindications.append(f"{e3_ligase} expression LOW in {cell_line}")
@@ -209,7 +258,7 @@ def score_e3(
         total_context_score=round(total, 4),
         evidence_refs=evidence_refs,
         contraindications=contraindications,
-        confidence=round(min(0.95, 0.5 + 0.3 * expression_score), 3),
+        confidence=round(min(0.95, max(0.45, float(expr.get("confidence", 0.5))) + 0.2 * expression_score), 3),
         explanation=explanation,
     )
 

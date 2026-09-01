@@ -1,4 +1,4 @@
-# RUN_AND_FRONTEND.md — How to run ProtacPilot, access the frontend, and where we are
+# RUN_AND_FRONTEND.md — How to run PROTACXtend, access the frontend, and where we are
 
 _Verified against the code on 2026-08-12 (ports, entry points, commands)._
 
@@ -6,7 +6,7 @@ _Verified against the code on 2026-08-12 (ports, entry points, commands)._
 
 ## 1. What this is (30-second answer)
 
-ProtacPilot is a research-grade **agentic PROTAC design platform**: a LangGraph
+PROTACXtend is a research-grade **agentic PROTAC design platform**: a LangGraph
 pipeline (real tools: live ChEMBL binders, trained Chemprop + TACK degradation,
 ADMET-AI, AiZynthFinder retrosynthesis, SE3/P4ward ternary, NSGA-II ranking)
 with an LLM advisory layer (gpt-oss:20b, Ollama), human gates, persistent

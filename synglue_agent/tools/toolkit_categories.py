@@ -1,4 +1,4 @@
-"""High-level toolkit categories for SynGlue / PROTAC Autopilot."""
+"""High-level toolkit categories for SynGlue / PROTACXtend."""
 
 from __future__ import annotations
 
@@ -30,4 +30,3 @@ CATEGORIES = [
     "image_analysis",
     "workflow_platforms",
 ]
-

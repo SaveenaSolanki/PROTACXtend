@@ -88,7 +88,37 @@ def _db(
 DATABASE_REGISTRY: list[dict[str, Any]] = [
     # PROTAC / glue
     _db("MagnetDB / MGDB / MolGlueDB", "protac_glue", "download_local", False, True, False, False, "local_file", "", "", notes="Local curated/source-specific export expected."),
-    _db("PROTAC-DB 3.0", "protac_glue", "download_local", False, True, False, False, "local_file", "http://cadd.zju.edu.cn/protacdb/", "", notes="No guaranteed public API."),
+    _db(
+        "PROTAC-DB 3.0",
+        "protac_glue",
+        "download_local",
+        False,
+        True,
+        False,
+        False,
+        "local_file",
+        "http://cadd.zju.edu.cn/protacdb/",
+        "",
+        local_file_expected=["data/benchmark/PROTAC-DB_3.0_protacs.xlsx"],
+        agent_use_case="PROTAC degradation, binary/ternary affinity, cellular activity, permeability, PK, physicochemical, warhead, and E3 ligand evidence",
+        expected_inputs=["target", "e3_ligase", "compound_id", "smiles", "evidence_family"],
+        expected_outputs=[
+            "DC50",
+            "Dmax",
+            "percent_degradation",
+            "target_binding_affinity",
+            "e3_binding_affinity",
+            "ternary_complex_affinity",
+            "cellular_activity",
+            "PAMPA",
+            "Caco-2",
+            "pharmacokinetic_parameters",
+            "physicochemical_properties",
+            "warhead_bioactivity",
+            "e3_ligand_bioactivity",
+        ],
+        notes="Public web database; local workbook parser normalizes rich evidence families when the XLSX is present.",
+    ),
     _db("PROTACpedia", "protac_glue", "download_local", False, True, False, False, "local_file", "https://protacpedia.com/", "", notes="Bulk/local copy preferred."),
     _db("TPDdb", "protac_glue", "download_local", False, True, False, False, "local_file", "https://db.idrblab.net/ttd/", "", notes="Dataset/source integration varies."),
     _db("PROTAC-PatentDB", "protac_glue", "download_local", False, True, False, False, "local_file", "", "", notes="Local index expected."),
@@ -156,4 +186,3 @@ def get_database_entry(name: str) -> dict[str, Any] | None:
         if row["name"].strip().lower() == q:
             return dict(row)
     return None
-

@@ -19,6 +19,13 @@ outputs/benchmark/chemprop_*/
 outputs/benchmark/*.log
 outputs/p4ward_evidence/*.pse
 outputs/p4ward_evidence/*.tar.gz
+outputs/runs/
+outputs/coverage/
+synglue_agent/outputs/candidates/*.csv
+synglue_agent/outputs/candidates/*.json
+synglue_agent/outputs/reports/*.md
+synglue_agent/memory/workflow_logs/*.json
+synglue_agent/memory/learnings/runs/
 
 # Notebooks / checkpoints
 .ipynb_checkpoints/
@@ -51,6 +58,8 @@ data/retrosynthesis/models/
 *.pt
 *.onnx
 *.sdf
+*.pptx
+*.zip
 # Runtime state DBs + cloned synthesis repos
 *.sqlite3
 *.sqlite

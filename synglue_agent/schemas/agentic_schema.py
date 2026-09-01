@@ -1,4 +1,4 @@
-"""Schemas for the seven-layer ProtacAutopilot agentic architecture."""
+"""Schemas for the seven-layer PROTACXtend agentic architecture."""
 
 from __future__ import annotations
 

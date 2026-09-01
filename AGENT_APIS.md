@@ -1,4 +1,4 @@
-# ProtacPilot Agent APIs
+# PROTACXtend Agent APIs
 
 ## Workflow Entry Point
 
@@ -101,7 +101,7 @@ LinkerGenerationAgent().run(state) → WorkflowState
   reads:  state.parsed_objective.preferred_linker_types
   sets:   state.generated_linkers (name, smiles, class, length, properties)
   data:   synglue_agent/data/curated_linkers.csv
-  tool:   ProtacAutopilotToolbox().generate_state_of_the_art_linker_panel()
+  tool:   internal linker-panel backend used by the PROTACXtend UI
 ```
 
 ### 9. MolecularConstructionAgent
@@ -209,6 +209,72 @@ ReportAgent().run(state) → WorkflowState
   output: state.report (printed summary + detailed table)
 ```
 
+### NP-hard Funnel Extension Agents
+
+These agents were added to keep PROTAC design bounded instead of enumerating the full combinatorial search space. They are deterministic orchestration and proxy-scoring agents; they do not make experimental claims unless assay feedback is supplied.
+
+```python
+ControlledSearchAgent().run(state) -> WorkflowState
+  reads:  state.parsed_objective.candidate_count, requested E3/cell context
+  sets:   state.search_policy
+  logic:  caps linker, E3, stereoisomer, construction, cheap-filter, expensive-modeling, and final budgets
+```
+
+```python
+StereochemistryEnumerationAgent().run(state) -> WorkflowState
+  reads:  state.assembled_candidates, state.search_policy.stereoisomer_budget_per_candidate
+  sets:   state.assembled_candidates
+  logic:  expands undefined stereocenters only up to the controlled budget and preserves stereoisomer IDs
+```
+
+```python
+CellContextAgent().run(state) -> WorkflowState
+  reads:  state.valid_candidates, state.target_record, state.parsed_objective.cell_line,
+          state.parsed_objective.expression_overrides
+  sets:   state.e3_context_predictions
+  logic:  scores E3 expression, target/E3 localization fit, ligand availability, structure support, and resistance risk
+  caveat: curated/default expression priors unless explicit expression overrides are provided
+```
+
+```python
+CheapFilterAgent().run(state) -> WorkflowState
+  reads:  state.valid_candidates, ADMET, novelty, applicability-domain, E3 context
+  sets:   state.valid_candidates, state.cheap_filter_summary
+  logic:  removes invalid/extreme candidates before degradation prediction and ternary modeling
+```
+
+```python
+ExpensiveModelingSelectionAgent().run(state) -> WorkflowState
+  reads:  state.valid_candidates, state.ranking_results, state.search_policy.expensive_modeling_budget
+  sets:   state.expensive_modeling_candidate_ids
+  logic:  selects a ranked/diverse finalist set for docking/P4ward or geometry-proxy ternary scoring
+```
+
+```python
+CooperativityPredictionAgent().run(state) -> WorkflowState
+  reads:  state.valid_candidates, state.ternary_feasibility_results
+  sets:   state.cooperativity_predictions
+  logic:  estimates proxy alpha from ternary feasibility, linker strain, interface, and lysine geometry
+  caveat: ranking flags proxy_cooperativity_not_measured_alpha until measured or calibrated alpha is available
+```
+
+```python
+HookEffectPredictionAgent().run(state) -> WorkflowState
+  reads:  state.valid_candidates, state.degradation_predictions,
+          state.cooperativity_predictions, state.e3_context_predictions
+  sets:   state.hook_effect_predictions
+  logic:  evaluates a concentration grid and therapeutic-window score for high-dose hook risk
+  caveat: ranking flags proxy_hook_model_not_fitted_to_dose_response until fitted dose-response data is available
+```
+
+```python
+ActiveLearningAgent().run(state) -> WorkflowState
+  reads:  state.assay_feedback, state.valid_candidates
+  sets:   state.active_learning_update
+  tool:   synglue_agent/tools/assay_feedback.py
+  logic:  appends candidate -> measured DC50/Dmax/hook/cell-line feedback rows and gates retraining readiness
+```
+
 ---
 
 ## Tool APIs
@@ -266,25 +332,33 @@ scan_linkers_from_state(state) → list[LinkerScanResult]
 ```
 1.  parse_user_request       → SupervisorAgent
 2.  create_design_plan       → DesignPlannerAgent
-3.  safety_precheck          → SafetyAgent
-4.  resolve_target           → TargetResolverAgent
-5.  retrieve_target_binders  → TargetBinderRetrievalAgent
-6.  select_warheads          → WarheadSelectionAgent
-7.  select_e3_ligands        → E3LigandSelectionAgent
-8.  detect_exit_vectors      → ExitVectorDetectionAgent
-9.  generate_linkers         → LinkerGenerationAgent
-10. construct_protacs        → MolecularConstructionAgent
-11. validate_protacs         → CandidateValidationAgent
-12. predict_degradation      → DegradationPredictionAgent
-13. predict_admet            → ADMETAgent
-14. check_novelty            → NoveltyAgent
-15. assess_applicability     → ApplicabilityDomainAgent
-16. initial_ranking          → RankingAgent(final=False)
-17. diversity_clustering     → ProximityDiversityAgent
-18. reflection_review        → ReflectionReviewAgent
-19. evolution_refinement     → EvolutionRefinementAgent
-20. ternary_feasibility      → TernaryFeasibilityAgent (optional)
-21. final_ranking            → RankingAgent(final=True)
-22. generate_report          → ReportAgent
-23. update_memory            → MemoryUpdateAgent
+3.  control_np_hard_search   → ControlledSearchAgent
+4.  safety_precheck          → SafetyAgent
+5.  resolve_target           → TargetResolverAgent
+6.  retrieve_target_binders  → TargetBinderRetrievalAgent
+7.  select_warheads          → WarheadSelectionAgent
+8.  select_e3_ligands        → E3LigandSelectionAgent
+9.  detect_exit_vectors      → ExitVectorDetectionAgent
+10. generate_linkers         → LinkerGenerationAgent
+11. construct_protacs        → MolecularConstructionAgent
+12. expand_stereoisomers     → StereochemistryEnumerationAgent
+13. validate_protacs         → CandidateValidationAgent
+14. score_cell_context       → CellContextAgent
+15. predict_admet            → ADMETAgent
+16. check_novelty            → NoveltyAgent
+17. assess_applicability     → ApplicabilityDomainAgent
+18. cheap_filter_candidates  → CheapFilterAgent
+19. predict_degradation      → DegradationPredictionAgent
+20. initial_ranking          → RankingAgent(final=False)
+21. diversity_clustering     → ProximityDiversityAgent
+22. reflection_review        → ReflectionReviewAgent
+23. evolution_refinement     → EvolutionRefinementAgent
+24. select_modeling_finalists→ ExpensiveModelingSelectionAgent
+25. ternary_feasibility      → TernaryFeasibilityAgent
+26. predict_cooperativity    → CooperativityPredictionAgent
+27. predict_hook_effect      → HookEffectPredictionAgent
+28. final_ranking            → RankingAgent(final=True)
+29. active_learning_update   → ActiveLearningAgent
+30. generate_report          → ReportAgent
+31. update_memory            → MemoryUpdateAgent
 ```

@@ -1,8 +1,8 @@
-# ProtacPilot — Complete Project Summary
+# PROTACXtend — Complete Project Summary
 
 ## What We Built
 
-ProtacPilot is an **AI-augmented computational PROTAC design pipeline** for targeted protein degradation. It integrates agentic workflow orchestration, molecular docking, ternary complex modeling (P4ward), and hypothesis-driven experimental design. The project specifically focused on **degrading HMGB2** (High Mobility Group Box 2), a nuclear chromatin-binding protein implicated in inflammation and cancer.
+PROTACXtend is an **AI-augmented computational PROTAC design pipeline** for targeted protein degradation. It integrates agentic workflow orchestration, molecular docking, ternary complex modeling (P4ward), and hypothesis-driven experimental design. The project specifically focused on **degrading HMGB2** (High Mobility Group Box 2), a nuclear chromatin-binding protein implicated in inflammation and cancer.
 
 ---
 
@@ -172,7 +172,7 @@ ICM_HMGB2_Hypothesis_Testing/
 
 | Component | Status | Evidence |
 |-----------|--------|----------|
-| ProtacPilot agent framework | ✅ **Architected** | 17 agents, 50+ tools, LangGraph workflow |
+| PROTACXtend agent framework | ✅ **Architected** | 17 agents, 50+ tools, LangGraph workflow |
 | H1: PROTAC via OH groups | ✅ **FAILED — documented** | 0/3600 passes, ICM is buried |
 | H2: A1_4COOH PROTAC | ✅ **Designed, tested computationally** | 8–16/3600 passes, salt bridge confirmed, P4ward ready |
 | H3: Molecular glue | ❌ **REJECTED** | ICM contributes 0 contacts |

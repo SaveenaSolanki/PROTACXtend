@@ -47,19 +47,25 @@ E3_ALIASES = {
 from synglue_agent.backend.schemas import (
     ADMETPrediction,
     AgentTrace,
+    ActiveLearningUpdate,
     ApplicabilityDomainResult,
+    AssayFeedbackRecord,
     BinderRecord,
     CandidateRecord,
+    CooperativityPrediction,
     ConstructionAttempt,
     DegradationPrediction,
     DiversityCluster,
+    E3ContextPrediction,
     E3LigandRecord,
     ExitVectorRecord,
+    HookEffectPrediction,
     LinkerRecord,
     NoveltyResult,
     ParsedObjective,
     RankingResult,
     ReflectionReview,
+    SearchPolicy,
     TargetRecord,
     TernaryFeasibilityResult,
     WarheadRecord,
@@ -73,6 +79,7 @@ from synglue_agent.tools.chemistry_core import (
 from synglue_agent.tools.chemistry_core import (
     compute_descriptors as compute_core_descriptors,
 )
+from synglue_agent.tools.structural_scoring import score_ternary_pose_for_candidate
 
 try:  # pragma: no cover - optional scientific dependency.
     from rdkit import Chem, rdBase
@@ -111,6 +118,20 @@ def _safe_int(value: Any, default: int = 0) -> int:
 
 def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     return max(low, min(high, value))
+
+
+def _numeric_tokens(value: Any) -> list[float]:
+    if value in ("", None):
+        return []
+    return [float(item) for item in re.findall(r"\d+(?:\.\d+)?", str(value))]
+
+
+def _best_nanomolar_score(value: Any, default: float = 0.55) -> float:
+    values = _numeric_tokens(value)
+    if not values:
+        return default
+    best = max(0.01, min(values))
+    return _clamp(1.0 - math.log10(best + 1.0) / 5.0)
 
 
 def _norm_name(value: str | None) -> str:
@@ -198,6 +219,21 @@ class ProtacDesignToolbox:
         text = user_request.strip()
         upper = text.upper()
 
+        cell_line = None
+        cell_patterns = [
+            r"\bcell\s*line\s+([A-Za-z0-9_.-]+)",
+            r"\bin\s+([A-Za-z0-9_.-]+)\s+cells\b",
+            r"\b([A-Za-z0-9_.-]+)\s+cell\s+line\b",
+        ]
+        for pattern in cell_patterns:
+            match = re.search(pattern, text, flags=re.IGNORECASE)
+            if match:
+                cell_line = match.group(1)
+                break
+        target_parse_text = text
+        if cell_line:
+            target_parse_text = re.sub(re.escape(cell_line), " ", target_parse_text, flags=re.IGNORECASE)
+
         e3 = None
         for ligase in ["CRBN", "VHL", "IAP", "MDM2", "DCAF", "DDB1"]:
             if ligase in upper:
@@ -211,16 +247,17 @@ class ProtacDesignToolbox:
             r"\btarget\s+([A-Za-z0-9\-]+)",
         ]
         for pattern in target_patterns:
-            match = re.search(pattern, text, flags=re.IGNORECASE)
+            match = re.search(pattern, target_parse_text, flags=re.IGNORECASE)
             if match:
                 candidate = match.group(1).strip(" .,:;")
                 if candidate.upper() not in {"A", "THE", "LOW", "HIGH", "CRBN", "VHL"}:
                     target_name = candidate
                     break
         if not target_name:
-            genes = re.findall(r"\b[A-Z0-9]{3,8}\b", text)
-            genes = [gene for gene in genes if gene not in {"CRBN", "VHL", "PROTAC", "SMILES"}]
-            target_name = genes[-1] if genes else ""
+            genes = re.findall(r"\b[A-Z0-9]{3,8}\b", target_parse_text.upper())
+            stop_tokens = {"CRBN", "VHL", "PROTAC", "PROTACS", "SMILES", "DESIGN", "CANDIDATES", "CELLS"}
+            genes = [gene for gene in genes if gene not in stop_tokens and not gene.startswith("MM")]
+            target_name = genes[0] if genes else ""
 
         smiles_candidates = re.findall(r"(?:(?:SMILES|smiles)\s*[:=]?\s*)([A-Za-z0-9@+\-\[\]\(\)=#$\\/%.:]+)", text)
         warhead_smiles = smiles_candidates[0] if smiles_candidates else None
@@ -250,6 +287,15 @@ class ProtacDesignToolbox:
         if "LOW TPSA" in upper or "AVOID HIGH TPSA" in upper:
             admet_constraints.setdefault("max_tpsa", 190.0)
 
+        expression_overrides: dict[str, float] = {}
+        for e3_name, value in re.findall(r"\b(CRBN|VHL|MDM2|IAP|cIAP1)\s+expression\s*(?:=|:)\s*(0?\.\d+|1(?:\.0)?|high|medium|low)\b", text, flags=re.IGNORECASE):
+            token = value.lower()
+            expression_overrides[E3_ALIASES.get(e3_name.lower(), e3_name.upper())] = {
+                "high": 1.0,
+                "medium": 0.6,
+                "low": 0.2,
+            }.get(token, float(token) if token.replace(".", "", 1).isdigit() else 0.6)
+
         use_structure = any(term in upper for term in ["STRUCTURE", "TERNARY", "DOCK", "POSE"])
         use_retro = any(term in upper for term in ["RETROSYNTHESIS", "SYNTHETICALLY FEASIBLE", "SYNTHESIS"])
         output_format = "json" if "JSON" in upper else "csv" if "CSV" in upper else "table" if "TABLE" in upper else "markdown"
@@ -278,6 +324,8 @@ class ProtacDesignToolbox:
             use_retrosynthesis_filtering=use_retro,
             desired_output_format=output_format,
             ranking_weights=dict(DEFAULT_RANKING_WEIGHTS),
+            cell_line=cell_line,
+            expression_overrides=expression_overrides,
         )
 
     def safety_precheck(self, state: WorkflowState) -> WorkflowState:
@@ -664,6 +712,30 @@ class ProtacDesignToolbox:
     # ------------------------------------------------------------------
     # Linkers and construction
     # ------------------------------------------------------------------
+    def build_search_policy(self, objective: ParsedObjective) -> SearchPolicy:
+        """Create bounded budgets for NP-hard PROTAC search.
+
+        The policy deliberately overgenerates only a small multiple of the
+        requested final count, then uses cheap filters before structural work.
+        """
+        requested = max(1, int(objective.candidate_count or 50))
+        final_budget = min(500, requested)
+        expensive_budget = max(10, min(50, final_budget, requested))
+        cheap_budget = max(expensive_budget, min(250, max(final_budget * 3, 40)))
+        construction_budget = max(cheap_budget, min(1000, max(final_budget * 6, 80)))
+        linker_budget = max(12, min(64, final_budget * 2))
+        e3_budget = 3 if objective.e3_ligase else 6
+        return SearchPolicy(
+            linker_budget=linker_budget,
+            e3_ligand_budget=e3_budget,
+            exit_vector_budget=max(8, min(24, e3_budget * 4)),
+            stereoisomer_budget_per_candidate=4,
+            construction_budget=construction_budget,
+            cheap_filter_budget=cheap_budget,
+            expensive_modeling_budget=expensive_budget,
+            final_candidate_budget=final_budget,
+        )
+
     def generate_linkers(
         self,
         linker_types: Sequence[str] | None = None,
@@ -778,10 +850,56 @@ class ProtacDesignToolbox:
             unique.append(linker)
         return unique
 
-    def state_of_the_art_tool_catalog(self) -> list[dict[str, str]]:
-        from synglue_agent.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox
+    def expand_stereoisomers_controlled(
+        self,
+        candidates: Sequence[CandidateRecord],
+        max_per_candidate: int = 4,
+        max_total: int = 200,
+    ) -> list[CandidateRecord]:
+        """Enumerate undefined stereoisomers with hard caps.
 
-        return ProtacAutopilotToolbox(self).catalog_as_rows()
+        Candidates with explicit stereochemistry pass through unchanged. If a
+        molecule has too many undefined centers, only the capped first variants
+        are retained and the candidate is flagged for review.
+        """
+        expanded: list[CandidateRecord] = []
+        for candidate in candidates:
+            if len(expanded) >= max_total:
+                break
+            try:
+                from synglue_agent.tools.stereochemistry_engine import enumerate_stereoisomers, get_stereochemistry_profile
+                profile = get_stereochemistry_profile(candidate.full_protac_smiles)
+                if not profile.has_undefined_stereo:
+                    candidate.provenance["stereochemistry_status"] = "explicit_or_not_applicable"
+                    expanded.append(candidate)
+                    continue
+                isomers = enumerate_stereoisomers(candidate.full_protac_smiles, max_isomers=max_per_candidate)
+            except Exception as exc:  # noqa: BLE001
+                candidate.warning_flags.append("stereochemistry_enumeration_unavailable")
+                candidate.provenance["stereochemistry_error"] = str(exc)
+                expanded.append(candidate)
+                continue
+            if not isomers:
+                candidate.warning_flags.append("stereochemistry_unresolved")
+                expanded.append(candidate)
+                continue
+            for idx, isomer in enumerate(isomers[:max_per_candidate], start=1):
+                if len(expanded) >= max_total:
+                    break
+                child = candidate.model_copy(deep=True)
+                child.candidate_id = f"{candidate.candidate_id}_st{idx}"
+                child.parent_ids = list(dict.fromkeys(child.parent_ids + [candidate.candidate_id]))
+                child.full_protac_smiles = isomer.get("smiles", candidate.full_protac_smiles)
+                child.provenance["stereochemistry_status"] = "enumerated_controlled"
+                child.provenance["stereochemistry_changes"] = isomer.get("changes", [])
+                child.warning_flags.append("stereoisomer_requires_separate_scoring")
+                expanded.append(child)
+        return self.remove_duplicate_candidates(expanded)
+
+    def state_of_the_art_tool_catalog(self) -> list[dict[str, str]]:
+        from synglue_agent.tools.protac_autopilot_toolbox import ProtacXtendToolbox
+
+        return ProtacXtendToolbox(self).catalog_as_rows()
 
     def construct_protac_candidates(
         self,
@@ -1132,6 +1250,9 @@ class ProtacDesignToolbox:
                     pred.tack_dc50_nM = tr["dc50_nM"]
                     pred.tack_dmax_pct = tr["dmax_pct"]
                     pred.tack_active = tr["active"]
+                    compatibility_warning = (tr.get("provenance") or {}).get("compatibility_warning")
+                    if compatibility_warning:
+                        pred.warning = "; ".join(filter(None, [pred.warning, compatibility_warning]))
         except Exception as exc:  # noqa: BLE001
             logger.warning("TACK cross-check unavailable: %s", exc)
         return predictions
@@ -1238,6 +1359,180 @@ class ProtacDesignToolbox:
         if score >= 0.34:
             return "medium"
         return "low"
+
+    def cheap_filter_candidates(
+        self,
+        candidates: Sequence[CandidateRecord],
+        admet_predictions: Sequence[ADMETPrediction] | None = None,
+        novelty_results: Sequence[NoveltyResult] | None = None,
+        domain_results: Sequence[ApplicabilityDomainResult] | None = None,
+        e3_context_results: Sequence[E3ContextPrediction] | None = None,
+        max_candidates: int = 100,
+    ) -> tuple[list[CandidateRecord], dict[str, Any]]:
+        """Apply cheap first-pass filters before expensive modeling.
+
+        Hard rejects are intentionally simple and transparent. Borderline
+        candidates can survive but carry warning flags so diversity is not
+        destroyed too early.
+        """
+        admet_by_id = {item.candidate_id: item for item in (admet_predictions or [])}
+        novelty_by_id = {item.candidate_id: item for item in (novelty_results or [])}
+        domain_by_id = {item.candidate_id: item for item in (domain_results or [])}
+        e3_by_id = {item.candidate_id: item for item in (e3_context_results or [])}
+        scored: list[tuple[float, CandidateRecord]] = []
+        reject_reasons: dict[str, int] = defaultdict(int)
+        for candidate in candidates:
+            status = candidate.validity_status
+            if not status or status == "unchecked":
+                status = self.validate_smiles(candidate.full_protac_smiles)
+                candidate.validity_status = status
+            props = self.compute_basic_properties(candidate.full_protac_smiles)
+            mw = float(candidate.mw if candidate.mw is not None else props.get("mw", 0.0) or 0.0)
+            tpsa = float(candidate.tpsa if candidate.tpsa is not None else props.get("tpsa", 0.0) or 0.0)
+            rotors = float(candidate.rotatable_bonds if candidate.rotatable_bonds is not None else props.get("rotatable_bonds", 0.0) or 0.0)
+            admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction(candidate_id=candidate.candidate_id))
+            novelty = novelty_by_id.get(candidate.candidate_id, NoveltyResult(candidate_id=candidate.candidate_id, novelty_score=0.5))
+            domain = domain_by_id.get(candidate.candidate_id, ApplicabilityDomainResult(candidate_id=candidate.candidate_id, similarity_to_training_set=0.5))
+            e3_context = e3_by_id.get(candidate.candidate_id, E3ContextPrediction(candidate_id=candidate.candidate_id, total_context_score=0.6))
+            reasons: list[str] = []
+            if status not in {"valid", "unverified_no_rdkit"}:
+                reasons.append("invalid_smiles")
+            if mw > 1800:
+                reasons.append("mw_above_1800")
+            if tpsa > 360:
+                reasons.append("tpsa_above_360")
+            if rotors > 45:
+                reasons.append("rotors_above_45")
+            if candidate.synthetic_feasibility_score < 0.18:
+                reasons.append("very_low_synthetic_feasibility")
+            if admet.hERG_risk == "high" and admet.DILI_risk == "high":
+                reasons.append("dual_high_toxicity_risk")
+            if novelty.duplicate_flag:
+                candidate.warning_flags.append("near_duplicate_removed_by_cheap_filter")
+                reasons.append("duplicate_known_protac")
+            if reasons:
+                for reason in reasons:
+                    reject_reasons[reason] += 1
+                continue
+            property_score = _clamp(
+                0.30 * (1.0 - _clamp((mw - 900.0) / 900.0))
+                + 0.25 * (1.0 - _clamp((tpsa - 160.0) / 220.0))
+                + 0.20 * (1.0 - _clamp((rotors - 16.0) / 30.0))
+                + 0.15 * candidate.synthetic_feasibility_score
+                + 0.10 * _clamp(e3_context.total_context_score or 0.6)
+            )
+            admet_score = _clamp(1.0 - admet.overall_admet_penalty)
+            novelty_score = _clamp(novelty.novelty_score or 0.5)
+            domain_score = _clamp(domain.similarity_to_training_set or 0.5)
+            total = _clamp(0.38 * property_score + 0.25 * admet_score + 0.17 * novelty_score + 0.12 * domain_score + 0.08 * _clamp(e3_context.total_context_score or 0.6))
+            candidate.provenance["cheap_filter_score"] = round(total, 3)
+            scored.append((total, candidate))
+        scored.sort(key=lambda item: item[0], reverse=True)
+        kept = [candidate for _, candidate in scored[:max_candidates]]
+        summary = {
+            "policy_version": "cheap-filter-v0.1",
+            "input_candidates": len(candidates),
+            "kept_candidates": len(kept),
+            "max_candidates": max_candidates,
+            "rejected_candidates": len(candidates) - len(scored),
+            "reject_reasons": dict(reject_reasons),
+            "score_fields": ["validity", "MW", "TPSA", "rotatable_bonds", "synthetic_feasibility", "ADMET", "novelty", "applicability_domain", "E3_context"],
+        }
+        return kept, summary
+
+    def filter_prediction_records(self, records: Sequence[Any], candidate_ids: set[str]) -> list[Any]:
+        return [record for record in records if getattr(record, "candidate_id", None) in candidate_ids]
+
+    def protacdb_evidence_prior(self, candidate: CandidateRecord) -> dict[str, Any]:
+        """Return a capped PROTAC-DB evidence prior for one candidate.
+
+        PROTAC-DB is treated as incomplete literature evidence. Exact chemical
+        matches are strong priors; target/E3 neighborhood records are weaker
+        priors. Missing evidence is neutral and must not reject novel designs.
+        """
+        try:
+            from synglue_agent.tools.protacdb_client import load_normalized_protacdb, search_protacdb_evidence
+        except Exception as exc:  # noqa: BLE001
+            return {"available": False, "source_scope": "unavailable", "score": 0.5, "warning": f"PROTAC-DB prior unavailable: {exc}"}
+
+        candidate_key = candidate.provenance.get("inchikey") or chem_identity(candidate.full_protac_smiles)
+        exact_match = None
+        for row in load_normalized_protacdb():
+            row_key = row.get("inchikey") or chem_identity(row.get("smiles", ""))
+            if candidate_key and row_key and candidate_key == row_key:
+                exact_match = row
+                break
+
+        if exact_match:
+            records = [exact_match]
+            source_scope = "exact_compound_match"
+            influence = 1.0
+        else:
+            records = search_protacdb_evidence(
+                target=candidate.target or None,
+                e3_ligase=candidate.e3_ligase or None,
+                min_evidence_families=1,
+                limit=75,
+            )
+            source_scope = "target_e3_neighborhood" if records else "no_matching_protacdb_records"
+            influence = 0.45 if records else 0.0
+
+        family_counts: dict[str, int] = defaultdict(int)
+        degradation_scores: list[float] = []
+        ternary_scores: list[float] = []
+        permeability_scores: list[float] = []
+        for record in records:
+            evidence = record.get("evidence", {})
+            for family in evidence:
+                family_counts[family] += 1
+            degradation = evidence.get("degradation_capacity", {})
+            if degradation:
+                degradation_scores.extend([
+                    _best_nanomolar_score(degradation.get("DC50 (nM)")),
+                    _clamp((_safe_float(degradation.get("Dmax (%)"), 50.0)) / 100.0),
+                    _clamp((_safe_float(degradation.get("Percent degradation (%)"), 50.0)) / 100.0),
+                ])
+            ternary = evidence.get("ternary_complex_affinity", {})
+            if ternary:
+                ternary_scores.extend([
+                    _best_nanomolar_score(ternary.get("Kd (nM, Ternary complex)")),
+                    _best_nanomolar_score(ternary.get("IC50 (nM, Ternary complex)")),
+                    _best_nanomolar_score(ternary.get("EC50 (nM, Ternary complex)")),
+                ])
+            permeability = evidence.get("cell_permeability", {})
+            if permeability:
+                pampa = max(_numeric_tokens(permeability.get("PAMPA Papp (nm/s, Permeability)")) or [0.0])
+                caco_a2b = max(_numeric_tokens(permeability.get("Caco-2 A2B Papp (nm/s, Permeability)")) or [0.0])
+                permeability_scores.append(_clamp(max(pampa / 200.0, caco_a2b / 100.0)))
+
+        degradation_prior = sum(degradation_scores) / len(degradation_scores) if degradation_scores else 0.5
+        ternary_prior = sum(ternary_scores) / len(ternary_scores) if ternary_scores else 0.5
+        permeability_prior = sum(permeability_scores) / len(permeability_scores) if permeability_scores else 0.5
+        diversity_prior = _clamp(len(family_counts) / 8.0)
+        score = _clamp(
+            influence
+            * (
+                0.34 * degradation_prior
+                + 0.30 * ternary_prior
+                + 0.18 * permeability_prior
+                + 0.18 * diversity_prior
+            )
+            + (1.0 - influence) * 0.5
+        )
+        return {
+            "available": bool(records),
+            "source": "PROTAC-DB 3.0",
+            "source_scope": source_scope,
+            "score": round(score, 3),
+            "influence": influence,
+            "record_count": len(records),
+            "evidence_family_counts": dict(family_counts),
+            "degradation_prior": round(degradation_prior, 3),
+            "ternary_prior": round(ternary_prior, 3),
+            "permeability_prior": round(permeability_prior, 3),
+            "diversity_prior": round(diversity_prior, 3),
+            "limitations": "PROTAC-DB is incomplete; absence from PROTAC-DB is neutral, not negative evidence.",
+        }
 
     def _pubchem_patents(self, smiles: str) -> tuple[int, list[str]]:
         """Live patent cross-reference: SMILES -> PubChem CID -> PUG-View Patents.
@@ -1385,6 +1680,377 @@ class ProtacDesignToolbox:
             return "edge"
         return "outside"
 
+    def score_e3_context(
+        self,
+        candidates: Sequence[CandidateRecord],
+        target_record: TargetRecord | None,
+        cell_line: str | None = None,
+        expression_overrides: dict[str, float] | None = None,
+    ) -> list[E3ContextPrediction]:
+        """Score explicit cell-type/E3 compatibility for each candidate.
+
+        ``expression_overrides`` accepts normalized 0-1 values keyed by E3
+        ligase, e.g. {"CRBN": 0.9, "VHL": 0.2}. This lets assay-specific
+        proteomics override curated defaults without changing the source table.
+        """
+        from synglue_agent.tools.e3_context_engine import score_e3
+
+        context = cell_line or "default"
+        localization = "nuclear"
+        if target_record and target_record.biology_context:
+            localization = str(target_record.biology_context.get("localization", localization) or localization)
+        target = target_record.gene_symbol if target_record else ""
+        overrides = {k.upper(): _clamp(v) for k, v in (expression_overrides or {}).items()}
+        rows: list[E3ContextPrediction] = []
+        for candidate in candidates:
+            result = score_e3(candidate.e3_ligase or "CRBN", context, localization, target)
+            expr = overrides.get((candidate.e3_ligase or "").upper(), result.expression_score)
+            total = result.total_context_score
+            if overrides:
+                total = _clamp(total + 0.30 * (expr - result.expression_score))
+            rows.append(
+                E3ContextPrediction(
+                    candidate_id=candidate.candidate_id,
+                    e3_ligase=candidate.e3_ligase,
+                    cell_line=context,
+                    target_localization=localization,
+                    expression_score=round(expr, 3),
+                    colocalization_score=result.colocalization_score,
+                    ligand_availability_score=result.ligand_availability_score,
+                    structural_support_score=result.structural_support_score,
+                    resistance_risk=result.resistance_risk,
+                    total_context_score=round(total, 3),
+                    confidence=result.confidence,
+                    contraindications=result.contraindications,
+                    evidence_refs=result.evidence_refs + (["expression_override:user"] if overrides else []),
+                    explanation=result.explanation,
+                )
+            )
+        return rows
+
+    def _load_calibration_rows(self, filename: str) -> dict[str, dict[str, str]]:
+        path = DATA_DIR / filename
+        if not path.exists():
+            return {}
+        try:
+            with path.open(newline="", encoding="utf-8") as handle:
+                return {
+                    row.get("candidate_id", "").strip(): row
+                    for row in csv.DictReader(handle)
+                    if row.get("candidate_id", "").strip()
+                }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Calibration table %s could not be loaded: %s", path, exc)
+            return {}
+
+    def predict_cooperativity(
+        self,
+        candidates: Sequence[CandidateRecord],
+        ternary_results: Sequence[TernaryFeasibilityResult] | None = None,
+    ) -> list[CooperativityPrediction]:
+        """Predict ternary cooperativity alpha with an interpretable proxy.
+
+        The proxy rewards feasible ternary geometry, moderate linker strain, and
+        plausible lysine/interface presentation. It is intentionally labelled as
+        a proxy because true alpha requires biophysical measurement or calibrated
+        structure/ML data.
+        """
+        ternary_by_id = {item.candidate_id: item for item in (ternary_results or [])}
+        measured_by_id = self._load_calibration_rows("cooperativity_calibration.csv")
+        rows: list[CooperativityPrediction] = []
+        for candidate in candidates:
+            protacdb_prior = self.protacdb_evidence_prior(candidate)
+            measured = measured_by_id.get(candidate.candidate_id)
+            if measured:
+                alpha = max(0.01, _safe_float(measured.get("predicted_alpha") or measured.get("measured_alpha"), 1.0))
+                log_alpha = math.log10(alpha)
+                score = _clamp((log_alpha + 1.0) / 3.0)
+                rows.append(
+                    CooperativityPrediction(
+                        candidate_id=candidate.candidate_id,
+                        predicted_alpha=round(alpha, 3),
+                        log_alpha=round(log_alpha, 3),
+                        cooperativity_score=round(score, 3),
+                        interface_contact_score=_safe_float(measured.get("interface_contact_score"), score),
+                        linker_strain_score=_safe_float(measured.get("linker_strain_score"), score),
+                        lysine_geometry_score=_safe_float(measured.get("lysine_geometry_score"), score),
+                        ternary_geometry_score=_safe_float(measured.get("ternary_geometry_score"), score),
+                        confidence=round(_clamp(_safe_float(measured.get("confidence"), 0.9)), 3),
+                        model_version=measured.get("source", "measured-alpha-calibration-v0.1") or "measured-alpha-calibration-v0.1",
+                        warning=None,
+                    )
+                )
+                continue
+            ternary = ternary_by_id.get(
+                candidate.candidate_id,
+                TernaryFeasibilityResult(candidate_id=candidate.candidate_id, ternary_plausibility_score=0.45),
+            )
+            rotors = float(candidate.rotatable_bonds if candidate.rotatable_bonds is not None else 14.0)
+            linker_len = float(len(candidate.linker_smiles or "")) / 6.0
+            flexibility_fit = 1.0 - abs(rotors - 14.0) / 22.0
+            length_fit = 1.0 - abs(linker_len - 7.0) / 12.0
+            linker_strain_score = _clamp(0.55 * flexibility_fit + 0.45 * length_fit)
+            interface_contact_score = _clamp(
+                0.45 * ternary.ternary_plausibility_score
+                + 0.25 * ternary.fast_geometry_feasibility_score
+                + 0.20 * candidate.synthetic_feasibility_score
+                + 0.10 * (1.0 if candidate.e3_ligase.upper() in {"CRBN", "VHL"} else 0.55)
+            )
+            lysine_geometry_score = _clamp(
+                0.55 * ternary.linker_reachability_score
+                + 0.25 * ternary.ternary_plausibility_score
+                + 0.20 * (1.0 - abs(rotors - 16.0) / 26.0)
+            )
+            structural_evidence = ternary.real_structural_score is not None
+            if ternary.interface_quality_score is not None:
+                interface_contact_score = _clamp(float(ternary.interface_quality_score))
+            if ternary.linker_strain_score is not None:
+                linker_strain_score = _clamp(float(ternary.linker_strain_score))
+            if ternary.lysine_geometry_score is not None:
+                lysine_geometry_score = _clamp(float(ternary.lysine_geometry_score))
+            coop_score = _clamp(
+                0.38 * interface_contact_score
+                + 0.27 * linker_strain_score
+                + 0.22 * lysine_geometry_score
+                + 0.13 * ternary.ternary_plausibility_score
+            )
+            if protacdb_prior.get("available") and protacdb_prior.get("ternary_prior", 0.5) != 0.5:
+                prior_weight = 0.18 if protacdb_prior["source_scope"] == "exact_compound_match" else 0.08
+                coop_score = _clamp((1.0 - prior_weight) * coop_score + prior_weight * protacdb_prior["ternary_prior"])
+            log_alpha = -1.0 + 3.0 * coop_score
+            alpha = 10 ** log_alpha
+            warning = None
+            if ternary.docking_status.startswith("not_run"):
+                warning = "Cooperativity is proxy-only until ternary docking/P4ward evidence is available."
+            elif structural_evidence:
+                warning = "Cooperativity uses experimental pose-backed structural scoring; still not measured alpha."
+            if protacdb_prior.get("available"):
+                warning = "; ".join(
+                    filter(
+                        None,
+                        [
+                            warning,
+                            f"PROTAC-DB {protacdb_prior['source_scope']} used as capped ternary-affinity prior; database is incomplete.",
+                        ],
+                    )
+                )
+            model_version = "cooperativity-proxy-v0.1"
+            if structural_evidence:
+                model_version += "+pose-structural-score"
+            if protacdb_prior.get("available"):
+                model_version += "+protacdb-prior"
+            confidence_base = 0.35 + 0.45 * ternary.ternary_plausibility_score + 0.20 * linker_strain_score
+            if structural_evidence:
+                confidence_base = max(
+                    confidence_base,
+                    0.42
+                    + 0.30 * float(ternary.structural_confidence or 0.0)
+                    + 0.18 * interface_contact_score
+                    + 0.10 * lysine_geometry_score,
+                )
+            rows.append(
+                CooperativityPrediction(
+                    candidate_id=candidate.candidate_id,
+                    predicted_alpha=round(alpha, 3),
+                    log_alpha=round(log_alpha, 3),
+                    cooperativity_score=round(coop_score, 3),
+                    interface_contact_score=round(interface_contact_score, 3),
+                    linker_strain_score=round(linker_strain_score, 3),
+                    lysine_geometry_score=round(lysine_geometry_score, 3),
+                    ternary_geometry_score=round(ternary.ternary_plausibility_score, 3),
+                    confidence=round(_clamp(confidence_base), 3),
+                    model_version=model_version,
+                    warning=warning,
+                )
+            )
+        return rows
+
+    def predict_hook_effect(
+        self,
+        candidates: Sequence[CandidateRecord],
+        degradation_predictions: Sequence[DegradationPrediction],
+        cooperativity_predictions: Sequence[CooperativityPrediction],
+        e3_context_predictions: Sequence[E3ContextPrediction] | None = None,
+    ) -> list[HookEffectPrediction]:
+        """Model concentration-dependent ternary occupancy and hook risk."""
+        deg_by_id = {item.candidate_id: item for item in degradation_predictions}
+        coop_by_id = {item.candidate_id: item for item in cooperativity_predictions}
+        e3_by_id = {item.candidate_id: item for item in (e3_context_predictions or [])}
+        measured_by_id = self._load_calibration_rows("hook_effect_calibration.csv")
+        concentrations = [0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 3000.0, 10000.0]
+        rows: list[HookEffectPrediction] = []
+        for candidate in candidates:
+            measured = measured_by_id.get(candidate.candidate_id)
+            if measured:
+                max_fraction = _clamp(_safe_float(measured.get("max_ternary_fraction"), 0.0))
+                high_fraction = _clamp(_safe_float(measured.get("high_concentration_fraction"), max_fraction))
+                hook_conc = measured.get("hook_concentration_nM")
+                rows.append(
+                    HookEffectPrediction(
+                        candidate_id=candidate.candidate_id,
+                        concentration_nM=[],
+                        ternary_fraction=[],
+                        hook_concentration_nM=_safe_float(hook_conc, 0.0) if hook_conc not in ("", None) else None,
+                        max_ternary_fraction=round(max_fraction, 4),
+                        high_concentration_fraction=round(high_fraction, 4),
+                        hook_risk=measured.get("hook_risk", "unknown") or "unknown",
+                        therapeutic_window_score=round(_clamp(_safe_float(measured.get("therapeutic_window_score"), max_fraction)), 3),
+                        model_version=measured.get("source", "measured-dose-response-calibration-v0.1") or "measured-dose-response-calibration-v0.1",
+                        warning=None,
+                    )
+                )
+                continue
+            deg = deg_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
+            coop = coop_by_id.get(candidate.candidate_id, CooperativityPrediction(candidate_id=candidate.candidate_id))
+            e3 = e3_by_id.get(candidate.candidate_id, E3ContextPrediction(candidate_id=candidate.candidate_id, total_context_score=0.6))
+            kd_poi = max(1.0, float(deg.predicted_dc50_nM or 100.0))
+            kd_e3 = {"CRBN": 250.0, "VHL": 180.0, "MDM2": 500.0, "IAP": 420.0, "CIAP1": 420.0}.get(candidate.e3_ligase.upper(), 400.0)
+            alpha = max(0.05, coop.predicted_alpha or 1.0)
+            e3_scale = _clamp(e3.total_context_score or 0.6, 0.15, 1.0)
+            fractions: list[float] = []
+            for concentration in concentrations:
+                poi_binary = concentration / (kd_poi + concentration)
+                e3_binary = concentration / (kd_e3 + concentration)
+                productive = alpha * poi_binary * e3_binary * e3_scale
+                binary_sink = 1.0 + concentration / (12.0 * kd_poi) + concentration / (12.0 * kd_e3)
+                fractions.append(round(_clamp(productive / binary_sink), 4))
+            max_fraction = max(fractions) if fractions else 0.0
+            max_idx = fractions.index(max_fraction) if fractions else 0
+            high_fraction = fractions[-1] if fractions else 0.0
+            drop = (max_fraction - high_fraction) / max(max_fraction, 1e-6)
+            if drop >= 0.55:
+                hook_risk = "high"
+            elif drop >= 0.25:
+                hook_risk = "medium"
+            else:
+                hook_risk = "low"
+            window_score = _clamp(0.75 * max_fraction + 0.25 * (1.0 - drop))
+            rows.append(
+                HookEffectPrediction(
+                    candidate_id=candidate.candidate_id,
+                    concentration_nM=concentrations,
+                    ternary_fraction=fractions,
+                    hook_concentration_nM=concentrations[max_idx] if fractions else None,
+                    max_ternary_fraction=round(max_fraction, 4),
+                    high_concentration_fraction=round(high_fraction, 4),
+                    hook_risk=hook_risk,
+                    therapeutic_window_score=round(window_score, 3),
+                    warning="High-dose degradation may decline from binary target/E3 saturation." if hook_risk == "high" else None,
+                )
+            )
+        return rows
+
+    def update_active_learning_from_feedback(
+        self,
+        feedback: Sequence[AssayFeedbackRecord | dict[str, Any]],
+        candidates: Sequence[CandidateRecord] | None = None,
+    ) -> ActiveLearningUpdate:
+        """Append assay feedback to a training table and report retraining readiness.
+
+        This does not claim a calibrated model has been trained. It creates the
+        supervised rows and a recommendation gate so a real training job can run
+        when enough feedback accumulates.
+        """
+        ensure_directories()
+        path = DATA_DIR / "assay_feedback_training.csv"
+        registry_dir = DATA_DIR / "active_learning"
+        registry_dir.mkdir(parents=True, exist_ok=True)
+        registry_path = registry_dir / "model_registry.json"
+        active_model_version = "heuristic_proxy-v0.1+feedback_registry"
+        rollback_artifact = ""
+        candidate_by_id = {c.candidate_id: c for c in (candidates or [])}
+        rows: list[dict[str, Any]] = []
+        for item in feedback:
+            fb = item if isinstance(item, AssayFeedbackRecord) else AssayFeedbackRecord(**item)
+            candidate = candidate_by_id.get(fb.candidate_id)
+            smiles = fb.smiles or (candidate.full_protac_smiles if candidate else "")
+            rows.append({
+                "candidate_id": fb.candidate_id,
+                "target": fb.target or (candidate.target if candidate else ""),
+                "e3_ligase": fb.e3_ligase or (candidate.e3_ligase if candidate else ""),
+                "cell_line": fb.cell_line or "default",
+                "smiles": smiles,
+                "measured_dc50_nM": fb.measured_dc50_nM,
+                "measured_dmax_percent": fb.measured_dmax_percent,
+                "measured_hook_concentration_nM": fb.measured_hook_concentration_nM,
+                "degradation_observed": fb.degradation_observed,
+                "source": fb.source,
+                "notes": fb.notes,
+                "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            })
+        if not rows:
+            existing = 0
+            if path.exists():
+                with path.open(newline="", encoding="utf-8") as handle:
+                    existing = max(0, sum(1 for _ in csv.DictReader(handle)))
+            return ActiveLearningUpdate(
+                status="no_feedback",
+                feedback_count=0,
+                training_rows=existing,
+                dataset_path=str(path) if path.exists() else "",
+                registry_path=str(registry_path) if registry_path.exists() else "",
+                active_model_version=active_model_version,
+                rollback_model_artifact_path=rollback_artifact,
+                retraining_recommendation="collect_more_feedback_before_retraining",
+                warnings=["No assay feedback records supplied."],
+            )
+        existing = 0
+        if path.exists():
+            with path.open(newline="", encoding="utf-8") as handle:
+                existing = max(0, sum(1 for _ in csv.DictReader(handle)))
+        fieldnames = [
+            "candidate_id", "target", "e3_ligase", "cell_line", "smiles",
+            "measured_dc50_nM", "measured_dmax_percent", "measured_hook_concentration_nM",
+            "degradation_observed", "source", "notes", "created_at",
+        ]
+        with path.open("a", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            if path.stat().st_size == 0:
+                writer.writeheader()
+            writer.writerows(rows)
+        total = existing + len(rows)
+        if total >= 200:
+            recommendation = "ready_for_full_retraining"
+            artifact = str(DATA_DIR / "active_learning" / "next_degradation_model.joblib")
+        elif total >= 40:
+            recommendation = "ready_for_calibration_or_fine_tuning"
+            artifact = ""
+        else:
+            recommendation = "collect_more_feedback_before_retraining"
+            artifact = ""
+        registry = {
+            "registry_version": "protacpilot-active-learning-registry-v0.1",
+            "active_model_version": active_model_version,
+            "active_dataset_path": str(path),
+            "training_rows": total,
+            "latest_feedback_count": len(rows),
+            "latest_update_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "candidate_schema": "synglue_agent.backend.schemas.CandidateRecord",
+            "feedback_schema": "synglue_agent.backend.schemas.AssayFeedbackRecord",
+            "recommended_next_action": recommendation,
+            "next_model_artifact_path": artifact,
+            "rollback_model_artifact_path": rollback_artifact,
+            "status": "registry_only_no_trained_model",
+            "limitations": [
+                "Feedback rows are appended for calibration/retraining readiness.",
+                "No new degradation model is trained by this function.",
+                "Promote a model only after a separate reproducible training job writes a validated artifact.",
+            ],
+        }
+        registry_path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
+        return ActiveLearningUpdate(
+            status="updated" if rows else "no_feedback",
+            feedback_count=len(rows),
+            training_rows=total,
+            dataset_path=str(path),
+            registry_path=str(registry_path),
+            active_model_version=active_model_version,
+            model_artifact_path=artifact,
+            rollback_model_artifact_path=rollback_artifact,
+            retraining_recommendation=recommendation,
+            warnings=[] if rows else ["No assay feedback records supplied."],
+        )
+
     # ------------------------------------------------------------------
     # Ranking, reflection, evolution, diversity, ternary feasibility
     # ------------------------------------------------------------------
@@ -1396,8 +2062,14 @@ class ProtacDesignToolbox:
         novelty_results: Sequence[NoveltyResult],
         domain_results: Sequence[ApplicabilityDomainResult],
         ternary_results: Sequence[TernaryFeasibilityResult] | None = None,
+        cooperativity_results: Sequence[CooperativityPrediction] | None = None,
+        hook_results: Sequence[HookEffectPrediction] | None = None,
+        e3_context_results: Sequence[E3ContextPrediction] | None = None,
         ranking_weights: dict[str, float] | None = None,
     ) -> list[RankingResult]:
+        if ranking_weights is None and isinstance(cooperativity_results, dict):
+            ranking_weights = cooperativity_results
+            cooperativity_results = None
         weights = dict(DEFAULT_RANKING_WEIGHTS)
         if ranking_weights:
             weights.update(ranking_weights)
@@ -1406,6 +2078,9 @@ class ProtacDesignToolbox:
         novelty_by_id = {item.candidate_id: item for item in novelty_results}
         domain_by_id = {item.candidate_id: item for item in domain_results}
         ternary_by_id = {item.candidate_id: item for item in (ternary_results or [])}
+        coop_by_id = {item.candidate_id: item for item in (cooperativity_results or [])}
+        hook_by_id = {item.candidate_id: item for item in (hook_results or [])}
+        e3_context_by_id = {item.candidate_id: item for item in (e3_context_results or [])}
 
         rows: list[RankingResult] = []
         for candidate in candidates:
@@ -1417,21 +2092,41 @@ class ProtacDesignToolbox:
                 candidate.candidate_id,
                 TernaryFeasibilityResult(candidate_id=candidate.candidate_id, ternary_plausibility_score=0.5),
             )
+            coop = coop_by_id.get(candidate.candidate_id, CooperativityPrediction(candidate_id=candidate.candidate_id, cooperativity_score=0.5))
+            hook = hook_by_id.get(candidate.candidate_id, HookEffectPrediction(candidate_id=candidate.candidate_id, therapeutic_window_score=0.5, hook_risk="unknown"))
+            e3_context = e3_context_by_id.get(candidate.candidate_id, E3ContextPrediction(candidate_id=candidate.candidate_id, total_context_score=0.6))
             dc50_score = self.compute_dc50_score(deg.predicted_dc50_nM)
             dmax_score = self.compute_dmax_score(deg.predicted_dmax_percent)
             admet_score = _clamp(1.0 - admet.overall_admet_penalty)
             ternary_score = ternary.ternary_plausibility_score
+            coop_score = coop.cooperativity_score
+            hook_score = hook.therapeutic_window_score
+            e3_context_score = e3_context.total_context_score
             novelty_score = novelty.novelty_score
             synthetic_score = candidate.synthetic_feasibility_score
+            protacdb_prior = self.protacdb_evidence_prior(candidate)
+            protacdb_bonus = 0.05 * protacdb_prior["influence"] * (protacdb_prior["score"] - 0.5)
+            candidate.provenance["protacdb_evidence_prior"] = protacdb_prior
             score = (
                 weights["dc50"] * dc50_score
                 + weights["dmax"] * dmax_score
                 + weights["admet"] * admet_score
                 + weights["ternary"] * ternary_score
+                + weights.get("cooperativity", 0.0) * coop_score
+                + weights.get("hook", 0.0) * hook_score
+                + weights.get("e3_context", 0.0) * e3_context_score
                 + weights["novelty"] * novelty_score
                 + weights["synthetic"] * synthetic_score
+                + protacdb_bonus
             )
-            confidence = _clamp(0.45 * deg.model_confidence + 0.35 * domain.similarity_to_training_set + 0.20 * candidate.synthetic_feasibility_score)
+            confidence = _clamp(
+                0.32 * deg.model_confidence
+                + 0.24 * domain.similarity_to_training_set
+                + 0.18 * coop.confidence
+                + 0.14 * e3_context.confidence
+                + 0.12 * candidate.synthetic_feasibility_score
+                + 0.08 * protacdb_prior["influence"] * protacdb_prior["diversity_prior"]
+            )
             uncertainty = []
             if deg.model_confidence < 0.45:
                 uncertainty.append("low_degradation_model_confidence")
@@ -1439,6 +2134,20 @@ class ProtacDesignToolbox:
                 uncertainty.append("outside_applicability_domain")
             if admet.hERG_risk == "high" or admet.DILI_risk == "high":
                 uncertainty.append("high_admet_toxicity_risk")
+            if hook.hook_risk == "high":
+                uncertainty.append("high_hook_effect_risk")
+            if e3_context.total_context_score < 0.45:
+                uncertainty.append("weak_cell_type_e3_context")
+            if candidate.candidate_id not in ternary_by_id:
+                uncertainty.append("not_selected_for_expensive_ternary_modeling")
+            if coop.model_version.startswith("cooperativity-proxy-v0.1") and "pose-structural-score" not in coop.model_version:
+                uncertainty.append("proxy_cooperativity_not_measured_alpha")
+            if hook.model_version.endswith("v0.1"):
+                uncertainty.append("proxy_hook_model_not_fitted_to_dose_response")
+            if not protacdb_prior["available"]:
+                uncertainty.append("no_protacdb_prior_available_not_negative_evidence")
+            elif protacdb_prior["source_scope"] != "exact_compound_match":
+                uncertainty.append("protacdb_prior_is_target_e3_neighborhood_not_exact_compound")
             if not self.rdkit_available:
                 uncertainty.append("rdkit_not_installed")
             penalty_bits = []
@@ -1448,6 +2157,12 @@ class ProtacDesignToolbox:
                 penalty_bits.append("near duplicate of local known PROTAC")
             if domain.domain_status != "inside":
                 penalty_bits.append(f"domain status {domain.domain_status}")
+            if hook.hook_risk in {"medium", "high"}:
+                penalty_bits.append(f"hook risk {hook.hook_risk}")
+            if e3_context.contraindications:
+                penalty_bits.append("; ".join(e3_context.contraindications[:2]))
+            if protacdb_prior["available"]:
+                penalty_bits.append(f"PROTAC-DB prior scope {protacdb_prior['source_scope']}")
             rows.append(
                 RankingResult(
                     candidate_id=candidate.candidate_id,
@@ -1455,7 +2170,10 @@ class ProtacDesignToolbox:
                     confidence=round(confidence, 3),
                     reason_for_rank=(
                         f"DC50 score {dc50_score:.2f}, Dmax score {dmax_score:.2f}, "
-                        f"ADME score {admet_score:.2f}, novelty {novelty_score:.2f}, synthetic {synthetic_score:.2f}."
+                        f"ADME score {admet_score:.2f}, ternary {ternary_score:.2f}, "
+                        f"cooperativity {coop_score:.2f}, hook-window {hook_score:.2f}, "
+                        f"E3 context {e3_context_score:.2f}, novelty {novelty_score:.2f}, synthetic {synthetic_score:.2f}, "
+                        f"PROTAC-DB prior {protacdb_prior['score']:.2f} ({protacdb_prior['source_scope']}, capped)."
                     ),
                     penalty_explanation="; ".join(penalty_bits) if penalty_bits else "No dominant penalty in demo scoring.",
                     uncertainty_flags=uncertainty,
@@ -1484,6 +2202,45 @@ class ProtacDesignToolbox:
         if score >= 0.55:
             return "Tier 2"
         return "Tier 3"
+
+    def select_expensive_modeling_finalists(
+        self,
+        candidates: Sequence[CandidateRecord],
+        rankings: Sequence[RankingResult],
+        max_finalists: int = 12,
+        similarity_threshold: float = 0.82,
+    ) -> list[CandidateRecord]:
+        """Choose a ranked, diverse subset for docking/P4ward-like work."""
+        ranking_by_id = {item.candidate_id: item for item in rankings}
+        ordered = sorted(
+            candidates,
+            key=lambda item: (
+                ranking_by_id.get(item.candidate_id, RankingResult()).final_priority_score,
+                ranking_by_id.get(item.candidate_id, RankingResult()).confidence,
+                item.provenance.get("cheap_filter_score", 0.0),
+            ),
+            reverse=True,
+        )
+        finalists: list[CandidateRecord] = []
+        for candidate in ordered:
+            if len(finalists) >= max_finalists:
+                break
+            too_similar = any(
+                self.calculate_similarity(candidate.full_protac_smiles, kept.full_protac_smiles) >= similarity_threshold
+                for kept in finalists
+            )
+            if too_similar:
+                continue
+            candidate.provenance["selected_for_expensive_modeling"] = True
+            finalists.append(candidate)
+        if len(finalists) < min(max_finalists, len(ordered)):
+            for candidate in ordered:
+                if len(finalists) >= max_finalists:
+                    break
+                if candidate not in finalists:
+                    candidate.provenance["selected_for_expensive_modeling"] = True
+                    finalists.append(candidate)
+        return finalists
 
     def cluster_candidates(self, candidates: Sequence[CandidateRecord], threshold: float = 0.62) -> list[DiversityCluster]:
         clusters: list[list[CandidateRecord]] = []
@@ -1837,16 +2594,68 @@ class ProtacDesignToolbox:
             flexibility = _clamp((candidate.rotatable_bonds or 10) / 24.0)
             geometry = _clamp(0.55 * reachability + 0.25 * flexibility + 0.20 * (1.0 if structure_available else 0.45))
             plausibility = _clamp(0.65 * geometry + 0.20 * candidate.synthetic_feasibility_score + 0.15 * (1.0 if structure_available else 0.4))
+            pose_pdb = (
+                candidate.provenance.get("ternary_pose_pdb")
+                or candidate.provenance.get("pose_pdb")
+                or candidate.provenance.get("docked_ternary_pose_pdb")
+            )
+            structural_payload: dict[str, Any] = {
+                "structural_backend": "geometry_proxy_stub",
+                "structural_warnings": ["No ternary pose PDB supplied; structural backend not run."],
+            }
+            docking_status = "not_run_stub_available"
+            structure_label = "target_structure_or_alphafold_available" if structure_available else "not_available_locally"
+            interface_warning = None if structure_available else "No target structure available in local table; geometry score is lower confidence."
+            if pose_pdb:
+                smiles_for_strain = candidate.full_protac_smiles or candidate.linker_smiles
+                structural = score_ternary_pose_for_candidate(
+                    candidate_id=candidate.candidate_id,
+                    pose_pdb=pose_pdb,
+                    smiles=smiles_for_strain,
+                    target_chain=str(candidate.provenance.get("target_chain") or ""),
+                    e3_chain=str(candidate.provenance.get("e3_chain") or ""),
+                )
+                if structural.real_structural_score > 0 or not structural.warnings:
+                    plausibility = _clamp(0.20 * plausibility + 0.80 * structural.real_structural_score)
+                    geometry = _clamp(0.45 * geometry + 0.55 * structural.real_structural_score)
+                    reachability = structural.lysine_geometry_score or reachability
+                    docking_status = "pose_backed_structural_scoring"
+                    structure_label = "ternary_pose_file"
+                    interface_warning = "; ".join(structural.warnings) if structural.warnings else None
+                else:
+                    docking_status = "pose_file_unusable"
+                    structure_label = "ternary_pose_file_unusable"
+                    interface_warning = "; ".join(structural.warnings) if structural.warnings else interface_warning
+                structural_payload = {
+                    "structural_backend": structural.backend,
+                    "pose_file": structural.pose_file,
+                    "interface_quality_score": structural.interface_quality_score,
+                    "interface_contact_count": structural.interface_contact_count,
+                    "polar_contact_count": structural.polar_contact_count,
+                    "clash_count": structural.clash_count,
+                    "buried_sasa_proxy": structural.buried_sasa_proxy,
+                    "nearest_lysine": structural.nearest_lysine,
+                    "nearest_lysine_distance_A": structural.nearest_lysine_distance_A,
+                    "accessible_lysine_count": structural.accessible_lysine_count,
+                    "productive_lysine_count": structural.productive_lysine_count,
+                    "lysine_geometry_score": structural.lysine_geometry_score,
+                    "linker_strain_score": structural.linker_strain_score,
+                    "linker_energy_spread": structural.linker_energy_spread,
+                    "real_structural_score": structural.real_structural_score,
+                    "structural_confidence": structural.confidence,
+                    "structural_warnings": structural.warnings,
+                }
             results.append(
                 TernaryFeasibilityResult(
                     candidate_id=candidate.candidate_id,
                     fast_geometry_feasibility_score=round(geometry, 3),
                     linker_reachability_score=round(reachability, 3),
                     ternary_plausibility_score=round(plausibility, 3),
-                    docking_status="not_run_stub_available",
-                    interface_warning=None if structure_available else "No target structure available in local table; geometry score is lower confidence.",
-                    structure_availability="target_structure_or_alphafold_available" if structure_available else "not_available_locally",
+                    docking_status=docking_status,
+                    interface_warning=interface_warning,
+                    structure_availability=structure_label,
                     proceed_to_expensive_modeling=plausibility >= 0.58,
+                    **structural_payload,
                 )
             )
         return results
@@ -1862,12 +2671,18 @@ class ProtacDesignToolbox:
         admet_predictions: Sequence[ADMETPrediction],
         novelty_results: Sequence[NoveltyResult],
         ternary_results: Sequence[TernaryFeasibilityResult],
+        cooperativity_results: Sequence[CooperativityPrediction] | None = None,
+        hook_results: Sequence[HookEffectPrediction] | None = None,
+        e3_context_results: Sequence[E3ContextPrediction] | None = None,
     ) -> list[dict[str, Any]]:
         ranking_by_id = {item.candidate_id: item for item in rankings}
         deg_by_id = {item.candidate_id: item for item in degradation_predictions}
         admet_by_id = {item.candidate_id: item for item in admet_predictions}
         novelty_by_id = {item.candidate_id: item for item in novelty_results}
         ternary_by_id = {item.candidate_id: item for item in ternary_results}
+        coop_by_id = {item.candidate_id: item for item in (cooperativity_results or [])}
+        hook_by_id = {item.candidate_id: item for item in (hook_results or [])}
+        e3_context_by_id = {item.candidate_id: item for item in (e3_context_results or [])}
         ordered = sorted(candidates, key=lambda item: ranking_by_id.get(item.candidate_id, RankingResult()).rank or 999999)
         rows: list[dict[str, Any]] = []
         for candidate in ordered:
@@ -1876,6 +2691,10 @@ class ProtacDesignToolbox:
             admet = admet_by_id.get(candidate.candidate_id, ADMETPrediction(candidate_id=candidate.candidate_id))
             novelty = novelty_by_id.get(candidate.candidate_id, NoveltyResult(candidate_id=candidate.candidate_id))
             ternary = ternary_by_id.get(candidate.candidate_id, TernaryFeasibilityResult(candidate_id=candidate.candidate_id))
+            coop = coop_by_id.get(candidate.candidate_id, CooperativityPrediction(candidate_id=candidate.candidate_id))
+            hook = hook_by_id.get(candidate.candidate_id, HookEffectPrediction(candidate_id=candidate.candidate_id))
+            e3_context = e3_context_by_id.get(candidate.candidate_id, E3ContextPrediction(candidate_id=candidate.candidate_id))
+            protacdb_prior = candidate.provenance.get("protacdb_evidence_prior") or self.protacdb_evidence_prior(candidate)
             rows.append(
                 {
                     "Rank": ranking.rank,
@@ -1910,6 +2729,35 @@ class ProtacDesignToolbox:
                     "Novelty score": novelty.novelty_score,
                     "Nearest known PROTAC similarity": novelty.max_tanimoto_similarity,
                     "Ternary feasibility score": ternary.ternary_plausibility_score,
+                    "Structural backend": ternary.structural_backend,
+                    "Pose file": ternary.pose_file,
+                    "Real structural score": ternary.real_structural_score,
+                    "Structural confidence": ternary.structural_confidence,
+                    "Interface score": ternary.interface_quality_score,
+                    "Interface contacts": ternary.interface_contact_count,
+                    "Polar contacts": ternary.polar_contact_count,
+                    "Clashes": ternary.clash_count,
+                    "Buried SASA proxy": ternary.buried_sasa_proxy,
+                    "Nearest lysine": ternary.nearest_lysine,
+                    "Nearest lysine distance A": ternary.nearest_lysine_distance_A,
+                    "Accessible lysines": ternary.accessible_lysine_count,
+                    "Productive lysines": ternary.productive_lysine_count,
+                    "Lysine geometry score": ternary.lysine_geometry_score,
+                    "Linker strain score": ternary.linker_strain_score,
+                    "Linker energy spread": ternary.linker_energy_spread,
+                    "Predicted cooperativity alpha": coop.predicted_alpha,
+                    "Cooperativity score": coop.cooperativity_score,
+                    "Cooperativity model": coop.model_version,
+                    "Hook concentration nM": hook.hook_concentration_nM,
+                    "Hook risk": hook.hook_risk,
+                    "Therapeutic window score": hook.therapeutic_window_score,
+                    "Hook model": hook.model_version,
+                    "Cell line": e3_context.cell_line,
+                    "E3 context score": e3_context.total_context_score,
+                    "E3 expression score": e3_context.expression_score,
+                    "PROTAC-DB prior score": protacdb_prior.get("score"),
+                    "PROTAC-DB prior scope": protacdb_prior.get("source_scope"),
+                    "PROTAC-DB evidence families": ";".join(sorted((protacdb_prior.get("evidence_family_counts") or {}).keys())),
                     "Synthetic feasibility score": candidate.synthetic_feasibility_score,
                     "Final priority score": ranking.final_priority_score,
                     "Warning flags": ";".join(candidate.warning_flags + ranking.uncertainty_flags),
@@ -1959,6 +2807,15 @@ class ProtacDesignToolbox:
 
         return [
             row(
+                "Controlled Search Agent",
+                "Search policy",
+                "bounded deterministic budget policy",
+                f"requested_candidates={state.parsed_objective.candidate_count}",
+                f"linker_budget={state.search_policy.linker_budget}, construction_budget={state.search_policy.construction_budget}, expensive_budget={state.search_policy.expensive_modeling_budget}",
+                "milliseconds locally",
+                "yes - explicit NP-hard search budgets",
+            ),
+            row(
                 "Target Resolver Agent",
                 "Target assessment",
                 "local curated target table; ChEMBL target fallback if network is available; no PDB/AlphaFold fetch is run here",
@@ -1989,12 +2846,21 @@ class ProtacDesignToolbox:
             row(
                 "E3 Ligand Agent",
                 "E3 ligase selection",
-                "local curated CRBN/VHL/IAP/MDM2 handles; no expression database query is run",
-                f"requested_e3={state.parsed_objective.e3_ligase or 'CRBN/VHL comparison'}",
+                "local curated CRBN/VHL/IAP/MDM2 handles plus optional explicit expression context",
+                f"requested_e3={state.parsed_objective.e3_ligase or 'CRBN/VHL comparison'}, cell_line={state.parsed_objective.cell_line or 'default'}",
                 f"e3_ligands={len(state.selected_e3_ligands)}, ligases={len({item.e3_ligase for item in state.selected_e3_ligands})}",
                 "milliseconds locally",
                 "yes - local E3 ligand records" if state.selected_e3_ligands else "no - no E3 ligands selected",
-                "HPA/DepMap/ProteomicsDB/E3Net selection is planned integration.",
+                "External HPA/DepMap/ProteomicsDB/E3Net expression queries remain planned integrations.",
+            ),
+            row(
+                "Cell Context Agent",
+                "E3-context compatibility",
+                "curated E3 expression evidence, target localization rules, optional user expression overrides",
+                f"cell_line={state.parsed_objective.cell_line or 'default'}, overrides={bool(state.parsed_objective.expression_overrides)}",
+                f"e3_context_records={len(state.e3_context_predictions)}",
+                "milliseconds locally",
+                "yes - deterministic cell/E3 context scores" if state.e3_context_predictions else "no - no context records",
             ),
             row(
                 "Exit Vector Agent",
@@ -2026,10 +2892,19 @@ class ProtacDesignToolbox:
                 "Retrosynthesis-aware route planning is planned integration.",
             ),
             row(
+                "Cheap Filter Agent",
+                "Cheap molecular filter",
+                "RDKit validity, MW, TPSA, rotatable bonds, synthetic feasibility, novelty, ADMET, applicability domain, E3 context",
+                f"max_keep={state.search_policy.cheap_filter_budget}",
+                f"kept={state.cheap_filter_summary.get('kept_candidates', 0)}, rejected={state.cheap_filter_summary.get('rejected_candidates', 0)}",
+                "milliseconds to seconds locally",
+                "yes - pre-ternary filtered candidate set" if state.cheap_filter_summary else "no - filter not run",
+            ),
+            row(
                 "Prediction Agent",
                 "DC50/Dmax prediction",
                 "heuristic demo predictor in codebase; no trained SynGlue/DeepPROTACs/PROTAC-STAN model is loaded",
-                "full PROTAC, components, target, E3 ligase, optional cell context",
+                "cheap-filter survivors, components, target, E3 ligase, optional cell context",
                 f"degradation_predictions={len(state.degradation_predictions)}",
                 "seconds locally",
                 "no - heuristic demo predictions only" if state.degradation_predictions else "no - no predictions",
@@ -2058,12 +2933,32 @@ class ProtacDesignToolbox:
             row(
                 "Ternary Feasibility Agent",
                 "Ternary complex modeling",
-                "local geometry proxy only when structure-aware ranking is requested; docking is not run",
-                "top candidates after first ranking",
+                "finalist-only geometry proxy; docking/P4ward only when structure-aware ranking is requested and tools are available",
+                f"finalist_ids={len(state.expensive_modeling_candidate_ids)}",
                 f"ternary_records={len(state.ternary_feasibility_results)}",
                 "seconds locally; docking not run",
                 "no - geometry proxy only" if state.ternary_feasibility_results else "no - skipped or no ternary records",
                 "Docking/ternary modeling is planned integration.",
+            ),
+            row(
+                "Cooperativity Agent",
+                "Cooperativity proxy",
+                "ternary geometry, linker strain, interface-contact proxy, and lysine-geometry proxy",
+                "valid candidates plus ternary feasibility records",
+                f"cooperativity_records={len(state.cooperativity_predictions)}",
+                "milliseconds locally",
+                "yes - proxy alpha estimates" if state.cooperativity_predictions else "no - no cooperativity records",
+                "Measured alpha or calibrated structure/ML cooperativity model is still needed for validation.",
+            ),
+            row(
+                "Hook Effect Agent",
+                "Concentration occupancy model",
+                "DC50/Dmax predictions, E3 affinity priors, cooperativity alpha, and cell-context E3 score",
+                "0.1-10000 nM concentration grid",
+                f"hook_records={len(state.hook_effect_predictions)}, high_risk={sum(1 for item in state.hook_effect_predictions if item.hook_risk == 'high')}",
+                "milliseconds locally",
+                "yes - concentration-dependent hook-risk curves" if state.hook_effect_predictions else "no - no hook records",
+                "Occupancy parameters are priors until fitted to cellular dose-response data.",
             ),
             row(
                 "Ranking Agent",
@@ -2281,6 +3176,9 @@ class ProtacDesignToolbox:
             state.admet_predictions,
             state.novelty_results,
             state.ternary_feasibility_results,
+            state.cooperativity_predictions,
+            state.hook_effect_predictions,
+            state.e3_context_predictions,
         )
         lines = [
             "# SynGlue-Agent PROTAC Design Report",
@@ -2300,13 +3198,27 @@ class ProtacDesignToolbox:
             f"- Linkers generated: {len(state.generated_linkers)}",
             f"- Construction attempts: {len(state.construction_attempts)}",
             f"- Valid or unverified candidates: {len(state.valid_candidates)}",
+            f"- Cheap-filter survivors: {state.cheap_filter_summary.get('kept_candidates', len(state.valid_candidates))}/{state.cheap_filter_summary.get('input_candidates', len(state.valid_candidates))}",
+            f"- Expensive-modeling finalists: {len(state.expensive_modeling_candidate_ids)}",
             f"- Evolved candidates: {len(state.evolved_candidates)}",
             "",
             "## Scientific Guardrails",
             "- Values are computational predictions, not experimental validation.",
             "- Model version is reported for degradation predictions.",
+            "- Cooperativity alpha is an exploratory proxy unless backed by measured ternary binding or a calibrated alpha model.",
+            "- Hook-effect risk is a concentration-occupancy proxy unless fitted to measured dose-response data.",
+            "- Expensive ternary modeling is restricted to the selected finalist subset, not the full generated space.",
+            "- PROTAC-DB evidence is used as a capped prior only; it is incomplete and absence from PROTAC-DB is not negative evidence.",
             "- Human medicinal chemistry and safety review is required before synthesis or wet-lab testing.",
         ]
+        if state.active_learning_update.status != "not_run":
+            lines.extend([
+                "",
+                "## Active Learning",
+                f"- Feedback records added: {state.active_learning_update.feedback_count}",
+                f"- Training rows available: {state.active_learning_update.training_rows}",
+                f"- Retraining recommendation: {state.active_learning_update.retraining_recommendation or 'not available'}",
+            ])
         if state.warnings:
             lines.extend(["", "## Warnings"])
             lines.extend(f"- {warning}" for warning in state.warnings)
@@ -2321,6 +3233,11 @@ class ProtacDesignToolbox:
                 "Linker class",
                 "Predicted DC50 nM",
                 "Predicted Dmax %",
+                "Predicted cooperativity alpha",
+                "Hook risk",
+                "E3 context score",
+                "PROTAC-DB prior score",
+                "PROTAC-DB prior scope",
                 "hERG risk",
                 "Novelty score",
                 "Final priority score",
@@ -2390,6 +3307,12 @@ class ProtacDesignToolbox:
             "final_candidate_ids": [candidate.candidate_id for candidate in state.final_ranked_candidates],
             "warnings": state.warnings,
             "errors": state.errors,
+            "cell_line": state.parsed_objective.cell_line,
+            "expression_overrides": state.parsed_objective.expression_overrides,
+            "e3_context_predictions": model_to_dict(state.e3_context_predictions),
+            "cooperativity_predictions": model_to_dict(state.cooperativity_predictions),
+            "hook_effect_predictions": model_to_dict(state.hook_effect_predictions),
+            "active_learning_update": model_to_dict(state.active_learning_update),
             "workflow_log": model_to_dict(state.workflow_log),
         }
         path.write_text(json.dumps(payload, indent=2), encoding="utf-8")

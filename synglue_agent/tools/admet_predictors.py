@@ -249,7 +249,7 @@ def _predict_with_external_api(smiles: str) -> dict[str, Any]:
     request = urllib.request.Request(
         url,
         data=payload,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}", "User-Agent": "ProtacAutopilot/0.1"},
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}", "User-Agent": "PROTACXtend/0.1"},
         method="POST",
     )
     try:
@@ -340,4 +340,3 @@ def predict_admet(smiles: str, backend: str = "auto") -> dict[str, Any]:
     if rule["success"]:
         return rule
     return _heuristic_stub(smiles)
-

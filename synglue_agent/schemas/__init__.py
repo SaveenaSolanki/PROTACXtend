@@ -1,2 +1,1 @@
-"""Typed schemas for ProtacAutopilot agentic workflows."""
-
+"""Typed schemas for PROTACXtend agentic workflows."""

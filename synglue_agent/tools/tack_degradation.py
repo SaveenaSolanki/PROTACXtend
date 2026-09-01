@@ -21,6 +21,7 @@ active, provenance}. Falls back gracefully to None when the models are absent.
 from __future__ import annotations
 
 import logging
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -39,17 +40,33 @@ class TackModel:
     def __init__(self, model_dir: Path = TACK_DIR):
         self._dc50 = self._dmax = self._bin = None
         self._meta: Dict[str, Any] = {}
+        self.compatibility_warnings: list[str] = []
         try:
-            self._dc50 = joblib.load(model_dir / "tack_dc50_model.joblib")
-            self._dmax = joblib.load(model_dir / "tack_dmax_model.joblib")
-            self._bin = joblib.load(model_dir / "tack_bin_model.joblib")
-            self._meta = joblib.load(model_dir / "tack_meta.joblib")
+            self._dc50 = self._load_joblib_with_warning_capture(model_dir / "tack_dc50_model.joblib")
+            self._dmax = self._load_joblib_with_warning_capture(model_dir / "tack_dmax_model.joblib")
+            self._bin = self._load_joblib_with_warning_capture(model_dir / "tack_bin_model.joblib")
+            self._meta = self._load_joblib_with_warning_capture(model_dir / "tack_meta.joblib")
         except Exception as exc:  # noqa: BLE001
             logger.warning("TACK models unavailable: %s", exc)
 
     @property
     def available(self) -> bool:
         return self._dc50 is not None and self._meta.get("metrics")
+
+    def _load_joblib_with_warning_capture(self, path: Path) -> Any:
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            payload = joblib.load(path)
+        for warning in caught:
+            message = str(warning.message)
+            if "Trying to unpickle estimator" in message or "InconsistentVersionWarning" in message:
+                summary = f"{path.name} was trained with a different sklearn version than the current runtime."
+                if summary not in self.compatibility_warnings:
+                    self.compatibility_warnings.append(summary)
+                    logger.warning("TACK model compatibility warning: %s", summary)
+            else:
+                warnings.warn(warning.message, warning.category, stacklevel=2)
+        return payload
 
     def _features(self, smiles: str, e3: str = "", cell: str = "", poi: str = "") -> np.ndarray:
         from rdkit import Chem
@@ -82,6 +99,12 @@ class TackModel:
         dmax = float(self._dmax.predict(x)[0])
         bin_prob = float(self._bin.predict_proba(x)[0, 1])
         metrics = self._meta.get("metrics", {})
+        compatibility_note = None
+        if self.compatibility_warnings:
+            compatibility_note = (
+                "TACK model artifact loaded with sklearn version mismatch; "
+                "treat this as an uncalibrated second-opinion signal until models are rebuilt in the runtime environment."
+            )
         return {
             "dc50_nM": round(float(10 ** log_dc50), 2),
             "log_dc50": round(log_dc50, 3),
@@ -93,6 +116,7 @@ class TackModel:
                 "training_data": f"TACK dataset (n_dc50={metrics.get('n_dc50')}, "
                                  f"n_dmax={metrics.get('n_dmax')})",
                 "val_metrics": metrics,
+                "compatibility_warning": compatibility_note,
             },
         }
 

@@ -12,8 +12,8 @@ class ReportAgent(ReActAgent):
     action = "generate_report"
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
-        state.pipeline_status = self.toolbox.generate_pipeline_status_table(state)
         state.report = self.toolbox.generate_markdown_report(state)
+        state.pipeline_status = self.toolbox.generate_pipeline_status_table(state)
         return state
 
     def _observation(self, state: WorkflowState) -> str:

@@ -1,4 +1,4 @@
-# ProtacPilot — Technical Architecture Deep Dive
+# PROTACXtend — Technical Architecture Deep Dive
 ## Orchestration, Agent Mechanics, Biology, and Implementation Details
 
 **Document date**: 2026-07-31
@@ -27,7 +27,7 @@
 
 ### 1.1 Engine: LangGraph (with local fallback)
 
-ProtacPilot uses a **state-machine workflow graph** orchestrated by LangGraph when available, with a
+PROTACXtend uses a **state-machine workflow graph** orchestrated by LangGraph when available, with a
 deterministic fallback (`LocalSynGlueWorkflowGraph`) that runs in any Python environment without
 LangGraph installed.
 
@@ -498,9 +498,9 @@ Cell
  └── PROTAC released (catalytic — one PROTAC degrades many POIs)
 ```
 
-### 6.2 How each NP-hard problem maps to ProtacPilot
+### 6.2 How each NP-hard problem maps to PROTACXtend
 
-| NP-hard problem | Biology | ProtacPilot module |
+| NP-hard problem | Biology | PROTACXtend module |
 |-----------------|---------|---------------------|
 | Linker optimization | Same warhead+E3, different linker → different degradation. Single atom matters. | `linker_scanner.py` (scan+score), `p4ward_wrapper.py` (full ternary) |
 | E3 sparsity | 600+ E3 ligases, only 4 usable. Limiting reagent. | `e3_agent.py` (selects from 4 available) |
@@ -596,7 +596,7 @@ Each step is rate-limited, cached, and retried.
 
 ### 8.1 Current state: 100% deterministic
 
-**No LLM is used in the default ProtacPilot workflow.** Every agent is pure Python:
+**No LLM is used in the default PROTACXtend workflow.** Every agent is pure Python:
 
 | Component | Implementation | LLM? |
 |-----------|---------------|------|
@@ -759,7 +759,7 @@ SAFETY_GUARDRAILS = [
 
 ## Summary
 
-**ProtacPilot is a 100% deterministic agentic workflow** — no LLM calls by default. It uses:
+**PROTACXtend is a 100% deterministic agentic workflow** — no LLM calls by default. It uses:
 - **LangGraph** (with local Python fallback) for 23-node sequential orchestration
 - **ReAct pattern** (Thought → Action → Observation) for every agent, stored as traces
 - **Pydantic** (with fallback) for 19 typed schemas passed as shared mutable state

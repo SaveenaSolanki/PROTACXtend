@@ -11,7 +11,7 @@ from typing import Any
 SOURCE = "RCSB PDB"
 SEARCH_URL = "https://search.rcsb.org/rcsbsearch/v2/query"
 GRAPHQL_URL = "https://data.rcsb.org/graphql"
-USER_AGENT = "ProtacAutopilot/0.1"
+USER_AGENT = "PROTACXtend/0.1"
 
 
 ENTRY_QUERY = """

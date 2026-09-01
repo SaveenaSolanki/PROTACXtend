@@ -14,6 +14,8 @@ Everything else (backend, CLI, UI) calls THIS. No other entry points.
 
 from __future__ import annotations
 
+import argparse
+import json
 import logging
 import time
 import uuid
@@ -227,3 +229,40 @@ def summarize_run(result: Dict[str, Any]) -> str:
         f"[{result['run_id']}] mode={result['mode']} status={result['status']} "
         f"({result['runtime_s']}s)"
     )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run PROTACXtend through the unified runtime.")
+    parser.add_argument(
+        "request",
+        nargs="?",
+        default="Design CRBN PROTACs for BRD4 degradation.",
+        help="Natural-language PROTAC design request.",
+    )
+    parser.add_argument("--mode", choices=sorted(VALID_MODES), default="agentic")
+    parser.add_argument("--run-id", default="", help="Optional stable run id.")
+    parser.add_argument("--persistent", action="store_true", help="Use persistent checkpointer for interrupt/resume.")
+    parser.add_argument("--llm-enabled", action="store_true", help="Enable the configured LLM decision layer.")
+    parser.add_argument("--json", action="store_true", help="Print the full JSON result instead of a short summary.")
+    args = parser.parse_args()
+
+    config: dict[str, Any] = {
+        "persistent": bool(args.persistent),
+        "llm_enabled": bool(args.llm_enabled),
+    }
+    if args.run_id:
+        config["run_id"] = args.run_id
+    result = run_protacpilot(args.request, mode=args.mode, config=config)
+    if args.json:
+        from synglue_agent.backend.schemas import model_to_dict
+
+        print(json.dumps(model_to_dict(result), indent=2))
+    else:
+        print(summarize_run(result))
+        artifacts = result.get("artifacts") or {}
+        if artifacts:
+            print(json.dumps(artifacts, indent=2))
+
+
+if __name__ == "__main__":
+    main()

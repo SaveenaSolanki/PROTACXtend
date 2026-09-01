@@ -20,7 +20,7 @@ class MolecularConstructionAgent(ReActAgent):
             state.selected_e3_ligands,
             state.generated_linkers,
             state.target_record,
-            candidate_count=max(1, state.parsed_objective.candidate_count),
+            candidate_count=max(1, state.search_policy.construction_budget),
             use_retrosynthesis_filtering=state.parsed_objective.use_retrosynthesis_filtering,
         )
         state.construction_attempts.extend(attempts)

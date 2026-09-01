@@ -16,6 +16,12 @@ from synglue_agent.tools.report_generator import generate_candidate_table
 from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
 
 
+def run_agentic_design(user_request: str, config: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Run the unified agentic workflow from the legacy backend CLI."""
+
+    return run_protacpilot(user_request, mode="agentic", config=config or {})
+
+
 def run_workflow_from_request(user_request: str) -> WorkflowState:
     """Run the complete SynGlue workflow from a natural-language request."""
 

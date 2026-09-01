@@ -1,4 +1,4 @@
-"""RDKit-based chemistry core for PROTAC Autopilot.
+"""RDKit-based chemistry core for PROTACXtend.
 
 The functions in this module are deliberately small, structured, and safe for
 workflow use: invalid user chemistry returns explicit failed status instead of
@@ -493,4 +493,3 @@ def to_dict(value: Any) -> dict[str, Any]:
     if hasattr(value, "__dataclass_fields__"):
         return asdict(value)
     return dict(value)
-

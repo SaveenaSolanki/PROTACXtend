@@ -1,4 +1,4 @@
-# ProtacPilot Technical Coherence Assessment
+# PROTACXtend Technical Coherence Assessment
 ## Honest Self-Audit Against the Reviewer Critique
 
 **Date**: 2026-07-31
@@ -43,7 +43,7 @@ Real ReAct (Yao et al. 2023) is a *loop* where a model:
 4. Integrates the observation
 5. Decides whether to continue, revise, or terminate
 
-ProtacPilot today does step (4) mechanically — every node runs because it is next in
+PROTACXtend today does step (4) mechanically — every node runs because it is next in
 `zip(ordered, ordered[1:])` (`graph.py` line ~145). There is **no step (2), step (3), or step (5)**.
 Therefore it is not ReAct.
 
@@ -630,7 +630,7 @@ reject explicitly:
 The reviewer is right that the system is not agentic. The reviewer is also right that it should
 not be rebuilt. The intermediate position — which is the contribution of this document — is:
 
-> **ProtacPilot v0.1 is a provenance-aware, modular, deterministic PROTAC design workflow.**
+> **PROTACXtend v0.1 is a provenance-aware, modular, deterministic PROTAC design workflow.**
 > **It has all the right deterministic foundations (chemistry engine, stereo engine, linker
 > scanner, P4ward, public-data layer, applicability-domain flag, uncertainty flags) to become
 > agentic, but it executes those foundations in a fixed sequence instead of an adaptive graph.**

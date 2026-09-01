@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from synglue_agent.agents.base_agent import ReActAgent
 from synglue_agent.backend.schemas import WorkflowState
-from synglue_agent.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox
+from synglue_agent.tools.protac_autopilot_toolbox import ProtacXtendToolbox
 
 
 class LinkerGenerationAgent(ReActAgent):
@@ -13,10 +13,10 @@ class LinkerGenerationAgent(ReActAgent):
     action = "generate_linkers"
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
-        autopilot = ProtacAutopilotToolbox(self.toolbox)
-        state.generated_linkers = autopilot.linkers.generate_state_of_the_art_linker_panel(
+        xtend = ProtacXtendToolbox(self.toolbox)
+        state.generated_linkers = xtend.linkers.generate_state_of_the_art_linker_panel(
             state.parsed_objective.preferred_linker_types,
-            max_linkers=max(16, min(96, state.parsed_objective.candidate_count * 2)),
+            max_linkers=state.search_policy.linker_budget,
         )
         if not state.generated_linkers:
             state.generated_linkers = self.toolbox.generate_rule_based_linkers(["PEG", "alkyl", "piperazine", "triazole"])

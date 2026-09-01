@@ -1,4 +1,4 @@
-"""ProtacAutopilot toolbox facade.
+"""PROTACXtend toolbox facade.
 
 This file provides a scientist-facing toolbox organized by PROTAC design task.
 The workflow agents can call these methods directly, while production teams can
@@ -253,7 +253,7 @@ class ReviewAndEvolutionToolbox:
         }
 
 
-class ProtacAutopilotToolbox:
+class ProtacXtendToolbox:
     """Facade that exposes the state-of-the-art PROTAC toolbox to agents."""
 
     def __init__(self, core: ProtacDesignToolbox | None = None):
@@ -287,3 +287,5 @@ class ProtacAutopilotToolbox:
     def catalog_as_rows(self) -> list[dict[str, str]]:
         return [capability.__dict__ for capability in self.capability_catalog()]
 
+
+ProtacAutopilotToolbox = ProtacXtendToolbox

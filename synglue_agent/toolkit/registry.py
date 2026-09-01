@@ -1,4 +1,4 @@
-"""Excel-backed toolkit registry for ProtacAutopilot.
+"""Excel-backed toolkit registry for PROTACXtend.
 
 Phase 1 is intentionally registry-only: it loads the source workbook, preserves
 all rows from the key sheets, and exposes structured search helpers. It does not

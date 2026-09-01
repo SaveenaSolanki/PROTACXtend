@@ -344,6 +344,8 @@ class TargetBinderRetrievalAgent(ReActAgent):
     def _observation(self, state: WorkflowState) -> str:
         binders = state.retrieved_binders
         if binders:
-            max_p = max(b.p_activity for b in binders if b.p_activity)
-            return f"binders={len(binders)}, max_pActivity={max_p:.1f}"
+            p_values = [b.p_activity for b in binders if b.p_activity is not None]
+            if p_values:
+                return f"binders={len(binders)}, max_pActivity={max(p_values):.1f}"
+            return f"binders={len(binders)}, max_pActivity=unavailable"
         return "binders=0"

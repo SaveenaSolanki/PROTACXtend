@@ -1,6 +1,6 @@
 # Chemical Synthesis Prediction Setup
 
-This directory isolates synthesis-prediction repositories from the main PROTAC Autopilot environment.
+This directory isolates synthesis-prediction repositories from the main PROTACXtend environment.
 
 ## Repositories
 
@@ -18,4 +18,3 @@ python -c "import linchemin, importlib.metadata; print(importlib.metadata.versio
 ## Legacy Repos
 
 Use the environment specs in `env_specs/` as starting points only. Do not run training or model-download scripts without explicit review.
-

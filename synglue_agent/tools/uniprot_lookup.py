@@ -15,7 +15,7 @@ from typing import Any
 
 SOURCE = "UniProt REST"
 BASE_URL = "https://rest.uniprot.org/uniprotkb"
-USER_AGENT = "ProtacAutopilot/0.1"
+USER_AGENT = "PROTACXtend/0.1"
 ORGANISM_IDS = {"human": "9606", "homo sapiens": "9606", "mouse": "10090", "rat": "10116"}
 
 

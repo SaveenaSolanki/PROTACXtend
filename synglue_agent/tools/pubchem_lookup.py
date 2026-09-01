@@ -11,7 +11,7 @@ from typing import Any
 
 SOURCE = "PubChem PUG-REST"
 BASE_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
-USER_AGENT = "ProtacAutopilot/0.1"
+USER_AGENT = "PROTACXtend/0.1"
 PROPERTY_FIELDS = "CanonicalSMILES,IsomericSMILES,IUPACName,MolecularFormula,MolecularWeight"
 
 

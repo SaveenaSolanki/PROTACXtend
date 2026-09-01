@@ -78,9 +78,11 @@ class E3LigandSelectionAgent(ReActAgent):
             )
             ligands.append(record)
 
-        state.selected_e3_ligands = ligands
+        budget = max(1, getattr(state, "search_policy", None).e3_ligand_budget if getattr(state, "search_policy", None) else len(ligands))
+        ligands.sort(key=lambda item: item.exit_vector_confidence + item.source_confidence + item.diversity_score, reverse=True)
+        state.selected_e3_ligands = ligands[:budget]
         
-        if not ligands:
+        if not state.selected_e3_ligands:
             state.errors.append("E3LigandSelectionAgent: No E3 ligands selected.")
         
         return state

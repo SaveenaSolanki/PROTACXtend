@@ -1,6 +1,6 @@
-# ProtacPilot Environments
+# PROTACXtend Environments
 
-Two conda environments are the canonical compute layers for ProtacPilot.
+Two conda environments are the canonical compute layers for PROTACXtend.
 
 | Env | Python | Path | Purpose |
 |-----|--------|------|---------|

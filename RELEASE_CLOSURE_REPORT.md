@@ -1,6 +1,6 @@
 # RELEASE CLOSURE REPORT — SynGlue v0.3-agentic-core
 
-_Author: ProtacPilot engineering (Feynman agent)_
+_Author: PROTACXtend engineering (Feynman agent)_
 _Date: 2026-08-06_
 _Branch: `release/v0.3-agentic-core`_
 _Tag: `v0.3.0-agentic-core`_

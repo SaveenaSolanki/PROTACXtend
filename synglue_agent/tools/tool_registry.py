@@ -1,4 +1,4 @@
-"""Self-describing tool registry for ProtacAutopilot."""
+"""Self-describing tool registry for PROTACXtend."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 from typing import Any, Dict, List
 
 from synglue_agent.toolkit.registry import get_tool_status
-from synglue_agent.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox
+from synglue_agent.tools.protac_autopilot_toolbox import ProtacXtendToolbox
 
 
 REGISTRY_ALIASES = {
@@ -57,7 +57,7 @@ class ToolRegistry:
     """Catalogs callable chemistry, biology, model, memory, and report tools."""
 
     def __init__(self):
-        self.autopilot = ProtacAutopilotToolbox()
+        self.xtend = ProtacXtendToolbox()
 
     def tools(self) -> List[RegistryTool]:
         base = [
@@ -162,7 +162,7 @@ class ToolRegistry:
             row["executable"] = status["executable"]
             row["registry_status"] = "executable" if status["executable"] else "available" if status["available"] else "registered" if status["registered"] else "unregistered"
             row["integration_note"] = "" if status["executable"] else "planned integration"
-        for capability in self.autopilot.catalog_as_rows():
+        for capability in self.xtend.catalog_as_rows():
             status = _registry_status_for(capability["name"])
             rows.append(
                 {
@@ -174,7 +174,7 @@ class ToolRegistry:
                     "execution_layer": capability["layer"],
                     "input_schema": capability["inputs"],
                     "output_schema": capability["outputs"],
-                    "execution_rules": "Registered via ProtacAutopilotToolbox capability catalog",
+                    "execution_rules": "Registered via PROTACXtend toolbox capability catalog",
                     "status": capability["status"],
                     "registered": status["registered"],
                     "available": status["available"],

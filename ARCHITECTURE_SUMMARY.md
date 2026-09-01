@@ -1,4 +1,4 @@
-# ProtacPilot — Complete Architecture & Capabilities Report
+# PROTACXtend — Complete Architecture & Capabilities Report
 ## What We Have, What Works, What Needs Building
 
 **Date**: 2026-07-31
@@ -9,7 +9,7 @@
 
 ## 1. System Overview
 
-ProtacPilot is a 23-node agentic workflow for end-to-end PROTAC design. It takes a natural
+PROTACXtend is a 23-node agentic workflow for end-to-end PROTAC design. It takes a natural
 language request ("Design a PROTAC for HMGB2 with ICM warhead and CRBN E3") and produces
 ranked, validated PROTAC candidates with full provenance.
 
@@ -131,7 +131,7 @@ state = run_syn_glue_workflow("Design a PROTAC for HMGB2 using ICM warhead and C
 | File | Lines | What it does |
 |------|-------|-------------|
 | `protac_component_wrappers.py` | 477 | Component-level wrappers for toolbox |
-| `protac_autopilot_toolbox.py` | 289 | Autopilot mode wrappers |
+| `protac_autopilot_toolbox.py` | 289 | PROTACXtend mode wrappers |
 | `protac_repo_tool_wrappers.py` | 372 | Third-party tool wrappers |
 | `repo_tool_adapter.py` | 283 | External tool adapter pattern |
 | `synglue_integration.py` | 447 | Synglue backend integration |

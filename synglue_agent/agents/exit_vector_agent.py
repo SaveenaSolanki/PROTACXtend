@@ -10,6 +10,17 @@ class ExitVectorDetectionAgent(ReActAgent):
     thought = "Detect suitable linker attachment points on warhead and E3 ligand molecules."
     action = "detect_exit_vectors"
 
+    @staticmethod
+    def _atom_index(atom_record) -> int | None:
+        if isinstance(atom_record, dict):
+            value = atom_record.get("atom_index")
+        else:
+            value = atom_record
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
     def _execute(self, state: WorkflowState) -> WorkflowState:
         vectors = []
 
@@ -17,7 +28,10 @@ class ExitVectorDetectionAgent(ReActAgent):
         for warhead in state.selected_warheads:
             result = detect_exit_vector_atoms(warhead.smiles)
             if result.get("success"):
-                for atom_idx in result.get("exit_vector_atoms", [])[:3]:
+                for atom_record in result.get("exit_vector_atoms", [])[:3]:
+                    atom_idx = self._atom_index(atom_record)
+                    if atom_idx is None:
+                        continue
                     vectors.append(ExitVectorRecord(
                         molecule_name=warhead.name,
                         molecule_role="warhead",
@@ -41,7 +55,10 @@ class ExitVectorDetectionAgent(ReActAgent):
         for ligand in state.selected_e3_ligands:
             result = detect_exit_vector_atoms(ligand.smiles)
             if result.get("success"):
-                for atom_idx in result.get("exit_vector_atoms", [])[:3]:
+                for atom_record in result.get("exit_vector_atoms", [])[:3]:
+                    atom_idx = self._atom_index(atom_record)
+                    if atom_idx is None:
+                        continue
                     vectors.append(ExitVectorRecord(
                         molecule_name=ligand.name,
                         molecule_role="e3_ligand",

@@ -184,7 +184,7 @@ class OrchestratorAgent:
         tools_used = sorted({trace.agent for trace in workflow_state.workflow_log})
         prov_rows = candidate_provenance[:10]
         lines = [
-            "# Agentic ProtacAutopilot Report",
+            "# Agentic PROTACXtend Report",
             "",
             "Research-use only. Results are computational hypotheses and are not experimentally validated.",
             "",

@@ -1,6 +1,6 @@
 """DrugBank client with local import and keyed API path.
 
-DrugBank requires licensed access. ProtacAutopilot therefore supports a local
+DrugBank requires licensed access. PROTACXtend therefore supports a local
 CSV export instead of pretending to call an unrestricted public API.
 """
 
@@ -50,7 +50,7 @@ def _request_drugbank(path: str, params: dict[str, Any] | None = None, timeout: 
         url = f"{url}?{query}"
     request = urllib.request.Request(
         url,
-        headers={"Accept": "application/json", "Authorization": f"Bearer {key}", "User-Agent": "ProtacAutopilot/0.1"},
+        headers={"Accept": "application/json", "Authorization": f"Bearer {key}", "User-Agent": "PROTACXtend/0.1"},
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:

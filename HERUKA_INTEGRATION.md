@@ -1,6 +1,6 @@
-# HERUKA.AI Integration — channel ProtacPilot to your frontend
+# HERUKA.AI Integration — channel PROTACXtend to your frontend
 
-`synglue_agent/integrations/heruka.py` exports every ProtacPilot run as an
+`synglue_agent/integrations/heruka.py` exports every PROTACXtend run as an
 **auditable bundle** and pushes it to a configurable HERUKA webhook, so your
 heruka.ai frontend (or any endpoint you host) receives full run provenance.
 

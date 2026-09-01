@@ -1,4 +1,4 @@
-# ProtacPilot api/worker runtime dependencies — pinned to the locally verified set
+# PROTACXtend api/worker runtime dependencies — pinned to the locally verified set
 # (the working protacpilot conda env resolved these exact versions).
 rdkit==2026.3.4
 numpy==2.4.6

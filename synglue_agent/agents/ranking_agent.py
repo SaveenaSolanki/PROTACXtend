@@ -26,6 +26,9 @@ class RankingAgent(ReActAgent):
             state.novelty_results,
             state.applicability_domain_results,
             state.ternary_feasibility_results,
+            state.cooperativity_predictions,
+            state.hook_effect_predictions,
+            state.e3_context_predictions,
             state.parsed_objective.ranking_weights,
         )
         if self.final:

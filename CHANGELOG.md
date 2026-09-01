@@ -1,4 +1,4 @@
-# ProtacPilot Changelog
+# PROTACXtend Changelog
 
 ## 2026-07-06 — HMGB2 Linker Optimization Campaign
 

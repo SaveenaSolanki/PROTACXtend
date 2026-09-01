@@ -11,6 +11,10 @@ from synglue_agent.databases.database_registry import get_database_registry
 RULES: list[tuple[list[str], list[str]]] = [
     (["find", "ligands"], ["ChEMBL", "BindingDB", "PubChem", "IUPHAR/BPS Guide to Pharmacology"]),
     (["find", "protacs"], ["PROTAC-DB 3.0", "PROTACpedia", "PROTAC-8K"]),
+    (["protac", "permeability"], ["PROTAC-DB 3.0"]),
+    (["protac", "pharmacokinetic"], ["PROTAC-DB 3.0"]),
+    (["protac", "ternary", "affinity"], ["PROTAC-DB 3.0", "RCSB PDB"]),
+    (["protac", "binding", "affinity"], ["PROTAC-DB 3.0", "ChEMBL", "BindingDB"]),
     (["ternary", "structures"], ["RCSB PDB", "PROTAC-DB 3.0", "AlphaFold DB"]),
     (["target", "disease"], ["Open Targets", "DisGeNET", "OMIM", "cBioPortal"]),
     (["cancer", "dependency"], ["DepMap", "cBioPortal", "TCGA / GDC"]),
@@ -64,4 +68,3 @@ def route_database_request(task_description: str) -> dict[str, Any]:
             "No fake API output, no fake local availability."
         ),
     }
-

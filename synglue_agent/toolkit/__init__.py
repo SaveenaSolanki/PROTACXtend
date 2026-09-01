@@ -1,4 +1,4 @@
-"""Excel-backed toolkit registry for ProtacAutopilot."""
+"""Excel-backed toolkit registry for PROTACXtend."""
 
 from synglue_agent.toolkit.registry import (
     get_agent_module,

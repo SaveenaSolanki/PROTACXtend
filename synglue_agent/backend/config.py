@@ -19,12 +19,15 @@ VECTOR_MEMORY_DIR = MEMORY_DIR / "vector_store"
 
 
 DEFAULT_RANKING_WEIGHTS = {
-    "dc50": 0.30,
-    "dmax": 0.25,
-    "admet": 0.15,
-    "ternary": 0.15,
-    "novelty": 0.10,
-    "synthetic": 0.05,
+    "dc50": 0.24,
+    "dmax": 0.19,
+    "admet": 0.13,
+    "ternary": 0.12,
+    "cooperativity": 0.11,
+    "hook": 0.08,
+    "e3_context": 0.06,
+    "novelty": 0.05,
+    "synthetic": 0.02,
 }
 
 DEFAULT_LINKER_TYPES = ["PEG", "alkyl", "piperazine", "triazole"]

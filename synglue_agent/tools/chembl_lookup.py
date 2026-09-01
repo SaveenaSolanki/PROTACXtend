@@ -12,7 +12,7 @@ from typing import Any, Sequence
 
 SOURCE = "ChEMBL REST API"
 BASE_URL = "https://www.ebi.ac.uk/chembl/api/data"
-USER_AGENT = "ProtacAutopilot/0.1"
+USER_AGENT = "PROTACXtend/0.1"
 DEFAULT_TYPES = ["IC50", "Ki", "Kd", "EC50"]
 
 

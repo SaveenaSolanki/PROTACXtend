@@ -96,6 +96,7 @@ class ParsedObjective(BaseModel):
     ranking_weights: Dict[str, float] = Field(default_factory=dict)
     cell_line: Optional[str] = None
     assay_context: Optional[str] = None
+    expression_overrides: Dict[str, float] = Field(default_factory=dict)
 
 
 class AgentTrace(BaseModel):
@@ -368,6 +369,106 @@ class TernaryFeasibilityResult(BaseModel):
     interface_warning: Optional[str] = None
     structure_availability: str = "unknown"
     proceed_to_expensive_modeling: bool = False
+    structural_backend: str = ""
+    pose_file: Optional[str] = None
+    interface_quality_score: Optional[float] = None
+    interface_contact_count: Optional[int] = None
+    polar_contact_count: Optional[int] = None
+    clash_count: Optional[int] = None
+    buried_sasa_proxy: Optional[float] = None
+    nearest_lysine: Optional[str] = None
+    nearest_lysine_distance_A: Optional[float] = None
+    accessible_lysine_count: Optional[int] = None
+    productive_lysine_count: Optional[int] = None
+    lysine_geometry_score: Optional[float] = None
+    linker_strain_score: Optional[float] = None
+    linker_energy_spread: Optional[float] = None
+    real_structural_score: Optional[float] = None
+    structural_confidence: Optional[float] = None
+    structural_warnings: List[str] = Field(default_factory=list)
+
+
+class E3ContextPrediction(BaseModel):
+    candidate_id: str = ""
+    e3_ligase: str = ""
+    cell_line: str = "default"
+    target_localization: str = "nuclear"
+    expression_score: float = 0.0
+    colocalization_score: float = 0.0
+    ligand_availability_score: float = 0.0
+    structural_support_score: float = 0.0
+    resistance_risk: float = 0.0
+    total_context_score: float = 0.0
+    confidence: float = 0.0
+    contraindications: List[str] = Field(default_factory=list)
+    evidence_refs: List[str] = Field(default_factory=list)
+    explanation: str = ""
+
+
+class CooperativityPrediction(BaseModel):
+    candidate_id: str = ""
+    predicted_alpha: float = 1.0
+    log_alpha: float = 0.0
+    cooperativity_score: float = 0.5
+    interface_contact_score: float = 0.0
+    linker_strain_score: float = 0.0
+    lysine_geometry_score: float = 0.0
+    ternary_geometry_score: float = 0.0
+    confidence: float = 0.0
+    model_version: str = "cooperativity-proxy-v0.1"
+    warning: Optional[str] = None
+
+
+class HookEffectPrediction(BaseModel):
+    candidate_id: str = ""
+    concentration_nM: List[float] = Field(default_factory=list)
+    ternary_fraction: List[float] = Field(default_factory=list)
+    hook_concentration_nM: Optional[float] = None
+    max_ternary_fraction: float = 0.0
+    high_concentration_fraction: float = 0.0
+    hook_risk: str = "unknown"
+    therapeutic_window_score: float = 0.0
+    model_version: str = "hook-occupancy-v0.1"
+    warning: Optional[str] = None
+
+
+class AssayFeedbackRecord(BaseModel):
+    candidate_id: str = ""
+    target: str = ""
+    e3_ligase: str = ""
+    cell_line: str = "default"
+    smiles: str = ""
+    measured_dc50_nM: Optional[float] = None
+    measured_dmax_percent: Optional[float] = None
+    measured_hook_concentration_nM: Optional[float] = None
+    degradation_observed: Optional[bool] = None
+    source: str = "user_feedback"
+    notes: str = ""
+
+
+class ActiveLearningUpdate(BaseModel):
+    status: str = "not_run"
+    feedback_count: int = 0
+    training_rows: int = 0
+    dataset_path: str = ""
+    registry_path: str = ""
+    active_model_version: str = ""
+    model_artifact_path: str = ""
+    rollback_model_artifact_path: str = ""
+    retraining_recommendation: str = ""
+    warnings: List[str] = Field(default_factory=list)
+
+
+class SearchPolicy(BaseModel):
+    linker_budget: int = 32
+    e3_ligand_budget: int = 6
+    exit_vector_budget: int = 12
+    stereoisomer_budget_per_candidate: int = 4
+    construction_budget: int = 200
+    cheap_filter_budget: int = 100
+    expensive_modeling_budget: int = 12
+    final_candidate_budget: int = 50
+    policy_version: str = "controlled-funnel-v0.1"
 
 
 class RankingResult(BaseModel):
@@ -418,6 +519,9 @@ class WorkflowState(BaseModel):
     novelty_results: List[NoveltyResult] = Field(default_factory=list)
     applicability_domain_results: List[ApplicabilityDomainResult] = Field(default_factory=list)
     ternary_feasibility_results: List[TernaryFeasibilityResult] = Field(default_factory=list)
+    e3_context_predictions: List[E3ContextPrediction] = Field(default_factory=list)
+    cooperativity_predictions: List[CooperativityPrediction] = Field(default_factory=list)
+    hook_effect_predictions: List[HookEffectPrediction] = Field(default_factory=list)
     ranking_results: List[RankingResult] = Field(default_factory=list)
     reflection_reviews: List[ReflectionReview] = Field(default_factory=list)
     evolved_candidates: List[CandidateRecord] = Field(default_factory=list)
@@ -429,6 +533,11 @@ class WorkflowState(BaseModel):
     warnings: List[str] = Field(default_factory=list)
     errors: List[str] = Field(default_factory=list)
     memory_updates: List[Dict[str, Any]] = Field(default_factory=list)
+    assay_feedback: List[AssayFeedbackRecord] = Field(default_factory=list)
+    active_learning_update: ActiveLearningUpdate = Field(default_factory=ActiveLearningUpdate)
+    search_policy: SearchPolicy = Field(default_factory=SearchPolicy)
+    cheap_filter_summary: Dict[str, Any] = Field(default_factory=dict)
+    expensive_modeling_candidate_ids: List[str] = Field(default_factory=list)
 
     # AGENT_ARCHITECTURE_UPDATE additions (observability of what was NOT done)
     retrieval_census: List[RetrievalCensus] = Field(default_factory=list)
@@ -443,9 +552,11 @@ def model_to_dict(value: Any) -> Any:
     """Return a JSON-serializable dict/list/value for Pydantic or fallback models."""
 
     if hasattr(value, "model_dump"):
-        return value.model_dump()
+        return model_to_dict(value.model_dump())
     if isinstance(value, list):
         return [model_to_dict(item) for item in value]
+    if isinstance(value, set):
+        return sorted(model_to_dict(item) for item in value)
     if isinstance(value, dict):
         return {key: model_to_dict(item) for key, item in value.items()}
     return value

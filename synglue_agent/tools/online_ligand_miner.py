@@ -29,7 +29,7 @@ GPROFILER_GOST_URL = "https://biit.cs.ut.ee/gprofiler/api/gost/profile/"
 def _get_json(url: str, params: Optional[Dict[str, Any]] = None, timeout: float = 8.0) -> Dict[str, Any]:
     query = urllib.parse.urlencode({key: value for key, value in (params or {}).items() if value not in (None, "")})
     full_url = f"{url}?{query}" if query else url
-    request = urllib.request.Request(full_url, headers={"User-Agent": "ProtacAutopilot/0.1"})
+    request = urllib.request.Request(full_url, headers={"User-Agent": "PROTACXtend/0.1"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -39,7 +39,7 @@ def _post_json(url: str, payload: Dict[str, Any], timeout: float = 8.0) -> Dict[
     request = urllib.request.Request(
         url,
         data=data,
-        headers={"Content-Type": "application/json", "User-Agent": "ProtacAutopilot/0.1"},
+        headers={"Content-Type": "application/json", "User-Agent": "PROTACXtend/0.1"},
         method="POST",
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:

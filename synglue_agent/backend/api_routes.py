@@ -57,7 +57,7 @@ def get_app():
     except Exception as exc:  # pragma: no cover - optional dependency.
         raise RuntimeError("Install fastapi and pydantic to run the API server.") from exc
 
-    app = FastAPI(title="ProtacAutopilot API", version="0.1.0")
+    app = FastAPI(title="PROTACXtend API", version="0.1.0")
 
     @app.get("/health")
     def health():

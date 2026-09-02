@@ -3,7 +3,9 @@
 `rank_e3_ligases(poi, cell_line=None, tissue=None, disease=None, warhead=None,
 poi_structure=None, top_k=10)` ranks candidate E3 ligases for PROTAC
 development across **independent, evidence-gated axes** — never by expression
-alone. See SPEC.md, VALIDATION.md, LIMITATIONS.md, REFERENCES.md.
+alone. Verdicts: SUPPORTED / PROMISING / EXPLORATORY / INSUFFICIENT EVIDENCE.
+See SPEC.md, VALIDATION.md, LIMITATIONS.md, REFERENCES.md and the claim
+register docs/CLAIMS.md (audit-gated).
 
 ```python
 from synglue_agent.modules.e3_opportunity import rank_e3_ligases

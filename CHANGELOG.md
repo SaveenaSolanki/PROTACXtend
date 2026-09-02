@@ -1,5 +1,324 @@
 # PROTACXtend Changelog
 
+## 2026-09-02 (module 4) — PROTAC Degradation ML Model
+
+Curated real dataset from the project's PROTAC-DB benchmark extract (64 rows
+with published DC50 -> pDC50 target; 32 with published Dmax; E3 CRBN/VHL).
+Features: 8 RDKit descriptors + Morgan(ECFP4,1024) + train-only ordinal
+target/E3 codes. Baselines in order mean -> ridge -> RF -> XGBoost (GP
+reserved); grouped split evaluation random / scaffold(Murcko) / unseen-target /
+unseen-E3 / unseen-PROTAC with leakage-safe entity encoding. Artifact stores
+fitted estimator + conformal-style residual interval + training descriptors for
+kNN OOD. predict_degradation() returns pDC50, DC50 nM, empirical interval, OOD
+score/flag; Dmax None (sparse labels, separate artifact path) and degradation
+probability None with the task reported disabled — no binary measured labels
+exist and none are fabricated. Reported honestly: grouped test metrics are
+modest (n small; e.g., random split negative R2), in-sample RF R2~0.95/MAE 0.21
+is train-fit only. Audit fix (2026-09-02): predict_degradation now forwards
+caller-provided target/E3 into feature_matrix so a seen entity is coded with its
+training code (absent/unknown -> OOV sentinel) instead of being silently
+dropped; regression test added. Tests 9 (dataset honesty incl. prob==0,
+determinism, splits, train/predict roundtrip w/ interval+OOD, entity-context
+forwarding, explicit missing-artifact error).
+Tool run_degradation_predictor. Docs + tracker updated.
+
+
+## 2026-09-02 (module 3) — Cooperativity (alpha) Predictor
+
+Built in the required order (no DL jump). Exact alpha definition documented
+(alpha = Kd2/Kd2(ternary), same assay; log target ln(alpha); classes >1 /
+0.8-1.25 / <0.8). Data audit: shipped curation template has ZERO records — no
+reliable machine-readable experimental-alpha dataset is programmatically
+available (values in article SI tables), so per spec step 6 supervised training
+is NOT claimed; dataset/audit pipeline + leakage-safe grouped benchmark harness
+(mean, ridge, RF, XGBoost, GP; R2/MAE/RMSE/Spearman/Pearson/sign accuracy,
+unseen-series folds) are implemented and gated on curated data. Structural
+surrogate implemented and clearly labelled "cooperativity feasibility score"
+(reuses Module 2 Shrake-Rupley/PDB toolkit: BSA/DeltaSASA, contacts, Hbond
+proxy, salt bridges, hydrophobic, clashes, ensemble stability; deterministic
+0..1). predict_cooperativity() returns predicted_alpha=None in surrogate mode,
+cooperativity_class, uncertainty/confidence, feature evidence, structure
+availability, applicability/OOD note and explicit limitations; raises an
+evidence-required error when neither structure nor trained model is supplied.
+Tests 18 (conversions/classes, reproducibility, feature extraction, malformed
+structure, missing-chain, no-evidence failure, schema, no-leakage splits, empty-
+data stops training). Agent tool run_cooperativity_predictor. Module 2
+real-benchmark tracked as a non-blocking follow-up task.
+
+## 2026-09-02 (audit) — Module 1 deterministic↔Monte-Carlo consistency audit
+
+Audited the demo "153 nM vs 73.9–79.9 nM" discrepancy. Findings: (1) the two
+numbers were different quantities — 153 nM was the optimal PROTAC dose (x-axis),
+while the demo-printed MC interval was the peak ternary-complex concentration
+(y-axis, 73.9–79.9 nM) that correctly brackets the deterministic peak ternary
+77.3 nM; labels were ambiguous. (2) Real defect: MC optimum-dose detection used
+a coarse 24-point log grid (~1.8× spacing) that quantised per-sample optima.
+Fixes: deterministic metrics and every MC sample now estimate the peak with a
+two-stage coarse+fine sub-grid scan; UncertaintySummary gains
+`reference_optimum_nM` and `fraction_within_25pct`; demo prints both quantities
+with unambiguous labels. Measured: deterministic optimum 150.42 nM; MC optimum-
+dose p5/med/p95 142.0/149.2/156.9 nM; MC peak-ternary p5/med/p95
+73.9/77.3/80.0 nM; optimum within ±25 % of nominal in 100 % of samples.
+3 regression tests added (16 total, all pass).
+
+## 2026-09-02 (late) — Module 1 (Hook Effect Modeler) + publication-quality research reports
+
+### deep_research CLI — publication-quality scientific report (reporting redesign)
+- Default terminal output is now a concise scientific evidence review in the exact
+  required order: Research question → Bottom-line answer (model/LLM tier clearly
+  marked) → Overall evidence confidence → Key findings (per-claim Strong/
+  Moderate/Weak/Unsupported grading) → Best supporting evidence table (≤12) →
+  Scientific/mechanistic interpretation (flagged model interpretation) →
+  Conflicting/weak/excluded evidence (with reasons) → Knowledge gaps →
+  References (Crossref-validated DOIs/PMIDs, authors, journal) → compact
+  provenance. Complete retrieved-source list moved to an appendix; `--json`
+  keeps the full machine-readable record (`_analyses` includes graded claims,
+  evidence scores, references, metadata conflicts, exclusions, source roles).
+- New `research/reporting.py`: interpretable Evidence Score (relevance, primary
+  status, directness, authority, citation support, full-text availability),
+  primary/mechanistic/review/web role separation, tangential-source detection
+  with reasons, claim grading, DOI↔title conflict rejection (Crossref).
+- Crossref DOI↔title validation extended to the top 12 works per run; enrichment
+  mutations now persist through dedup (enrich → merge). Deterministic digest is
+  sectioned (## Bottom line / Key findings (retrieved-source quotes) / gaps);
+  quotes are trimmed and labelled; LLM prompt enforces the same section contract.
+- CLI: `--trace` appends the execution trace (hidden by default); traces persist
+  under outputs/research_traces and are referenced in the report provenance.
+- Tests: +10 offline (synglue_agent/tests/test_research_reporting.py); suite green.
+
+### Module 1 — Hook Effect Modeler (`simulate_hook_effect()`)
+- Mechanistic three-body equilibrium/QSP model in `synglue_agent/modules/
+  hook_effect_modeler/` (maps requested `protacxtend/modules/...` layout — the
+  protacxtend distribution's code package is synglue_agent).
+- Solves POI/PROTAC/E3 mass action exactly (bounded least-squares in log10-space,
+  relative residuals; detailed-balance-consistent α), full ternary curve, optimal
+  concentration, hook onset/severity/label, max occupancy, window; seeded
+  Monte-Carlo uncertainty (p5/median/p95). No heuristics substitute for the
+  solved equilibrium; typed pydantic I/O + version metadata + config JSON.
+- 13 tests pass (mass balance, zero-dose, bell/hook behaviour, α scaling,
+  E3-limiting severity, MC reproducibility/bounds, schema, input rejection);
+  demo output + docs (README/ARCHITECTURE/USAGE/VALIDATION/LIMITATIONS/
+  REFERENCES); agent tool `tools/hook_effect_modeler_tool.py` (JSON in/out,
+  graph-safe) + `tool_spec()`; build tracker `modules/PROTACXTEND_MODULE_BUILD.md`.
+
+## 2026-09-02 (pm) — Scientific deep-research framework (LangGraph evidence retrieval)
+
+New low-cost, production-ready retrieval+synthesis stack: `synglue_agent/research/`
+with the unified `deep_research(query)` / `deep_research_sync(query)` API
+(docs: documentation/DEEP_RESEARCH.md).
+
+### Modules
+- **config.py** — ResearchConfig; every knob env-configurable (LLM tiers, budgets,
+  endpoints/keys, cache, rerankers, scoring weights); `snapshot()` for reproducible
+  runs (secrets redacted).
+- **httpbase.py** — async HTTP client: retry loop (429/5xx/timeouts, exponential
+  backoff+jitter), per-client rate delay + semaphores (NCBI ~3 rps without key),
+  disk JSON cache (7-day TTL), structured ClientError.
+- **sources.py** — verified live adapters (request/response contracts probed against
+  the real APIs): Europe PMC (search + OA fullTextXML), PubMed E-utilities
+  (esearch+efetch abstract XML), OpenAlex (works search, abstract-inverted-index
+  reconstruction, cited-by, referenced works), Crossref (DOI metadata/references),
+  SearXNG (self-hosted JSON), Crawl4AI wrapper with a robots-honouring clean-HTML
+  fallback; source registry + retrieval-priority ordering.
+- **retrieval.py** — dedup keyed DOI→PMID→PMCID→canonical-URL→normalized-title;
+  merge-enrich (abstract/source provenance); authority/recency/primary scoring
+  (configurable weights); neural rerank (cross-encoder + local embeddings) with
+  deterministic lexical BM25 tier (honest `rerank_model`); sufficiency gate;
+  claim split + citation verification (out-of-range/missing citations flagged,
+  never fabricated).
+- **reasoning.py** — cheap/strong LLM wrappers over the existing llm.providers
+  gateway + deterministic plan/synthesis fallbacks; strong LLM reserved for hard
+  plans when RESEARCH_STRONG_LLM_* configured; RESEARCH_LLM_OFF=1 forces the
+  deterministic quoted-evidence digest.
+- **graph.py** — LangGraph state machine (async nodes, conditional edges):
+  analyze → search_scientific (Europe PMC/PubMed/OpenAlex, parallel) →
+  enrich_graph → web_search → crawl_fulltext → dedup_score → sufficiency gate →
+  reformulate (loop, excludes seen DOIs) → synthesize → verify_claims → finalize.
+- **api.py / __init__** — `deep_research(query, config=...) -> ResearchReport`
+  (answer, evidence, claims, verification, sources searched, step trace);
+  `answer_to_markdown`; trace persistence under outputs/research_traces/.
+- **scripts/deep_research_cli.py** — CLI (`--no-llm`, `--json`, `--out`, …).
+
+### Verified live
+- Live run (LLM off): EPMC/PubMed/OpenAlex each returned hits; duplicates merged
+  by DOI/PMID; ~3 s warm / ~13-23 s cold (NCBI spacing) single-pass runs;
+  deterministic digest with 100% supported claims (citation map ok).
+- Reusable tooling live-verified: EPMC 503 retried transparently (max_retries=3).
+
+### Tests
+- New synglue_agent/tests/test_deep_research.py — 18 offline + 1 network:
+  dedup/merge, canonical URLs, scoring monotonicity, lexical rerank ordering,
+  sufficiency/reformulation, no-fabrication verification, deterministic
+  synthesis, full LangGraph run with stub clients (incl. reformulation loop),
+  disk cache roundtrip, live EPMC search (network-marked).
+
+## 2026-09-02 (pm) — Retrosynthesis toolkit engines: ASKCOS + AiZynthFinder + RDKit/OpenNMT
+
+Three retrosynthesis engines are now integrated as **working toolkits** behind the
+`run_retrosynthesis` stage (spec text: ASKCOS/MIT portal+Docker, AiZynthFinder
+MCTS, RDKit+OpenNMT seq2seq workflows).
+
+### New: synglue_agent/tools/retrosynthesis_engines.py
+- **ASKCOS (MIT)** — `AskcosClient` speaks the current ASKCOS REST API and was
+  verified live against the public MIT instance (`askcos.mit.edu`):
+  `POST /api/retro/controller/call-sync` (one-step), Retro* tree search via
+  `/api/tree-search/retro-star/call-sync-without-token`, and `/api/buyables/search`.
+  Normalisation turns the Retro* nodelink graph into routes + terminal
+  purchasability (probe: aspirin -> acetic-anhydride/AcCl/AcOH + salicylic acid,
+  15 routes, purchasable fraction 1.0). Defaults to the public portal; a local
+  Docker deployment is selected with the `ASKCOS_API_URL` env var (optional
+  `ASKCOS_API_TOKEN` bearer header).
+- **AiZynthFinder (AstraZeneca, MIT)** — `run_aizynth_engine` reuses the verified
+  `aizynth_route_search` integration; honest gate on package + policy/stock assets
+  (`data/retrosynthesis/models/aizynth`, bootstrap via `scripts/bootstrap_assets.sh`).
+- **RDKit + OpenNMT (Molecular Transformer)** — `run_openmt_engine` implements the
+  local RDKit-preprocess -> OpenNMT-py translate -> RDKit-revalidate workflow with
+  the Molecular Transformer SMILES token grammar (`tokenize_smiles`, lossless on
+  canonical SMILES incl. stereo/charges). Translation is honest-gated on the
+  `onmt` package + checkpoint (`data/retrosynthesis/models/openmt/retro_model.pt`
+  or `OPENMT_MODEL`); RDKit preprocessing/validation always runs.
+- Multi-engine orchestration `run_engines`/`merge_engine_outcomes` with a canonical
+  order, per-engine `EngineOutcome` provenance, latency, and graceful
+  tool_failed reasons; `engine_status_report()` prints honest availability.
+
+### Wiring
+- `retrosynthesis.assess_retrosynthesis(..., engines=[...])` accepts
+  `aizynth|askcos|openmt` (aliases); legacy defaults unchanged (AiZynthFinder when
+  `use_aizynth`), `RetrosynthesisResult` gains `engines_requested`, `engines_ran`,
+  `engine_outcomes`. Route evidence is merged across engines (best = fewest steps).
+- Registry (`toolkit_registry.py`): AiZynthFinder + ASKCOS upgraded to working
+  entries (MIT, executable_type, assets notes); new entries **Molecular Transformer**
+  and **RDKit + OpenNMT workflow**; ASKCOS Tree Builder points at the Retro*
+  client. Router (`toolkit_router.py`) now maps retrosynthesis/forward/accessibility
+  requests to the three engines.
+- Smoke/evidence runner `scripts/retrosynthesis_toolkits_smoke.py` writes
+  `outputs/retrosynthesis_toolkits/evidence.json` (live ASKCOS evidence generated:
+  one-step + Retro* tree for aspirin).
+
+### Tests
+- New `synglue_agent/tests/test_retrosynthesis_engines.py` (18 offline tests):
+  engine catalogue, tokenizer losslessness, ASKCOS stub-session contract (one-step,
+  Retro* normalisation), unreachable-endpoint graceful failure, merge semantics,
+  honest openmt downgrade; live ASKCOS marked `network`.
+- `test_retrosynthesis.py` slow real-route test now honest-gates on the
+  `aizynthfinder` package as well as assets (docker workers omit the package per
+  the numpy<2 pin — degrades to RAscore-only by design).
+- `tests/test_toolkit_registry.py`, `tests/test_tool_status.py` still green (15).
+
+## 2026-09-02 — v0.1 e2e hang fixed (3 root causes) + G6 reproduction + runtime-sklearn rebuilds
+
+### (a) v0.1 deterministic e2e hang — root-caused and fixed
+Previously: `runtime --mode deterministic` never finished (stuck >50 min at
+run_start, 112 threads, CUDA/OpenMP spin ~1400% CPU). Three stacked causes:
+
+1. **TACK HGB OpenMP spin (primary)** — sklearn HistGradientBoosting opens
+   libgomp parallel regions per predict; on this shared box (load>40) a
+   single-row predict took ~11 s/model (33 s/molecule). 150 candidates ≈
+   83 min. Verified: same code with OMP_NUM_THREADS=1 → fit 48 s→0.24 s,
+   predict 283ms→0.1ms.
+   - NEW `synglue_agent/tools/thread_limits.py`: `apply_thread_limits()`
+     (env defaults OMP/OPENBLAS/MKL=4, early) + `bounded()` context
+     (threadpoolctl). Wired into `runtime.py` entry + `tack_degradation.py`
+     (predict wrapped in threadpool_limits(1, 'openmp')).
+   - TACK cold call 33 s → 1.1 s; warm 11 s → 10 ms.
+2. **rank_candidates per-candidate O(N×C) InChIKey generation** —
+   `protacdb_evidence_prior` linearly scanned all PROTAC-DB rows computing
+   an RDKit InChIKey per row PER CANDIDATE (measured 96 s for 20 candidate
+   ranks; first attempt to cache keyed on id(rows) FAILED because
+   load_normalized_protacdb() wraps the cached tuple in a fresh list per
+   call). Fixed with `_protacdb_exact_index()`: stable key on the cached
+   tuple object → O(1) exact-match dict. 150 candidates: ~9+ min → 0.87 s.
+3. One-time 22-26 s pandas/openpyxl parse of `PROTAC-DB_3.0_protacs.xlsx`
+   (cached per process — acceptable; parquet disk-cache deferred).
+
+Result: `e2e_final_20260902` ran to completion in **196 s** (was >50 min):
+150 candidates, TACK-style DC50/Dmax primary + chemprop cross-check,
+ranking/evolution/hook/cooperativity complete, full Markdown report.
+
+### (b) G6 reproduction for PROTAC-Degradation-Predictor — DONE
+- studies regenerated with seed-42 standard split (`data/studies/`,
+  active_col=Active) via `scripts/get_studies_datasets.py`.
+- `run_experiments_xgboost.py --experiments standard --force_study=true`
+  completed 2026-09-02 10:57 (models/ dir created — author code saves CV
+  models to ../models/ and crashed without it; xgboost nthread default
+  burned ~28 cores during the run — flagged for author-code follow-up).
+- Results vs paper (arXiv 2406.02637 random-split study, acc 80.8 % /
+  AUC 0.865 majority vote): our retrain test acc **81.6 %** (maj. vote),
+  AUC **0.900**; per-model acc 80.3 %, AUC 0.890–0.904. Reproduction PASS
+  (within ~1 acc point; AUC higher — paper uses pyTorch+XGBoost mix).
+
+### (c) Runtime-sklearn rebuilds (warnings cleared)
+- TACK: `scripts/build_tack_model.py` rerun in protacpilot env (sklearn
+  1.9.0): DC50 ρ=0.800, Dmax ρ=0.738, bin acc 0.846/AUC 0.917 — TackModel
+  loads with compatibility_warnings=[] (backup /tmp/tack_backup_20260902).
+- synglue RF legs (rf_dc50/rf_dmax.joblib, sklearn 1.2.2 pickles) are
+  UNLOADABLE on sklearn>=1.4 (tree dtype boundary, verified) and the
+  original training set is absent locally — faithful rebuild impossible.
+  Honest fix: targeted InconsistentVersionWarning suppression at the load
+  site + docstring; transformer heads remain the synglue backend (torch
+  artifacts load clean). test_synglue_degradation 17 passed, zero warnings.
+
+### Tests
+- 26 passed : repo_tool_adapter + production_wiring + protacdb_evidence
+- 15 passed : test_degradation_endpoint (incl. tack-primary tests)
+- 13 passed : protacdb_evidence + scientific_contract
+- 17 passed : synglue_degradation (no InconsistentVersionWarning)
+- e2e: run_end 196 s (status ok)
+
+### Artifacts
+- Audit: outputs/DEGRADATION_BACKEND_REPAIR_AND_GATE_AUDIT.md (updated)
+- Ledger: notes/TASK_LEDGER_20260902.md
+- Debug tools: notes/debug_v01_stages.py, notes/time_degradation_batch.py,
+  notes/time_post_degradation.py
+
+## 2026-09-01 — Degradation backend repair: PROTAC-Degradation-Predictor + TACK-as-primary
+
+### External gate: PROTAC-Degradation-Predictor repaired (G4/G5/G6-example PASS)
+- Env `/home/saveenas/miniconda3/envs/pp/envs/protac-degradation-predictor` (py 3.10.8):
+  installed `gdown 6.1.0` and `pip install -e . --no-deps` (avoided forcing
+  requirements pins torch 2.7.1/sklearn 1.3.2/xgboost 3.0.2 — env run verified).
+- LOCAL PATCH in `get_protac_active_proba()` (local checkout):
+  `models = {k: v.to(device) for k, v in models.items()}` after `load_models()`.
+  Root cause: `load_model()` map_location=None when CUDA present → weights on
+  cuda:0 vs inputs on cpu → RuntimeError. Backup: /tmp/pdp_backup.py.
+- Data downloaded via gdown (Google Drive, 175 MB total) to
+  `~/.cache/protac_degradation_predictor/` (DB 2141 rows, uniprot h5, cell pkl,
+  models.zip → best_model/cv_model ckpts).
+- Verified: import ok (v1.0.2); README example VHL/P04637/HeLa → active=True,
+  mean proba 0.5985, majority vote True, 3 models; batch OK.
+- Registry: `all_repo_install_verification.csv` → install_appears_successful=True,
+  safe_wrapper_integration_possible=True; `repo_tool_adapter.py` gained a safe
+  inference smoke branch; `outputs/external_integrations/protac_degradation_predictor.json`
+  → status `adapter_ready`, executable true. Repair log:
+  `data/protac_repos/install_logs/protac_degradation_predictor_gate_repair.log`.
+- Remaining: G6 full experiment reproduction + G7 calibration/pin-following rebuild.
+
+### TACK-style model is now the degradation PRIMARY backend
+- `tools/degradation_endpoint.py`: `_tack_primary()` helper; single + batch paths
+  use TACK DC50/Dmax/active when available (`model: tack-style-v1`), Chemprop
+  preserved as cross-check (`chemprop_*` row keys + provenance
+  `chemprop_cross_check_*`); uncertainty/AD/context gating still Chemprop-based.
+- `backend/schemas.py` DegradationPrediction += `tack_active_prob`,
+  `chemprop_dc50_nM`, `chemprop_dmax_pct`.
+- `tools/protac_toolbox.py` predict_degradation maps `model_version` to
+  `tack-style-v1 (DC50/Dmax primary) + chemprop cross-check` when primary;
+  TACK second pass now only fills tack_* when endpoint didn't (fallback only).
+- Tests: `test_degradation_endpoint.py` 15 passed (2 new: tack-primary,
+  chemprop-fallback via monkeypatched _tack_primary); regression 21 passed
+  (repo_tool_adapter, mode_router, production_wiring). Example: aspirin
+  CRBN/BRD4/HEK293T → TACK 384.6 nM inactive vs Chemprop 79.9 nM, verdict
+  low_confidence (out-of-domain) — disagreement surfaced honestly.
+- Audit artifact: `outputs/DEGRADATION_BACKEND_REPAIR_AND_GATE_AUDIT.md`.
+
+### BLOCKER noted: v0.1 deterministic e2e hangs pre-degradation
+- `python -m synglue_agent.agents.runtime "Design CRBN PROTACs for BRD4 degradation"
+  --mode deterministic --run-id gate_check_tack_20260901` was killed after
+  ~50 min: trace stuck at `run_start`, CUDA/torch worker-thread spin (112
+  threads, one `cuda*` thread, ~1400% CPU, no open TCP conns at sample time).
+- Happens BEFORE the degradation stage → not caused by today's change;
+  component-level verification stands (see audit section 7). Needs its own
+  repair ticket (v0.1 graph early stages: GPU-context spin / missing guards).
+
 ## 2026-07-06 — HMGB2 Linker Optimization Campaign
 
 ### Summary

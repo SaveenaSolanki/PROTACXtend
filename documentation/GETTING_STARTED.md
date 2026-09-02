@@ -17,13 +17,11 @@ This guide will walk you through setting up **PROTACXtend** on your system, inst
 
 ### Option 1: Install from GitHub (Recommended)
 
-Clone the working, CI-tested repository (canonical organization home:
-`the-ahuja-lab/PROTACXtend` — content mirroring is coordinated from
-`SaveenaSolanki/PROTACXtend`):
+Clone the canonical repository (Ahuja Lab organization home):
 
 ```bash
 # Clone the repository
-git clone https://github.com/SaveenaSolanki/PROTACXtend.git
+git clone https://github.com/the-ahuja-lab/PROTACXtend.git
 cd PROTACXtend
 
 # Create a virtual environment
@@ -40,7 +38,7 @@ pip install -e .
 ### Option 1b: Docker
 
 ```bash
-docker build -t protacxtend https://github.com/SaveenaSolanki/PROTACXtend.git
+docker build -t protacxtend https://github.com/the-ahuja-lab/PROTACXtend.git
 ```
 
 ### Option 2: Repository-Local CLI Execution (No Installation Required)

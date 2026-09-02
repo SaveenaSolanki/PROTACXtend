@@ -1,10 +1,16 @@
-# PROTACXtend Architecture & The Feynman Stack
+# PROTACXtend Architecture & the Scientific Contract
 
-**PROTACXtend** implements a transparent, auditable **23-node agentic workflow graph** inspired by Richard Feynman's principle: *making invisible molecular interactions visible as composable, inspectable reasoning steps*.
+**PROTACXtend** implements a governed, auditable **agent graph**: a **23-node core scientific
+workflow** (objective parsing → discovery → component-aware assembly → evaluation →
+reflection/ranking) plus **8 controlled-search and feedback extensions**
+(expensive-modeling selection, ternary / cooperativity / hook-effect gates, final ranking,
+active-learning update, report, memory) = **31 documented agent nodes** registered in
+`synglue_agent/agents/graph.py`. The production path walks the registered nodes in sequence
+and stops only at terminal evidence or error gates.
 
 ---
 
-## 🔬 The Feynman Philosophy in Molecular Design
+## The scientific-contract philosophy
 
 Traditional PROTAC design models operate as opaque black boxes — taking inputs and outputting SMILES strings without explaining *why* a particular linker length was chosen or *how* ternary complex geometry was evaluated.
 
@@ -12,6 +18,9 @@ PROTACXtend transforms every stage into an explicit decision chain:
 - **Invisible interactions** → **Visible reasoning traces**
 - **Black-box predictions** → **Step-by-step decision chains**
 - **Opaque outputs** → **Auditable evidence trails & human escalation gates**
+
+Every executed scientific step records its input, output, evidence source, tool/model
+version, confidence, applicability-domain status, warning state and limitation.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

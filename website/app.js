@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════════════════════
-   PROTACXtend — Interactive layer
+   PROTACXtend — Interactive layer (v2, scientific-coherence)
    scroll progress · nav · reveal · counters · install tabs · copy ·
-   agent-pipeline simulator · docs tabs
+   illustrative pipeline walkthrough · docs tabs
    ════════════════════════════════════════════════════════════════ */
 'use strict';
 
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCounters();
   initInstallTabs();
   initCopy();
-  initSimulator();
+  initWalkthrough();
   initDocsTabs();
   document.getElementById('year').textContent = new Date().getFullYear();
 });
@@ -57,7 +57,6 @@ function initReveal() {
 function initCounters() {
   const nums = document.querySelectorAll('.stat-num[data-count]');
   if (!nums.length || !('IntersectionObserver' in window)) return;
-  const fmt = (v) => v >= 1000 ? (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(v);
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
@@ -66,7 +65,7 @@ function initCounters() {
       const dur = 1100; const t0 = performance.now();
       const tick = (t) => {
         const p = Math.min((t - t0) / dur, 1);
-        el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
         if (p < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -76,14 +75,13 @@ function initCounters() {
   nums.forEach(n => io.observe(n));
 }
 
-/* ── install command tabs ────────────────────────────────────────── */
+/* ── install tabs (git clone + docker; PyPI is on the roadmap) ───── */
 function initInstallTabs() {
   const btns = document.querySelectorAll('.tab-pill');
   const out = document.getElementById('install-command');
   const cmds = {
-    pip:  'pip install protacxtend',
-    git:  'git clone https://github.com/the-ahuja-lab/PROTACXtend.git',
-    curl: 'curl -fsSL https://raw.githubusercontent.com/the-ahuja-lab/PROTACXtend/main/install.sh | bash'
+    git:   'git clone https://github.com/SaveenaSolanki/PROTACXtend.git',
+    docker: 'docker build -t protacxtend https://github.com/SaveenaSolanki/PROTACXtend.git'
   };
   btns.forEach(btn => btn.addEventListener('click', () => {
     btns.forEach(b => b.classList.remove('active'));
@@ -106,8 +104,15 @@ function initCopy() {
   });
 }
 
-/* ── interactive agent pipeline simulator ────────────────────────── */
-function initSimulator() {
+/* ═══════════════════════════════════════════════════════════════════
+   ILLUSTRATIVE PIPELINE WALKTHROUGH
+   Browser-only. Precomputed illustrative values — NOT live science.
+   Shape mirrors a PROTACXtend run: KNOW retrieval → REASON → DESIGN
+   (linkers · retrosynthesis · assembly) → mechanistic layers
+   (ternary · ubiquitination · cooperativity · hook effect) →
+   degradation models (M4 · M5) → Pareto ranking.
+   ═══════════════════════════════════════════════════════════════════ */
+function initWalkthrough() {
   const runBtn = document.getElementById('run-sim-btn');
   if (!runBtn) return;
   const trace = document.getElementById('trace-output');
@@ -119,37 +124,39 @@ function initSimulator() {
   const e3Sel = document.getElementById('e3-select');
 
   const steps = [
-    { n: 'SupervisorAgent',            m: 'Parsing design objective → Target {{TARGET}} · E3 recruiter {{E3}} · constraints applied', s: 'OK' },
-    { n: 'DesignPlanner',              m: 'Plan committed: 23-node core + closed-loop refinement (31 nodes total)', s: 'OK' },
-    { n: 'NpHardSearchControl',        m: 'Search-space control bounds set — NP-hard enumeration bounded', s: 'OK' },
-    { n: 'SafetyPrecheck',             m: 'Objective screened against chemistry-safety policy — cleared', s: 'OK' },
-    { n: 'TargetResolver',             m: 'UniProt + ChEMBL resolution → target record, pChembl ranked', s: 'OK' },
-    { n: 'BinderRetrieval',            m: 'ChEMBL/PubChem/BindingDB → 87 binders · 12 E3 recruiters retrieved', s: 'OK' },
-    { n: 'ExitVectorDetection',        m: 'RDKit attachment-point scan → exit vectors mapped on warhead', s: 'OK' },
-    { n: 'LinkerGenerator',            m: '73-method engine → PEG / alkyl / triazole / GRU-generative linkers', s: 'OK' },
-    { n: 'ConstructProtacs',           m: 'Warhead ⊕ linker ⊕ E3-recruiter → 32 chimeras assembled & sanitized', s: 'OK' },
-    { n: 'Validate + CellContext',     m: 'Validity gates passed · cell-line degradation context scored', s: 'OK' },
-    { n: 'ADMET + Novelty',            m: 'hERG/AMES/BBB profile PASS · novelty & applicability domain OK', s: 'OK' },
-    { n: 'DegradationML',              m: 'Chemprop ensemble → DC50 = 12.4 nM · Dmax = 89.2% · class Active', s: 'OK' },
-    { n: 'TernaryFeasibility',         m: 'P4ward ensemble → SE(3) geometric feasibility 0.88 · α > 1', s: 'OK' },
-    { n: 'FinalRanking + Report',      m: 'Pareto frontier compiled → top candidates with full provenance', s: 'OK' }
+    { n: 'KNOW · retrieval',            m: 'Europe PMC + PubMed + OpenAlex → PMID/DOI verified evidence for {{TARGET}} degradation (illustrative set)', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'KNOW · grading',              m: 'Claim-level grading + citation provenance recorded on dossier', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'REASON · target resolve',     m: 'UniProt/ChEMBL resolution → target record; binder evidence ranked (pChembl)', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'REASON · E3 selection',       m: 'E3 recruiters {{E3}} screened; exit vectors mapped on warhead', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'DESIGN · linkers',            m: '73-method engine → curated + rule-based + generative linker candidates', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'DESIGN · retrosynthesis',     m: 'Synthetic feasibility + filter: 24/32 designs routed to feasible routes', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'DESIGN · assembly',           m: 'Component-aware construction → 32 chimeras · RDKit sanitized · stereoisomers', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'DESIGN · ADMET',              m: 'hERG / AMES / BBB / Lipinski–Veber profile computed (deterministic tool)', s: 'CALCULATED', c: 'trace-ok' },
+    { n: 'MECH · ternary',              m: 'Ternary complex ensemble + SE(3) geometric feasibility (surrogate pose path)', s: 'ILLUSTRATIVE', c: 'trace-illu' },
+    { n: 'MECH · ubiquitination',       m: 'Lysine ubiquitination feasibility — static-geometry scorer (Module 2)', s: 'STRUCTURAL SURROGATE', c: 'trace-illu' },
+    { n: 'MECH · cooperativity',        m: 'Cooperativity feasibility (Module 3 — surrogate; experimental α data-gated)', s: 'STRUCTURAL SURROGATE', c: 'trace-illu' },
+    { n: 'MECH · hook effect',          m: 'Three-body equilibrium: occupancy peak, hook onset & severity + MC bounds (Module 1)', s: 'CALCULATED', c: 'trace-ok' },
+    { n: 'DISCOVER · degradation M4',   m: 'Module 4 model → illustrative pDC50 band for the top designs', s: 'LEARNED PREDICTION', c: 'trace-learn' },
+    { n: 'DISCOVER · cell context M5',  m: 'Module 5 transcriptomic conditioning (DepMap 24Q4 signature proxy)', s: 'LEARNED PREDICTION', c: 'trace-learn' },
+    { n: 'DISCOVER · Pareto dossier',   m: 'Ranking with ADMET + novelty + synthetic feasibility → dossier written', s: 'ILLUSTRATIVE', c: 'trace-illu' }
   ];
 
+  /* illustrative values only — model-backed runs require the CLI/API */
   const candidates = {
     BRD4: [
-      { r: 1, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-PEG4-JQ1',            dc: '12.4 nM', dm: '89.2%', t: '0.88', a: 'PASS' },
-      { r: 2, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Alkyl6-dBET6',        dc: '24.8 nM', dm: '84.5%', t: '0.82', a: 'PASS' },
-      { r: 3, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Triazole-MZ1',        dc: '38.1 nM', dm: '81.0%', t: '0.79', a: 'PASS' },
-      { r: 4, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Alkyl8-ARV771',        dc: '45.0 nM', dm: '78.4%', t: '0.75', a: 'PASS' }
+      { r: 1, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-PEG4-JQ1',            dc: '12.4', t: '0.88', rr: 'feasible', a: 'PASS' },
+      { r: 2, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Alkyl6-dBET6',        dc: '24.8', t: '0.82', rr: 'feasible', a: 'PASS' },
+      { r: 3, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Triazole-MZ1',        dc: '38.1', t: '0.79', rr: 'review',   a: 'PASS' },
+      { r: 4, s: 'O=C1NC(=O)C(N2C(=O)c3ccccc3C2=O)CC1-Alkyl8-ARV771',        dc: '45.0', t: '0.75', rr: 'review',   a: 'PASS' }
     ],
     HMGB2: [
-      { r: 1, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-PEG3-CRBN',            dc: '18.6 nM', dm: '86.4%', t: '0.85', a: 'PASS' },
-      { r: 2, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-Alkyl5-CRBN',          dc: '31.2 nM', dm: '82.1%', t: '0.80', a: 'PASS' },
-      { r: 3, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-PEG5-CRBN',            dc: '42.0 nM', dm: '79.8%', t: '0.77', a: 'PASS' }
+      { r: 1, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-PEG3-CRBN',            dc: '18.6', t: '0.85', rr: 'feasible', a: 'PASS' },
+      { r: 2, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-Alkyl5-CRBN',          dc: '31.2', t: '0.80', rr: 'feasible', a: 'PASS' },
+      { r: 3, s: 'Cc1nc(C)c2c(n1)N(C)c3ccc(Cl)cc3C2=O-PEG5-CRBN',            dc: '42.0', t: '0.77', rr: 'review',   a: 'PASS' }
     ],
     EGFR: [
-      { r: 1, s: 'C=CC(=O)Nc1cc(Nc2nccc(n2)c3cn(C)c4ccccc34)c(OC)cc1-PEG4-VHL', dc: '15.1 nM', dm: '91.0%', t: '0.90', a: 'PASS' },
-      { r: 2, s: 'C=CC(=O)Nc1cc(Nc2nccc(n2)c3cn(C)c4ccccc34)c(OC)cc1-Alkyl6-VHL', dc: '29.4 nM', dm: '85.7%', t: '0.84', a: 'PASS' }
+      { r: 1, s: 'C=CC(=O)Nc1cc(Nc2nccc(n2)c3cn(C)c4ccccc34)c(OC)cc1-PEG4-VHL', dc: '15.1', t: '0.90', rr: 'feasible', a: 'PASS' },
+      { r: 2, s: 'C=CC(=O)Nc1cc(Nc2nccc(n2)c3cn(C)c4ccccc34)c(OC)cc1-Alkyl6-VHL', dc: '29.4', t: '0.84', rr: 'feasible', a: 'PASS' }
     ]
   };
 
@@ -159,35 +166,39 @@ function initSimulator() {
     const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
     runBtn.disabled = true;
-    label.textContent = 'Running 31-node pipeline…';
-    live.textContent = 'EXECUTING'; live.classList.add('running');
-    trace.innerHTML = ''; meta.textContent = 'designing…';
-    table.innerHTML = '<tr><td colspan="6" class="empty-row">Executing assembly, ML scoring & ternary simulation…</td></tr>';
+    label.textContent = 'Walking the pipeline…';
+    live.textContent = 'EXECUTING (ILLUSTRATIVE)'; live.classList.add('running');
+    trace.innerHTML = ''; meta.textContent = 'illustrative run…';
+    table.innerHTML = '<tr><td colspan="7" class="empty-row">ILLUSTRATIVE DEMO — precomputing example values…</td></tr>';
 
     for (const st of steps) {
-      await wait(300 + Math.random() * 200);
+      await wait(230 + Math.random() * 170);
       const row = document.createElement('div');
       row.className = 'trace-row new';
+      const stClass = st.c === 'trace-ok' ? 'trace-st' : (st.c === 'trace-learn' ? 'trace-st illu' : 'trace-st illu');
       row.innerHTML = `<span class="trace-node">${st.n}</span>
         <span class="trace-msg">${st.m.replace('{{TARGET}}', target).replace('{{E3}}', e3)}</span>
-        <span class="trace-st">[${st.s}]</span>`;
+        <span class="${stClass}">[${st.s}]</span>`;
       trace.appendChild(row);
       trace.scrollTop = trace.scrollHeight;
     }
 
-    await wait(300);
+    await wait(280);
     runBtn.disabled = false;
-    label.textContent = 'Run 31-node pipeline';
+    label.textContent = 'Run walkthrough';
     live.textContent = 'COMPLETE'; live.classList.remove('running');
 
     const rows = (candidates[target] || candidates.BRD4);
-    meta.textContent = `${rows.length} candidates · ${target} × ${e3}`;
+    meta.textContent = `${rows.length} illustrative candidates · ${target} × ${e3}`;
     table.innerHTML = rows.map(c => `
       <tr>
         <td><span class="rank-chip">${c.r}</span></td>
         <td class="smiles-cell" title="${c.s}">${c.s}</td>
-        <td><strong>${c.dc}</strong></td><td>${c.dm}</td><td>${c.t}</td>
-        <td><span class="pass-badge">${c.a} · LOW RISK</span></td>
+        <td><strong>${c.dc}</strong> nM <span class="badge eb-illu">ILLUSTRATIVE</span></td>
+        <td>${c.t} <span class="badge eb-illu">SURROGATE</span></td>
+        <td>${c.rr}</td>
+        <td><span class="pass-badge illu">${c.a} · EXAMPLE</span></td>
+        <td><span class="badge eb-illu">ILLUSTRATIVE DEMO</span></td>
       </tr>`).join('');
   });
 }

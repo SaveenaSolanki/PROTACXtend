@@ -17,9 +17,13 @@ This guide will walk you through setting up **PROTACXtend** on your system, inst
 
 ### Option 1: Install from GitHub (Recommended)
 
+Clone the working, CI-tested repository (canonical organization home:
+`the-ahuja-lab/PROTACXtend` — content mirroring is coordinated from
+`SaveenaSolanki/PROTACXtend`):
+
 ```bash
-# Clone the official repository
-git clone https://github.com/the-ahuja-lab/PROTACXtend.git
+# Clone the repository
+git clone https://github.com/SaveenaSolanki/PROTACXtend.git
 cd PROTACXtend
 
 # Create a virtual environment
@@ -29,8 +33,14 @@ conda activate protacxtend
 # Install key chemistry & machine learning dependencies
 pip install -r requirements.txt
 
-# Install PROTACXtend in editable mode
+# Install PROTACXtend in editable mode (PyPI publishing is on the roadmap)
 pip install -e .
+```
+
+### Option 1b: Docker
+
+```bash
+docker build -t protacxtend https://github.com/SaveenaSolanki/PROTACXtend.git
 ```
 
 ### Option 2: Repository-Local CLI Execution (No Installation Required)
@@ -82,7 +92,7 @@ protacxtend design "Design CRBN PROTAC candidates targeting BRD4 degradation"
 ```
 
 ### 2. Launching the Local Workbench UI
-Launch the interactive Feynman science workbench interface:
+Launch the interactive science workbench interface:
 ```bash
 protacxtend serve
 ```

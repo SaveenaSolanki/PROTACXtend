@@ -39,7 +39,7 @@ stop the graph with an explicit message. See `AGENTS.md` §3.
 - Every node append to a structured trace (`synglue_agent/observability/`).
 - Sessions are checkpointed to persistent memory (`synglue_agent/memory/`) and replayable
   with `/audit`, which cross-checks each claim against the empirical tool-output matrix.
-- The Feynman rule: *invisible interactions → visible reasoning traces; black-box
+- The audit rule: *invisible interactions → visible reasoning traces; black-box
   predictions → step-by-step decision chains.*
 
 ## 4 · Final-code test protocol (local → GitHub)

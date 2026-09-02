@@ -98,3 +98,13 @@
 {"event": "node_end", "ts": 1788324936.122209, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
 {"event": "decision", "ts": 1788324936.1222334, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
 {"event": "run_end", "ts": 1788324936.1222653, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788364776.3948386, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788364776.394946, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788364776.3949823, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788364776.3950102, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788364776.3950424, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788365246.306761, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788365246.30683, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788365246.3068635, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788365246.3068912, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788365246.3069205, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}

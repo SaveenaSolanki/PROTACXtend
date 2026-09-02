@@ -1,104 +1,131 @@
-# PROTACXtend Workflows & Slash Commands
+# PROTACXtend Workflows & CLI
 
-PROTACXtend provides intuitive slash commands and natural-language workflows through the CLI, REST API, and local Feynman science workbench.
+Reproducible workflows from research question to candidate dossier. The CLI exposes the
+real scientific surface of the platform (`protacxtend --help` / `protacxtend capabilities`
+to list everything); every workflow writes structured output and cites the model or
+evidence layer that produced it.
 
----
-
-## ⚡ Slash Commands Overview
-
-| Command | Action | Key Parameters | Output |
-| :--- | :--- | :--- | :--- |
-| `/design` | Full end-to-end PROTAC discovery pipeline | `--target`, `--e3`, `--num-candidates` | Pareto-ranked PROTAC candidate table + markdown report |
-| `/predict` | Predict $DC_{50}$, $D_{\max}$, and degradation class | `--smiles`, `--target`, `--cell-line` | Quantitative degradation metrics and confidence interval |
-| `/dock` | Run ternary complex modeling & docking | `--smiles`, `--target-pdb`, `--e3-pdb` | 3D complex structure + SE(3) geometric feasibility score |
-| `/admet` | Evaluate safety, toxicity, & drug-likeness | `--smiles` | ADMET radar scores (hERG, AMES, BBB, Lipinski/Veber) |
-| `/audit` | Audit reasoning chain and claim evidence | `--session-id` | Step-by-step decision log & evidence verification matrix |
-| `/replicate` | Replicate benchmark experiments | `--dataset`, `--model` | Reproducibility report & metric validation |
+Scientific framing: **KNOW → REASON → DESIGN → DISCOVER**.
 
 ---
 
-## 🧪 Detailed Workflow Examples
+## CLI subcommand overview
 
-### 1. `/design` — End-to-End Candidate Generation
+| Command | Action | Touches (evidence/model layer) |
+| :--- | :--- | :--- |
+| `design` | Deterministic end-to-end candidate generation (core 23-node path) | resolution → assembly → ADMET/novelty → degradation → ranking |
+| `structure` | Pose-backed lysine-ubiquitination geometry + cooperativity feasibility | Module 2, Module 3 (structural surrogate) |
+| `dose` | Ternary dose-response & hook-effect risk simulation | Module 1 (equilibrium, MC uncertainty) |
+| `context` | Cell-context-aware degradation prediction adapter | Module 5 (transcriptomic) |
+| `validate` | Validate & score a PROTAC SMILES (RDKit + ADMET) | chemistry engine |
+| `ternary` | Ternary-feasibility mode for one SMILES | P4ward / SE(3) feasibility |
+| `proteome` | Cell-context selectivity risk scoring (transcriptomic proxy) | Module 5 features |
+| `contract` | Show KNOW-REASON-DESIGN-DISCOVER contracts & dossiers | trace / evidence layer |
+| `ask` | Search tools, databases, skills and local literature context | retrieval + local assets |
+| `learn` | Lock predictions or recommend next active-learning batch | Module 7 (partial — BO loop planned) |
+| `external` | Show/launch external model/tool integration smoke jobs | repo wrappers |
+| `run` | Run the unified PROTACXtend runtime | agents/graph.py |
+| `status` / `scenarios` / `capabilities` | Runtime diagnostics and capability listing | — |
+| `api` / `ui` / `tui` | FastAPI backend, Streamlit frontend, terminal UI | — |
 
-Run a complete design run targeting BRD4 degradation with CRBN E3 ligase:
+---
+
+## 1. `design` — end-to-end candidate generation
 
 ```bash
-protacxtend design \
-  --target "BRD4" \
-  --e3 "CRBN" \
-  --warhead "pomalidomide" \
-  --num-candidates 16 \
+protacxtend design --target "BRD4" --e3 "CRBN" --num-candidates 16 \
   --output ./results/brd4_run.json
 ```
 
-**What happens inside**:
-1. UniProt and ChEMBL lookup for BRD4 binders.
-2. Attachment point detection on warhead and pomalidomide.
-3. Generative linker design (rigid vs flexible chains).
-4. Chemprop $DC_{50}$ prediction and SE(3) ternary complex check.
-5. Multi-objective Pareto ranking and CSV/JSON output.
+**What happens inside (core scientific workflow):**
+1. Objective parsed; design plan committed; search space bounded; safety precheck.
+2. UniProt / ChEMBL target resolution; binder & warhead evidence retrieval/ranking; E3 selection;
+   exit-vector detection.
+3. Linker generation (73-method engine: curated + rule-based + generative), component-aware
+   construction, stereoisomer enumeration, RDKit validation, cell-context feature scoring.
+4. ADMET, novelty and applicability-domain checks; degradation ML (Module 4).
+5. Ranking with diversity clustering, reflection review and evolution refinement;
+   controlled-search extensions (expensive-modeling selection, ternary / cooperativity /
+   hook-effect gates, final ranking, report, memory) follow when their gates open.
 
 ---
 
-### 2. `/predict` — Degradation Prediction for Existing SMILES
-
-Evaluate a candidate molecule:
+## 2. `structure` — ubiquitination geometry & cooperativity feasibility
 
 ```bash
-protacxtend predict \
-  --smiles "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)C4=NC=CN4" \
-  --target "BRD4" \
-  --cell-line "HeLa"
+protacxtend structure --smiles "<PROTAC_SMILES>" --target-pdb 3U5L --e3-pdb 4CIW
 ```
 
-**Output**:
-```json
-{
-  "smiles": "CC1=C(C=C(C=C1)...",
-  "dc50_nm": 14.2,
-  "dmax_percent": 88.5,
-  "degradation_class": "High Degrader",
-  "confidence": 0.91,
-  "hERG_risk": "Low"
-}
+- Module 2 (lysine ubiquitination feasibility): static-geometry scorer — E2 catalytic-site
+  geometry, POI lysines, SASA, distance/approach angle, steric occlusion, ensemble productive
+  fraction. *Status: structural surrogate; real-PDB benchmark pending.*
+- Module 3 (cooperativity): feasibility score in surrogate mode. *Status: data-gated —
+  experimental-α prediction requires a curated experimental dataset.*
+
+---
+
+## 3. `dose` — hook-effect / three-body equilibrium
+
+```bash
+protacxtend dose --smiles "<PROTAC_SMILES>"
+```
+
+Mass-action three-body equilibrium over binary and ternary species: peak and maximum ternary
+occupancy, hook onset and severity, dose window, seeded Monte-Carlo uncertainty (Module 1,
+validated baseline). **Equilibrium modeling only — not degradation kinetics.**
+
+---
+
+## 4. `context` — cell-context-aware degradation prediction
+
+```bash
+protacxtend context --smiles "<PROTAC_SMILES>" --cell-line "HeLa"
+```
+
+Module 5 adapter: pDC50 conditioned on transcriptomic features (DepMap 24Q4). The output
+reports which model produced it, its applicability-domain state and its limitation
+(transcriptomic only; proteotype and unseen-cell-line transfer are **not** claimed).
+
+---
+
+## 5. `validate` — single-candidate chemistry gate
+
+```bash
+protacxtend validate --smiles "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)C4=NC=CN4"
+```
+
+RDKit sanitization, exit-vector awareness, ADMET profile (hERG · AMES · BBB ·
+Lipinski/Veber). Returns a PASS/WARN verdict with per-check detail.
+
+---
+
+## 6. `contract` — scientific dossier / decision trace
+
+```bash
+protacxtend contract --target "BRD4" --e3 "CRBN"
+protacxtend contract --session-id "session_20260731_1542"
+```
+
+Renders the KNOW-REASON-DESIGN-DISCOVER dossier: what was retrieved (and verified), which
+design decisions were made, which mechanistic/model layers ran, and the evidence trace with
+applicability-domain and limitation states.
+
+---
+
+## 7. Research surface
+
+```bash
+protacxtend ask "HMGB2 degradation E3 options"     # databases + literature + local assets
+protacxtend learn                                   # next-experiment recommendations (partial)
+protacxtend external                                # external repo/model integration smoke jobs
 ```
 
 ---
 
-### 3. `/dock` — Ternary Complex Simulation
-
-Perform 3D docking simulation for target-PROTAC-E3 ternary complex:
+## Serving
 
 ```bash
-protacxtend dock \
-  --smiles "<PROTAC_SMILES>" \
-  --target-pdb "3U5L" \
-  --e3-pdb "4CIW"
+protacxtend api          # FastAPI backend   (default :8001) — POST /design · POST /mode · GET /health
+protacxtend ui           # Streamlit frontend (default :8501)
+protacxtend tui          # terminal UI
 ```
-
-Generates PDB coordinates of the predicted ternary ensemble along with interface contact residue mapping.
-
----
-
-### 4. `/admet` — ADMET Risk Profiling
-
-Perform comprehensive ADMET profiling:
-
-```bash
-protacxtend admet --smiles "<PROTAC_SMILES>"
-```
-
-Returns Lipinski Rule-of-5 compliance, Veber rotatable bond count, topological polar surface area (TPSA), hERG affinity risk, and AMES mutagenicity assessment.
-
----
-
-### 5. `/audit` — Feynman Decision Trace Audit
-
-Audit a completed design session to review reasoning provenance:
-
-```bash
-protacxtend audit --session-id "session_20260731_1542"
-```
-
-Outputs the exact sequence of 23 agent decisions, tool parameters, and threshold evaluations.

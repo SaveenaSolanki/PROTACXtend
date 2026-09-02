@@ -1,0 +1,114 @@
+# ════════════════════════════════════════════════════════════════════
+# config/scientific_status.yaml
+# PROTACXtend — machine-readable source of truth for scientific status.
+# Website status cards, the claim audit and the docs hub are verified
+# against this file. When a module/status changes, update it here first.
+# Statuses: VALIDATED BASELINE | TRAINED | STRUCTURAL SURROGATE |
+#           PARTIAL | UNDER EVALUATION | PLANNED | NOT AVAILABLE
+# Evidence types: MEASURED | RETRIEVED | CALCULATED | LEARNED PREDICTION |
+#                 STRUCTURAL SURROGATE | HEURISTIC | ILLUSTRATIVE
+# ════════════════════════════════════════════════════════════════════
+
+release:
+  software: "v0.3 core release"
+  status: "active research development"
+  claim_level: "software release status is separate from scientific validation status"
+
+architecture:
+  core_nodes: 23
+  extension_nodes: 8
+  documented_nodes: 31
+  wording: "23-node core scientific workflow + 8 controlled-search/feedback extensions = 31 documented agent nodes"
+  production_graph: "synglue_agent/agents/graph.py — deterministic state machine walks every registered node in sequence; terminal evidence/error gates may stop the run early"
+
+framework:
+  name: "KNOW → REASON → DESIGN → DISCOVER"
+  description: "evidence-grounded autonomous research loop for targeted protein degradation"
+
+retrieval_sources:            # KNOW — code: synglue_agent/research/sources.py
+  europepmc:    {status: TRAINED-API,  type: RETRIEVED}
+  pubmed:       {status: TRAINED-API,  type: RETRIEVED}
+  openalex:     {status: TRAINED-API,  type: RETRIEVED}
+  crossref:     {status: TRAINED-API,  type: RETRIEVED}
+  searxng:      {status: PARTIAL,      type: RETRIEVED, note: "requires self-hosted SEARXNG_URL"}
+  fulltext_crawl: {status: PARTIAL,    type: RETRIEVED, note: "crawl4ai / httpx; robots-aware"}
+
+modules:                      # source of truth: synglue_agent/modules/PROTACXTEND_MODULE_BUILD.md
+  hook_effect_modeler:        # Module 1
+    status: VALIDATED BASELINE
+    type: CALCULATED
+    implemented: true
+    detail: "mass-action three-body equilibrium (binary/ternary species), peak/max occupancy, hook onset & severity, seeded Monte-Carlo uncertainty"
+    limitation: "equilibrium only — not degradation kinetics; input Kds must come from experiment/upstream"
+    validation: "13/13 tests (mass balance, zero-dose exactness, hook behaviour, MC bounds)"
+    public_claim: true
+  lysine_ubiquitination_feasibility:   # Module 2
+    status: STRUCTURAL SURROGATE
+    type: STRUCTURAL SURROGATE
+    implemented: true
+    detail: "static-geometry scorer: E2 catalytic-site geometry, POI lysines, SASA, distance/approach angle, steric occlusion, ensemble productive fraction"
+    limitation: "static geometry baseline; real-PDB benchmark pending"
+    validation: "synthetic-fixture validation; real-PDB benchmark pending"
+    public_claim: true
+  cooperativity_alpha:        # Module 3
+    status: DATA-GATED SURROGATE
+    type: STRUCTURAL SURROGATE
+    implemented: true
+    detail: "surrogate/feasibility mode until a curated experimental alpha dataset exists; benchmark harness (constant/ridge/RF/XGB/GP, grouped splits) ready"
+    limitation: "NOT a trained experimental-alpha predictor; experimental alpha prediction is data-gated"
+    validation: "benchmark harness ready; no curated experimental labels yet"
+    public_claim: true
+  degradation_ml:             # Module 4
+    status: TRAINED
+    type: LEARNED PREDICTION
+    implemented: true
+    detail: "pDC50 + Dmax regression; curated 64/32 published labels; grouped splits (random/scaffold/unseen-target/E3/PROTAC); honest disabled prob task"
+    limitation: "small curated label set; OOD handled via grouped splits + domain checks"
+    validation: "audit approved 2026-09-02 (9/9 tests)"
+    public_claim: true
+  cell_context:               # Module 5
+    status: TRAINED
+    type: LEARNED PREDICTION
+    implemented: true
+    detail: "transcriptomic cell-context-aware pDC50; PROTAC-Degradation-DB (1913 rows; DC50 1181 / Dmax 761); DepMap 24Q4 transcriptomics on 1512 rows; grouped A-G; leg D beats leg B on unseen-PROTAC pDC50 (R2 0.605 vs 0.513)"
+    limitation: "transcriptomic only — proteotype NOT claimed (no proteomics coverage); unseen-cell-line transfer NOT claimed"
+    validation: "16 tests; grouped cross-validation"
+    public_claim: true
+  novel_e3_engine:            # Module 6
+    status: PLANNED
+    implemented: false
+    public_claim: false
+  active_learning:            # Module 7
+    status: PARTIAL
+    implemented: false
+    detail: "CLI /learn surface exists; multiobjective BO + feedback loop module not yet built"
+    public_claim: false
+
+degradation_models:           # DISCOVER — independent predictors (never averaged silently)
+  module4_pdc50_dmax: {endpoint: "pDC50 / Dmax",   type: LEARNED PREDICTION, status: TRAINED,   provenance: "64/32 curated published labels", file: "modules/degradation_ml/models/pdc50_model.joblib"}
+  module5_cell_context: {endpoint: "cell-context pDC50", type: LEARNED PREDICTION, status: TRAINED, provenance: "PROTAC-Degradation-DB + DepMap 24Q4", file: "modules/cell_context_selector/models/cell_context_model.joblib"}
+  tack_dc50:          {endpoint: "DC50",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_dc50_model.joblib"}
+  tack_dmax:          {endpoint: "Dmax",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_dmax_model.joblib"}
+  tack_binary:        {endpoint: "active/inactive",type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_bin_model.joblib"}
+  synglue_dc50:       {endpoint: "DC50",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "GROVER/SynGlue multitask", file: "SynGlue_Py/models/rf_dc50.joblib"}
+  synglue_dmax:       {endpoint: "Dmax",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "SynGlue", file: "SynGlue_Py/models/rf_dmax.joblib"}
+  unified_engine:     {endpoint: "ensemble verdict", type: HEURISTIC, status: UNDER EVALUATION, note: "model-disagreement & uncertainty-aware integration under evaluation — never averaged silently"}
+
+spreadsheet_assets:           # xlsx/csv assets shipped in-repo (documentation/GETTING_STARTED & site docs)
+  - {file: "data/benchmark/PROTAC-DB_3.0_protacs.xlsx",   use: "benchmark + training provenance"}
+  - {file: "Agent_Toolkit.xlsx",                          use: "agent/module capability registry"}
+  - {file: "data/toolkit/Agent_Toolkit_EXPANDED.xlsx",    use: "expanded agent tool catalogue"}
+  - {file: "TOOL_AUDIT.xlsx",                             use: "tool audit log"}
+  - {file: "data/protac_repos/protac_repo_registry.xlsx", use: "upstream repo registry"}
+  - {file: "synglue_agent/modules/cell_context_selector/data/context_joined.csv", use: "Module 5 features (DepMap 24Q4)"}
+
+databases_and_apis:           # what the platform queries / ships
+  live_apis: ["UniProt", "ChEMBL", "PubChem", "BindingDB", "Europe PMC", "PubMed", "OpenAlex", "Crossref"]
+  local_curated: ["PROTAC-DB 3.0", "PROTAC-Degradation-DB (1913 rows)", "TACK", "DepMap 24Q4 (transcriptomics)", "GROVER/SynGlue encodings"]
+  rest_endpoints: ["POST /design", "POST /mode", "GET /health"]
+
+tools:
+  chemistry_engine: {methods: 73, detail: "protac_toolbox.py — parse/validate, exit vectors, assemble, enumerate"}
+  retrosynthesis:   {status: implemented, note: "engines + filter; optional heavy backends guarded"}
+  admet:            {detail: "hERG/AMES/BBB/Lipinski/Veber radar"}
+  docking:          {detail: "P4ward ternary + SE(3) feasibility; external docking adapters guarded"}

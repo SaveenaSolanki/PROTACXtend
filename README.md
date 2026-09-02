@@ -11,10 +11,10 @@ PROTACXtend is a local, tool-augmented AI agent platform for component-aware PRO
 - **Organization**: Ahuja Lab ([@the-ahuja-lab](https://github.com/the-ahuja-lab))
 - **Lead Developer**: Saveena Solanki ([@SaveenaSolanki](https://github.com/SaveenaSolanki))
 - **Web App source**: [`website/`](website/index.html) — pure static landing page, interactive simulator & documentation hub (no build step)
-- **Documentation**: [`documentation/`](documentation/README.md) — installation, 31-node agentic architecture, workflows, API reference, and GitHub collaborator setup.
+- **Documentation**: [`documentation/`](documentation/README.md) — installation, architecture (23-node core + 8 extensions = 31 documented nodes), workflows, API reference, and GitHub collaborator setup.
 - **Agent workframe**: [`AGENT_WORKFRAME.md`](AGENT_WORKFRAME.md) & [`AGENTS.md`](AGENTS.md) — orchestration model, node contract, and the final-code test protocol (local tier-1 + GitHub Actions tier-2).
 
-The system takes a natural-language design objective, converts it into a structured workflow state, runs a sequence of 23 specialist agents, builds candidate PROTAC records, scores them with local deterministic tools or model backends, ranks candidates, and outputs reports, CSV, and JSON data.
+The system takes a natural-language design objective, converts it into a structured workflow state, and runs a governed agent graph — a 23-node core scientific workflow plus 8 controlled-search/feedback extensions (31 documented nodes, see `AGENT_WORKFRAME.md`) — to build candidate PROTAC records, score them with deterministic tools, mechanistic modules and ML models, rank candidates, and output reports, CSV and JSON data. Every executed step records its input, output, evidence source, model version and limitation.
 
 Quick start and backend map: [PROTACXTEND_README.md](PROTACXTEND_README.md) & [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md).
 

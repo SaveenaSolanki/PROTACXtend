@@ -28,10 +28,8 @@ document limitations and be agent-connected before the next starts.
 | 1 | Hook Effect Modeler (three-body equilibrium/QSP, hook onset & severity) | `simulate_hook_effect()` | ✅ DONE (QA passed 2026-09-02) |
 | 2 | Lysine Ubiquitination Feasibility Scorer | `score_lysine_ubiquitination()` | ✅ DONE v1.0.0 (2026-09-02; static-geometry baseline, synthetic-fixture validation, real-PDB benchmark pending) |
 | 3 | Cooperativity α Predictor | `predict_cooperativity()` | ✅ DONE v1.0.0 (2026-09-02) — data-audit-honest: surrogate mode until curated experimental α dataset exists; benchmark harness ready (constant/ridge/RF/XGB/GP, grouped splits) |
-| 3 | Cooperativity α Predictor (XGBoost/RF/GP baselines, log-α + uncertainty) | `predict_cooperativity()` | pending |
 | 4 | PROTAC Degradation ML (pDC50 + Dmax/OOD; honest disabled prob task) | `predict_degradation()` | ✅ DONE v1.0.0 (2026-09-02) — curated 64/32 published labels; grouped splits (random/scaffold/unseen-target/E3/PROTAC); prob task disabled (no measured binary labels); audit approved 2026-09-02 (9/9 tests) |
-| 5 | Cell-Context / Proteotype Selectivity (DepMap/CCLE features) | `predict_cell_context()` | 🔨 in progress (spec + data audit 2026-09-02; build gated on audit approval) |
-| 5 | Cell-Context / Proteotype Selectivity (DepMap/CCLE features) | `predict_cell_context()` | pending |
+| 5 | Cell-Context / Proteotype Selectivity (DepMap/CCLE features) | `predict_cell_context()` | ✅ DONE v1.0.0 (2026-09-02) — curated PROTAC-Degradation-DB (1913 rows; DC50 1181/Dmax 761; DepMap 24Q4 transcriptomics on 1512 rows); grouped A–G; leg D beats leg B on unseen-PROTAC pDC50 (R² 0.605 vs 0.513) → cell-context-aware; transcriptomic unseen-line transfer NOT claimed; proteotype NOT claimed (no proteomics); artifact + tool + 16 tests; **status report gated — Module 6 not started until audited** |
 | 6 | Novel E3 Ligase Opportunity Engine | `rank_e3_ligases()`, `evaluate_e3_ligandability()` | pending |
 | 7 | Active Learning / Experiment Selection (multiobjective BO + feedback) | `select_next_experiments()`, `update_models()` | pending |
 

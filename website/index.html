@@ -38,7 +38,7 @@
       </div>
 
       <div class="nav-actions">
-        <a class="btn-github-nav" href="https://github.com/SaveenaSolanki/PROTACXtend" target="_blank" rel="noopener noreferrer">
+        <a class="btn-github-nav" href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
           GitHub
         </a>
@@ -95,7 +95,7 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
             <a href="#docs" class="btn btn-ghost">Read the docs</a>
-            <a href="https://github.com/SaveenaSolanki/PROTACXtend" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+            <a href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
               Source code
             </a>
@@ -107,7 +107,7 @@
               <button class="tab-pill active" data-tool="git">git clone</button>
               <button class="tab-pill" data-tool="docker">docker</button>
             </div>
-            <code class="install-cmd" id="install-command">git clone https://github.com/SaveenaSolanki/PROTACXtend.git</code>
+            <code class="install-cmd" id="install-command">git clone https://github.com/the-ahuja-lab/PROTACXtend.git</code>
             <button class="copy-btn" id="install-copy-btn" title="Copy command" aria-label="Copy command">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
@@ -632,14 +632,14 @@ protacxtend api --port 8001</pre>
               <h3>Getting started</h3>
               <p>Python 3.10+ with conda is recommended for RDKit / PyTorch isolation. Two supported install paths — both run from the repository source; PyPI publishing is on the roadmap.</p>
               <h4>Option A — git clone</h4>
-              <pre><code>git clone https://github.com/SaveenaSolanki/PROTACXtend.git
+              <pre><code>git clone https://github.com/the-ahuja-lab/PROTACXtend.git
 cd PROTACXtend
 conda create -n protacxtend python=3.10 -y
 conda activate protacxtend
 pip install -r requirements.txt
 pip install -e .</code></pre>
               <h4>Option B — docker</h4>
-              <pre><code>docker build -t protacxtend https://github.com/SaveenaSolanki/PROTACXtend.git
+              <pre><code>docker build -t protacxtend https://github.com/the-ahuja-lab/PROTACXtend.git
 docker run -p 8501:8501 -p 8001:8001 protacxtend</code></pre>
               <h4>Verify the environment</h4>
               <pre><code>protacxtend status          # runtime status
@@ -743,8 +743,9 @@ protac_sm = tb.assemble_protac(warhead_smiles="...", linker_smiles="...", e3_smi
 
             <div class="docs-pane" id="pane-github">
               <h3>GitHub &amp; collaborators</h3>
-              <p><strong>Working repository (CI-tested, Pages live):</strong> <a href="https://github.com/SaveenaSolanki/PROTACXtend" target="_blank" rel="noopener noreferrer">github.com/SaveenaSolanki/PROTACXtend</a><br>
-              <strong>Canonical organization repository:</strong> <a href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">github.com/the-ahuja-lab/PROTACXtend</a> — final mirror pending org push grant<br>
+              <p><strong>Repository:</strong> <a href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">github.com/the-ahuja-lab/PROTACXtend</a> — canonical Ahuja Lab home (full code + Pages)<br>
+              <strong>Live site:</strong> <a href="https://the-ahuja-lab.github.io/PROTACXtend/" target="_blank" rel="noopener noreferrer">the-ahuja-lab.github.io/PROTACXtend</a><br>
+              <strong>Development mirror:</strong> <a href="https://github.com/SaveenaSolanki/PROTACXtend" target="_blank" rel="noopener noreferrer">github.com/SaveenaSolanki/PROTACXtend</a><br>
               <strong>Lead developer:</strong> <span class="mono">@SaveenaSolanki</span> · <strong>Lab:</strong> <span class="mono">@the-ahuja-lab</span> (IIIT Delhi)</p>
               <h4>Continuous testing on GitHub</h4>
               <p>Every push runs CI: compile + asset-free smoke, fast offline units, the full offline suite (including the agentic E2E benchmark), plus gitleaks full-history scan, ruff and committed-artifact checks.</p>
@@ -769,7 +770,7 @@ protac_sm = tb.assemble_protac(warhead_smiles="...", linker_smiles="...", e3_smi
           <p>Clone, audit the status matrix, and extend one layer at a time — literature, chemistry, mechanism, models or cell context.</p>
         </div>
         <div class="cta-btns">
-          <a class="btn btn-light" href="https://github.com/SaveenaSolanki/PROTACXtend" target="_blank" rel="noopener noreferrer">
+          <a class="btn btn-light" href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
             GitHub repository
           </a>
@@ -799,7 +800,7 @@ protac_sm = tb.assemble_protac(warhead_smiles="...", linker_smiles="...", e3_smi
         <h5>Resources</h5>
         <a href="#docs">Documentation</a><a href="#workflows">Workflows</a>
         <a href="#playground">Walkthrough</a>
-        <a href="https://github.com/SaveenaSolanki/PROTACXtend/blob/main/documentation/API_REFERENCE.md" target="_blank" rel="noopener noreferrer">API reference</a>
+        <a href="https://github.com/the-ahuja-lab/PROTACXtend/blob/main/documentation/API_REFERENCE.md" target="_blank" rel="noopener noreferrer">API reference</a>
       </div>
       <div class="footer-col">
         <h5>People</h5>

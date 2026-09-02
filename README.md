@@ -1,12 +1,12 @@
 # PROTACXtend
 
-[![Live site](https://img.shields.io/badge/⚗%EF%B8%8F%20PROTACXtend-github.io-%23706BD6?style=flat-square&labelColor=%230B1338)](https://saveenasolanki.github.io/PROTACXtend/)
-[![CI](https://img.shields.io/github/actions/workflow/status/SaveenaSolanki/PROTACXtend/ci.yml?style=flat-square&label=CI&labelColor=%230B1338&color=%23706BD6)](https://github.com/SaveenaSolanki/PROTACXtend/actions/workflows/ci.yml)
+[![Live site](https://img.shields.io/badge/⚗%EF%B8%8F%20PROTACXtend-github.io-%23706BD6?style=flat-square&labelColor=%230B1338)](https://the-ahuja-lab.github.io/PROTACXtend/)
+[![CI](https://img.shields.io/github/actions/workflow/status/the-ahuja-lab/PROTACXtend/ci.yml?style=flat-square&label=CI&labelColor=%230B1338&color=%23706BD6)](https://github.com/the-ahuja-lab/PROTACXtend/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-%23706BD6?style=flat-square&labelColor=%230B1338)](LICENSE)
 
 PROTACXtend is a local, tool-augmented AI agent platform for component-aware PROTAC design, ternary complex feasibility modeling, and degradation prediction.
 
-- **Live website**: [`saveenasolanki.github.io/PROTACXtend`](https://saveenasolanki.github.io/PROTACXtend/) (GitHub Pages — hero overview, capabilities, workflows, simulator & docs)
+- **Live website**: [`the-ahuja-lab.github.io/PROTACXtend`](https://the-ahuja-lab.github.io/PROTACXtend/) (GitHub Pages — hero overview, capabilities, mechanisms, model panel, validation matrix, workflows, walkthrough & docs)
 - **GitHub Repository**: [`the-ahuja-lab/PROTACXtend`](https://github.com/the-ahuja-lab/PROTACXtend)
 - **Organization**: Ahuja Lab ([@the-ahuja-lab](https://github.com/the-ahuja-lab))
 - **Lead Developer**: Saveena Solanki ([@SaveenaSolanki](https://github.com/SaveenaSolanki))

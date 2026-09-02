@@ -42,3 +42,14 @@ Branding / assets
 - Hero uses the logo card + framework strip; visual language kept (PROTACXtend palette, `#8683DD → #706BD6` signature gradient).
 
 Related files touched in the same change: `config/scientific_status.yaml` (new source of truth), `SCIENTIFIC_CLAIM_AUDIT.md`, `SITE_COHERENCE_AUDIT.md`, `AGENTS.md`/`AGENT_WORKFRAME.md` ("Feynman" → audit/scientific-contract language), module tracker de-duplication (stale Module-3 row removed), README badge/install reconciliation, `documentation/WORKFLOWS.md` and `documentation/ARCHITECTURE.md` reconciled with the current CLI/modules.
+
+## v2.1 — canonical hosting on the Ahuja Lab organization (2026-09-02)
+
+- Final code mirrored to **the-ahuja-lab/PROTACXtend** (full history) after the org granted
+  push access; the organization repository is now canonical for code, CI and Pages.
+- All site links, install commands (git clone / docker), README badges (live site, CI) and
+  the docs "GitHub & collaborators" pane now point to **the-ahuja-lab/PROTACXtend** and
+  **https://the-ahuja-lab.github.io/PROTACXtend/**; SaveenaSolanki/PROTACXtend is listed as
+  the development mirror.
+- GitHub Pages on the org repository is enabled by the repository admin (Pages → Source:
+  GitHub Actions); the deploy workflow is already in the repo and deploys `website/`.

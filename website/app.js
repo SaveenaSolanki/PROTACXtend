@@ -80,8 +80,8 @@ function initInstallTabs() {
   const btns = document.querySelectorAll('.tab-pill');
   const out = document.getElementById('install-command');
   const cmds = {
-    git:   'git clone https://github.com/SaveenaSolanki/PROTACXtend.git',
-    docker: 'docker build -t protacxtend https://github.com/SaveenaSolanki/PROTACXtend.git'
+    git:   'git clone https://github.com/the-ahuja-lab/PROTACXtend.git',
+    docker: 'docker build -t protacxtend https://github.com/the-ahuja-lab/PROTACXtend.git'
   };
   btns.forEach(btn => btn.addEventListener('click', () => {
     btns.forEach(b => b.classList.remove('active'));

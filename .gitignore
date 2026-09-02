@@ -66,3 +66,5 @@ data/research/cache/
 outputs/research_traces/
 outputs/omics_cache/
 SynGlue_Py/
+artifacts/
+docs/

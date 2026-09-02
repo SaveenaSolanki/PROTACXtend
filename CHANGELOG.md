@@ -1,5 +1,36 @@
 # PROTACXtend Changelog
 
+## 2026-09-02 (module 5) — Cell-Context / Proteotype-Aware Degradation Model
+
+predict_cell_context(protac, poi, e3, cell_line). Data: PROTAC-Degradation-DB
+(arXiv 2406.02637; verified research clone) curated reproducibly 2141 -> -62
+viability-only -> 2079 -> -166 exact dups -> 1913 rows (180 cell lines, 121
+targets, 8 E3s, 231 DOIs; measured DC50 1181 / Dmax 761 / both 479). Binary
+activity labels recomputed from the paper's documented AND rule (pDC50>=6,
+Dmax>=60) — threshold-derived, never called experimental; QA vs shipped
+'Active' 700/857 agree (shipped column unused). DC50 asserted nM before pDC50;
+no label fabricated; endpoint masks throughout. Cell lines mapped to DepMap
+24Q4 Model.csv (137 mapped/2 ambiguous/41 unmapped incl. 7 qualitative
+descriptions); transcriptomic features from DepMap 24Q4 TPM-log1p (142-gene
+E3/E2/proteasome/DUB/transporter panel + POI genes) on 1512 rows; proteomics
+coverage 0 (no DepMap 24Q4 proteomics). Modules 1-3 mechanistic features
+structure/parameter-limited (22 rows reference a ternary PDB) -> reported as a
+census, not used at scale. Baselines mean->cell-mean->ridge->elasticnet->RF->ET
+->XGBoost (+RF/logistic classifier); grouped splits random/unseen-PROTAC/
+scaffold/unseen-target/unseen-E3/unseen-cell-line/unseen-PROTAC+cell,
+train-only preprocessing; R2/MAE/RMSE/Spearman/Pearson (+AUROC/AUPRC for the
+derived task), n per split. Results: pDC50 leg D (transcriptomics) beats leg B
+on unseen-PROTAC (RF R2 0.605 vs 0.513), scaffold (0.603) and random (best
+family 0.685); Dmax similar (unseen-PROTAC 0.519 vs 0.476); derived-active
+AUROC 0.894 (unseen-PROTAC leg D). Claims gated in the artifact:
+cell_context_aware True; transcriptomics_generalises_to_unseen_lines False
+(D<B on unseen-cell-line; identity codes never claimed as selectivity);
+proteotype_aware False. Production artifact cell_context_model.joblib (all
+endpoints leg D RF). M4-v1 artifact untouched; M4_FOLLOWUP memo recommends a
+versioned M4-v2 retrain from the larger set after audit. Tests 16; module
+suites + full run in status report.
+
+
 ## 2026-09-02 (module 4) — PROTAC Degradation ML Model
 
 Curated real dataset from the project's PROTAC-DB benchmark extract (64 rows

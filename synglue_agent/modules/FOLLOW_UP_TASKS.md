@@ -10,3 +10,19 @@
    POI / E3 / leave-one-series) before any learned alpha predictor may be claimed.
    Status: OPEN — does not block later modules; the surrogate remains clearly
    labelled as heuristic/untrained until this is done.
+3. **Module 5 → M4-v2 retrain (tracked, gated on Module-5 report audit)**: per
+   docs/M4_FOLLOWUP.md — train a separately-versioned context-INDEPENDENT pDC50
+   model (`degradation_ml` v2) on the Module-5 curated dataset (leg B or
+   per-compound aggregated), then publish M4-v1 vs M5-context vs M4-v2 on a
+   common held-out set. M4-v1 artifact stays frozen. Status: pending audit.
+4. **Module 5 proteomics leg (tracked)**: when a DepMap/CCLE quantitative
+   proteomics matrix is available (not in 24Q4), curate per-cell-line protein
+   features and re-run leg E; proteotype-awareness may only be claimed then.
+5. **Module 5 unseen-cell-line transfer (tracked)**: transcriptomic context did
+   not yet robustly beat PROTAC-only on unseen cell lines (RF/XGB negative
+   deltas, ET/ridge positive). Candidate fixes: batch-corrected expression,
+   per-line assay-matched labels, larger panel; revisit before any
+   "generalises to new cell lines" claim.
+6. **Module 5 mechanistic leg (tracked)**: structure-paired series curation
+   (ternary PDB + measured Kds) is required before Modules 1–3 features can be
+   evaluated at scale (currently only 22 rows reference a structure).

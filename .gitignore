@@ -70,3 +70,8 @@ data/synthesis_prediction/repos/
 
 # Machine-local paths (absolute) — never commit
 env/protacpilot_config.json
+
+# deep-research framework caches / traces (runtime, regenerable)
+data/research/cache/
+outputs/research_traces/
+outputs/omics_cache/

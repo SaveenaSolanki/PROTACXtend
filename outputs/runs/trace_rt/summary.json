@@ -1,9 +1,9 @@
 {
   "run_id": "trace_rt",
   "status": "ok",
-  "runtime_s": 4.58,
+  "runtime_s": 344.76,
   "events": 3,
-  "trace_file": "/tmp/protacxtend-release/outputs/runs/trace_rt/trace.jsonl",
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/trace_rt/trace.jsonl",
   "mode": "agentic",
   "request": "design BRD4 PROTAC"
 }

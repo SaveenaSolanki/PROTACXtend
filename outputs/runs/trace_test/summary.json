@@ -3,6 +3,6 @@
   "status": "ok",
   "runtime_s": 0.0,
   "events": 5,
-  "trace_file": "/tmp/protacxtend-release/outputs/runs/trace_test/trace.jsonl",
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/trace_test/trace.jsonl",
   "mode": "agentic"
 }

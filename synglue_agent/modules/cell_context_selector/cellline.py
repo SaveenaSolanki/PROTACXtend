@@ -80,14 +80,22 @@ def normalize_name(name) -> str:
 
 def _load_depmap_model(path: str | Path | None = None) -> pd.DataFrame:
     p = Path(path) if path else DEPMAP_MODEL_CSV
-    if p.exists():
-        return pd.read_csv(p)
-    if BUNDLED_MODEL_CSV.exists():
-        return pd.read_csv(BUNDLED_MODEL_CSV)
-    return pd.DataFrame()
+    if not p.exists():
+        if BUNDLED_MODEL_CSV.exists():
+            return pd.read_csv(BUNDLED_MODEL_CSV)
+        return pd.DataFrame()
+    if not hasattr(_load_depmap_model, "_cache"):
+        _load_depmap_model._cache = pd.read_csv(p)
+    return _load_depmap_model._cache
+
+
+_index_cache: dict | None = None
 
 
 def _candidates_index(models: pd.DataFrame) -> dict[str, list[dict]]:
+    global _index_cache
+    if _index_cache is not None and len(models):
+        return _index_cache
     idx: dict[str, list[dict]] = {}
     for _, row in models.iterrows():
         rec = {"depmap_id": row.get("ModelID"),
@@ -100,7 +108,14 @@ def _candidates_index(models: pd.DataFrame) -> dict[str, list[dict]]:
             v = row.get(field)
             if isinstance(v, str) and v:
                 idx.setdefault(normalize_name(v), []).append(rec)
+    _index_cache = idx
     return idx
+
+
+def reset_caches() -> None:
+    global _index_cache
+    _index_cache = None
+    _load_depmap_model._cache = None
 
 
 def map_cell_lines(names: list[str], path=None) -> pd.DataFrame:

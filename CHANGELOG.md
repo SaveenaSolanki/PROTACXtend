@@ -1,5 +1,37 @@
 # PROTACXtend Changelog
 
+## 2026-09-02 (module 6) — Novel E3 Ligase Opportunity Engine
+
+rank_e3_ligases(poi, cell_line, tissue, disease, warhead, poi_structure,
+top_k): 30-gene E3 catalog (families/modes/adaptors; CRL4/2/3, SCF, RING,
+IAP, HECT, RBR, U-box, TRIM) x independent evidence axes — cell-context
+expression (DepMap 24Q4 percentiles, Module 5 infra; E3+adaptor+POI),
+subcellular compatibility (78 UniProt-reviewed annotations cached offline),
+recruiter tractability (DOI-cited ligand library only; demo rows excluded),
+biological precedent (curated measured PROTAC rows), structural availability
+(ternary feasibility stays UNKNOWN without ternary data), surface-lysine
+census (only with user-supplied POI structure; Module-2 SASA), selectivity
+(lineage-expression restriction + curated paralog families), per-axis
+uncertainty/OOD. Verdicts SUPPORTED/PROMISING/EXPLORATORY/INSUFFICIENT
+EVIDENCE with hard rules: expression alone never recommends an E3 (benchmark:
+expression-only AUROC 0.49 = chance); SUPPORTED requires direct measured
+precedent for the POI; low-expression (<20th pct) caps at EXPLORATORY.
+Retrospective benchmark (270 unique measured POI-cell-E3 pairs; negatives =
+catalog E3s never used, absence-of-record documented): grouped regimes
+random/unseen-target/pair/cell/E3/family-LOO; baselines expression-only /
+recruiter-only / precedent-frequency / logistic / RF / XGBoost; RF best
+(AUROC .98 random & unseen-target, .93 unseen-E3, .99 unseen-cell);
+recruiter ablation −0.52 AUROC on unseen-E3; precedent transfers across cell
+lines but not targets; structure/lysine axes reported as coverage census (no
+POI structures in the retrospective set). Ablations and claims gated in
+VALIDATION.md. Challenges 1–7 encoded as tests (same-POI cell contrast, VHL
+vs CRBN, low-expression penalty, missing-context uncertainty, no-structure no
+mechanistic claim, absent-recruiter explicit, unknown POI graceful) +
+determinism; 17 tests. Agent tool run_e3_opportunity. Artifacts:
+artifacts/benchmark_results.json; docs README/SPEC/VALIDATION/LIMITATIONS/
+REFERENCES.
+
+
 ## 2026-09-02 (module 5) — Cell-Context / Proteotype-Aware Degradation Model
 
 predict_cell_context(protac, poi, e3, cell_line). Data: PROTAC-Degradation-DB

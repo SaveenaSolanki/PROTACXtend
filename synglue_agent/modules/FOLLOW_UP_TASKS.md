@@ -26,3 +26,11 @@
 6. **Module 5 mechanistic leg (tracked)**: structure-paired series curation
    (ternary PDB + measured Kds) is required before Modules 1–3 features can be
    evaluated at scale (currently only 22 rows reference a structure).
+7. **Module 6 real-time UniProt/PDB refresh (tracked, optional)**: the
+   localization + structural tables are static caches (78 genes; curated
+   complex facts for CRBN/VHL only). A refresh utility + broader curation
+   would extend POI/E3 coverage; no structural claims are made without it.
+8. **Module 6 prospective validation (tracked)**: verdict thresholds were
+   calibrated on retrospective retrieval of known usage (absence-of-record
+   negatives). A prospective set (newly reported POI-E3 degraders vs
+   predictions) is the definitive test of SUPPORTED/PROMISING calibration.

@@ -1,0 +1,27 @@
+{"event": "run_start", "ts": 1786449402.3452454, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786449409.2717261, "elapsed_s": 2.15, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786449409.2717721, "elapsed_s": 6.9265, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786449536.1522532, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786449543.3692975, "elapsed_s": 2.4, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "36"}}
+{"event": "run_end", "ts": 1786449543.3693576, "elapsed_s": 7.2171, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786449812.7647014, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "error", "ts": 1786449818.7824285, "elapsed_s": 6.0177, "node": "runtime", "error": "'str' object has no attribute 'get'"}
+{"event": "run_end", "ts": 1786449818.7827287, "elapsed_s": 6.018, "status": "failed", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786449876.9080932, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "error", "ts": 1786449881.9376595, "elapsed_s": 5.0296, "node": "runtime", "error": "'str' object has no attribute 'get'"}
+{"event": "run_end", "ts": 1786449881.9378445, "elapsed_s": 5.0298, "status": "failed", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786454719.0892735, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786454796.3865075, "elapsed_s": 73.71, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786454796.3865614, "elapsed_s": 77.2973, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786454890.8815358, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786454966.2584422, "elapsed_s": 71.89, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786454966.258495, "elapsed_s": 75.377, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786455142.0492754, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786455215.7875545, "elapsed_s": 70.22, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786455215.7876127, "elapsed_s": 73.7383, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786455665.8228729, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786455745.1350965, "elapsed_s": 75.87, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786455745.1351461, "elapsed_s": 79.3123, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786458162.455594, "elapsed_s": 0.0, "run_id": "e2e_20260811_BRD4_known", "meta": {"mode": "agentic", "request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic f"}}
+{"event": "tool_call", "ts": 1786458238.2633307, "elapsed_s": 72.37, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_BRD4_known"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786458238.2633784, "elapsed_s": 75.8078, "status": "ok", "summary": {}, "events": 2}

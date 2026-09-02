@@ -1,0 +1,28 @@
+{
+  "schema": "protacpilot-bundle-v1",
+  "produced_by": "SynGlue v0.3-agentic-core",
+  "run_id": "container_boot_2",
+  "mode": "agentic",
+  "status": "ok",
+  "runtime_s": 0.67,
+  "n_decisions": 0,
+  "n_tool_calls": 1,
+  "decisions": [],
+  "tool_calls": [
+    {
+      "tool": "runtime.run_protacpilot",
+      "args": {
+        "mode": "agentic",
+        "run_id": "container_boot_2"
+      },
+      "result_summary": {
+        "status": "ok",
+        "n_decisions": "18"
+      },
+      "elapsed_s": 0.67
+    }
+  ],
+  "human_gate_events": [],
+  "uncertainty_notes": [],
+  "evidence_refs": []
+}

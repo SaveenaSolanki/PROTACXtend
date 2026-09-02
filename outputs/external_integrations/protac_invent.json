@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "reproduce examples and compare validity/novelty/runtime",
+  "integration_wave": 3,
+  "method_id": "protac_invent",
+  "name": "PROTAC-INVENT",
+  "repo_available": true,
+  "repo_name": "Protac-invent",
+  "repo_registered": true,
+  "role": "3D linker generation baseline",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.595559+00:00"
+}

@@ -1,0 +1,47 @@
+name: github-pages
+
+# Deploy the pure-static PROTACXtend site (website/) to GitHub Pages.
+# Live URL follows the repository owner:
+#   SaveenaSolanki/PROTACXtend  -> https://saveenasolanki.github.io/PROTACXtend/
+#   the-ahuja-lab/PROTACXtend   -> https://the-ahuja-lab.github.io/PROTACXtend/
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify static bundle
+        run: |
+          test -f website/index.html
+          test -f website/styles.css
+          test -f website/app.js
+          test -f website/assets/00_PROTACXtend_hero_visual.png
+          echo "static bundle OK"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

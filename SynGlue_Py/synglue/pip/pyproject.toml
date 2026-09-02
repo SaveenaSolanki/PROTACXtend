@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synglue"
+version = "0.1.3"
+description = "Generative AI toolkit for PROTAC design"
+readme = "README.md"
+authors = [
+    {name = "Saveena Solanki", email = "saveenas@iiitd.ac.in"}
+]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "requests",
+    "pandas",
+    "rdkit",
+    "biopython",
+    "matplotlib",
+    "scikit-learn",
+    "seaborn",
+    "scipy",
+    "tqdm"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

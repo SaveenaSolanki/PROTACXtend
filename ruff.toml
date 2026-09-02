@@ -1,0 +1,22 @@
+# Ruff policy for ProtacPilot.
+# - BLE001: blind `except Exception` is INTENTIONAL in graceful-degradation
+#   nodes (real_nodes.py, run_admet_ai.py) — the graph must never crash on a
+#   tool failure; errors are recorded and the run degrades.
+# - S110: try/except-pass with logged warnings (same rationale).
+# - SIM401/SIM102/ISC004: readability preferences, not correctness.
+# - E501: long descriptive strings/comments preferred over wrapping.
+select = ["E", "W", "F", "I", "UP", "B"]
+ignore = [
+    "E501",
+    "BLE001",
+    "S110",
+    "SIM401",
+    "SIM102",
+    "ISC004",
+    "EXE001",
+    "RUF100",
+    "E402",
+    "E741",
+    "UP035",  # legacy typing.Dict/List in protac_toolbox kept for compatibility
+    "F401",
+]

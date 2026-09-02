@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1785930329.7225585, "elapsed_s": 0.0, "run_id": "run_b60d8d5e", "meta": {"mode": "agentic", "request": "Design PROTACs for BRD4 with CRBN"}}
+{"event": "tool_call", "ts": 1785930331.5193362, "elapsed_s": 1.81, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "run_b60d8d5e"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1785930331.519391, "elapsed_s": 1.7968, "status": "ok", "summary": {}, "events": 2}

@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_mdm2_probe",
+  "status": "ok",
+  "runtime_s": 5.96,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_mdm2_probe/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design MDM2-recruiting PROTAC candidates against p53 using the MDM2 E3 ligase, prioritizing cellular degradation."
+}

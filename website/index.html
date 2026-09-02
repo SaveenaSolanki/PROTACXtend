@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROTACXtend — AI Agentic Platform for PROTAC Discovery &amp; Design | Ahuja Lab · IIIT Delhi</title>
+  <meta name="description" content="PROTACXtend is an open-source, agentic AI platform for target-to-lead PROTAC discovery: generative linker assembly, ternary-complex modeling, DC50/Dmax degradation prediction, and auditable ADMET safety. By Saveena Solanki & the Ahuja Lab, IIIT Delhi.">
+  <meta name="author" content="Saveena Solanki & Ahuja Lab (IIIT Delhi)">
+  <meta property="og:title" content="PROTACXtend — AI Agents for PROTAC Discovery & Design">
+  <meta property="og:description" content="31-node agentic orchestration · generative linker design · ternary complex simulation · degradation & ADMET ML. Open source, auditable, reproducible.">
+  <meta property="og:image" content="assets/og-cover.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238683DD'/%3E%3Cstop offset='1' stop-color='%23706BD6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230B1338'/%3E%3Cpath d='M18 46V18h8l12 16V18h8v28h-8L26 30v16z' fill='url(%23g)'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+
+  <!-- ═══════════ NAVBAR ═══════════ -->
+  <div class="scroll-progress" id="scroll-progress"></div>
+  <nav class="navbar" id="top-navbar">
+    <div class="container nav-inner">
+      <a href="#home" class="nav-brand" aria-label="PROTACXtend home">
+        <span class="brand-mark"><span class="brand-mark-x">X</span></span>
+        <span class="brand-word">PROTAC<span class="brand-accent">Xtend</span></span>
+        <span class="brand-chip">v0.3 · final</span>
+      </a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#capabilities" class="nav-link">Capabilities</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+        <a href="#workflows" class="nav-link">Workflows</a>
+        <a href="#playground" class="nav-link">Simulator</a>
+        <a href="#docs" class="nav-link">Docs</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="btn-github-nav" href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+          GitHub
+        </a>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="hero" id="home">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="orb orb-a"></span>
+        <span class="orb orb-b"></span>
+        <span class="orb orb-c"></span>
+        <span class="grid-fade"></span>
+      </div>
+
+      <div class="container hero-inner">
+        <div class="hero-copy reveal">
+          <div class="kicker">
+            <span class="kicker-dot"></span>
+            AHUJA LAB · IIIT DELHI — AGENTIC COMPUTATIONAL BIOLOGY
+          </div>
+
+          <h1 class="hero-title">
+            Every invisible interaction,
+            <em>made visible by agents.</em>
+          </h1>
+
+          <p class="hero-lede">
+            PROTACXtend is an open-source AI platform in which <strong>23 specialist agents orchestrate a
+            31-node pipeline</strong> for target-to-lead PROTAC discovery — generative linker assembly,
+            ternary-complex simulation, degradation &amp; ADMET prediction — with a Feynman-grade
+            decision trace behind every molecule.
+          </p>
+
+          <div class="hero-ctas">
+            <a href="#playground" class="btn btn-primary">Run the Simulator
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="#docs" class="btn btn-ghost">Read the Docs</a>
+            <a href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+              Star on GitHub
+            </a>
+          </div>
+
+          <div class="install-strip reveal">
+            <span class="install-label">Install</span>
+            <div class="install-tabs" role="tablist">
+              <button class="tab-pill active" data-tool="pip">pip</button>
+              <button class="tab-pill" data-tool="git">git clone</button>
+              <button class="tab-pill" data-tool="curl">curl</button>
+            </div>
+            <code class="install-cmd" id="install-command">pip install protacxtend</code>
+            <button class="copy-btn" id="install-copy-btn" title="Copy command" aria-label="Copy command">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal">
+          <figure class="hero-figure">
+            <div class="fig-topbar">
+              <span class="fig-dot"></span><span class="fig-dot"></span><span class="fig-dot"></span>
+              <span class="fig-title">protacxtend — agentic_pipeline_overview.png</span>
+            </div>
+            <img src="assets/00_PROTACXtend_hero_visual.png"
+                 alt="PROTACXtend agentic pipeline overview — from target & E3 selection through generative linker assembly, ternary complex simulation and Pareto-ranked candidate output."
+                 width="1672" height="941" loading="eager">
+            <div class="fig-caption">
+              <span class="fig-caption-tag">Figure 1</span>
+              <span>PROTACXtend agentic orchestration — target resolution → generative assembly → physics + ML evaluation → audited Pareto frontier.</span>
+            </div>
+          </figure>
+        </div>
+      </div>
+
+      <div class="hero-stats container reveal">
+        <div class="stat"><span class="stat-num" data-count="31">0</span><span class="stat-lab">audited agent nodes</span></div>
+        <div class="stat"><span class="stat-num" data-count="23">0</span><span class="stat-lab">core design steps</span></div>
+        <div class="stat"><span class="stat-num" data-count="73">0</span><span class="stat-lab">chemistry-engine methods</span></div>
+        <div class="stat"><span class="stat-num" data-count="6">0</span><span class="stat-lab">slash workflows</span></div>
+        <div class="stat"><span class="stat-num" data-count="100">0</span><span class="stat-suffix">%</span><span class="stat-lab">trace auditable</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ ABOUT — journal-style platform note ═══════════ -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>PLATFORM NOTE · 01</p>
+          <h2 class="sec-title">About <em>PROTACXtend</em></h2>
+          <p class="sec-desc">A transparent, agentic take on the hardest problem in targeted protein degradation: choosing the <i>right linker, geometry and chemistry</i> — and being able to say why.</p>
+        </div>
+
+        <!-- publication meta bar -->
+        <div class="pub-meta reveal">
+          <div class="pub-meta-item"><span class="pm-label">AUTHORS</span><span class="pm-value">Saveena Solanki <sup>1</sup> · Ahuja Lab <sup>1</sup></span></div>
+          <div class="pub-meta-item"><span class="pm-label">AFFILIATION</span><span class="pm-value">Dept. of Computational Biology, IIIT Delhi</span></div>
+          <div class="pub-meta-item"><span class="pm-label">REPOSITORY</span><span class="pm-value mono">the-ahuja-lab/PROTACXtend</span></div>
+          <div class="pub-meta-item"><span class="pm-label">LICENSE</span><span class="pm-value">MIT — open source</span></div>
+          <div class="pub-meta-item"><span class="pm-label">STATUS</span><span class="pm-value badge-soft">Final build · CI-tested</span></div>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-abstract reveal">
+            <h3>Abstract</h3>
+            <p>
+              PROTACs (proteolysis-targeting chimeras) degrade disease proteins by recruiting an E3 ubiquitin
+              ligase — yet their design space is astronomically large: warhead × linker × E3 recruiter
+              combinatorics, ternary-complex geometry, hook effect, and degradation efficiency are coupled in
+              ways that defeat one-shot heuristics.
+            </p>
+            <p>
+              PROTACXtend frames this as an <strong>agentic search problem</strong>. A supervisor parses a design
+              objective; resolver agents ground it in UniProt / ChEMBL / BindingDB evidence; design agents assemble
+              candidate chimeras across a <strong>73-method chemistry engine</strong>; machine-learning agents score
+              <span class="mono">DC<sub>50</sub></span>, <span class="mono">D<sub>max</sub></span> and ADMET risk;
+              and physics agents simulate ternary complex feasibility. Every step emits an inspectable trace, so the
+              final Pareto-ranked candidates are <em>decisions with provenance — not black-box outputs</em>.
+            </p>
+            <div class="pill-row">
+              <span class="pill">#protac</span><span class="pill">#targeted-protein-degradation</span>
+              <span class="pill">#agentic-science</span><span class="pill">#chemprop</span><span class="pill">#rdkit</span>
+            </div>
+          </div>
+
+          <aside class="about-side reveal">
+            <h3>Why it matters</h3>
+            <ul class="tick-list">
+              <li><strong>Design space:</strong> linker identity and length dominate ternary-complex formation and degradation potency.</li>
+              <li><strong>Failure modes:</strong> hook effect, poor cooperativity (α), metabolic instability and off-target toxicity kill candidates late.</li>
+              <li><strong>Reproducibility:</strong> most published PROTAC pipelines are black boxes; PROTACXtend records a Feynman-style decision chain for every candidate.</li>
+            </ul>
+            <h3 style="margin-top:26px;">Contributors</h3>
+            <div class="author-card">
+              <div class="author-avatar" style="background:linear-gradient(135deg,#8683DD,#1792A2);">SS</div>
+              <div>
+                <div class="author-name">Saveena Solanki</div>
+                <div class="author-role">Lead maintainer · computational biologist</div>
+                <a class="author-link" href="https://github.com/SaveenaSolanki" target="_blank" rel="noopener noreferrer">@SaveenaSolanki</a>
+              </div>
+            </div>
+            <div class="author-card">
+              <div class="author-avatar" style="background:linear-gradient(135deg,#0F2280,#5AB9CD);">AL</div>
+              <div>
+                <div class="author-name">Ahuja Lab</div>
+                <div class="author-role">The Chemosensory Lab — IIIT Delhi</div>
+                <a class="author-link" href="https://github.com/the-ahuja-lab" target="_blank" rel="noopener noreferrer">@the-ahuja-lab</a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CAPABILITIES ═══════════ -->
+    <section class="section section-tint" id="capabilities">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>CAPABILITIES · 02</p>
+          <h2 class="sec-title">One platform, <em>six scientific engines</em></h2>
+          <p class="sec-desc">From a natural-language objective to Pareto-ranked, evidence-tagged PROTAC candidates — every capability is a first-class agent with its own tools, models and audit trail.</p>
+        </div>
+
+        <div class="caps-grid">
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">01</span><span class="cap-ico">⌖</span></div>
+            <h3>Target &amp; context resolution</h3>
+            <p>Resolves the design objective against UniProt, ChEMBL, PubChem and BindingDB; retrieves validated warheads, E3-recruiter chemistry and cell-line degradation context before any molecule is drawn.</p>
+            <div class="tag-row"><span class="tag">UniProt</span><span class="tag">ChEMBL</span><span class="tag">BindingDB</span><span class="tag">cell-context DB</span></div>
+          </article>
+
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">02</span><span class="cap-ico">⛓</span></div>
+            <h3>Generative linker design</h3>
+            <p>A 73-method chemistry engine enumerates rule-based, curated and generative (GRU) linker chemistry with exit-vector awareness; Link-INVENT scoring and optimizer refine length, rigidity and polarity.</p>
+            <div class="tag-row"><span class="tag">GRU generative</span><span class="tag">Link-INVENT</span><span class="tag">exit vectors</span><span class="tag">PEG/alkyl/triazole</span></div>
+          </article>
+
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">03</span><span class="cap-ico">◈</span></div>
+            <h3>Ternary complex simulation</h3>
+            <p>P4ward 3D docking of target·PROTAC·E3 ensembles with SE(3) geometric-feasibility scoring, cooperativity (α) and hook-effect prediction — geometry checked before a single wet-lab dollar is spent.</p>
+            <div class="tag-row"><span class="tag">P4ward</span><span class="tag">SE(3) feasibility</span><span class="tag">cooperativity α</span><span class="tag">hook effect</span></div>
+          </article>
+
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">04</span><span class="cap-ico">▤</span></div>
+            <h3>Degradation deep learning</h3>
+            <p>A Chemprop multitask ensemble trained on curated degradation assays predicts <span class="mono">DC<sub>50</sub></span>, <span class="mono">D<sub>max</sub></span> and degradation class with calibrated confidence intervals — validated against TACK cross-checks.</p>
+            <div class="tag-row"><span class="tag">Chemprop</span><span class="tag">DC50 / Dmax</span><span class="tag">TACK cross-check</span><span class="tag">confidence</span></div>
+          </article>
+
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">05</span><span class="cap-ico">⬡</span></div>
+            <h3>ADMET &amp; drug-likeness</h3>
+            <p>Multi-profile safety screening — hERG, AMES mutagenicity, BBB penetration — plus Lipinski and Veber rule evaluation rendered as an interpretable risk radar before ranking.</p>
+            <div class="tag-row"><span class="tag">hERG</span><span class="tag">AMES</span><span class="tag">BBB</span><span class="tag">Lipinski · Veber</span></div>
+          </article>
+
+          <article class="cap-card reveal">
+            <div class="cap-top"><span class="cap-num">06</span><span class="cap-ico">✓</span></div>
+            <h3>Audit, provenance &amp; learning</h3>
+            <p>Feynman-style step tracing, reflection review, evolution refinement, active-learning memory and session checkpoints — every ranking claim is replayable, reviewable and reproducible.</p>
+            <div class="tag-row"><span class="tag">decision trace</span><span class="tag">reflection agent</span><span class="tag">active learning</span><span class="tag">session memory</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ ARCHITECTURE ═══════════ -->
+    <section class="section" id="architecture">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>ARCHITECTURE · 03</p>
+          <h2 class="sec-title">A 31-node agent graph, <em>governed end-to-end</em></h2>
+          <p class="sec-desc">Five orchestration phases span the 23-node core design pipeline plus closed-loop refinement — each node an auditable agent on the shared workflow state.</p>
+        </div>
+
+        <div class="pipeline reveal" id="pipeline">
+          <div class="phase">
+            <div class="phase-head"><span class="phase-idx">P0</span><div><div class="phase-name">Governance</div><div class="phase-sub">parse → plan → guard</div></div></div>
+            <div class="nodes">
+              <span class="node">parse_user_request</span><span class="node">create_design_plan</span>
+              <span class="node">control_np_hard_search</span><span class="node node-warn">safety_precheck</span>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase-head"><span class="phase-idx">P1</span><div><div class="phase-name">Discovery</div><div class="phase-sub">ground the objective in evidence</div></div></div>
+            <div class="nodes">
+              <span class="node">resolve_target</span><span class="node">retrieve_target_binders</span>
+              <span class="node">select_warheads</span><span class="node">select_e3_ligands</span><span class="node">detect_exit_vectors</span>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase-head"><span class="phase-idx">P2</span><div><div class="phase-name">Generative assembly</div><div class="phase-sub">linkers → chimeras → validation</div></div></div>
+            <div class="nodes">
+              <span class="node">generate_linkers</span><span class="node">construct_protacs</span>
+              <span class="node">expand_stereoisomers</span><span class="node">validate_protacs</span><span class="node">score_cell_context</span>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase-head"><span class="phase-idx">P3</span><div><div class="phase-name">ML + physics evaluation</div><div class="phase-sub">safety, novelty, degradation, ranking</div></div></div>
+            <div class="nodes">
+              <span class="node">predict_admet</span><span class="node">check_novelty</span><span class="node">assess_applicability_domain</span>
+              <span class="node">cheap_filter_candidates</span><span class="node">predict_degradation</span>
+              <span class="node">initial_ranking</span><span class="node">diversity_clustering</span>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase-head"><span class="phase-idx">P4</span><div><div class="phase-name">Closed-loop refinement</div><div class="phase-sub">reflect → refine → final frontier</div></div></div>
+            <div class="nodes">
+              <span class="node">reflection_review</span><span class="node">evolution_refinement</span><span class="node">select_expensive_modeling_finalists</span>
+              <span class="node">optional_ternary_feasibility</span><span class="node">predict_cooperativity</span><span class="node">predict_hook_effect</span>
+              <span class="node">final_ranking</span><span class="node">active_learning_update</span><span class="node">generate_report</span><span class="node">update_memory</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-cols">
+          <div class="arch-text reveal">
+            <h3>The Feynman contract</h3>
+            <p>Each node reads a shared typed workflow state, performs one falsifiable task, and writes its evidence back — <em>no agent may silently mutate another agent's conclusions</em>.</p>
+            <ul class="tick-list">
+              <li>Deterministic state-machine fallback and a compiled <span class="mono">LangGraph</span> path share one node registry.</li>
+              <li>Retry policies and escalation gates pause the run when evidence is missing — never fabricate.</li>
+              <li>Every design, prediction and docking call is checkpointed to session memory for <span class="mono">/audit</span>.</li>
+            </ul>
+          </div>
+
+          <div class="terminal reveal">
+            <div class="terminal-topbar">
+              <span class="fig-dot"></span><span class="fig-dot"></span><span class="fig-dot"></span>
+              <span class="fig-title mono">protacxtend · interactive shell</span>
+            </div>
+            <div class="terminal-body">
+              <p><span class="t-prompt">$</span> <span class="t-cmd">protacxtend design "BRD4 degradation with CRBN E3"</span></p>
+              <p class="t-out">→ Supervisor parsed objective · plan approved · 23-node core started</p>
+              <p><span class="t-prompt">$</span> <span class="t-cmd">protacxtend predict --smiles "O=C1NC(=O)C(N2C..."</span></p>
+              <p class="t-out">→ Chemprop ensemble → DC50 = 12.4 nM · Dmax = 89.2% · ADMET = PASS</p>
+              <p><span class="t-prompt">$</span> <span class="t-cmd">protacxtend dock --smiles "&lt;PROTAC&gt;" --target-pdb 3U5L --e3-pdb 4CIW</span></p>
+              <p class="t-out">→ P4ward ternary ensemble · SE(3) feasibility 0.88</p>
+              <p><span class="t-prompt">$</span> <span class="t-cmd">protacxtend audit --session-id "session_20260731"</span></p>
+              <p class="t-out">→ Provenance chain OK · 31/31 nodes evidenced · report ready</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ WORKFLOWS ═══════════ -->
+    <section class="section section-tint" id="workflows">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>WORKFLOWS · 04</p>
+          <h2 class="sec-title">Six slash commands, <em>zero black boxes</em></h2>
+          <p class="sec-desc">Trigger specialist multi-agent subroutines from the CLI, Python API or REST backend — each returns structured evidence, not just answers.</p>
+        </div>
+
+        <div class="wf-grid">
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/design</code><span class="wf-badge">full pipeline</span></header>
+            <p>Target-to-lead multi-agent assembly, generative linker optimization and Pareto ranking into CSV/JSON + markdown report.</p>
+            <pre class="wf-ex">protacxtend design \
+  --target BRD4 --e3 CRBN \
+  --num-candidates 16</pre>
+          </article>
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/predict</code><span class="wf-badge">ML</span></header>
+            <p>Chemprop ensemble + TACK cross-check predicts DC<sub>50</sub>, D<sub>max</sub> and degradation class with confidence interval.</p>
+            <pre class="wf-ex">protacxtend predict \
+  --smiles "CC1=C(C=C..." \
+  --cell-line HeLa</pre>
+          </article>
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/dock</code><span class="wf-badge">physics</span></header>
+            <p>P4ward 3D ternary-complex simulation, interface contact mapping and SE(3) geometric feasibility scoring.</p>
+            <pre class="wf-ex">protacxtend dock \
+  --target-pdb 3U5L \
+  --e3-pdb 4CIW</pre>
+          </article>
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/admet</code><span class="wf-badge">safety</span></header>
+            <p>hERG, AMES, BBB, TPSA plus Lipinski &amp; Veber drug-likeness profiling with an interpretable risk radar.</p>
+            <pre class="wf-ex">protacxtend admet \
+  --smiles "O=C1NC(=O)..."</pre>
+          </article>
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/audit</code><span class="wf-badge">provenance</span></header>
+            <p>Feynman-style audit verifying every claim in a session against the empirical tool-output evidence matrix.</p>
+            <pre class="wf-ex">protacxtend audit \
+  --session-id session_20260731</pre>
+          </article>
+          <article class="wf-card reveal">
+            <header class="wf-head"><code class="wf-cmd">/replicate</code><span class="wf-badge">reproducibility</span></header>
+            <p>Benchmark dataset replication and model validation with full provenance logs for publication-grade claims.</p>
+            <pre class="wf-ex">protacxtend replicate \
+  --dataset PROTAC-DB \
+  --model multitask</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SIMULATOR ═══════════ -->
+    <section class="section" id="playground">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>INTERACTIVE · 05</p>
+          <h2 class="sec-title">Live <em>agent pipeline simulator</em></h2>
+          <p class="sec-desc">Watch the orchestration run in your browser — representative target/E3 combinations stream node-by-node traces and a Pareto-ranked candidate table, exactly as the CLI would report them.</p>
+        </div>
+
+        <div class="sim-shell reveal">
+          <div class="sim-side">
+            <div class="sim-field">
+              <label class="sim-label" for="target-select">Target protein</label>
+              <select id="target-select">
+                <option value="BRD4">BRD4 — bromodomain 4</option>
+                <option value="HMGB2">HMGB2 — high-mobility group box 2</option>
+                <option value="EGFR">EGFR — epidermal growth factor receptor</option>
+              </select>
+            </div>
+            <div class="sim-field">
+              <label class="sim-label" for="e3-select">E3 ligase recruiter</label>
+              <select id="e3-select">
+                <option value="CRBN">CRBN — cereblon / pomalidomide</option>
+                <option value="VHL">VHL — von Hippel–Lindau</option>
+                <option value="MDM2">MDM2 — RING-finger ligase</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-block" id="run-sim-btn">
+              <span class="btn-glyph">▶</span><span id="run-btn-label">Run 31-node pipeline</span>
+            </button>
+            <p class="sim-note">Interactive front-end demo. Install locally for live Chemprop &amp; P4ward execution.</p>
+          </div>
+
+          <div class="sim-main">
+            <div class="sim-trace-head">
+              <span>Node-by-node decision trace</span><span class="trace-live" id="trace-live">STANDBY</span>
+            </div>
+            <div class="trace-output" id="trace-output" aria-live="polite">
+              <div class="trace-row standby">
+                <span class="trace-node">SystemReady</span>
+                <span class="trace-msg">Select a target and E3 recruiter, then launch the pipeline.</span>
+                <span class="trace-st">STANDBY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="res-shell reveal">
+          <div class="res-head">
+            <h3>Pareto-ranked candidates</h3>
+            <span class="res-meta mono" id="res-meta">awaiting run</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>Rank</th><th>PROTAC candidate</th><th>DC<sub>50</sub></th><th>D<sub>max</sub></th><th>Ternary</th><th>ADMET</th></tr>
+              </thead>
+              <tbody id="results-table-body">
+                <tr><td colspan="6" class="empty-row">No candidates generated yet — launch the pipeline to begin design.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ DOCS ═══════════ -->
+    <section class="section section-tint" id="docs">
+      <div class="container">
+        <div class="sec-head reveal">
+          <p class="kicker"><span class="kicker-dot"></span>DOCUMENTATION · 06</p>
+          <h2 class="sec-title">Documentation <em>hub</em></h2>
+          <p class="sec-desc">Installation, architecture, workflows, API and collaboration guides — mirrored from <span class="mono">documentation/*.md</span> in the repository.</p>
+        </div>
+
+        <div class="docs-shell reveal">
+          <div class="docs-nav" role="tablist">
+            <button class="docs-tab active" data-target="pane-getting-started">Getting started</button>
+            <button class="docs-tab" data-target="pane-architecture">Architecture</button>
+            <button class="docs-tab" data-target="pane-workflows">Workflows</button>
+            <button class="docs-tab" data-target="pane-api">API reference</button>
+            <button class="docs-tab" data-target="pane-github">GitHub &amp; collaborators</button>
+          </div>
+
+          <div class="docs-content">
+
+            <div class="docs-pane active" id="pane-getting-started">
+              <h3>Getting started</h3>
+              <p>PROTACXtend installs from PyPI, from the official GitHub repository, or runs directly from a repository-local checkout. Python 3.10+ with conda is recommended for RDKit and PyTorch isolation.</p>
+              <h4>Option A — clone &amp; install (recommended)</h4>
+              <pre><code>git clone https://github.com/the-ahuja-lab/PROTACXtend.git
+cd PROTACXtend
+conda create -n protacxtend python=3.10 -y
+conda activate protacxtend
+pip install -r requirements.txt
+pip install -e .</code></pre>
+              <h4>Option B — PyPI</h4>
+              <pre><code>pip install protacxtend</code></pre>
+              <h4>Verify the environment</h4>
+              <pre><code>protacxtend status</code></pre>
+              <p>The diagnostic confirms chemistry modules, RDKit sanitization routines, committed ML artifacts (multitask transformer, grover encodings) and agent tool initialization.</p>
+            </div>
+
+            <div class="docs-pane" id="pane-architecture">
+              <h3>Architecture &amp; the Feynman stack</h3>
+              <p>PROTACXtend organizes PROTAC design as an <strong>auditable agent graph</strong> running over a <strong>73-method master chemistry engine</strong> (<span class="mono">protac_toolbox.py</span>). The 23-node core design pipeline plus closed-loop refinement nodes form a 31-node orchestration.</p>
+              <h4>Key system components</h4>
+              <ol>
+                <li><strong>Supervisor &amp; planning node</strong> — natural-language objective parsing and multi-turn policy execution with retry and escalation gates.</li>
+                <li><strong>Target &amp; warhead resolution</strong> — automated UniProt, ChEMBL, PubChem and BindingDB retrieval with pChembl ranking.</li>
+                <li><strong>Generative linker assembly</strong> — rule-based, curated and GRU generative linker attachment scanning across a 73-method engine.</li>
+                <li><strong>Physics + ML scoring</strong> — Chemprop deep-learning ensemble for DC<sub>50</sub>/D<sub>max</sub> and P4ward SE(3) ternary-complex feasibility.</li>
+                <li><strong>Reflection &amp; memory</strong> — Feynman-style review, active-learning update, session checkpoints and persistent memory stores.</li>
+              </ol>
+              <h4>Design philosophy</h4>
+              <p>Inspired by Feynman — <em>make the invisible visible</em>: invisible molecular interactions become composable, inspectable reasoning steps; black-box predictions become step-by-step decision chains; opaque outputs become auditable evidence trails with human escalation gates.</p>
+            </div>
+
+            <div class="docs-pane" id="pane-workflows">
+              <h3>Workflows &amp; slash commands</h3>
+              <p>Design, prediction, docking and audit workflows execute from the CLI, the Python API or the REST backend.</p>
+              <h4>End-to-end design run</h4>
+              <pre><code>protacxtend design --target "BRD4" --e3 "CRBN" --warhead "pomalidomide" \
+  --num-candidates 16 --output ./results/brd4_run.json</code></pre>
+              <p class="doc-inline">Inside: UniProt/ChEMBL lookup → binder retrieval → exit-vector detection → linker generation → construction → stereoisomer enumeration → validation → ADMET + novelty + applicability domain → degradation ML → initial ranking → diversity clustering → reflection → final Pareto frontier.</p>
+              <h4>Prediction for an existing molecule</h4>
+              <pre><code>protacxtend predict --smiles "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)C4=NC=CN4" \
+  --target "BRD4" --cell-line "HeLa"</code></pre>
+              <pre class="json-pre"><code>{
+  "smiles": "CC1=C(C=C(C=C1)...",
+  "dc50_nm": 14.2, "dmax_percent": 88.5,
+  "degradation_class": "High Degrader",
+  "confidence": 0.91, "herg_risk": "Low"
+}</code></pre>
+              <h4>Launch the local workbench</h4>
+              <pre><code>protacxtend serve   # → http://localhost:8501</code></pre>
+            </div>
+
+            <div class="docs-pane" id="pane-api">
+              <h3>API reference</h3>
+              <p>PROTACXtend exposes the <span class="mono">synglue_agent</span> Python package, a FastAPI REST backend and a CLI.</p>
+              <h4>Python — workflow entrypoint</h4>
+              <pre><code>from synglue_agent.agents.graph import run_syn_glue_workflow
+
+state = run_syn_glue_workflow(
+    request="Design 10 CRBN PROTAC candidates for HMGB2 with low hERG risk",
+    config={"persistent": True, "max_iterations": 3})
+
+candidates = state["final_candidates"]
+report     = state["report_markdown"]</code></pre>
+              <h4>Python — chemistry engine</h4>
+              <pre><code>from synglue_agent.tools.protac_toolbox import PROTACMasterToolbox
+
+tb = PROTACMasterToolbox()
+vectors   = tb.detect_exit_vectors(warhead_smiles="...")
+protac_sm = tb.assemble_protac(warhead_smiles="...",
+                               linker_smiles="...",
+                               e3_smiles="...")</code></pre>
+              <h4>REST endpoints (FastAPI)</h4>
+              <div class="ep-row"><code class="ep">POST /design</code><span>structured end-to-end design run</span></div>
+              <div class="ep-row"><code class="ep">POST /mode</code><span>agentic mode routing</span></div>
+              <div class="ep-row"><code class="ep">GET /health</code><span>backend liveness</span></div>
+              <pre class="json-pre"><code>curl -X POST http://localhost:8001/design \
+  -H "Content-Type: application/json" \
+  -d '{"request":"Design 20 CRBN PROTAC candidates for BRD4",
+       "num_candidates": 20}'</code></pre>
+            </div>
+
+            <div class="docs-pane" id="pane-github">
+              <h3>GitHub &amp; collaborators</h3>
+              <p><strong>Repository:</strong> <a href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">https://github.com/the-ahuja-lab/PROTACXtend</a><br>
+              <strong>Lab account:</strong> <span class="mono">@the-ahuja-lab</span> (Ahuja Lab, IIIT Delhi)<br>
+              <strong>Lead maintainer:</strong> <span class="mono">@SaveenaSolanki</span></p>
+              <h4>Continuous testing on GitHub</h4>
+              <p>Every push runs the CI suite: compile check, asset-free smoke, fast offline unit tests, full offline suite (including the agentic end-to-end benchmark) and a gitleaks full-history secret scan.</p>
+              <h4>Granting collaborator access</h4>
+              <pre><code># GitHub CLI
+gh api -X PUT /repos/the-ahuja-lab/PROTACXtend/collaborators/SaveenaSolanki \
+  -f permission=admin
+
+# or: repository Settings → Collaborators → add SaveenaSolanki</code></pre>
+              <h4>Contributing</h4>
+              <p>Open an issue for design-node ideas, linker chemistry expansions or dataset additions; PRs run the full CI matrix before merge. All scientific claims in the documentation are linked to committed evidence assets and reproducible benchmark scripts.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CTA ═══════════ -->
+    <section class="cta-band">
+      <div class="container cta-inner reveal">
+        <div>
+          <p class="kicker kicker-light"><span class="kicker-dot"></span>OPEN SOURCE · MIT LICENSE</p>
+          <h2>Build degraders with <em>visible reasoning</em>.</h2>
+          <p>Clone the repository, run the design pipeline, and audit every decision trace — on your own hardware, with your own targets.</p>
+        </div>
+        <div class="cta-btns">
+          <a class="btn btn-light" href="https://github.com/the-ahuja-lab/PROTACXtend" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 2.87-.39c.97 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.05.78 2.13v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+            GitHub repository
+          </a>
+          <a class="btn btn-outline-light" href="https://github.com/the-ahuja-lab/PROTACXtend/issues" target="_blank" rel="noopener noreferrer">Open an issue</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="nav-brand" href="#home">
+          <span class="brand-mark"><span class="brand-mark-x">X</span></span>
+          <span class="brand-word">PROTAC<span class="brand-accent">Xtend</span></span>
+        </a>
+        <p>Agentic PROTAC discovery &amp; design platform. Every molecule, every reason, every trace.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <a href="#about">About</a><a href="#capabilities">Capabilities</a>
+        <a href="#architecture">Architecture</a><a href="#playground">Simulator</a>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <a href="#docs">Documentation</a><a href="#workflows">Workflows</a>
+        <a href="https://github.com/the-ahuja-lab/PROTACXtend/blob/main/documentation/API_REFERENCE.md" target="_blank" rel="noopener noreferrer">API reference</a>
+        <a href="https://github.com/the-ahuja-lab/PROTACXtend/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a>
+      </div>
+      <div class="footer-col">
+        <h5>People</h5>
+        <a href="https://github.com/SaveenaSolanki" target="_blank" rel="noopener noreferrer">Saveena Solanki</a>
+        <a href="https://github.com/the-ahuja-lab" target="_blank" rel="noopener noreferrer">Ahuja Lab</a>
+        <a href="https://ahuja-lab.in/" target="_blank" rel="noopener noreferrer">ahuja-lab.in</a>
+      </div>
+    </div>
+    <div class="container footer-base">
+      <span>© <span id="year">2026</span> Saveena Solanki &amp; Ahuja Lab, IIIT Delhi · MIT License</span>
+      <span class="mono">the-ahuja-lab/PROTACXtend · build: final</span>
+    </div>
+  </footer>
+
+</body>
+</html>

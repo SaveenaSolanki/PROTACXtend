@@ -1,0 +1,67 @@
+======================================================================
+KEY LOG EVIDENCE FROM P4WARD RUN
+======================================================================
+Run: HMGB2 (receptor) + CRBN (ligase) + ICM PROTAC (CCCOCCC linker)
+File: p4ward_run.log
+
+== CONFIGURATION ==
+ligand_distances = True
+filter_dist_cutoff = auto       # → 0.7443 Å
+accessable_lysines = True
+crbn_ubq_dist_cutoff = 16.0
+e3 = CRBN
+
+== TIMELINE ==
+19:07:02  Run started
+19:07:39  Proteins fixed
+20:54:37  MegaDock started (3600 orientations)
+20:57:32  MegaDock complete
+20:57:32  DISTANCE CUTOFF SET TO 0.7443 Å (auto-calculated from linker)
+20:57:32  Filtering 3600 poses with cutoff 0.7443 Å
+20:57:32    Pose 46:    14.99 Å → FILTERED (linker can only span 0.74 Å)
+20:57:32    Pose 2615:  10.83 Å → FILTERED (CLOSEST — still 14.6× too large)
+20:57:32    Pose 3600:  88.06 Å → FILTERED
+20:57:32  >>> INFO: There are no poses which satisfy the ligand 
+           distance filtering criteria. Exiting now. <<<
+
+== ALL 3600 POSES: DISTANCE DISTRIBUTION ==
+Range (Å)     Count    % of total    Outcome
+─────────────────────────────────────────────
+10–20          36       1.0%         ALL FAILED (exit vectors too far apart)
+20–30          67       1.9%         ALL FAILED
+30–50         315       8.8%         ALL FAILED
+50–100       1542      42.8%         ALL FAILED
+100–176      1640      45.6%         ALL FAILED
+─────────────────────────────────────────────
+TOTAL        3600     100%          0 PASSED
+
+== CLOSEST 10 POSES ==
+Rank  Pose #  Exit-vector gap (Å)
+─────────────────────────────────
+ 1    2615    10.83    (best attempt — still 14.6× linker's max)
+ 2    2258    12.60
+ 3    2638    12.66
+ 4    1524    13.01
+ 5    3481    13.03
+ 6    1892    13.44
+ 7     982    13.81
+ 8    1986    13.96
+ 9    1533    14.27
+10     446    14.56
+
+== INTERPRETATION ==
+The shortest distance between the ICM exit vector and the thalidomide 
+exit vector across ALL 3600 orientations is 10.83 Å. The C4-equivalent 
+linker (CCCOCCC) can span at most 0.74 Å in its accessible conformations.
+
+→ The linker is 14.6× too short. Even the closest pose fails by a wide margin.
+→ No ternary complex is geometrically possible with this PROTAC design.
+
+== AUTHORITATIVE REFERENCE ==
+For the complete dataset, see the following files in this directory:
+
+Raw log:        p4ward_run.log  (search for "There are no poses")
+Config:         p4ward_config.ini
+Input PDBs:     hmgb2_fixed_minim.pdb, crbn_fixed_minim.pdb
+Ligand MOL2s:   inflachromene_derivative.mol2, thalidomide_analog.mol2
+MegaDock scores: megadock_scores.out  (3600 rotation parameters)

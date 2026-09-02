@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Data (large, cloned repos, models — never commit)
+data/protac_repos/repos/
+SynGlue_Py/data/*
+!SynGlue_Py/data/grover_e3.csv
+!SynGlue_Py/data/grover_warhead.csv
+!SynGlue_Py/data/e3_ligand.csv
+SynGlue_Py/models/*
+!SynGlue_Py/models/multitask_transformer.pt
+data/benchmark/_ad_cache/
+outputs/benchmark/chemprop_*/
+outputs/benchmark/*.log
+outputs/p4ward_evidence/*.pse
+outputs/p4ward_evidence/*.tar.gz
+outputs/runs/
+outputs/coverage/
+synglue_agent/outputs/candidates/*.csv
+synglue_agent/outputs/candidates/*.json
+synglue_agent/outputs/reports/*.md
+synglue_agent/memory/workflow_logs/*.json
+synglue_agent/memory/learnings/runs/
+
+# Notebooks / checkpoints
+.ipynb_checkpoints/
+*.checkpoint
+
+# Env / secrets
+.env
+*.key
+nohup.out
+
+# OS
+.DS_Store
+
+# --- v0.3 controlled GitHub hygiene (added 2026-08-07) ---
+# Virtualenvs / runtime dirs (never commit)
+.venvs/
+data/synthesis_prediction/envs/
+data/synthesis_prediction/install_logs/
+
+# Cloned upstream dependency repos + generated outputs
+SynGlue_Py/repos/
+SynGlue_Py/reinvent/
+SynGlue_Py/outputs/
+SynGlue_Py/data_copy/
+
+# Large data/model binaries (re-downloadable; see README/DOCS)
+data/retrosynthesis/models/
+*.hdf5
+*.pkl
+*.pt
+*.onnx
+*.sdf
+*.pptx
+*.zip
+# Runtime state DBs + cloned synthesis repos
+*.sqlite3
+*.sqlite
+data/synthesis_prediction/repos/
+
+# Logs (secrets can hide here)
+*.log
+
+# Machine-local paths (absolute) — never commit
+env/protacpilot_config.json
+
+# deep-research framework caches / traces (runtime, regenerable)
+data/research/cache/
+outputs/research_traces/
+outputs/omics_cache/

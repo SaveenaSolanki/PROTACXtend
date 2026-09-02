@@ -1,0 +1,48 @@
+{
+  "mode": "structure",
+  "input": {
+    "candidate_id": "structure_input",
+    "pose": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/synthetic_ternary_pose.pdb",
+    "target_chain": "A",
+    "e3_chain": "B"
+  },
+  "ubiquitination_geometry": {
+    "candidate_id": "structure_input",
+    "status": "REVISE",
+    "score": 1.0,
+    "confidence": 0.8,
+    "features": {
+      "nearest_lysine": "LYS2:A",
+      "nearest_lysine_distance_A": 18.0,
+      "accessible_lysine_count": 1,
+      "productive_lysine_count": 1,
+      "lysine_geometry_score": 1.0,
+      "interface_quality_score": 0.0,
+      "real_structural_score": 0.546
+    },
+    "warnings": [],
+    "next_actions": [
+      "Improve pose support, lysine accessibility, or interface quality before finalist promotion."
+    ],
+    "backend": "protacxtend_ubiquitination_geometry_v0.1"
+  },
+  "cooperativity_potential": {
+    "candidate_id": "structure_input",
+    "status": "REVISE",
+    "predicted_alpha": 0.341,
+    "log_alpha": -0.467,
+    "cooperativity_score": 0.167,
+    "confidence": 0.78,
+    "features": {
+      "interface_quality_score": 0.0,
+      "interface_contact_count": 0,
+      "polar_contact_count": 0,
+      "clash_count": 0,
+      "frustration_proxy": 0.175,
+      "linker_strain_score": 0.994,
+      "lysine_geometry_score": 1.0
+    },
+    "warnings": [],
+    "backend": "protacxtend_cooperativity_potential_v0.1"
+  }
+}

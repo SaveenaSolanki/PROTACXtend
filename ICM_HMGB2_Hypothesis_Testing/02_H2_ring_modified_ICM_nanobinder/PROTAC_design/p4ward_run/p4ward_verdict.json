@@ -1,0 +1,15 @@
+{
+  "verdict": "COMPUTATIONALLY SUPPORTED",
+  "aicm_min_distance_to_crbn": 8.3,
+  "oh27_min_distance_to_crbn": 9.7,
+  "improvement_vs_oh27": "1.4 A closer (modest geometry improvement; key benefits are synthetic handle + salt bridge)",
+  "best_linker": "C8-PEG4",
+  "best_linker_pass_rate": 0.22,
+  "c8_peg4_passing_poses": 8,
+  "c14_peg5_passing_poses": 16,
+  "exit_vector_correction": "OH groups (H1) \u2192 N-phenyl COOH (H2)",
+  "key_insight": "Lee et al. 2014 ICM-BP probe proves N-phenyl is solvent-exposed",
+  "salt_bridge": "A1_4COOH COO\u207b \u22ef HMGB2 LYS8 NH\u2083\u207a at 3.8 \u00c5",
+  "predicted_kd": "~2 nM (from salt bridge energetics, vs 5 \u00b5M parent)",
+  "corrected_finding": "A1_4COOH COOH and OH27 show similar pass rates at moderate/long linkers. The primary advantage of A1_4COOH is the synthetically accessible COOH handle for linker attachment and the predicted nM affinity via salt bridge."
+}

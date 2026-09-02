@@ -1,0 +1,10 @@
+1. Prerequisites
+==========
+In order to run this program user should have Python 3.7+, requests (for API calls).
+
+To install the required package:
+
+	pip install requests
+
+No other dependencies are required for the SynGlue.
+

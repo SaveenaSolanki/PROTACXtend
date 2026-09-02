@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1785817623.0282245, "elapsed_s": 0.0, "run_id": "run_848a58ac", "meta": {"mode": "deterministic", "request": "Design CRBN-based PROTACs for BRD4 with PEG linkers."}}
+{"event": "tool_call", "ts": 1785817686.5406933, "elapsed_s": 63.77, "tool": "runtime.run_protacpilot", "args": {"mode": "deterministic", "run_id": "run_848a58ac"}, "result_summary": {"status": "ok", "n_decisions": "None"}}
+{"event": "run_end", "ts": 1785817686.5407815, "elapsed_s": 63.5126, "status": "ok", "summary": {}, "events": 2}

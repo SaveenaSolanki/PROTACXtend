@@ -1,0 +1,31 @@
+{
+  "PROTAC_SMILES": "CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=C(C=C5)C(=O)NCCCCCCCCOCCOCCOCCOCC(=O)NC1=CC=CC2=C1C(=O)N(C1CCC(=O)NC1=O)C2=O",
+  "warhead": "A1_4COOH",
+  "warhead_SMILES": "CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=C(C=C5)C(=O)O)",
+  "warhead_MW": 421,
+  "linker": "C8-PEG4",
+  "linker_SMILES": "NH-CCCCCCCCOCCOCCOCCOCC-CO",
+  "linker_MW": 280,
+  "e3_ligand": "Pomalidomide",
+  "e3_SMILES": "NC1=CC=CC2=C1C(=O)N(C1CCC(=O)NC1=O)C2=O",
+  "e3_MW": 273,
+  "total_MW": 974,
+  "exit_vector": "COOH at N-phenyl para position",
+  "salt_bridge": {
+    "partner": "HMGB2 LYS8 NZ",
+    "distance_A": 3.77
+  },
+  "screen_results": {
+    "OH27_C4_linker_passes": 0,
+    "A1_4COOH_C8PEG4_passes": 8,
+    "A1_4COOH_PEG8_passes": 12,
+    "A1_4COOH_C14PEG5_passes": 16,
+    "best_gap_A": 8.27
+  },
+  "plots_generated": [
+    "comparison_OH27_vs_A1_4COOH.png",
+    "comparison_passing_poses.png",
+    "exit_vector_direction.png",
+    "protac_assembly.png"
+  ]
+}

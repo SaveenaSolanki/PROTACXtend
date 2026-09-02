@@ -1,0 +1,6 @@
+{"event": "run_start", "run_id": "heruka_test_run", "meta": {"mode": "agentic"}}
+{"event": "node_start", "node": "ternary", "elapsed_s": 0.0}
+{"event": "decision", "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation", "evidence_refs": ["ev_1"], "elapsed_s": 0.1}
+{"event": "tool_call", "tool": "degradation_endpoint", "args": {"smiles": "C"}, "result_summary": {"dc50_nM": 33.9}, "elapsed_s": 1.2}
+{"event": "node_end", "node": "human_gate", "status": "needs_human", "elapsed_s": 0.5}
+{"event": "run_end", "status": "ok", "events": 6}

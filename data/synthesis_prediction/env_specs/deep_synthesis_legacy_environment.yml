@@ -1,0 +1,27 @@
+name: deep_synthesis_legacy
+channels:
+  - rdkit
+  - defaults
+dependencies:
+  - python=3.6
+  - rdkit
+  - pip
+  - pip:
+      - six
+      - tqdm==4.30.*
+      - future
+      - configargparse
+      - boto3
+      - pathlib
+      - streamlit==0.50.2
+      - pandas
+      - numpy
+      - seaborn
+      - matplotlib==3.0.0
+      - aiohttp
+      # The upstream requirements also specify torch>=1.2 and
+      # git+https://github.com/pytorch/text.git@master#wheel=torchtext.
+      # Those are intentionally not pinned here because modern torch wheels no
+      # longer support Python 3.6 from current indexes. Use the upstream Docker
+      # recipe or a dated package mirror to recreate the original stack.
+

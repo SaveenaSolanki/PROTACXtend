@@ -1,0 +1,16 @@
+rank,name,class,affinity_kcal_mol,composite_score,num_poses,exit_vector_element,exit_vector_atom,solvent_accessibility,distance_to_surface,status
+1,Folic acid,HMGB1-TLR4 inhibitor,-4.62,0.524,5,O,20,0.203,5.54,completed
+2,DAPI,DNA minor groove binder,-4.43,0.515,5,N,16,0.153,4.79,completed
+3,Netropsin,DNA minor groove binder,-4.76,0.508,5,O,29,0.184,5.26,completed
+4,Distamycin A,DNA minor groove binder,-5.08,0.504,5,N,22,0.221,5.81,completed
+5,Sofalcone,Covalent HMGB1 binder,-4.69,0.469,5,O,2,0.076,3.64,completed
+6,3-Deoxysappanchalcone,HMGB1 inhibitor,-5.33,0.464,5,O,11,0.160,4.90,completed
+7,Inflachromene,HMGB1/2 binder,-5.79,0.450,5,N,10,0.194,5.41,completed
+8,Berenil,DNA minor groove binder,-5.87,0.447,5,N,10,0.198,5.47,completed
+9,PDS (Pyridostatin),G-quadruplex ligand,-5.87,0.431,5,N,21,0.157,4.85,completed
+10,Hoechst 33258,DNA minor groove binder,-6.49,0.425,5,N,21,0.236,6.04,completed
+11,Phen-DC3,G-quadruplex ligand,-5.75,0.415,5,N,20,0.099,3.99,completed
+12,BRACO-19,G-quadruplex ligand,-6.44,0.377,5,O,15,0.108,4.11,completed
+13,Glycyrrhizin,HMGB1 Box B binder,,,0,,,,,failed_warhead_prep
+14,TMPyP4,G-quadruplex ligand,,,0,,,,,failed_warhead_prep
+15,5,O=C1C2=CC(=C(C(=C2)C3=CC(=C(C(=C3)C(=O)O1)O)C)O)C,,,0,,,,,failed_warhead_prep

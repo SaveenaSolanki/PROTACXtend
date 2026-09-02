@@ -1,0 +1,15 @@
+receptor = hmgb2.pdbqt
+ligand = a1_4COOH.pdbqt
+
+center_x = -0.348
+center_y = 14.080
+center_z = 2.453
+
+size_x = 22
+size_y = 22
+size_z = 22
+
+num_modes = 20
+energy_range = 5.0
+exhaustiveness = 32
+seed = 42

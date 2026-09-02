@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260812_MDM2_nonclassical_e3",
+  "status": "ok",
+  "runtime_s": 83.87,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260812_MDM2_nonclassical_e3/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design MDM2-recruiting PROTAC candidates against BRD4 using the MDM2 E3 ligase (not CRBN/VHL), prioritizing cellular deg"
+}

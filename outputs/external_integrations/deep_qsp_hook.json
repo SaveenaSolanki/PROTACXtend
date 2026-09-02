@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "reproduce dose-response and hook-effect outputs with sensitivity analysis",
+  "integration_wave": 1,
+  "method_id": "deep_qsp_hook",
+  "name": "Deep-QSP Hook model",
+  "repo_available": true,
+  "repo_name": "protac_deep_qsp",
+  "repo_registered": true,
+  "role": "mechanistic ternary dose-response and hook-effect simulator",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.592827+00:00"
+}

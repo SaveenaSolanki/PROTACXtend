@@ -1,0 +1,4 @@
+name,target,e3_ligase,smiles,source
+demo_known_brd4_crbn,BRD4,CRBN,COc1ccccc1CCOCCO=C1NC(=O)c2ccccc21,local_demo_known_set
+demo_known_brd4_vhl,BRD4,VHL,COc1ccccc1CCCCCC(C)CNC(=O)c1ccccc1,local_demo_known_set
+demo_known_gspt1_crbn,GSPT1,CRBN,NCC(=O)N1CCN(CC1)c1ccccc1CCN1C(=O)c2ccccc2C1=O,local_demo_known_set

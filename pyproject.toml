@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protacxtend"
+version = "0.1.0"
+description = "PROTACXtend command-line, API, and UI workspace for agentic PROTAC design."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas>=2.0",
+  "pydantic>=2.6",
+  "requests>=2.31",
+]
+
+[project.optional-dependencies]
+tui = ["textual>=0.40", "rich>=13.0"]
+ui = ["streamlit>=1.35"]
+api = ["fastapi>=0.110", "uvicorn>=0.27"]
+chemistry = ["rdkit"]
+
+[project.scripts]
+PROTACXtend = "synglue_agent.cli:main"
+protacxtend = "synglue_agent.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["synglue_agent*"]
+

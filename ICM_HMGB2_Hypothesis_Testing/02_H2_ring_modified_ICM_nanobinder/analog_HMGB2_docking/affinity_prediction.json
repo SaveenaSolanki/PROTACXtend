@@ -1,0 +1,37 @@
+{
+  "method": "AutoDock Vina v1.2.3",
+  "receptor": "HMGB2 (hmgb2_fixed_minim.pdb)",
+  "ligands": {
+    "A1_4COOH (4-carboxyphenyl-ICM)": {
+      "vina_score_kcal_mol": -11.22,
+      "vina_modes": 19,
+      "vina_score_range": "-11.22 to -10.52",
+      "key_interactions": {
+        "hbonds": [
+          "TYR78 (2.38, 2.73 \u00c5)",
+          "GLY83 (2.14 \u00c5)",
+          "LYS85 N (3.39 \u00c5)"
+        ],
+        "hydrophobic": [
+          "PRO80",
+          "LYS8",
+          "LYS82",
+          "LYS85",
+          "ASP5"
+        ],
+        "salt_bridge_partner": "LYS85 (3.04 \u00c5)",
+        "salt_bridge_distance_A": 3.04
+      },
+      "predicted_kd_nM": "~10-50 (from Vina score calibration)",
+      "pocket_region": "Cleft between Box A and Box B, near residues 78-87"
+    },
+    "Parent ICM": {
+      "vina_score_kcal_mol": -5.75,
+      "vina_modes": 5,
+      "vina_score_range": "-5.75 to -5.34"
+    }
+  },
+  "improvement_vina_kcal_mol": -5.47,
+  "improvement_fold_estimated": "~100-1000\u00d7 (from Vina score difference)",
+  "note": "Previously claimed LYS8 salt bridge at 3.8 \u00c5 was INCORRECT \u2014 actual Vina docking shows COOH 15.4 \u00c5 from LYS8. Real salt bridge partner is LYS85 at 3.04 \u00c5."
+}

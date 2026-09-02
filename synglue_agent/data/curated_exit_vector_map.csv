@@ -1,0 +1,6 @@
+component_type,name,smiles,attachment_smarts,attachment_atom_label,confidence,source,notes
+warhead,BRD4_demo_JQ1_like,COc1cc([*:1])cc(C(=O)N2CCN(CC2)c2ccc(Cl)cc2)c1,[*:1],warhead_exit,0.88,SynGlue curated warhead table,Explicit demo attachment marker from curated warhead seed.
+warhead,EGFR_demo_gefitinib_like,COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1OCC[*:1],[*:1],warhead_exit,0.80,SynGlue curated warhead table,Explicit demo attachment marker from curated warhead seed.
+e3_ligand,CRBN_demo_pomalidomide_like,O=C1NC(=O)c2ccc([*:1])cc21,[*:1],e3_exit,0.88,SynGlue curated E3 ligand table,Explicit CRBN handle marker.
+e3_ligand,VHL_demo_hydroxyproline_like,CC(C)[C@H](NC(=O)c1ccc([*:1])cc1)C(=O)N1CCC[C@H]1O,[*:1],e3_exit,0.86,SynGlue curated E3 ligand table,Explicit VHL handle marker.
+linker,PEG2_two_point,[*:1]CCOCC[*:2],[*:1]|[*:2],two_point_linker,0.72,SynGlue curated linker pattern,Two explicit linker attachment markers.

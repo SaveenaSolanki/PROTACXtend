@@ -1,0 +1,138 @@
+[
+  {
+    "system": "fixed_pipeline",
+    "n": 14,
+    "spearman_rho": 0.4792,
+    "known_degrader_enrichment": 0.75,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 0.4,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "adaptive_deterministic",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 249.4,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "llm_planner_only",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 254.0,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "full_agentic",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 258.1,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "full_minus_memory",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 255.8,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "full_minus_repair",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 247.9,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "full_minus_uncertainty",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 247.6,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "system": "full_minus_context",
+    "n": 14,
+    "spearman_rho": 0.7846,
+    "known_degrader_enrichment": 0.875,
+    "synthesis_feasible_rate": 0.929,
+    "human_gate_count": 0,
+    "repair_count": 0,
+    "hallucination_count": 0,
+    "runtime_s": 248.7,
+    "reproducible": true,
+    "verdict_summary": {
+      "high": 14,
+      "medium": 0,
+      "low": 0
+    }
+  }
+]

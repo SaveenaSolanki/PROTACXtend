@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260811_KRAS_evidence_limited",
+  "status": "ok",
+  "runtime_s": 14.5,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260811_KRAS_evidence_limited/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design a PROTAC against KRAS G12C, an evidence-limited target. Flag low-confidence evidence and do not over-claim."
+}

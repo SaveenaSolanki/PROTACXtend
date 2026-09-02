@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260811_BTK_VHL",
+  "status": "ok",
+  "runtime_s": 13.27,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260811_BTK_VHL/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design VHL-recruiting PROTAC candidates against BTK, prioritizing cellular degradation potency and avoiding known warhea"
+}

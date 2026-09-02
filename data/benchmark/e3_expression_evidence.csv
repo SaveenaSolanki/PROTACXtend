@@ -1,0 +1,25 @@
+cell_line,e3,level,expression_score,source,evidence_type,source_url,confidence
+MM1.S,CRBN,high,0.95,curated multiple-myeloma CRBN-high evidence,curated_expression,,0.82
+MM1.S,VHL,low,0.25,curated multiple-myeloma VHL-low evidence,curated_expression,,0.70
+MM1.S,cIAP1,medium,0.58,curated IAP expression prior,curated_expression,,0.62
+MM1.S,MDM2,medium,0.60,curated MDM2 expression prior,curated_expression,,0.62
+HCT116,CRBN,medium,0.62,curated colorectal cell-line expression prior,curated_expression,,0.70
+HCT116,VHL,medium,0.64,curated colorectal cell-line expression prior,curated_expression,,0.70
+HCT116,cIAP1,high,0.82,curated IAP expression prior,curated_expression,,0.65
+HCT116,MDM2,medium,0.62,curated MDM2 expression prior,curated_expression,,0.65
+HEK293T,CRBN,high,0.88,curated common-cell-line proteomics prior,curated_expression,,0.72
+HEK293T,VHL,medium,0.66,curated common-cell-line proteomics prior,curated_expression,,0.72
+HEK293T,cIAP1,medium,0.60,curated IAP expression prior,curated_expression,,0.62
+HEK293T,MDM2,medium,0.58,curated MDM2 expression prior,curated_expression,,0.62
+MCF7,CRBN,medium,0.60,curated breast-cancer cell-line expression prior,curated_expression,,0.70
+MCF7,VHL,high,0.86,curated breast-cancer cell-line expression prior,curated_expression,,0.70
+MCF7,cIAP1,low,0.25,curated IAP expression prior,curated_expression,,0.58
+MCF7,MDM2,high,0.82,curated p53-pathway expression prior,curated_expression,,0.62
+Jurkat,CRBN,medium,0.62,curated hematologic cell-line expression prior,curated_expression,,0.64
+Jurkat,VHL,low,0.28,curated hematologic cell-line expression prior,curated_expression,,0.64
+RPMI8226,CRBN,high,0.94,curated multiple-myeloma CRBN-high evidence,curated_expression,,0.80
+RPMI8226,VHL,low,0.24,curated multiple-myeloma VHL-low evidence,curated_expression,,0.68
+default,CRBN,medium,0.60,default neutral expression prior,fallback_prior,,0.50
+default,VHL,medium,0.60,default neutral expression prior,fallback_prior,,0.50
+default,cIAP1,medium,0.60,default neutral expression prior,fallback_prior,,0.50
+default,MDM2,medium,0.60,default neutral expression prior,fallback_prior,,0.50

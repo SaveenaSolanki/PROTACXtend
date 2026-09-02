@@ -1,0 +1,9 @@
+{
+  "run_id": "container_boot_2",
+  "status": "ok",
+  "runtime_s": 0.67,
+  "events": 3,
+  "trace_file": "/app/outputs/runs/container_boot_2/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design PROTACs for BRD4"
+}

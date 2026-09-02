@@ -1,0 +1,136 @@
+{
+  "case": "C_HMGB2_ICM",
+  "request": "Design/evaluate a PROTAC for HMGB2 using CRBN.",
+  "note": "new design: ICM warhead + pomalidomide (H1/H2 project)",
+  "start_ts": "2026-08-04T00:14:17",
+  "node_path": [
+    "e3_context_engine",
+    "ternary_geometric_proxy",
+    "degradation_endpoint",
+    "retrosynthesis",
+    "pareto_ranking"
+  ],
+  "tool_calls": [
+    {
+      "tool": "e3_context_engine",
+      "input": {
+        "e3s": [
+          "CRBN",
+          "VHL"
+        ]
+      },
+      "output": {
+        "best": "CRBN",
+        "explanation": "CRBN preferred over VHL because CRBN has higher expression (1.00 vs 0.20) and stronger contextual support (0.91 vs 0.57) despite VHL having better structural availability (1.00 vs 0.90)"
+      }
+    },
+    {
+      "tool": "degradation_endpoint",
+      "input": {
+        "smiles": "CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=C(C=C5)",
+        "cell_line": "MM1.S"
+      },
+      "output": {
+        "dc50_nM": 6.1,
+        "dmax": 84.0,
+        "class": "active",
+        "verdict": "low_confidence"
+      }
+    }
+  ],
+  "repair_history": [],
+  "model_outputs": {
+    "ternary_geometric": {
+      "score": 0.453,
+      "ok": true,
+      "tool": "geometric_proxy"
+    },
+    "degradation": {
+      "candidate_id": "C_HMGB2_ICM",
+      "dc50_nM": 6.1,
+      "log_dc50": 0.9525,
+      "dmax_pct": 84.0,
+      "activity_class": "active",
+      "uncertainty_log10": 1.4064,
+      "ad_status": "out_of_domain",
+      "nn_tanimoto": 0.161,
+      "context": {
+        "cell_line": "MM1.S",
+        "target": "HMGB2",
+        "e3_ligase": "CRBN",
+        "target_expression": "high",
+        "e3_expression": "high",
+        "subcellular_match": true,
+        "context_id": "MM1.S|HMGB2|CRBN",
+        "evidence_refs": [
+          "Ito et al. 2010 / Zhu et al. 2019 (curated)"
+        ]
+      },
+      "context_gated": false,
+      "context_note": "",
+      "verdict": "low_confidence",
+      "confidence": 0.25,
+      "model": "chemprop_multitarget",
+      "provenance": {
+        "dc50_dmax": "chemprop_multitarget",
+        "uncertainty": "chemprop_ensemble_conformal",
+        "context": "Ito et al. 2010 / Zhu et al. 2019 (curated)"
+      },
+      "degraded_fallback": false,
+      "note": ""
+    },
+    "retrosynthesis": {
+      "candidate_id": "C_HMGB2_ICM",
+      "route_found": false,
+      "route_count": 0,
+      "shortest_route_steps": null,
+      "rascore": 0.6115,
+      "route_confidence": 0.1835,
+      "purchasable_fraction": 0.0,
+      "unresolved_precursors": [
+        "CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=C(C=C5)C(=O)O)"
+      ],
+      "incompatible_reactions": [],
+      "route_files": [],
+      "status": "tool_failed",
+      "tools_used": [
+        "sascore_proxy",
+        "aizynthfinder:disabled"
+      ],
+      "provenance": {
+        "prescreen": "sascore_proxy",
+        "route_search": "none"
+      },
+      "prescreen_tool": "sascore_proxy",
+      "note": "AiZynthFinder unavailable \u2014 RAscore-only assessment"
+    }
+  },
+  "human_decisions": [],
+  "runtime_s": 18.49,
+  "gpu": {
+    "gpus": [
+      "NVIDIA RTX 5000 Ada Generation, 13040 MiB, 32760 MiB",
+      "NVIDIA GeForce RTX 3090, 372 MiB, 24576 MiB"
+    ]
+  },
+  "api_calls": {
+    "llm": 0,
+    "external_api": 0
+  },
+  "final_ranked_candidates": [
+    {
+      "candidate_id": "C_HMGB2_ICM",
+      "objectives": {
+        "log_dc50": 0.1905,
+        "dmax_inverted": 0.16,
+        "admet_penalty": 0.2,
+        "synthesis_difficulty": 0.3885,
+        "ternary_penalty": 0.547
+      },
+      "pareto_rank": 0,
+      "crowding_distance": Infinity,
+      "on_front": true,
+      "pareto_score": -1.0
+    }
+  ]
+}

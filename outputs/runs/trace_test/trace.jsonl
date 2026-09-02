@@ -1,0 +1,100 @@
+{"event": "run_start", "ts": 1785817505.7151222, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785817505.7152803, "elapsed_s": 0.0002, "node": "ternary"}
+{"event": "node_end", "ts": 1785817505.7153378, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785817505.715381, "elapsed_s": 0.0003, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785817505.7154279, "elapsed_s": 0.0003, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785817530.637423, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785817530.637568, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785817530.6376398, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785817530.6376987, "elapsed_s": 0.0003, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785817530.6377597, "elapsed_s": 0.0003, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785817563.3876843, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785817563.387808, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785817563.3878787, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785817563.3879352, "elapsed_s": 0.0003, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785817563.3879967, "elapsed_s": 0.0003, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785817594.0221589, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785817594.022213, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785817594.0222404, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785817594.0222647, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785817594.0222902, "elapsed_s": 0.0001, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785817890.9458656, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785817890.9459484, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785817890.9459789, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785817890.9460032, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785817890.9460278, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785818243.9804626, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785818243.9805257, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785818243.980556, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785818243.9805791, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785818243.9806037, "elapsed_s": 0.0001, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785818750.2762551, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785818750.2763152, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785818750.2763448, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785818750.2763686, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785818750.2763994, "elapsed_s": 0.0001, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785930674.41662, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785930674.4166977, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785930674.4167316, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785930674.4167588, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785930674.4167852, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1785952260.0995224, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1785952260.099612, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1785952260.0996468, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1785952260.0996757, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1785952260.099704, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786034947.952828, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786034947.9529095, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786034947.9529405, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786034947.9529657, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786034947.9529939, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786162796.5496414, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786162796.5497267, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786162796.5497618, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786162796.549801, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786162796.5498385, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786441560.5458698, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786441560.5645638, "elapsed_s": 0.0187, "node": "ternary"}
+{"event": "node_end", "ts": 1786441560.564656, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786441560.5647144, "elapsed_s": 0.0188, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786441560.5647717, "elapsed_s": 0.0189, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786441958.1420453, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786441958.142118, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786441958.1421494, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786441958.1421814, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786441958.1422126, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786456013.4873219, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786456013.4874022, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786456013.4874356, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786456013.4874597, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786456013.4874864, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1786528902.3783042, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1786528902.37838, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1786528902.3784118, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1786528902.3784413, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1786528902.3784692, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788285895.5299783, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788285895.5300643, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788285895.530098, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788285895.5301244, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788285895.5301566, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788287105.7293692, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788287105.7294528, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788287105.729485, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788287105.7295115, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788287105.7295415, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788288319.133026, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788288319.1331277, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788288319.133162, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788288319.1331892, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788288319.133224, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788289532.9257832, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788289532.925859, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788289532.9258912, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788289532.9259174, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788289532.925943, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788324936.1221116, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788324936.1221795, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788324936.122209, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788324936.1222334, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788324936.1222653, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}

@@ -1,0 +1,35 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxrender1 libxext6 libssl3 libexpat1 && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# libexpat1 (chemprop cuik_molmaker needs it) — separate RUN so the layer
+# always rebuilds (the first apt RUN may be cached)
+RUN apt-get update && apt-get install -y --no-install-recommends libexpat1     && rm -rf /var/lib/apt/lists/*
+
+COPY synglue_agent/ ./synglue_agent/
+COPY scripts/ ./scripts/
+COPY deploy/ ./deploy/
+
+# NOTE: aizynthfinder (retrosynthesis) is NOT in the container image — it
+# hard-requires numpy<2 which conflicts with the validated chemprop stack.
+# The retrosynthesis layer degrades to RAscore/SAScore-proxy mode per spec
+# ('tool unavailable → RAscore only, downgraded confidence'); the full
+# AiZynthFinder stack runs on the host worker.
+
+# ABI fix: chemprop 2.3.0's cuik_molmaker expects rdkit 2023.9.6 hash-named
+# shared libs; relink them to the installed rdkit (verified working locally).
+RUN python /app/deploy/abi_fix.py
+# Trained models + evidence (mounted in production via volume)
+ENV PROTACPILOT_CHECKPOINT_URL=postgresql://postgres:protacpilot@postgres:5432/protacpilot
+ENV PROTACPILOT_REDIS_URL=redis://redis:6379/0
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "synglue_agent.backend.api_routes:get_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

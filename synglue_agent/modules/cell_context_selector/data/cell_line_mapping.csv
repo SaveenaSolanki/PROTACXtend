@@ -1,0 +1,181 @@
+cell_line_raw,cell_line,depmap_id,lineage,primary_disease,subtype,rrid,mapping_status,candidates,descriptive_entry,has_expression
+22RV1,22Rv1,ACH-000956,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_1045,mapped,1,,1
+22Rv1,22Rv1,ACH-000956,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_1045,mapped,1,,1
+231MFP,231MFP,,,,,,unmapped,0,False,0
+293T,293T,,,,,,unmapped,0,False,0
+A-204,A-204,ACH-000201,Kidney,Rhabdoid Cancer,Rhabdoid Cancer,CVCL_1058,mapped,1,,1
+A152T neurons,A152T neurons,,,,,,unmapped,0,True,0
+A375,A-375,ACH-000219,Skin,Melanoma,Melanoma,CVCL_0132,mapped,1,,1
+A431,A-431,ACH-001328,Skin,Cutaneous Squamous Cell Carcinoma,Cutaneous Squamous Cell Carcinoma,CVCL_0037,mapped,1,,1
+A549,A549,ACH-000681,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_0023,mapped,1,,1
+AML cells,AML cells,,,,,,unmapped,0,True,0
+AsPC-1,AsPC-1,ACH-000222,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_0152,mapped,1,,1
+BT474,BT-474,ACH-000927,Breast,Invasive Breast Carcinoma,Breast Invasive Ductal Carcinoma,CVCL_0179,mapped,1,,1
+Ba/F3,Ba/F3,,,,,,unmapped,0,False,0
+BaF3 FLT3-ITD,BaF3 FLT3-ITD,,,,,,unmapped,0,False,0
+Bel-7402,Bel-7402,,,,,,unmapped,0,False,0
+Big sellection of cacer cell lines,Big sellection of cacer cell lines,,,,,,unmapped,0,True,0
+CA-46,CA46,ACH-000440,Lymphoid,Mature B-Cell Neoplasms,Burkitt Lymphoma,CVCL_1101,mapped,1,,1
+CAL-12T,CAL-12T,ACH-000826,Lung,Non-Small Cell Lung Cancer,Non-Small Cell Lung Cancer,CVCL_1105,mapped,1,,1
+CCLP1,CC-LP-1,ACH-001959,Biliary Tract,Intraductal Papillary Neoplasm of the Bile Duct,Intrahepatic Cholangiocarcinoma,CVCL_0205,mapped,1,,1
+COLO 205,COLO 205,ACH-001039,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0218,mapped,1,,0
+COLO-205,COLO 205,ACH-001039,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0218,mapped,1,,0
+Calu-1,Calu-1,ACH-000511,Lung,Non-Small Cell Lung Cancer,Lung Squamous Cell Carcinoma,CVCL_0608,mapped,1,,1
+Capan-1,Capan-1,ACH-000354,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_0237,mapped,1,,1
+DB,DB,ACH-000334,Lymphoid,Mature B-Cell Neoplasms,"Diffuse Large B-Cell Lymphoma, NOS",CVCL_1168,mapped,1,,1
+DOHH2,DOHH-2,ACH-000056,Lymphoid,Mature B-Cell Neoplasms,"Diffuse Large B-Cell Lymphoma, NOS",CVCL_1179,mapped,1,,1
+EOL-1,EOL-1,ACH-000198,Myeloid,Myeloproliferative Neoplasms,"Chronic Eosinophilic Leukemia, NOS",CVCL_0258,mapped,1,,1
+ER-positive breast cancer cell lines,ER-positive breast cancer cell lines,,,,,,unmapped,0,True,0
+GFP-KRASG12C reporter cell line in Flp-In 293,GFP-KRASG12C reporter cell line in Flp-In 293,,,,,,unmapped,0,True,0
+H1666,NCI-H1666,ACH-000448,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1485,mapped,1,,1
+H1975,NCI-H1975,ACH-000587,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1511,mapped,1,,1
+H23,NCI-H23,ACH-000900,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1547,mapped,1,,1
+H3122,NCI-H3122,ACH-000337,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_5160,mapped,1,,1
+H3255,NCI-H3255,ACH-000109,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_6831,mapped,1,,1
+H358,NCI-H358,ACH-000860,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1559,mapped,1,,1
+H661,NCI-H661,ACH-000853,Lung,Non-Small Cell Lung Cancer,Large Cell Lung Carcinoma,CVCL_1577,mapped,1,,1
+HAP1,HAP1,ACH-002475,Myeloid,Myeloproliferative Neoplasms,"Chronic Myeloid Leukemia, BCR-ABL1+",CVCL_Y019,mapped,1,,1
+HBL-1,HBL-1,,,,,,unmapped,0,False,0
+HCC-827,HCC-827,ACH-000012,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_2063,mapped,1,,1
+HCC1937,HCC1937,ACH-000223,Breast,Invasive Breast Carcinoma,Breast Invasive Ductal Carcinoma,CVCL_0290,mapped,1,,1
+HCC827,HCC-827,ACH-000012,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_2063,mapped,1,,1
+HCT-116,HCT 116,ACH-000971,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0291,mapped,1,,1
+HCT116,HCT 116,ACH-000971,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0291,mapped,1,,1
+HD-MB03,HD-MB03,,,,,,unmapped,0,False,0
+HEI-OC1,HEI-OC1,,,,,,unmapped,0,False,0
+HEK293,HEK293,,,,,,unmapped,0,False,0
+HEK293-hTau,HEK293-hTau,,,,,,unmapped,0,False,0
+HEK293A,HEK293A,,,,,,unmapped,0,False,0
+HEK293T,HEK293T,,,,,,unmapped,0,False,0
+HEL,HEL,ACH-000004,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0001,mapped,1,,1
+HLE,HLE,ACH-001089,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_1281,mapped,1,,0
+HLF,HLF,ACH-000393,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_2947,mapped,1,,1
+HT-29,HT-29,ACH-000552,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0320,mapped,1,,1
+HT1080,HT-1080,ACH-000054,Soft Tissue,Fibrosarcoma,Fibrosarcoma,CVCL_0317,mapped,1,,1
+HUCCT1,HuCCT1,ACH-000976,Biliary Tract,Intraductal Papillary Neoplasm of the Bile Duct,Intrahepatic Cholangiocarcinoma,CVCL_0324,mapped,1,,1
+HUH-1,huH-1,ACH-000475,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_2956,mapped,1,,1
+HeLa,HeLa,ACH-001086,Cervix,Cervical Adenocarcinoma,Endocervical Adenocarcinoma,CVCL_0030,mapped,1,,1
+Hela,HeLa,ACH-001086,Cervix,Cervical Adenocarcinoma,Endocervical Adenocarcinoma,CVCL_0030,mapped,1,,1
+Hella,HeLa,ACH-001086,Cervix,Cervical Adenocarcinoma,Endocervical Adenocarcinoma,CVCL_0030,mapped,1,,1
+Hep3B2.1-7,Hep 3B2.1-7,ACH-000625,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0326,mapped,1,,1
+HepG2,Hep G2,ACH-000739,Liver,Hepatoblastoma,Hepatoblastoma,CVCL_0027,mapped,1,,1
+Hs578t,Hs 578T,ACH-000148,Breast,Invasive Breast Carcinoma,"Breast Invasive Carcinoma, NOS",CVCL_0332,mapped,1,,1
+HuH-7,HuH-7,ACH-000480,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0336,mapped,1,,1
+Huh7,HuH-7,ACH-000480,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0336,mapped,1,,1
+Huh7.5,HuH-7,ACH-000480,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0336,mapped,1,,1
+Human THP-1 monocytes,Human THP-1 monocytes,,,,,,unmapped,0,True,0
+IgE MM,IgE MM,,,,,,unmapped,0,False,0
+JeKo-1,JeKo-1,ACH-000357,Lymphoid,Mature B-Cell Neoplasms,Mantle Cell Lymphoma,CVCL_1865,mapped,1,,1
+Jurkat,JURKAT,ACH-000995,Lymphoid,T-Lymphoblastic Leukemia/Lymphoma,T-Lymphoblastic Leukemia/Lymphoma,CVCL_0065,mapped,1,,1
+K562,K-562,ACH-000551,Myeloid,Myeloproliferative Neoplasms,"Chronic Myeloid Leukemia, BCR-ABL1+",CVCL_0004,mapped,1,,1
+K562 CML,K562 CML,,,,,,unmapped,0,False,0
+KATO III,KATO III,ACH-000793,Esophagus/Stomach,Esophagogastric Adenocarcinoma,Signet Ring Cell Carcinoma of the Stomach,CVCL_0371,mapped,1,,1
+KM12,KM12,ACH-000969,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_1331,mapped,1,,1
+KOPN49,KOPN49,,,,,,unmapped,0,False,0
+KU812,KU812,ACH-000074,Myeloid,Myeloproliferative Neoplasms,"Chronic Myeloid Leukemia, BCR-ABL1+",CVCL_0379,mapped,1,,1
+KYSE-270,KYSE-270,ACH-000873,Esophagus/Stomach,Esophageal Squamous Cell Carcinoma,Esophageal Squamous Cell Carcinoma,CVCL_1350,mapped,1,,1
+KYSE520,KYSE-520,ACH-000637,Esophagus/Stomach,Esophageal Squamous Cell Carcinoma,Esophageal Squamous Cell Carcinoma,CVCL_1355,mapped,1,,1
+KYSE520 esophageal cancer cell line,KYSE-520,ACH-000637,Esophagus/Stomach,Esophageal Squamous Cell Carcinoma,Esophageal Squamous Cell Carcinoma,CVCL_1355,mapped,1,,1
+Karpas 299,KARPAS-299,ACH-000053,Lymphoid,Mature T and NK Neoplasms,Anaplastic Large-Cell Lymphoma ALK Positive,CVCL_1324,mapped,1,,1
+Karpas422,KARPAS-422,ACH-000315,Lymphoid,Mature B-Cell Neoplasms,"Diffuse Large B-Cell Lymphoma, NOS",CVCL_1325,mapped,1,,1
+Kasumi-1,KASUMI-1,ACH-000263,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0589,mapped,1,,1
+Kelly,KELLY,ACH-000259,Peripheral Nervous System,Neuroblastoma,Neuroblastoma,CVCL_2092,mapped,1,,1
+LNCaP,LNCaP clone FGC,ACH-000977,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_1379,mapped,1,,1
+LnCaP95,LnCaP95,,,,,,unmapped,0,False,0
+LnCap,LNCaP clone FGC,ACH-000977,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_1379,mapped,1,,1
+MB-MDA-231,MDA-MB-231,ACH-000768,Breast,Invasive Breast Carcinoma,Invasive Breast Carcinoma,CVCL_0062,mapped,1,,1
+MCF-7,MCF7,ACH-000019,Breast,Invasive Breast Carcinoma,Invasive Breast Carcinoma,CVCL_0031,mapped,1,,1
+MCF-7 breast cancer cells,MCF-7 breast cancer cells,,,,,,unmapped,0,True,0
+MCF7,MCF7,ACH-000019,Breast,Invasive Breast Carcinoma,Invasive Breast Carcinoma,CVCL_0031,mapped,1,,1
+MDA-MB-231,MDA-MB-231,ACH-000768,Breast,Invasive Breast Carcinoma,Invasive Breast Carcinoma,CVCL_0062,mapped,1,,1
+MDA-MB-436,MDA-MB-436,ACH-000573,Breast,Invasive Breast Carcinoma,"Breast Invasive Carcinoma, NOS",CVCL_0623,mapped,1,,1
+MDA-MB-468,MDA-MB-468,ACH-000849,Breast,Invasive Breast Carcinoma,Invasive Breast Carcinoma,CVCL_0419,mapped,1,,1
+MHH-CALL-4,MHH-CALL-4,ACH-000156,Lymphoid,B-Lymphoblastic Leukemia/Lymphoma,"B-Lymphoblastic Leukemia/Lymphoma, BCR-ABL1 Like",CVCL_1410,mapped,1,,1
+MIA PaCa-2,MIA PaCa-2,ACH-000601,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_0428,mapped,1,,1
+MIA PaCa2,MIA PaCa-2,ACH-000601,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_0428,mapped,1,,1
+MM.1S,MM1-S,ACH-000763,Lymphoid,Mature B-Cell Neoplasms,Plasma Cell Myeloma,CVCL_8792,mapped,1,,1
+MM1S,MM1-S,ACH-000763,Lymphoid,Mature B-Cell Neoplasms,Plasma Cell Myeloma,CVCL_8792,mapped,1,,1
+MOLM-13,MOLM-13,ACH-000362,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_2119,mapped,1,,1
+MOLM-14,MOLM-14,ACH-001574,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_7916,mapped,1,,1
+MOLM-16,MOLM-16,ACH-000369,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_2120,mapped,1,,1
+MOLM14,MOLM-14,ACH-001574,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_7916,mapped,1,,1
+MOLT-4,MOLT-4,ACH-001127,Lymphoid,T-Lymphoblastic Leukemia/Lymphoma,T-Lymphoblastic Leukemia/Lymphoma,CVCL_0013,mapped,1,,0
+MOLT4,MOLT-4,ACH-001127,Lymphoid,T-Lymphoblastic Leukemia/Lymphoma,T-Lymphoblastic Leukemia/Lymphoma,CVCL_0013,mapped,1,,0
+MV-4-11,MV4-11,ACH-000045,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0064,mapped,1,,1
+MV4-11,MV4-11,ACH-000045,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0064,mapped,1,,1
+MV4-11 (WDR5-HiBiT),MV4-11,ACH-000045,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0064,mapped,1,,1
+MV4;11,MV4-11,ACH-000045,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0064,mapped,1,,1
+MiaPaCa2,MIA PaCa-2,ACH-000601,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_0428,mapped,1,,1
+Mino,Mino,ACH-000220,Lymphoid,Mature B-Cell Neoplasms,Mantle Cell Lymphoma,CVCL_1872,mapped,1,,1
+Molm-16,MOLM-16,ACH-000369,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_2120,mapped,1,,1
+Mouse 4935,Mouse 4935,,,,,,unmapped,0,False,0
+MyLa1929,MyLa1929,,,,,,unmapped,0,False,0
+NAMALWA,NAMALWA,ACH-000944,Lymphoid,Mature B-Cell Neoplasms,Burkitt Lymphoma,CVCL_0067,mapped,1,,1
+NB4,NB-4,ACH-000294,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0005,mapped,1,,1
+NCI-H1568,NCI-H1568,ACH-000869,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1476,mapped,1,,1
+NCI-H2030,NCI-H2030,ACH-000521,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1517,mapped,1,,1
+NCI-H2228,NCI-H2228,ACH-000447,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1543,mapped,1,,1
+NCI-H23,NCI-H23,ACH-000900,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1547,mapped,1,,1
+NCI-H358,NCI-H358,ACH-000860,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1559,mapped,1,,1
+NCI-H661,NCI-H661,ACH-000853,Lung,Non-Small Cell Lung Cancer,Large Cell Lung Carcinoma,CVCL_1577,mapped,1,,1
+NCI-H838,NCI-H838,ACH-000416,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1594,mapped,1,,1
+Namalwa,NAMALWA,ACH-000944,Lymphoid,Mature B-Cell Neoplasms,Burkitt Lymphoma,CVCL_0067,mapped,1,,1
+OCI-AML2,OCI-AML2,ACH-000113,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_1619,mapped,1,,1
+OCI-AML3,OCI-AML3,ACH-000336,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_1844,mapped,1,,1
+OPM2,OPM-2,ACH-000024,Lymphoid,Mature B-Cell Neoplasms,Plasma Cell Myeloma,CVCL_1625,mapped,1,,1
+OVCAR8,OVCAR-8,ACH-000696,Ovary/Fallopian Tube,Ovarian Epithelial Tumor,High-Grade Serous Ovarian Cancer,CVCL_1629,mapped,1,,1
+PA1,PA-1 [PA1],ACH-001374,Ovary/Fallopian Tube,Ovarian Germ Cell Tumor,Mixed Germ Cell Tumor,CVCL_0479,mapped,1,,1
+PBMC,PBMC,,,,,,unmapped,0,False,0
+PBMCs,PBMCs,,,,,,unmapped,0,False,0
+PC-3,PC-3,ACH-000090,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_0035,mapped,1,,1
+PC3,PC-3,ACH-000090,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_0035,mapped,1,,1
+PC3-S1,PC3-S1,,,,,,unmapped,0,False,0
+PC9,PC-9,ACH-000779,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_B260,mapped,1,,1
+PDX SJBALL020589,PDX SJBALL020589,,,,,,unmapped,0,False,0
+Panc Tu-I,Panc Tu-I,,,,,,unmapped,0,False,0
+Panc02.13,Panc 02.13,ACH-000031,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_1634,mapped,1,,1
+Pfeiffer,Pfeiffer,ACH-000140,Lymphoid,Mature B-Cell Neoplasms,"Diffuse Large B-Cell Lymphoma, NOS",CVCL_3326,mapped,1,,1
+Primary Cardiomyocytes,Primary Cardiomyocytes,,,,,,unmapped,0,False,0
+RAMOS,Ramos,ACH-001636,Lymphoid,Mature B-Cell Neoplasms,Burkitt Lymphoma,CVCL_0597,mapped,1,,1
+RAW 264.7,RAW 264.7,,,,,,unmapped,0,False,0
+RI-1,RI-1,ACH-000398,Lymphoid,Mature B-Cell Neoplasms,Activated B-cell Type,CVCL_1885,mapped,1,,1
+RS4; 11,RS4;11,ACH-000874,Lymphoid,B-Lymphoblastic Leukemia/Lymphoma,B-Lymphoblastic Leukemia/Lymphoma with t(v;11q23.3);KMT2A Rearranged,CVCL_0093,mapped,1,,1
+RS4;11,RS4;11,ACH-000874,Lymphoid,B-Lymphoblastic Leukemia/Lymphoma,B-Lymphoblastic Leukemia/Lymphoma with t(v;11q23.3);KMT2A Rearranged,CVCL_0093,mapped,1,,1
+Ramos,Ramos,ACH-001636,Lymphoid,Mature B-Cell Neoplasms,Burkitt Lymphoma,CVCL_0597,mapped,1,,1
+SH-SY5Y,SH-SY5Y,ACH-001188,Peripheral Nervous System,Neuroblastoma,Neuroblastoma,CVCL_0019,mapped,1,,1
+SK-Hep-1,SK-HEP-1,ACH-000361,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0525,mapped,1,,1
+SK-LU-1,SK-LU-1,ACH-000309,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_0629,mapped,1,,0
+SK-MEL-246,SK-MEL-246,,,,,,ambiguous,2,,0
+SK-MEL-28,SK-MEL-28,ACH-000615,Skin,Melanoma,Cutaneous Melanoma,CVCL_0526,mapped,1,,1
+SNU-387,SNU-387,ACH-000478,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0250,mapped,1,,1
+SNU-398,SNU-398,ACH-000221,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0077,mapped,1,,1
+SNU-423,SNU-423,ACH-000493,Liver,Hepatocellular Carcinoma,Hepatocellular Carcinoma,CVCL_0366,mapped,1,,1
+SR,SR,,,,,,unmapped,0,False,0
+SRD15,SRD15,,,,,,unmapped,0,False,0
+SU-DHL-1,SU-DHL-1,ACH-000664,Lymphoid,Mature T and NK Neoplasms,Anaplastic Large-Cell Lymphoma ALK Positive,CVCL_0538,mapped,1,,1
+SUM149,SUM-149PT,ACH-001390,Breast,Invasive Breast Carcinoma,Breast Invasive Ductal Carcinoma,CVCL_3422,mapped,1,,1
+SUP-M2,SUP-M2,ACH-000226,Lymphoid,Mature T and NK Neoplasms,Anaplastic Large-Cell Lymphoma ALK Positive,CVCL_2209,mapped,1,,1
+SW1573,SW 1573,ACH-000677,Lung,Non-Small Cell Lung Cancer,Lung Adenocarcinoma,CVCL_1720,mapped,1,,1
+SW480,SW 480,ACH-000842,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0546,mapped,1,,1
+SW620,SW 620,ACH-000651,Bowel,Colorectal Adenocarcinoma,Colon Adenocarcinoma,CVCL_0547,mapped,1,,1
+Sk-Mel-28,SK-MEL-28,ACH-000615,Skin,Melanoma,Cutaneous Melanoma,CVCL_0526,mapped,1,,1
+T47D,T-47D,ACH-000147,Breast,Invasive Breast Carcinoma,Breast Invasive Ductal Carcinoma,CVCL_0553,mapped,1,,1
+THP,THP-1,ACH-000146,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0006,mapped,1,,1
+THP-1,THP-1,ACH-000146,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0006,mapped,1,,1
+THP1,THP-1,ACH-000146,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0006,mapped,1,,1
+THPT1,THP-1,ACH-000146,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0006,mapped,1,,1
+TM3,TM3,,,,,,ambiguous,2,,0
+TMD8,TMD8,,,,,,unmapped,0,False,0
+U251,U-251 MG,ACH-000232,CNS/Brain,Diffuse Glioma,Astrocytoma,CVCL_0021,mapped,1,,1
+U937,U-937,ACH-000406,Myeloid,Acute Myeloid Leukemia,Acute Myeloid Leukemia,CVCL_0007,mapped,1,,1
+VCaP,VCaP,ACH-000115,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_2235,mapped,1,,1
+VCaP AR+,VCaP,ACH-000115,Prostate,Prostate Adenocarcinoma,Prostate Adenocarcinoma,CVCL_2235,mapped,1,,1
+WI38,WI38,,,,,,unmapped,0,False,0
+WI38 platelets,WI38 platelets,,,,,,unmapped,0,False,0
+XLA,XLA,,,,,,unmapped,0,False,0
+Z138,Z-138,ACH-002500,Lymphoid,Mature B-Cell Neoplasms,Mantle Cell Lymphoma,CVCL_B077,mapped,1,,1
+germ,GR-M,ACH-001072,Pancreas,Pancreatic Adenocarcinoma,Pancreatic Adenocarcinoma,CVCL_2451,mapped,1,,0
+hPBMC,hPBMC,,,,,,unmapped,0,False,0
+hela,HeLa,ACH-001086,Cervix,Cervical Adenocarcinoma,Endocervical Adenocarcinoma,CVCL_0030,mapped,1,,1
+platelets,platelets,,,,,,unmapped,0,False,0
+primary Sertoli,primary Sertoli,,,,,,unmapped,0,False,0

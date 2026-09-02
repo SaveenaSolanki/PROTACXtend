@@ -1,0 +1,9 @@
+{
+  "run_id": "dbg3",
+  "status": "failed",
+  "runtime_s": 4.49,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/dbg3/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design CRBN PROTACs against BRD4"
+}

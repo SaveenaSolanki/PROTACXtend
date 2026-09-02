@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786528285.440722, "elapsed_s": 0.0, "run_id": "e2e_20260812_KRAS_evidence_limited", "meta": {"mode": "agentic", "request": "Design a PROTAC against KRAS G12C, an evidence-limited target. Flag low-confidence evidence and do not over-claim."}}
+{"event": "tool_call", "ts": 1786528309.0941124, "elapsed_s": 23.65, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260812_KRAS_evidence_limited"}, "result_summary": {"status": "needs_human", "n_decisions": "15"}}
+{"event": "run_end", "ts": 1786528309.0941622, "elapsed_s": 23.6534, "status": "needs_human", "summary": {}, "events": 2}

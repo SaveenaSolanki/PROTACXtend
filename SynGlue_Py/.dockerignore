@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Env / Git
+.env
+.git
+.gitignore
+
+# LARGE FOLDERS (CRITICAL)
+data/
+data_copy/
+models/
+outputs/
+synglue_package/
+synglue/
+test_synglue_pacakge/
+
+# notebooks
+*.ipynb
+
+# misc
+*.log
+*.sh
+
+api_readme.md
+module_4.py
+synglue_batch_inference.py
+query.csv
+Dockerfile
+
+

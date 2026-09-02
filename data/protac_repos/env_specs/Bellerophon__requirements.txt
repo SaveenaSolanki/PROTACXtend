@@ -1,0 +1,6 @@
+streamlit
+pandas
+rdkit==2024.9.2
+numpy
+requests
+IPython

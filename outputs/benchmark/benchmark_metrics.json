@@ -1,0 +1,19 @@
+{
+  "n_predictions": 64,
+  "n_published_dc50": 64,
+  "n_with_dmax": 32,
+  "spearman_rho_logdc50": 0.2433,
+  "spearman_p": 0.052673,
+  "kendall_tau_logdc50": 0.1672,
+  "kendall_p": 0.050881,
+  "hit_rate_100nM": 0.5312,
+  "hit_rate_1000nM": 0.7812,
+  "mae_log10_dc50": 1.2098,
+  "spearman_rho_dmax": 0.1956,
+  "median_published_dc50": 22.0,
+  "median_predicted_dc50": 173.0510726467407,
+  "pct_grover_protac": 100.0,
+  "sample_size_requested": 64,
+  "method": "SynGlue MultiTaskProtacModel, full-PROTAC GROVER embedding + family E3 embedding + constant warhead (SynGlue inference design)",
+  "data": "PROTAC-DB 3.0 (cadd.zju.edu.cn/protacdb), DC50-available CRBN/VHL PROTACs"
+}

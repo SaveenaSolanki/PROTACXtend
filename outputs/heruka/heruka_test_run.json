@@ -1,0 +1,45 @@
+{
+  "schema": "protacpilot-bundle-v1",
+  "produced_by": "SynGlue v0.3-agentic-core",
+  "run_id": "heruka_test_run",
+  "mode": "agentic",
+  "status": "ok",
+  "runtime_s": 2.5,
+  "n_decisions": 1,
+  "n_tool_calls": 1,
+  "decisions": [
+    {
+      "node": "ternary",
+      "decision_type": "accept",
+      "reason_codes": [
+        "ternary_conf_ok"
+      ],
+      "confidence": 0.85,
+      "next_node": "degradation",
+      "elapsed_s": 0.1
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "degradation_endpoint",
+      "args": {
+        "smiles": "C"
+      },
+      "result_summary": {
+        "dc50_nM": 33.9
+      },
+      "elapsed_s": 1.2
+    }
+  ],
+  "human_gate_events": [
+    {
+      "node": "human_gate",
+      "status": "needs_human",
+      "elapsed_s": 0.5
+    }
+  ],
+  "uncertainty_notes": [],
+  "evidence_refs": [
+    "ev_1"
+  ]
+}

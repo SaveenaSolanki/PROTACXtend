@@ -1,0 +1,11 @@
+evidence_family,protacdb_columns,agent_use
+degradation_capacity,"DC50 (nM); Dmax (%); Percent degradation (%); Assay (DC50/Dmax); Assay (Percent degradation)","Train/rank degradation potency; active-learning labels; benchmark filtering"
+target_binding_affinity,"IC50/EC50/Kd/Ki/delta G/delta H/-T*delta S/kon/koff/t1/2 for Protac to Target","Separate binary target binding from degradation and cooperativity"
+e3_binding_affinity,"IC50/EC50/Kd/Ki/delta G/delta H/-T*delta S/kon/koff/t1/2 for Protac to E3","Separate binary E3 engagement from degradation and hook-effect priors"
+ternary_complex_affinity,"IC50/EC50/Kd/Ki/delta G/delta H/-T*delta S/kon/koff/t1/2 for Ternary complex","Calibrate cooperativity and productive ternary-complex scoring"
+cellular_activity,"IC50; EC50; GI50; ED50; GR50 for cellular activities","Contextual efficacy filters and cell-response evidence"
+cell_permeability,"PAMPA Papp; Caco-2 A2B Papp; Caco-2 B2A Papp","Permeability-vs-potency Pareto ranking"
+pharmacokinetic_parameters,"Tmax; T1/2; Cmax; AUC; Vz; Vss; CL; MRT; Bioavailability when present in detailed/source records","Developability and PK evidence extension point"
+physicochemical_properties,"Molecular Weight; Exact Mass; XLogP3; Heavy Atom Count; Ring Count; HBA; HBD; Rotatable Bond Count; TPSA; Formula; InChI; InChI Key","ADMET/domain/novelty/deduplication features"
+warhead_bioactivity,"Target, Uniprot, PROTAC-to-target affinity fields, DOI","Warhead/binder evidence extraction"
+e3_ligand_bioactivity,"E3 ligase, PROTAC-to-E3 affinity fields, DOI","E3 ligand selection and E3 engagement evidence"

@@ -1,0 +1,4 @@
+### EXPERIMENTAL TERNARY COOPERATIVITY RECORDS
+### Policy: only values measured in primary literature are entered; alpha is never inferred from qualitative statements.
+### Columns (must match synglue_agent.modules.cooperativity_alpha_predictor.data.RECORD_FIELDS):
+protac_id,protac_smiles,poi,e3,warhead,e3_recruiter,linker,linker_smiles,alpha,log_alpha,kd_binary_poi_nM,kd_binary_e3_nM,kd_ternary_nM,assay,temperature_c,doi,pmid,pdb_ids,alpha_definition,source,notes

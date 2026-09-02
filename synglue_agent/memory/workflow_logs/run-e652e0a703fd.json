@@ -1,0 +1,193 @@
+{
+  "run_id": "run-e652e0a703fd",
+  "timestamp": "20260601-113444",
+  "user_request": "Design CRBN-based PROTACs for BRD4. Generate 20 candidates using PEG and alkyl linkers with low hERG risk.",
+  "target": "BRD4",
+  "final_candidate_ids": [
+    "SGA-652e8bacb1db",
+    "SGA-6a10113b669b",
+    "SGA-ae9023c36798",
+    "SGA-c1939240a150",
+    "SGA-d28151910fad",
+    "SGA-d1af7b8aa4ad",
+    "SGA-a4c705301594",
+    "SGA-af9681e1a180",
+    "SGA-e06f8f011db4",
+    "SGA-54544ecbc14d",
+    "SGA-26ed27cc1ed9",
+    "SGA-dff5a48598ae",
+    "SGA-d9ee74da1545",
+    "SGA-4cb67156c487",
+    "SGA-393784bda14c",
+    "SGA-9dcfaf174aee",
+    "SGA-0fdb990aae3d",
+    "SGA-4792ee26ba46",
+    "SGA-c956bd142584",
+    "SGA-29197911ebf5"
+  ],
+  "warnings": [
+    "UniProt REST lookup did not provide a real API record: UniProt network error: [Errno -3] Temporary failure in name resolution",
+    "RCSB executable lookup failed; retaining local_curated_seed PDB IDs: RCSB network error: [Errno -3] Temporary failure in name resolution",
+    "warhead:BRD4_demo_JQ1_like: Only one dummy attachment atom was detected.",
+    "warhead:BRD4_demo_triazolobenzodiazepine_like: Only one dummy attachment atom was detected.",
+    "warhead:BRD4_demo_quinazoline_like: Only one dummy attachment atom was detected.",
+    "warhead:metaboglue_seed_665: Attachment vector is ambiguous; curated map or user input is recommended.",
+    "warhead:metaboglue_seed_844: Attachment vector is ambiguous; curated map or user input is recommended.",
+    "warhead:metaboglue_seed_35: Attachment vector is ambiguous; curated map or user input is recommended.",
+    "warhead:metaboglue_seed_18: Attachment vector is ambiguous; curated map or user input is recommended.",
+    "warhead:metaboglue_seed_669: Attachment vector is ambiguous; curated map or user input is recommended.",
+    "e3_ligand:CRBN_demo_pomalidomide_like: Only one dummy attachment atom was detected.",
+    "e3_ligand:CRBN_demo_lenalidomide_like: Only one dummy attachment atom was detected.",
+    "e3_ligand:CRBN_demo_avado_like: Only one dummy attachment atom was detected."
+  ],
+  "errors": [],
+  "workflow_log": [
+    {
+      "agent": "SupervisorAgent",
+      "thought": "Parse the user's degradation objective into a structured PROTAC workflow state.",
+      "action": "parse_user_request",
+      "observation": "target=BRD4, e3=CRBN, candidate_count=20, linkers=['PEG', 'alkyl']",
+      "processing_time_s": 0.001
+    },
+    {
+      "agent": "SafetyGuardrailAgent",
+      "thought": "Check request and candidate state for overclaiming, experimental-use language, and reporting guardrails.",
+      "action": "safety_precheck",
+      "observation": "guardrails=8, warnings=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "TargetResolverAgent",
+      "thought": "Resolve target identity, structure availability, known binder count, and tractability.",
+      "action": "resolve_target",
+      "observation": "target=BRD4, uniprot=O60885, structures=3, tractability=0.86",
+      "processing_time_s": 0.1413
+    },
+    {
+      "agent": "TargetBinderRetrievalAgent",
+      "thought": "Retrieve target binders unless the user provided a warhead.",
+      "action": "retrieve_target_binders",
+      "observation": "binders=2721",
+      "processing_time_s": 2.9584
+    },
+    {
+      "agent": "WarheadSelectionAgent",
+      "thought": "Rank binders or the user-provided molecule as PROTAC warhead candidates using potency, derivatization, and exit-vector confidence.",
+      "action": "select_warheads",
+      "observation": "warheads=8",
+      "processing_time_s": 0.7702
+    },
+    {
+      "agent": "E3LigandSelectionAgent",
+      "thought": "Select E3 ligands with known attachment handles and source provenance.",
+      "action": "select_e3_ligands",
+      "observation": "e3_ligands=3, ligases=['CRBN']",
+      "processing_time_s": 0.0004
+    },
+    {
+      "agent": "ExitVectorDetectionAgent",
+      "thought": "Verify warhead and E3 ligand attachment vectors before construction.",
+      "action": "detect_exit_vectors",
+      "observation": "exit_vectors=11, ambiguous=5",
+      "processing_time_s": 0.0013
+    },
+    {
+      "agent": "LinkerGenerationAgent",
+      "thought": "Generate curated and rule-based linker candidates matching requested classes and PROTAC-aware constraints.",
+      "action": "generate_linkers",
+      "observation": "linkers=7, classes=['PEG', 'alkyl']",
+      "processing_time_s": 0.0095
+    },
+    {
+      "agent": "MolecularConstructionAgent",
+      "thought": "Construct PROTAC candidates with multi-strategy deterministic assembly and provenance tracking.",
+      "action": "construct_protacs",
+      "observation": "attempts=20, assembled=20, successes=20",
+      "processing_time_s": 0.0873
+    },
+    {
+      "agent": "CandidateValidationAgent",
+      "thought": "Sanitize, canonicalize, property-check, and deduplicate assembled PROTAC candidates.",
+      "action": "validate_protacs",
+      "observation": "valid_candidates=20",
+      "processing_time_s": 0.1137
+    },
+    {
+      "agent": "DegradationPredictionAgent",
+      "thought": "Predict DC50, Dmax, degradation probability, confidence, and model-version provenance.",
+      "action": "predict_degradation",
+      "observation": "predictions=20, low_confidence=0",
+      "processing_time_s": 0.0459
+    },
+    {
+      "agent": "ADMETAgent",
+      "thought": "Compute PROTAC-aware descriptor and toxicity-risk triage without strict Lipinski rejection.",
+      "action": "predict_admet",
+      "observation": "admet=20, high_risk_records=6",
+      "processing_time_s": 0.191
+    },
+    {
+      "agent": "NoveltySimilarityAgent",
+      "thought": "Compare candidates against local known PROTAC-like records using fingerprints or deterministic string fallback.",
+      "action": "check_novelty",
+      "observation": "novelty_results=20, duplicates=0",
+      "processing_time_s": 0.0385
+    },
+    {
+      "agent": "ApplicabilityDomainAgent",
+      "thought": "Assess whether candidates are inside the demo model domain before ranking.",
+      "action": "assess_applicability_domain",
+      "observation": "domain_results=20, outside=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "RankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "rank_candidates",
+      "observation": "ranked=20, top_score=0.686",
+      "processing_time_s": 0.0005
+    },
+    {
+      "agent": "ProximityDiversityAgent",
+      "thought": "Cluster chemically similar candidates and identify diverse representatives.",
+      "action": "diversity_clustering",
+      "observation": "clusters=2",
+      "processing_time_s": 0.011
+    },
+    {
+      "agent": "ReflectionReviewAgent",
+      "thought": "Critique top candidates for evidence strength, overclaims, ADME/Tox risk, novelty, and synthesis plausibility.",
+      "action": "reflection_review",
+      "observation": "reviews=20, high_review_risk=1",
+      "processing_time_s": 0.0004
+    },
+    {
+      "agent": "EvolutionRefinementAgent",
+      "thought": "Use review and ADME/Tox weaknesses to propose deterministic linker replacements and re-score evolved candidates.",
+      "action": "evolution_refinement",
+      "observation": "evolved=0, candidate_pool=20",
+      "processing_time_s": 0.0559
+    },
+    {
+      "agent": "TernaryFeasibilityAgent",
+      "thought": "Run fast geometry and linker reachability scoring only on top-ranked candidates unless explicitly requested.",
+      "action": "optional_ternary_feasibility",
+      "observation": "skipped, ternary_results=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "FinalRankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "final_ranking",
+      "observation": "ranked=20, top_score=0.686",
+      "processing_time_s": 0.0211
+    },
+    {
+      "agent": "ReportAgent",
+      "thought": "Generate transparent candidate table, workflow summary, provenance, warnings, and scientific limitations.",
+      "action": "generate_report",
+      "observation": "report_chars=12864",
+      "processing_time_s": 1.9994
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "run_id": "run_91682bdc",
+  "status": "ok",
+  "runtime_s": 7.65,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/run_91682bdc/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design CRBN-based PROTACs for HMGB2."
+}

@@ -1,0 +1,15 @@
+{"event": "run_start", "ts": 1786449547.7321842, "elapsed_s": 0.0, "run_id": "e2e_20260811_impossible_input", "meta": {"mode": "agentic", "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"}}
+{"event": "tool_call", "ts": 1786449549.5014334, "elapsed_s": 1.77, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_impossible_input"}, "result_summary": {"status": "ok", "n_decisions": "18"}}
+{"event": "run_end", "ts": 1786449549.50147, "elapsed_s": 1.7693, "status": "ok", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786454820.1460242, "elapsed_s": 0.0, "run_id": "e2e_20260811_impossible_input", "meta": {"mode": "agentic", "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"}}
+{"event": "tool_call", "ts": 1786454820.252032, "elapsed_s": 0.1, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_impossible_input"}, "result_summary": {"status": "needs_human", "n_decisions": "28"}}
+{"event": "run_end", "ts": 1786454820.2520747, "elapsed_s": 0.1061, "status": "needs_human", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786454984.620485, "elapsed_s": 0.0, "run_id": "e2e_20260811_impossible_input", "meta": {"mode": "agentic", "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"}}
+{"event": "tool_call", "ts": 1786454984.728646, "elapsed_s": 0.11, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_impossible_input"}, "result_summary": {"status": "needs_human", "n_decisions": "28"}}
+{"event": "run_end", "ts": 1786454984.728686, "elapsed_s": 0.1082, "status": "needs_human", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786455325.6444888, "elapsed_s": 0.0, "run_id": "e2e_20260811_impossible_input", "meta": {"mode": "agentic", "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"}}
+{"event": "tool_call", "ts": 1786455325.7764547, "elapsed_s": 0.12, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_impossible_input"}, "result_summary": {"status": "needs_human", "n_decisions": "28"}}
+{"event": "run_end", "ts": 1786455325.776499, "elapsed_s": 0.132, "status": "needs_human", "summary": {}, "events": 2}
+{"event": "run_start", "ts": 1786455785.2147021, "elapsed_s": 0.0, "run_id": "e2e_20260811_impossible_input", "meta": {"mode": "agentic", "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"}}
+{"event": "tool_call", "ts": 1786455785.3384285, "elapsed_s": 0.12, "tool": "runtime.run_protacpilot", "args": {"mode": "agentic", "run_id": "e2e_20260811_impossible_input"}, "result_summary": {"status": "needs_human", "n_decisions": "28"}}
+{"event": "run_end", "ts": 1786455785.3385375, "elapsed_s": 0.1238, "status": "needs_human", "summary": {}, "events": 2}

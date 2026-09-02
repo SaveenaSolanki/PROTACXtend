@@ -1,0 +1,9 @@
+{
+  "run_id": "run_89356765",
+  "status": "ok",
+  "runtime_s": 1.57,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/run_89356765/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design BRD4 PROTACs with CRBN."
+}

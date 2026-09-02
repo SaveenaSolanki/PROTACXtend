@@ -1,0 +1,251 @@
+{
+  "run_id": "e2e_20260811_BRD4_known",
+  "timestamp": "2026-08-11T14:23:58.252560Z",
+  "user_objective": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic feasibility as a secondary objective.",
+  "parsed_objective": {
+    "target_name": "BRD4",
+    "e3": "CRBN",
+    "objectives": [
+      "cellular_degradation",
+      "synthetic_feasibility"
+    ],
+    "raw_request": "Design CRBN-recruiting PROTAC candidates against BRD4 with cellular degradation as the primary objective and synthetic feasibility as a secondary objective."
+  },
+  "execution_plan": [
+    {}
+  ],
+  "tools_requested": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "report"
+  ],
+  "tools_executed": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "report"
+  ],
+  "evidence_records": [
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "evidence_admet",
+      "status": "ok",
+      "count": 5
+    }
+  ],
+  "candidates_generated": 16,
+  "candidates_valid": 16,
+  "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "ranking",
+    "report"
+  ],
+  "repair_events": [],
+  "human_interventions": [],
+  "final_candidates": [
+    {
+      "candidate_id": "cand_0",
+      "full_protac_smiles": "Cc1c(CCCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.4079,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_1",
+      "full_protac_smiles": "Cc1c(CCCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.6305,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_2",
+      "full_protac_smiles": "Cc1c(CCCCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.4029,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_3",
+      "full_protac_smiles": "Cc1c(CCCCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.619,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_4",
+      "full_protac_smiles": "Cc1c(CCCOCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.4341,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_5",
+      "full_protac_smiles": "Cc1c(CCCOCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.7043,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_6",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.4641,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_7",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.7324,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_8",
+      "full_protac_smiles": "Cc1c(CCCCCCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.393,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_9",
+      "full_protac_smiles": "Cc1c(CCCCCCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.6061,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_10",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCOCCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.493,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_11",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCOCCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.7586,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_12",
+      "full_protac_smiles": "Cc1c(CCCN2CCN(CCc3ccc4c(c3)C(=O)NC4=O)CC2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.3769,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_13",
+      "full_protac_smiles": "Cc1c(CCCN2CCN(CCN3C(=O)c4ccc(C(N)=O)cc4C3=O)CC2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.5675,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_14",
+      "full_protac_smiles": "Cc1c(CCCn2nncc2CCc2ccc3c(c2)C(=O)NC3=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.5723,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_15",
+      "full_protac_smiles": "Cc1c(CCCn2nncc2CCN2C(=O)c3ccc(C(N)=O)cc3C2=O)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.7991,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    }
+  ],
+  "pareto_front": [],
+  "llm_model": null,
+  "llm_calls": 0,
+  "llm_failures": 0,
+  "scientific_tool_versions": {
+    "rdkit": "2026.03.5",
+    "langgraph": "?",
+    "torch": "2.6.0+cu126",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "chemprop": "2.3.0",
+    "aizynthfinder": "?"
+  },
+  "warnings": [
+    "ranking degraded: 'ParetoResult' object has no attribute 'rank'"
+  ],
+  "errors": [],
+  "runtime_seconds": 72.37,
+  "reproducibility_hash": "bf781fd8fac808efa28b016ff15e65b199856a48909a9ad3ceadb7d9ba2310af"
+}

@@ -1,0 +1,22 @@
+{
+  "mode": "learn",
+  "action": "recommend",
+  "decision": {
+    "status": "SUPPORTED",
+    "next_batch": [
+      "A",
+      "B"
+    ],
+    "expected_information_gain": {
+      "A": 0.675,
+      "B": 0.475
+    },
+    "decision_change_probability": {
+      "A": 0.69,
+      "B": 0.52
+    },
+    "model_update_record": {},
+    "rollback_pointer": "",
+    "warnings": []
+  }
+}

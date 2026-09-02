@@ -1,0 +1,85 @@
+{
+  "parent_ICM": {
+    "OH27": {
+      "position": [
+        2.57,
+        12.32,
+        0.29
+      ],
+      "distance_to_surface": 3.2,
+      "angle_to_crbn_vector": 105.0,
+      "solvent_accessibility": 0.12,
+      "protac_viable": false,
+      "verdict": "Buried \u2014 points into HMGB2"
+    },
+    "OH29": {
+      "position": [
+        0.73,
+        15.51,
+        3.34
+      ],
+      "distance_to_surface": 4.1,
+      "angle_to_crbn_vector": 100.0,
+      "solvent_accessibility": 0.18,
+      "protac_viable": false,
+      "verdict": "Buried \u2014 points into HMGB2"
+    },
+    "N_phenyl": {
+      "position": [
+        -2.89,
+        14.15,
+        8.23
+      ],
+      "distance_to_surface": 8.5,
+      "angle_to_crbn_vector": 45.0,
+      "solvent_accessibility": 0.65,
+      "protac_viable": true,
+      "verdict": "SOLVENT EXPOSED \u2014 correct exit vector (Lee 2014)"
+    }
+  },
+  "A1_4COOH": {
+    "COOH_para": {
+      "position": [
+        -3.2553482943989893,
+        14.02234818629433,
+        11.003125608088714
+      ],
+      "distance_to_surface": 11.2,
+      "angle_to_crbn_vector": 35.0,
+      "solvent_accessibility": 0.85,
+      "salt_bridge_partner": "LYS8 NZ",
+      "salt_bridge_distance": 3.8,
+      "linker_attachment_type": "Amide (from COOH)",
+      "linker_vector_angle": 25.0,
+      "protac_viable": true,
+      "estimated_linker_span_required": 13.6,
+      "c8_peg4_passing_poses": 8,
+      "c8_peg4_pass_rate": 0.2,
+      "verdict": "\u2705 Excellent \u2014 solvent exposed + salt bridge + linker handle"
+    },
+    "N_phenyl_core": {
+      "position": [
+        -2.89,
+        14.15,
+        8.23
+      ],
+      "distance_to_surface": 8.5,
+      "angle_to_crbn_vector": 45.0,
+      "solvent_accessibility": 0.65,
+      "protac_viable": true,
+      "verdict": "Solvent exposed, but COOH is better handle"
+    }
+  },
+  "linker_recommendations": {
+    "best_linker": "C8-PEG4",
+    "effective_span": 13.6,
+    "extended_length": 19.5,
+    "passing_poses_vs_OH27": "\u221e (0 \u2192 8)",
+    "fallback_options": [
+      "PEG8 (15.7 \u00c5, 12 passes)",
+      "C14-PEG5 (18.9 \u00c5, 16 passes)"
+    ],
+    "recommended_PROTAC": "A1_4COOH\u2013C8-PEG4\u2013Pomalidomide",
+    "predicted_total_MW": 944
+  }
+}

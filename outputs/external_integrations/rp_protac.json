@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "verify license, data provenance, weights, splits, and calibration",
+  "integration_wave": 1,
+  "method_id": "rp_protac",
+  "name": "RP-PROTAC",
+  "repo_available": true,
+  "repo_name": "RP-PROTAC",
+  "repo_registered": true,
+  "role": "uncertainty/OOD baseline and ranking comparator",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.595559+00:00"
+}

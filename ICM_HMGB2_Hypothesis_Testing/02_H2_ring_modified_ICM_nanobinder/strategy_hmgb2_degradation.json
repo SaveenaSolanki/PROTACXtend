@@ -1,0 +1,52 @@
+{
+  "motto": "Improve ICM + Degrade HMGB2",
+  "problem": "ICM binds at 78-86, CRBN docks at 112-128 (96\u00b0 away). ICM-PROTAC has 0.2% pass rate.",
+  "solutions": [
+    {
+      "id": "S1",
+      "name": "A1_4COOH as Molecular Glue (test FIRST - cheapest)",
+      "mechanism": "Improved ICM analog (COOH, -11.22) may recruit an E3 ligase directly at the 78-86 site. HMGB2 has 40 lysines, all accessible. Basic surface recruits acidic E3 surfaces.",
+      "experiment": "Treat cells with A1_4COOH (0.1-10 \u03bcM) \u2192 WB for HMGB2 at 24h \u2192 \u00b1 MG132 \u00b1 CRBN KO \u00b1 proteasome inhibitors",
+      "cost_time": "$500, 1-2 weeks",
+      "priority": "PRIORITY 1",
+      "success_criteria": "HMGB2 drops >50% at \u226410 \u03bcM, rescued by MG132"
+    },
+    {
+      "id": "S2",
+      "name": "Dual/Bivalent Warhead: A1_4COOH + Box B binder (glycyrrhizin)",
+      "mechanism": "Link A1_4COOH (binds 78-86) to glycyrrhizin (binds Box B 112-128). The bivalent molecule sits ACROSS the CRBN interface, positioning an exit vector directly at CRBN.",
+      "experiment": "Design bivalent (computational) \u2192 synthesize \u2192 P4ward test \u2192 cellular degradation",
+      "cost_time": "$3000, 6-8 weeks",
+      "priority": "PRIORITY 2 (if S1 fails)",
+      "success_criteria": "P4ward pass rate >5%"
+    },
+    {
+      "id": "S3",
+      "name": "Alternative E3 ligase for ICM site",
+      "mechanism": "Instead of CRBN (docks 96\u00b0 away), screen DCAF1/RNF114/\u03b2-TrCP - if any docks at 78-86, the ICM-PROTAC becomes viable.",
+      "experiment": "MegaDock screen of ICM-HMGB2 against DCAF1, RNF114, FEM1B, \u03b2-TrCP surfaces \u2192 check if any docks at 78-86",
+      "cost_time": "Computational: 2-3 days",
+      "priority": "PRIORITY 3 (parallel)",
+      "success_criteria": "Any E3 docks within 20 \u00c5 of ICM site"
+    },
+    {
+      "id": "S4",
+      "name": "HMGB2 destabilization via DNA-binding disruption (H4)",
+      "mechanism": "ICM blocks HMGB2-DNA binding \u2192 free HMGB2 is unstable \u2192 proteasomal degradation. A1_4COOH (stronger binder) may be more effective than ICM.",
+      "experiment": "EMSA (ICM blocks HMGB2-DNA complex) \u2192 measure free HMGB2 half-life in cells",
+      "cost_time": "$800, 2 weeks",
+      "priority": "PRIORITY 3 (parallel)",
+      "success_criteria": "ICM/A1_4COOH disrupts HMGB2-DNA in EMSA"
+    },
+    {
+      "id": "S5",
+      "name": "Degron-tag approach (definitive, not ICM-based)",
+      "mechanism": "Fuse HMGB2 with dTAG or Auxin degron \u2192 inducible degradation. NOT using ICM, but guarantees degradation if the goal is HMGB2 loss.",
+      "experiment": "CRISPR knock-in of degron tag \u2192 add degrader \u2192 HMGB2 loss",
+      "cost_time": "$5000, 2-3 months",
+      "priority": "FALLBACK (if ICM-based approaches all fail)",
+      "success_criteria": "Inducible HMGB2 degradation >90%"
+    }
+  ],
+  "recommendation": "Run S1 (A1_4COOH glue test) + S3 (alt E3 screen) in parallel first. They are cheap and fast. If S1 works: optimized ICM alone degrades HMGB2 = SUCCESS. If S3 finds a compatible E3: ICM-PROTAC becomes viable with the right E3. S2 (bivalent) if both fail."
+}

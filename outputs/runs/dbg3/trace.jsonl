@@ -1,0 +1,3 @@
+{"event": "run_start", "ts": 1786449971.6236382, "elapsed_s": 0.0, "run_id": "dbg3", "meta": {"mode": "agentic", "request": "Design CRBN PROTACs against BRD4"}}
+{"event": "error", "ts": 1786449976.1113908, "elapsed_s": 4.4878, "node": "runtime", "error": "'str' object has no attribute 'get'"}
+{"event": "run_end", "ts": 1786449976.1120727, "elapsed_s": 4.4884, "status": "failed", "summary": {}, "events": 2}

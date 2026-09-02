@@ -1,0 +1,3 @@
+protac_id,target,e3_ligase,smiles,source,note
+PEDIA_DEMO_BRD4_CRBN_A,BRD4,CRBN,Cc1ccccc1CCOCCN1C(=O)c2ccccc2C1=O,local_demo_protacpedia,nonvalidated_demo_record_for_similarity_only
+PEDIA_DEMO_GSPT1_CRBN_A,GSPT1,CRBN,NCC(=O)N1CCN(CC1)c1ccccc1CCN1C(=O)c2ccccc2C1=O,local_demo_protacpedia,nonvalidated_demo_record_for_similarity_only

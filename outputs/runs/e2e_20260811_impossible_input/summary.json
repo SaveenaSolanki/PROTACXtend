@@ -1,0 +1,9 @@
+{
+  "run_id": "e2e_20260811_impossible_input",
+  "status": "ok",
+  "runtime_s": 0.12,
+  "events": 3,
+  "trace_file": "/storage/saveena/protacpilot/outputs/runs/e2e_20260811_impossible_input/trace.jsonl",
+  "mode": "agentic",
+  "request": "Design a PROTAC against the nonexistent target QZYX123 using an invalid warhead SMILES 'not_a_smiles'. Fail gracefully a"
+}

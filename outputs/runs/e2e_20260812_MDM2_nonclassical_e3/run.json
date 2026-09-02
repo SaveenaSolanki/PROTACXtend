@@ -1,0 +1,250 @@
+{
+  "run_id": "e2e_20260812_MDM2_nonclassical_e3",
+  "timestamp": "2026-08-12T09:53:30.113708Z",
+  "user_objective": "Design MDM2-recruiting PROTAC candidates against BRD4 using the MDM2 E3 ligase (not CRBN/VHL), prioritizing cellular degradation.",
+  "parsed_objective": {
+    "target_name": "BRD4",
+    "e3": "VHL",
+    "objectives": [
+      "cellular_degradation"
+    ],
+    "raw_request": "Design MDM2-recruiting PROTAC candidates against BRD4 using the MDM2 E3 ligase (not CRBN/VHL), prioritizing cellular degradation."
+  },
+  "execution_plan": [
+    {}
+  ],
+  "tools_requested": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "report"
+  ],
+  "tools_executed": [
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "report"
+  ],
+  "evidence_records": [
+    {
+      "type": "binder",
+      "source": "?",
+      "name": "",
+      "smiles": "",
+      "activity_nM": null,
+      "p_activity": null
+    },
+    {
+      "type": "evidence_admet",
+      "status": "ok",
+      "count": 5
+    }
+  ],
+  "candidates_generated": 16,
+  "candidates_valid": 16,
+  "routing_path": [
+    "supervisor",
+    "planner",
+    "safety",
+    "target_resolver",
+    "binder_retrieval",
+    "warhead_selection",
+    "e3_selection",
+    "exit_vector_detection",
+    "linker_generation",
+    "construction",
+    "validation",
+    "ternary_feasibility",
+    "degradation_prediction",
+    "admet_prediction",
+    "novelty_check",
+    "EvidenceSufficiencyGate",
+    "ranking",
+    "report"
+  ],
+  "repair_events": [],
+  "human_interventions": [],
+  "final_candidates": [
+    {
+      "candidate_id": "cand_0",
+      "full_protac_smiles": "Cc1c(CCCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0478,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_1",
+      "full_protac_smiles": "Cc1c(CCCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9215,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_2",
+      "full_protac_smiles": "Cc1c(CCCCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0334,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_3",
+      "full_protac_smiles": "Cc1c(CCCCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9072,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_4",
+      "full_protac_smiles": "Cc1c(CCCOCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0519,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_5",
+      "full_protac_smiles": "Cc1c(CCCOCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9245,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_6",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0488,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_7",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9231,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_8",
+      "full_protac_smiles": "Cc1c(CCCCCCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0053,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_9",
+      "full_protac_smiles": "Cc1c(CCCCCCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.8801,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_10",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCOCCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.0445,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_11",
+      "full_protac_smiles": "Cc1c(CCCOCCOCCOCCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9206,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_12",
+      "full_protac_smiles": "Cc1c(CCCN2CCN(CCc3ccc(C(=O)N[C@H](C(=O)N4CCC[C@H]4O)C(C)C)cc3)CC2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.114,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_13",
+      "full_protac_smiles": "Cc1c(CCCN2CCN(CCc3cc(C(=O)N[C@@H](C(=O)N4CCC[C@H]4O)C(C)C)ccc3C(C)C)CC2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 1.9671,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_14",
+      "full_protac_smiles": "Cc1c(CCCn2nncc2CCc2ccc(C(=O)N[C@H](C(=O)N3CCC[C@H]3O)C(C)C)cc2)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.3035,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    },
+    {
+      "candidate_id": "cand_15",
+      "full_protac_smiles": "Cc1c(CCCn2nncc2CCc2cc(C(=O)N[C@@H](C(=O)N3CCC[C@H]3O)C(C)C)ccc2C(C)C)sc2c1C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)OC(C)(C)C)c1nnc(C)n1-2",
+      "log_dc50": 2.1576,
+      "dmax_inverted": 1.0,
+      "admet_penalty": 0.2,
+      "synthesis_difficulty": 0.3,
+      "ternary_penalty": 0.1
+    }
+  ],
+  "pareto_front": [],
+  "llm_model": null,
+  "llm_calls": 0,
+  "llm_failures": 0,
+  "scientific_tool_versions": {
+    "rdkit": "2026.03.5",
+    "langgraph": "?",
+    "torch": "2.6.0+cu126",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "chemprop": "2.3.0",
+    "aizynthfinder": "?"
+  },
+  "warnings": [
+    "ranking degraded: 'ParetoResult' object has no attribute 'rank'"
+  ],
+  "errors": [],
+  "runtime_seconds": 83.86,
+  "reproducibility_hash": "f5cdaa007474ade28d79facbeed5e154ac4349a79214b00932e3cbbef3c0260d"
+}

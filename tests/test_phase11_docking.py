@@ -6,9 +6,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from synglue_agent.backend.schemas import CandidateRecord
-from synglue_agent.tools.docking_status import detect_docking_backends
-from synglue_agent.tools.ternary_feasibility import (
+from protacxtend.backend.schemas import CandidateRecord
+from protacxtend.tools.docking_status import detect_docking_backends
+from protacxtend.tools.ternary_feasibility import (
     assess_ternary_feasibility,
     generate_ligand_conformers,
     run_vina_if_available,
@@ -46,8 +46,8 @@ class Phase11DockingTests(unittest.TestCase):
             self.skipTest("RDKit not available in this environment.")
         self.assertIn("ligand_sdf", result["ligand_files"])
 
-    @patch("synglue_agent.tools.ternary_feasibility.run_vina_if_available")
-    @patch("synglue_agent.tools.ternary_feasibility.run_gnina_if_available")
+    @patch("protacxtend.tools.ternary_feasibility.run_vina_if_available")
+    @patch("protacxtend.tools.ternary_feasibility.run_gnina_if_available")
     def test_ternary_proxy_label_and_no_docking_score(self, mock_gnina, mock_vina) -> None:
         mock_vina.return_value = {
             "backend": "vina",

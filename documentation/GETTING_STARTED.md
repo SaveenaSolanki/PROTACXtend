@@ -99,7 +99,7 @@ Open your web browser at `http://localhost:8501`.
 ### 3. REST API Server Mode
 Start the FastAPI REST backend for programmatic API calls:
 ```bash
-python -m uvicorn synglue_agent.backend.api_routes:get_app --factory --host 0.0.0.0 --port 8001
+python -m uvicorn protacxtend.backend.api_routes:get_app --factory --host 0.0.0.0 --port 8001
 ```
 
 Send a POST request to design PROTAC candidates:

@@ -1,7 +1,0 @@
-{
-  "uspto_policy.hdf5": "49c3e54b280106fdc9412939b4feaa940ef6ea426461565679f69a1c826450b3",
-  "uspto_templates.hdf5": "027f0a1d5dff8968c1132815863e49afbe60c1b1ab2ef2885b28015089d05def",
-  "zinc_stock.hdf5": "99d39a6f807c3e815487500bafc2b4a9dc66a31af189e3b1776874fb0d4a188d",
-  "uspto_model.onnx": "1a0282f40129f5791dd6bf7f152a02abd94cedd3450964a3e89845e6852fd860",
-  "uspto_templates.csv.gz": "851b91b329602a9c4f0570d5835e2ca4403cd64af463c312488add43a0fbbcaf"
-}

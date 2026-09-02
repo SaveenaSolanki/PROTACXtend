@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from synglue_agent.tools.retrosynthesis_engines import (  # noqa: E402
+from protacxtend.tools.retrosynthesis_engines import (  # noqa: E402
     ENGINE_CODES,
     engine_status_report,
     render_engine_status_report,

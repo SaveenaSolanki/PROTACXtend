@@ -1,4 +1,4 @@
-from synglue_agent.agentic.orchestration import run_agentic_design
+from protacxtend.agentic.orchestration import run_agentic_design
 
 import unittest
 

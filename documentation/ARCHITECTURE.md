@@ -5,7 +5,7 @@ workflow** (objective parsing → discovery → component-aware assembly → eva
 reflection/ranking) plus **8 controlled-search and feedback extensions**
 (expensive-modeling selection, ternary / cooperativity / hook-effect gates, final ranking,
 active-learning update, report, memory) = **31 documented agent nodes** registered in
-`synglue_agent/agents/graph.py`. The production path walks the registered nodes in sequence
+`protacxtend/agents/graph.py`. The production path walks the registered nodes in sequence
 and stops only at terminal evidence or error gates.
 
 ---
@@ -88,7 +88,7 @@ version, confidence, applicability-domain status, warning state and limitation.
 
 ## 🧱 23-Node Agentic Inventory
 
-PROTACXtend organizes its workflow into 23 specialized agent nodes defined under `synglue_agent/agents/`:
+PROTACXtend organizes its workflow into 23 specialized agent nodes defined under `protacxtend/agents/`:
 
 | # | Node Name | Agent Class | Function & Responsibility |
 |---|-----------|-------------|---------------------------|

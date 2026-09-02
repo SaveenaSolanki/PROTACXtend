@@ -51,7 +51,7 @@ def _heuristic_rank(smiles: str) -> float:
 
 def _chemprop_log_dc50(smiles: str):
     """Validated layer: single-molecule chemprop via the endpoint."""
-    from synglue_agent.tools.degradation_endpoint import predict_degradation_endpoint
+    from protacxtend.tools.degradation_endpoint import predict_degradation_endpoint
     r = predict_degradation_endpoint(smiles, candidate_id="x", cell_line="HCT116",
                                      target="T", e3_ligase="CRBN")
     return r
@@ -59,7 +59,7 @@ def _chemprop_log_dc50(smiles: str):
 
 def _oov_flag(smiles: str) -> bool:
     """Out-of-vocabulary = AD out_of_domain (uncertainty system's signal)."""
-    from synglue_agent.tools.applicability_domain import assess_applicability_domain
+    from protacxtend.tools.applicability_domain import assess_applicability_domain
     return assess_applicability_domain(smiles).get("status") == "out_of_domain"
 
 
@@ -114,7 +114,7 @@ def run_system(system: str, molecules: pd.DataFrame) -> dict:
 
         # ── memory retrieval (suggestion only, never overrides) ──
         if use_memory:
-            from synglue_agent.memory.stores import MemoryHub
+            from protacxtend.memory.stores import MemoryHub
             hub = MemoryHub()
             hub.suggest_repair(problem_type="degradation_prediction", failure_reason="low_confidence")
 
@@ -132,7 +132,7 @@ def run_system(system: str, molecules: pd.DataFrame) -> dict:
     enrichment = enriched / n_potent if n_potent else 0.0
 
     # synthesis feasibility (fast proxy, deterministic)
-    from synglue_agent.tools.retrosynthesis import assess_retrosynthesis
+    from protacxtend.tools.retrosynthesis import assess_retrosynthesis
     feasible = 0
     for _, row in molecules.iterrows():
         r = assess_retrosynthesis(row["smiles"], use_aizynth=False)

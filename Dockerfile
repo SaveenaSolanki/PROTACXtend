@@ -30,5 +30,5 @@ USER appuser
 EXPOSE 8000 8501
 
 # Default to API server; override CMD for CLI/Streamlit.
-CMD ["python", "-m", "uvicorn", "synglue_agent.backend.api_routes:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "protacxtend.backend.api_routes:app", "--host", "0.0.0.0", "--port", "8000"]
 

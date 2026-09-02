@@ -1,0 +1,16 @@
+id,priority,gap,why_it_matters,backend_exists,action,dependency,complexity,tests_required,validation_required
+GAP01,P0,Prospective scientific validation of degradation/E3/cell-context predictions,all ML claims retrospective (absence-of-record negatives),wet-lab/PDX/literature prospective sets,VALIDATE,n/a,M,-,prospective benchmark protocol
+GAP02,P0,Unified claims registry + config/scientific_status.yaml sync,config stale (M6=PLANNED); per-module CLAIMS only,internal,CONNECT,docs/config,S,verify script,claims cross-check
+GAP03,P0,Real ternary evidence inside design/ranking loop,M6 structural_feasibility=None for all pairs; no ternary in default CI,P4ward docker + SE3 clones,CONNECT,docker,M,integration tests,ternary retrieval benchmark
+GAP04,P1,Proteomics + wider cell context (M5 leg E),proteotype unclaimable; unmapped lines None,DepMap proteomics/user data,UPGRADE,data curation,M,-,proteomics coverage + leg E
+GAP05,P1,Selectivity: neosubstrate / off-target degradation risk,K axes heuristic only,literature datasets,BUILD,-,L,unit tests,paralog + degradome validation
+GAP06,P1,"Permeability / intracellular exposure (3D PSA, IMHB, P-gp)",only 2D rules,OpenADMET-style / ADMET-AI subset,INTEGRATE,external,M,-,PK assay correlation
+GAP07,P1,Metabolic stability / CYP breadth,ADME incomplete,ADMET-AI subset / admetSAR,INTEGRATE,external,M,-,stability benchmarks
+GAP08,P1,Active-learning scientific module (M7) + feedback loop,agent layer only,internal,BUILD,modules,L,module tests,retrospective selection benchmarks
+GAP09,P1,Dual-graph consistency (31-node vs 17-node),divergent node sets; exit_vector stub,internal,CONNECT,agents,M,graph parity tests,e2e parity
+GAP10,P2,Synthetic-accessibility scoring in construction,no SA score at build,AiZynth/ASKCOS,INTEGRATE,network,M,-,route validation
+GAP11,P2,Official Link-INVENT optional backend,internal style scorer only,Link-INVENT package,INTEGRATE (optional),external,M,-,linker parity benchmark
+GAP12,P2,Ternary/docking not in default CI,env-gated only,docker,CONNECT,CI infra,M,-,-
+GAP13,P2,Cloned external-repo runtime census,30+ clones not wired,-,CONNECT,repos,L,adapter smoke,per-repo benchmark
+GAP14,P3,PK/PBPK/exposure + in vivo translation,absent,OSP etc.,DEFER,external,L,-,in vivo correlation
+GAP15,P2,Client/lookup duplication + offline caching,two layers per source,internal,REMOVE_DUPLICATE,tools,M,-,-

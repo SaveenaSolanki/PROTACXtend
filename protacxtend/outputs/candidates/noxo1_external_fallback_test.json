@@ -1,0 +1,2828 @@
+{
+  "user_request": "Design CRBN-based PROTACs for NOXO1. Generate 10 candidates using PEG and alkyl linkers with low hERG risk.",
+  "parsed_objective": {
+    "target_name": "NOXO1",
+    "target_uniprot_id": null,
+    "disease_context": null,
+    "warhead_smiles": null,
+    "e3_ligase": "CRBN",
+    "e3_ligand_smiles": null,
+    "preferred_linker_types": [
+      "PEG",
+      "alkyl"
+    ],
+    "candidate_count": 10,
+    "optimization_objective": "low hERG risk",
+    "admet_constraints": {
+      "avoid_hERG": true
+    },
+    "novelty_requirement": "medium",
+    "use_structure_aware_ranking": false,
+    "use_retrosynthesis_filtering": false,
+    "desired_output_format": "markdown",
+    "ranking_weights": {
+      "dc50": 0.3,
+      "dmax": 0.25,
+      "admet": 0.15,
+      "ternary": 0.15,
+      "novelty": 0.1,
+      "synthetic": 0.05
+    },
+    "cell_line": null,
+    "assay_context": null
+  },
+  "target_record": {
+    "target_name": "NADPH oxidase organizer 1",
+    "gene_symbol": "NOXO1",
+    "uniprot_id": "Q8NFA2",
+    "organism": "Homo sapiens",
+    "synonyms": [
+      "NADPH oxidase organizer 1",
+      "NADPH oxidase regulatory protein",
+      "NOXO1",
+      "Nox organizer 1",
+      "Nox-organizing protein 1",
+      "P41NOX",
+      "SH3 and PX domain-containing protein 5",
+      "SH3PXD5"
+    ],
+    "structures": [],
+    "alphafold_id": "AF-Q8NFA2-F1",
+    "uniprot_confidence": 0.72,
+    "known_binder_count": 1,
+    "tractability_score": 0.42,
+    "source": "ChEMBL online target search",
+    "external_ids": {
+      "chembl_target_id": "CHEMBL5291596"
+    },
+    "biology_context": {},
+    "warnings": [
+      "Target was not found locally; resolved from ChEMBL online fallback."
+    ]
+  },
+  "retrieved_binders": [
+    {
+      "name": "CHEMBL5271171",
+      "target": "NOXO1",
+      "smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1",
+      "activity_type": "Kd",
+      "activity_nM": 2.0,
+      "p_activity": 8.698970004336019,
+      "assay_confidence": 0.58,
+      "source": "ChEMBL online activity mining",
+      "year": null,
+      "metadata": {
+        "molecule_chembl_id": "CHEMBL5271171",
+        "target_chembl_id": "CHEMBL5291596",
+        "activity_mode": "inhibitor",
+        "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+        "needs_exit_vector_hypothesis": true
+      }
+    }
+  ],
+  "selected_warheads": [
+    {
+      "name": "CHEMBL5271171",
+      "target": "NOXO1",
+      "smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "source": "ChEMBL online activity mining",
+      "potency_nM": 2.0,
+      "potency_score": 1.0,
+      "derivatization_score": 0.42,
+      "exit_vector_confidence": 0.32,
+      "source_confidence": 0.6399999999999999,
+      "chemical_validity": "unverified_no_rdkit",
+      "provenance": {
+        "activity_type": "Kd",
+        "activity_nM": 2.0,
+        "molecule_chembl_id": "CHEMBL5271171",
+        "target_chembl_id": "CHEMBL5291596",
+        "activity_mode": "inhibitor",
+        "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+        "needs_exit_vector_hypothesis": true,
+        "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+      }
+    }
+  ],
+  "selected_e3_ligands": [
+    {
+      "name": "CRBN_demo_pomalidomide_like",
+      "e3_ligase": "CRBN",
+      "smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "ligand_class": "glutarimide_phthalimide_like",
+      "source": "local_demo_e3_ligand",
+      "exit_vector_confidence": 0.88,
+      "stereochemistry_valid": true,
+      "source_confidence": 0.76,
+      "diversity_score": 0.42,
+      "provenance": {
+        "known_degrader_usage": "common_CRBN_PROTAC_handle"
+      }
+    },
+    {
+      "name": "CRBN_demo_lenalidomide_like",
+      "e3_ligase": "CRBN",
+      "smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "ligand_class": "imide_like",
+      "source": "local_demo_e3_ligand",
+      "exit_vector_confidence": 0.78,
+      "stereochemistry_valid": true,
+      "source_confidence": 0.68,
+      "diversity_score": 0.55,
+      "provenance": {
+        "known_degrader_usage": "common_CRBN_PROTAC_handle"
+      }
+    },
+    {
+      "name": "CRBN_demo_avado_like",
+      "e3_ligase": "CRBN",
+      "smiles": "CC(C)N1C(=O)c2ccc([*:1])cc2C1=O",
+      "ligand_class": "imide_like",
+      "source": "local_demo_e3_ligand",
+      "exit_vector_confidence": 0.7,
+      "stereochemistry_valid": true,
+      "source_confidence": 0.6,
+      "diversity_score": 0.68,
+      "provenance": {
+        "known_degrader_usage": "exploratory_CRBN_handle"
+      }
+    }
+  ],
+  "exit_vectors": [
+    {
+      "molecule_name": "CHEMBL5271171",
+      "molecule_role": "warhead",
+      "smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "attachment_atom_index": 0,
+      "attachment_smarts": "[*:1]",
+      "confidence": 0.32,
+      "rationale": "Explicit attachment marker found in curated or user-provided SMILES.",
+      "warning": null,
+      "failure_reason": null
+    },
+    {
+      "molecule_name": "CRBN_demo_pomalidomide_like",
+      "molecule_role": "e3_ligand",
+      "smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "attachment_atom_index": 0,
+      "attachment_smarts": "[*:1]",
+      "confidence": 0.88,
+      "rationale": "Explicit attachment marker found in curated or user-provided SMILES.",
+      "warning": null,
+      "failure_reason": null
+    },
+    {
+      "molecule_name": "CRBN_demo_lenalidomide_like",
+      "molecule_role": "e3_ligand",
+      "smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "attachment_atom_index": 0,
+      "attachment_smarts": "[*:1]",
+      "confidence": 0.78,
+      "rationale": "Explicit attachment marker found in curated or user-provided SMILES.",
+      "warning": null,
+      "failure_reason": null
+    },
+    {
+      "molecule_name": "CRBN_demo_avado_like",
+      "molecule_role": "e3_ligand",
+      "smiles": "CC(C)N1C(=O)c2ccc([*:1])cc2C1=O",
+      "attachment_atom_index": 0,
+      "attachment_smarts": "[*:1]",
+      "confidence": 0.7,
+      "rationale": "Explicit attachment marker found in curated or user-provided SMILES.",
+      "warning": null,
+      "failure_reason": null
+    }
+  ],
+  "generated_linkers": [
+    {
+      "name": "ALKYL3",
+      "smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "source": "curated_demo_linker",
+      "graph_length": 3,
+      "effective_length": 3.5,
+      "rotatable_bonds": 3,
+      "tpsa_contribution": 0.0,
+      "hbd": 0,
+      "hba": 0,
+      "synthetic_feasibility_proxy": 0.78,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "ALKYL4",
+      "smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "source": "curated_demo_linker",
+      "graph_length": 4,
+      "effective_length": 4.5,
+      "rotatable_bonds": 4,
+      "tpsa_contribution": 0.0,
+      "hbd": 0,
+      "hba": 0,
+      "synthetic_feasibility_proxy": 0.76,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "PEG2",
+      "smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "source": "curated_demo_linker",
+      "graph_length": 5,
+      "effective_length": 5.5,
+      "rotatable_bonds": 5,
+      "tpsa_contribution": 9.2,
+      "hbd": 0,
+      "hba": 1,
+      "synthetic_feasibility_proxy": 0.74,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "PEG3",
+      "smiles": "[*:1]CCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "source": "curated_demo_linker",
+      "graph_length": 8,
+      "effective_length": 8.4,
+      "rotatable_bonds": 8,
+      "tpsa_contribution": 18.4,
+      "hbd": 0,
+      "hba": 2,
+      "synthetic_feasibility_proxy": 0.7,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "ALKYL6",
+      "smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "source": "curated_demo_linker",
+      "graph_length": 6,
+      "effective_length": 6.5,
+      "rotatable_bonds": 6,
+      "tpsa_contribution": 0.0,
+      "hbd": 0,
+      "hba": 0,
+      "synthetic_feasibility_proxy": 0.7,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "PEG4",
+      "smiles": "[*:1]CCOCCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "source": "curated_demo_linker",
+      "graph_length": 11,
+      "effective_length": 11.2,
+      "rotatable_bonds": 11,
+      "tpsa_contribution": 27.6,
+      "hbd": 0,
+      "hba": 3,
+      "synthetic_feasibility_proxy": 0.64,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "curated_library"
+      }
+    },
+    {
+      "name": "rule_alkyl_3",
+      "smiles": "[*:1]CCCCC[*:2]",
+      "linker_class": "alkyl",
+      "source": "rule_based",
+      "graph_length": 5,
+      "effective_length": 5.0,
+      "rotatable_bonds": 5,
+      "tpsa_contribution": 0.0,
+      "hbd": 0,
+      "hba": 0,
+      "synthetic_feasibility_proxy": 0.62,
+      "validity_status": "unverified_no_rdkit",
+      "provenance": {
+        "generation_method": "rule_based_enumeration"
+      }
+    }
+  ],
+  "construction_attempts": [
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "ALKYL3",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-e470b372081f"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "ALKYL4",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-92ea1c29236c"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "PEG2",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-9ff45e63bee2"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "PEG3",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-0c5369628b2e"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "ALKYL6",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-2bf30829c66a"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "PEG4",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-83ea76cecdd3"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "linker_name": "rule_alkyl_3",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-1485368a69c3"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "linker_name": "ALKYL3",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-9d318133a11c"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "linker_name": "ALKYL4",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-f2bce00c5887"
+    },
+    {
+      "warhead_name": "CHEMBL5271171",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "linker_name": "PEG2",
+      "strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "success": true,
+      "failure_category": null,
+      "message": "assembled_with_string_fallback_rdkit_unavailable",
+      "candidate_id": "SGA-6b5cf86da22f"
+    }
+  ],
+  "assembled_candidates": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.707,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 974.05,
+      "tpsa": 279.0,
+      "logp": -1.45,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 35
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.698,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 987.46,
+      "tpsa": 279.0,
+      "logp": -1.42,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 36
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.689,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1003.46,
+      "tpsa": 296.0,
+      "logp": -1.6,
+      "hbd": 0,
+      "hba": 19,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG3",
+      "linker_smiles": "[*:1]CCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.28,
+      "tpsa": 313.0,
+      "logp": -1.71,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1014.28,
+      "tpsa": 279.0,
+      "logp": -1.35,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG4",
+      "linker_smiles": "[*:1]CCOCCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCOCCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.644,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1089.1,
+      "tpsa": 330.0,
+      "logp": -1.82,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 43
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "rule_alkyl_3",
+      "linker_smiles": "[*:1]CCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.635,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "rule_based",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1000.87,
+      "tpsa": 279.0,
+      "logp": -1.38,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.691,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1017.47,
+      "tpsa": 308.0,
+      "logp": -1.78,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.682,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1030.88,
+      "tpsa": 308.0,
+      "logp": -1.74,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.673,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.88,
+      "tpsa": 325.0,
+      "logp": -1.92,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 39
+    }
+  ],
+  "valid_candidates": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.707,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 974.05,
+      "tpsa": 279.0,
+      "logp": -1.45,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 35
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.698,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 987.46,
+      "tpsa": 279.0,
+      "logp": -1.42,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 36
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.689,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1003.46,
+      "tpsa": 296.0,
+      "logp": -1.6,
+      "hbd": 0,
+      "hba": 19,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG3",
+      "linker_smiles": "[*:1]CCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.28,
+      "tpsa": 313.0,
+      "logp": -1.71,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1014.28,
+      "tpsa": 279.0,
+      "logp": -1.35,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG4",
+      "linker_smiles": "[*:1]CCOCCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCOCCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.644,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1089.1,
+      "tpsa": 330.0,
+      "logp": -1.82,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 43
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "rule_alkyl_3",
+      "linker_smiles": "[*:1]CCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.635,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "rule_based",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1000.87,
+      "tpsa": 279.0,
+      "logp": -1.38,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.691,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1017.47,
+      "tpsa": 308.0,
+      "logp": -1.78,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.682,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1030.88,
+      "tpsa": 308.0,
+      "logp": -1.74,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.673,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.88,
+      "tpsa": 325.0,
+      "logp": -1.92,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 39
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.705,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {},
+        "evolution_parent": "SGA-6b5cf86da22f",
+        "evolution_action": "linker replacement to reduce size/flexibility/ADME penalty"
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "evolved_candidate_requires_revalidation",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1057.7,
+      "tpsa": 308.0,
+      "logp": -1.67,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    }
+  ],
+  "degradation_predictions": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "predicted_dc50_nM": 208.43,
+      "predicted_logdc50": 2.319,
+      "predicted_dmax_percent": 54.1,
+      "degradation_probability": 0.51,
+      "model_confidence": 0.611,
+      "applicability_domain_score": 0.522,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "predicted_dc50_nM": 217.61,
+      "predicted_logdc50": 2.338,
+      "predicted_dmax_percent": 53.8,
+      "degradation_probability": 0.507,
+      "model_confidence": 0.608,
+      "applicability_domain_score": 0.514,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "predicted_dc50_nM": 172.92,
+      "predicted_logdc50": 2.238,
+      "predicted_dmax_percent": 55.5,
+      "degradation_probability": 0.562,
+      "model_confidence": 0.598,
+      "applicability_domain_score": 0.48,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "predicted_dc50_nM": 187.78,
+      "predicted_logdc50": 2.274,
+      "predicted_dmax_percent": 52.7,
+      "degradation_probability": 0.542,
+      "model_confidence": 0.583,
+      "applicability_domain_score": 0.43,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "predicted_dc50_nM": 222.51,
+      "predicted_logdc50": 2.347,
+      "predicted_dmax_percent": 53.1,
+      "degradation_probability": 0.501,
+      "model_confidence": 0.604,
+      "applicability_domain_score": 0.498,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "predicted_dc50_nM": 203.93,
+      "predicted_logdc50": 2.309,
+      "predicted_dmax_percent": 49.9,
+      "degradation_probability": 0.523,
+      "model_confidence": 0.568,
+      "applicability_domain_score": 0.379,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "predicted_dc50_nM": 220.05,
+      "predicted_logdc50": 2.343,
+      "predicted_dmax_percent": 53.5,
+      "degradation_probability": 0.504,
+      "model_confidence": 0.606,
+      "applicability_domain_score": 0.506,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "predicted_dc50_nM": 241.71,
+      "predicted_logdc50": 2.383,
+      "predicted_dmax_percent": 50.0,
+      "degradation_probability": 0.482,
+      "model_confidence": 0.59,
+      "applicability_domain_score": 0.454,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "predicted_dc50_nM": 244.41,
+      "predicted_logdc50": 2.388,
+      "predicted_dmax_percent": 49.7,
+      "degradation_probability": 0.479,
+      "model_confidence": 0.588,
+      "applicability_domain_score": 0.446,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "predicted_dc50_nM": 194.21,
+      "predicted_logdc50": 2.288,
+      "predicted_dmax_percent": 51.4,
+      "degradation_probability": 0.534,
+      "model_confidence": 0.578,
+      "applicability_domain_score": 0.412,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "predicted_dc50_nM": 249.9,
+      "predicted_logdc50": 2.398,
+      "predicted_dmax_percent": 49.1,
+      "degradation_probability": 0.473,
+      "model_confidence": 0.583,
+      "applicability_domain_score": 0.43,
+      "model_version": "SynGlue-demo-heuristic-v0.1",
+      "warning": "RDKit not installed; descriptors are approximate."
+    }
+  ],
+  "admet_predictions": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "mw": 974.05,
+      "tpsa": 279.0,
+      "logp": -1.45,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 35,
+      "qed": null,
+      "sa_score_proxy": 0.293,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.223,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "mw": 987.46,
+      "tpsa": 279.0,
+      "logp": -1.42,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 36,
+      "qed": null,
+      "sa_score_proxy": 0.302,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.226,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "mw": 1003.46,
+      "tpsa": 296.0,
+      "logp": -1.6,
+      "hbd": 0,
+      "hba": 19,
+      "rotatable_bonds": 37,
+      "qed": null,
+      "sa_score_proxy": 0.311,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.23,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "mw": 1046.28,
+      "tpsa": 313.0,
+      "logp": -1.71,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40,
+      "qed": null,
+      "sa_score_proxy": 0.329,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "medium",
+      "overall_admet_penalty": 0.241,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "mw": 1014.28,
+      "tpsa": 279.0,
+      "logp": -1.35,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 38,
+      "qed": null,
+      "sa_score_proxy": 0.329,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.233,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "mw": 1089.1,
+      "tpsa": 330.0,
+      "logp": -1.82,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 43,
+      "qed": null,
+      "sa_score_proxy": 0.356,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "medium",
+      "overall_admet_penalty": 0.252,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "mw": 1000.87,
+      "tpsa": 279.0,
+      "logp": -1.38,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 37,
+      "qed": null,
+      "sa_score_proxy": 0.365,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.23,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "mw": 1017.47,
+      "tpsa": 308.0,
+      "logp": -1.78,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 37,
+      "qed": null,
+      "sa_score_proxy": 0.309,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.234,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "mw": 1030.88,
+      "tpsa": 308.0,
+      "logp": -1.74,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 38,
+      "qed": null,
+      "sa_score_proxy": 0.318,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "low",
+      "overall_admet_penalty": 0.237,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "mw": 1046.88,
+      "tpsa": 325.0,
+      "logp": -1.92,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 39,
+      "qed": null,
+      "sa_score_proxy": 0.327,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "medium",
+      "overall_admet_penalty": 0.241,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "mw": 1057.7,
+      "tpsa": 308.0,
+      "logp": -1.67,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40,
+      "qed": null,
+      "sa_score_proxy": 0.295,
+      "hERG_risk": "low",
+      "AMES_risk": "low",
+      "DILI_risk": "low",
+      "CYP_risk": "low",
+      "Pgp_risk": "high",
+      "solubility_risk": "medium",
+      "overall_admet_penalty": 0.244,
+      "warning": "Approximate descriptors; install RDKit for production use."
+    }
+  ],
+  "novelty_results": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "nearest_known_protac": "demo_known_brd4_crbn",
+      "max_tanimoto_similarity": 0.354,
+      "duplicate_flag": false,
+      "novelty_score": 0.646,
+      "scaffold_novelty": 0.632,
+      "component_novelty": 0.523,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "nearest_known_protac": "demo_known_gspt1_crbn",
+      "max_tanimoto_similarity": 0.274,
+      "duplicate_flag": false,
+      "novelty_score": 0.726,
+      "scaffold_novelty": 0.703,
+      "component_novelty": 0.563,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "nearest_known_protac": "demo_known_gspt1_crbn",
+      "max_tanimoto_similarity": 0.274,
+      "duplicate_flag": false,
+      "novelty_score": 0.726,
+      "scaffold_novelty": 0.703,
+      "component_novelty": 0.563,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "nearest_known_protac": "demo_known_gspt1_crbn",
+      "max_tanimoto_similarity": 0.274,
+      "duplicate_flag": false,
+      "novelty_score": 0.726,
+      "scaffold_novelty": 0.703,
+      "component_novelty": 0.563,
+      "linker_novelty": 0.65
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "nearest_known_protac": "demo_known_gspt1_crbn",
+      "max_tanimoto_similarity": 0.274,
+      "duplicate_flag": false,
+      "novelty_score": 0.726,
+      "scaffold_novelty": 0.703,
+      "component_novelty": 0.563,
+      "linker_novelty": 0.65
+    }
+  ],
+  "applicability_domain_results": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "similarity_to_training_set": 0.522,
+      "embedding_distance": 0.478,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "similarity_to_training_set": 0.514,
+      "embedding_distance": 0.486,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "similarity_to_training_set": 0.48,
+      "embedding_distance": 0.52,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "similarity_to_training_set": 0.43,
+      "embedding_distance": 0.57,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "similarity_to_training_set": 0.498,
+      "embedding_distance": 0.502,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "similarity_to_training_set": 0.379,
+      "embedding_distance": 0.621,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "similarity_to_training_set": 0.506,
+      "embedding_distance": 0.494,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "similarity_to_training_set": 0.454,
+      "embedding_distance": 0.546,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "similarity_to_training_set": 0.446,
+      "embedding_distance": 0.554,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "similarity_to_training_set": 0.412,
+      "embedding_distance": 0.588,
+      "domain_status": "edge",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "similarity_to_training_set": 0.43,
+      "embedding_distance": 0.57,
+      "domain_status": "edge",
+      "warning": null
+    }
+  ],
+  "ternary_feasibility_results": [],
+  "ranking_results": [
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "rank": 1,
+      "tier": "Tier 2",
+      "final_priority_score": 0.579,
+      "confidence": 0.575,
+      "reason_for_rank": "DC50 score 0.50, Dmax score 0.56, ADME score 0.77, novelty 0.65, synthetic 0.69.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "rank": 2,
+      "tier": "Tier 2",
+      "final_priority_score": 0.571,
+      "confidence": 0.599,
+      "reason_for_rank": "DC50 score 0.48, Dmax score 0.54, ADME score 0.78, novelty 0.65, synthetic 0.71.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "rank": 3,
+      "tier": "Tier 2",
+      "final_priority_score": 0.57,
+      "confidence": 0.539,
+      "reason_for_rank": "DC50 score 0.49, Dmax score 0.51, ADME score 0.76, novelty 0.73, synthetic 0.67.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "rank": 4,
+      "tier": "Tier 2",
+      "final_priority_score": 0.568,
+      "confidence": 0.593,
+      "reason_for_rank": "DC50 score 0.47, Dmax score 0.54, ADME score 0.77, novelty 0.65, synthetic 0.70.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "rank": 5,
+      "tier": "Tier 2",
+      "final_priority_score": 0.567,
+      "confidence": 0.547,
+      "reason_for_rank": "DC50 score 0.49, Dmax score 0.53, ADME score 0.76, novelty 0.65, synthetic 0.67.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "rank": 6,
+      "tier": "Tier 2",
+      "final_priority_score": 0.563,
+      "confidence": 0.58,
+      "reason_for_rank": "DC50 score 0.47, Dmax score 0.53, ADME score 0.77, novelty 0.65, synthetic 0.67.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "rank": 7,
+      "tier": "Tier 2",
+      "final_priority_score": 0.563,
+      "confidence": 0.577,
+      "reason_for_rank": "DC50 score 0.47, Dmax score 0.54, ADME score 0.77, novelty 0.65, synthetic 0.64.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "rank": 8,
+      "tier": "Tier 2",
+      "final_priority_score": 0.561,
+      "confidence": 0.563,
+      "reason_for_rank": "DC50 score 0.46, Dmax score 0.50, ADME score 0.77, novelty 0.73, synthetic 0.69.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "rank": 9,
+      "tier": "Tier 2",
+      "final_priority_score": 0.559,
+      "confidence": 0.557,
+      "reason_for_rank": "DC50 score 0.46, Dmax score 0.50, ADME score 0.76, novelty 0.73, synthetic 0.68.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "rank": 10,
+      "tier": "Tier 2",
+      "final_priority_score": 0.556,
+      "confidence": 0.554,
+      "reason_for_rank": "DC50 score 0.46, Dmax score 0.49, ADME score 0.76, novelty 0.73, synthetic 0.70.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "rank": 11,
+      "tier": "Tier 2",
+      "final_priority_score": 0.554,
+      "confidence": 0.517,
+      "reason_for_rank": "DC50 score 0.48, Dmax score 0.50, ADME score 0.75, novelty 0.65, synthetic 0.64.",
+      "penalty_explanation": "domain status edge",
+      "uncertainty_flags": [
+        "rdkit_not_installed"
+      ]
+    }
+  ],
+  "reflection_reviews": [
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "review_score": 0.723,
+      "plausibility_score": 0.613,
+      "evidence_score": 0.722,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "review_score": 0.72,
+      "plausibility_score": 0.609,
+      "evidence_score": 0.718,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "review_score": 0.718,
+      "plausibility_score": 0.61,
+      "evidence_score": 0.71,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "review_score": 0.707,
+      "plausibility_score": 0.596,
+      "evidence_score": 0.697,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "review_score": 0.711,
+      "plausibility_score": 0.598,
+      "evidence_score": 0.707,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-83ea76cecdd3",
+      "review_score": 0.694,
+      "plausibility_score": 0.579,
+      "evidence_score": 0.681,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "review_score": 0.703,
+      "plausibility_score": 0.59,
+      "evidence_score": 0.695,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "review_score": 0.712,
+      "plausibility_score": 0.599,
+      "evidence_score": 0.707,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "review_score": 0.709,
+      "plausibility_score": 0.596,
+      "evidence_score": 0.703,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "review_score": 0.707,
+      "plausibility_score": 0.597,
+      "evidence_score": 0.696,
+      "risk_score": 0.0,
+      "overclaiming_warning": "Predicted degradation is computational only; no experimental validation is implied.",
+      "factual_consistency_check": "provenance_present",
+      "recommendations": [
+        "Proceed only to expert medicinal chemistry review; predictions are not experimental evidence."
+      ]
+    }
+  ],
+  "evolved_candidates": [
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.705,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {},
+        "evolution_parent": "SGA-6b5cf86da22f",
+        "evolution_action": "linker replacement to reduce size/flexibility/ADME penalty"
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "evolved_candidate_requires_revalidation",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1057.7,
+      "tpsa": 308.0,
+      "logp": -1.67,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    }
+  ],
+  "diversity_clusters": [
+    {
+      "cluster_id": "cluster_1",
+      "candidate_ids": [
+        "SGA-e470b372081f",
+        "SGA-92ea1c29236c",
+        "SGA-9ff45e63bee2",
+        "SGA-0c5369628b2e",
+        "SGA-2bf30829c66a",
+        "SGA-83ea76cecdd3",
+        "SGA-1485368a69c3",
+        "SGA-9d318133a11c",
+        "SGA-f2bce00c5887",
+        "SGA-6b5cf86da22f"
+      ],
+      "representative_id": "SGA-e470b372081f",
+      "redundancy_score": 0.9,
+      "diversity_score": 0.1
+    }
+  ],
+  "final_ranked_candidates": [
+    {
+      "candidate_id": "SGA-9ff45e63bee2",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.689,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1003.46,
+      "tpsa": 296.0,
+      "logp": -1.6,
+      "hbd": 0,
+      "hba": 19,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-e470b372081f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.707,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 974.05,
+      "tpsa": 279.0,
+      "logp": -1.45,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 35
+    },
+    {
+      "candidate_id": "SGA-6b5cf86da22f",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "PEG2",
+      "linker_smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.673,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.88,
+      "tpsa": 325.0,
+      "logp": -1.92,
+      "hbd": 0,
+      "hba": 21,
+      "rotatable_bonds": 39
+    },
+    {
+      "candidate_id": "SGA-92ea1c29236c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.698,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 987.46,
+      "tpsa": 279.0,
+      "logp": -1.42,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 36
+    },
+    {
+      "candidate_id": "SGA-0c5369628b2e",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "PEG3",
+      "linker_smiles": "[*:1]CCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCOCCOCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1046.28,
+      "tpsa": 313.0,
+      "logp": -1.71,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    },
+    {
+      "candidate_id": "SGA-2bf30829c66a",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.671,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1014.28,
+      "tpsa": 279.0,
+      "logp": -1.35,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-1485368a69c3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_pomalidomide_like",
+      "e3_ligand_smiles": "O=C1NC(=O)c2ccc([*:1])cc21",
+      "linker_name": "rule_alkyl_3",
+      "linker_smiles": "[*:1]CCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCO=C1NC(=O)c2ccccc21",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.635,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "rule_based",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1000.87,
+      "tpsa": 279.0,
+      "logp": -1.38,
+      "hbd": 0,
+      "hba": 18,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-9d318133a11c",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL3",
+      "linker_smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.691,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1017.47,
+      "tpsa": 308.0,
+      "logp": -1.78,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 37
+    },
+    {
+      "candidate_id": "SGA-f2bce00c5887",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL4",
+      "linker_smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.682,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {
+          "activity_type": "Kd",
+          "activity_nM": 2.0,
+          "molecule_chembl_id": "CHEMBL5271171",
+          "target_chembl_id": "CHEMBL5291596",
+          "activity_mode": "inhibitor",
+          "assay_description": "Inhibition of 6His tagged NOXO1 (149 to 286 residues) (unknown origin) expressed in Escherichia coli BL21 (DE3) assessed as apparent dissociation constant at 800 uM by isothermal titration calorimetry",
+          "needs_exit_vector_hypothesis": true,
+          "exit_vector_warning": "Hypothetical attachment marker added by deterministic tool; chemist review required."
+        }
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "hypothetical_exit_vector_requires_chemist_review",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1030.88,
+      "tpsa": 308.0,
+      "logp": -1.74,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 38
+    },
+    {
+      "candidate_id": "SGA-c70261f276e3",
+      "target": "NOXO1",
+      "e3_ligase": "CRBN",
+      "warhead_name": "CHEMBL5271171",
+      "warhead_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1[*:1]",
+      "warhead_source": "ChEMBL online activity mining",
+      "e3_ligand_name": "CRBN_demo_lenalidomide_like",
+      "e3_ligand_smiles": "NC(=O)c1ccc2C(=O)N([*:1])C(=O)c2c1",
+      "linker_name": "ALKYL6",
+      "linker_smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "full_protac_smiles": "NC(=O)c1cccc(-c2ccccc2NCC2CCN(C(=O)CCOCCOCCOCCOCCNC(=O)CCCC[C@H]3SC[C@H]4NC(=O)N[C@H]43)CC2)c1CCCCCCNC(=O)c1ccc2C(=O)NC(=O)c2c1",
+      "assembly_strategy": "curated_template",
+      "reaction_class": "amide_or_ether_coupling",
+      "validity_status": "unverified_no_rdkit",
+      "synthetic_feasibility_score": 0.705,
+      "provenance": {
+        "strategy": "curated_template",
+        "reaction_class": "amide_or_ether_coupling",
+        "linker_source": "curated_demo_linker",
+        "rdkit_available": false,
+        "warhead_provenance": {},
+        "evolution_parent": "SGA-6b5cf86da22f",
+        "evolution_action": "linker replacement to reduce size/flexibility/ADME penalty"
+      },
+      "warning_flags": [
+        "rdkit_unavailable_unverified_smiles",
+        "evolved_candidate_requires_revalidation",
+        "install_rdkit_for_chemical_validation"
+      ],
+      "mw": 1057.7,
+      "tpsa": 308.0,
+      "logp": -1.67,
+      "hbd": 0,
+      "hba": 20,
+      "rotatable_bonds": 40
+    }
+  ],
+  "report": "# SynGlue-Agent PROTAC Design Report\n\nSynGlue-Agent is a tool-augmented, memory-enabled, workflow-orchestrated agentic AI framework for component-aware PROTAC design.\n\n## Objective\n- User request: Design CRBN-based PROTACs for NOXO1. Generate 10 candidates using PEG and alkyl linkers with low hERG risk.\n- Target: NOXO1\n- E3 ligase: CRBN\n- Candidate target count: 10\n\n## Workflow Summary\n- Binders retrieved: 1\n- Warheads selected: 1\n- E3 ligands selected: 3\n- Linkers generated: 7\n- Construction attempts: 10\n- Valid or unverified candidates: 11\n- Evolved candidates: 1\n\n## Scientific Guardrails\n- Values are computational predictions, not experimental validation.\n- Model version is reported for degradation predictions.\n- Human medicinal chemistry and safety review is required before synthesis or wet-lab testing.\n\n## Warnings\n- RDKit is not installed; local run uses approximate descriptors and unverified fallback assembly.\n- Target was not found locally; resolved from ChEMBL online fallback.\n- CHEMBL5271171: Hypothetical attachment marker added by deterministic tool; chemist review required.\n\n## Top Ranked Candidates\n\n| Rank | Tier | Target | E3 ligase | Warhead name | Linker class | Predicted DC50 nM | Predicted Dmax % | hERG risk | Novelty score | Final priority score | Warning flags |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | PEG | 172.92 | 55.5 | low | 0.646 | 0.579 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 2 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 208.43 | 54.1 | low | 0.646 | 0.571 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 3 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | PEG | 194.21 | 51.4 | low | 0.726 | 0.57 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 4 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 217.61 | 53.8 | low | 0.646 | 0.568 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 5 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | PEG | 187.78 | 52.7 | low | 0.646 | 0.567 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 6 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 222.51 | 53.1 | low | 0.646 | 0.563 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 7 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 220.05 | 53.5 | low | 0.646 | 0.563 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 8 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 241.71 | 50.0 | low | 0.726 | 0.561 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 9 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 244.41 | 49.7 | low | 0.726 | 0.559 | rdkit_unavailable_unverified_smiles;hypothetical_exit_vector_requires_chemist_review;install_rdkit_for_chemical_validation;rdkit_not_installed |\n| 10 | Tier 2 | NOXO1 | CRBN | CHEMBL5271171 | alkyl | 249.9 | 49.1 | low | 0.726 | 0.556 | rdkit_unavailable_unverified_smiles;evolved_candidate_requires_revalidation;install_rdkit_for_chemical_validation;rdkit_not_installed |\n\n## Agent Workflow Table\n\n| Agent type | Data sources/tools | Query parameters | Quantitative outputs | Processing time |\n| --- | --- | --- | --- | --- |\n| Target Resolver Agent | local curated targets; UniProt/ChEMBL/PDB/AlphaFold stubs | target=NOXO1, organism=human | UniProt=Q8NFA2, structures=0, tractability=0.42 | milliseconds locally; seconds with online APIs |\n| Binder Retrieval Agent | curated binders, ChEMBL/PubChem/BindingDB stubs, local PROTAC records | activity IC50/Ki/Kd/EC50 <= 1000 nM; assay confidence threshold | binders=1, unique_smiles=1 | milliseconds locally; minutes with online APIs |\n| Warhead Selection Agent | curated binders, RDKit validation, exit-vector maps | activity IC50/Ki/Kd <= 1000 nM; derivatization feasible | binders=1, warheads=1 | milliseconds locally; minutes with database queries |\n| E3 Ligand Agent | curated CRBN/VHL/IAP/MDM2 handles, E3 usage priors | requested_e3=CRBN | e3_ligands=3, ligases=1 | milliseconds locally |\n| Exit Vector Agent | explicit attachment markers, SMARTS rules, curated maps | warhead and E3 ligand component SMILES | vectors=4, ambiguous=0 | milliseconds locally |\n| Linker Generation Agent | curated library, rule enumeration, BRICS/RECAP hooks, LinkInvent/Reinvent stubs | linker_types=PEG,alkyl | linkers=7, classes=2 | milliseconds locally; model generation can take minutes |\n| Construction Agent | curated templates, reaction SMARTS, BRICS/RECAP, known-linker grafting, MMP replacement, generative hooks, retrosynthesis filter | warhead + linker + E3 with valid exit vectors | attempts=10, valid=11 | seconds locally; longer with retrosynthesis |\n| Prediction Agent | SynGlue DC50/Dmax interface, component embeddings, applicability-domain model | full PROTAC, components, target, E3 ligase, optional cell context | degradation_predictions=11 | seconds locally; model dependent |\n| ADME/Tox Agent | RDKit descriptors, hERG/AMES/DILI/CYP/P-gp/solubility wrappers | PROTAC-aware thresholds; no strict Lipinski rejection | admet_records=11 | seconds locally |\n| Novelty Agent | known PROTAC set, Morgan fingerprints/string fallback, scaffold/component novelty | candidate SMILES and similarity thresholds | novelty_records=11 | seconds locally |\n| Ternary Feasibility Agent | PDB/AlphaFold, geometry filter, docking wrappers, PRODIGY-like interface scoring | top candidates after first ranking | ternary_records=0 | seconds locally; docking can take hours |\n| Ranking Agent | SynGlue demo models, ADME/Tox, novelty, feasibility | low hERG risk | ranked=11, final=10 | seconds |\n| Reflection/Evolution Agent | candidate provenance, warning logs, linker replacement, E3 switch, exit-vector alternatives | top candidates and weaknesses | reviews=10, evolved=1 | seconds to minutes |\n| Safety/Human Review Agent | guardrail rules, applicability domain, toxicity risk, provenance logs | final candidates and requested use | warnings=3, errors=0, human_review_required=True | milliseconds locally |",
+  "workflow_log": [
+    {
+      "agent": "SupervisorAgent",
+      "thought": "Parse the user's degradation objective into a structured PROTAC workflow state.",
+      "action": "parse_user_request",
+      "observation": "target=NOXO1, e3=CRBN, candidate_count=10, linkers=['PEG', 'alkyl']",
+      "processing_time_s": 0.0004
+    },
+    {
+      "agent": "SafetyGuardrailAgent",
+      "thought": "Check request and candidate state for overclaiming, experimental-use language, and reporting guardrails.",
+      "action": "safety_precheck",
+      "observation": "guardrails=8, warnings=1",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "TargetResolverAgent",
+      "thought": "Resolve target identity, structure availability, known binder count, and tractability.",
+      "action": "resolve_target",
+      "observation": "target=NOXO1, uniprot=Q8NFA2, structures=0, tractability=0.42",
+      "processing_time_s": 0.7986
+    },
+    {
+      "agent": "TargetBinderRetrievalAgent",
+      "thought": "Retrieve target binders unless the user provided a warhead.",
+      "action": "retrieve_target_binders",
+      "observation": "binders=1",
+      "processing_time_s": 0.7706
+    },
+    {
+      "agent": "WarheadSelectionAgent",
+      "thought": "Rank binders or the user-provided molecule as PROTAC warhead candidates using potency, derivatization, and exit-vector confidence.",
+      "action": "select_warheads",
+      "observation": "warheads=1",
+      "processing_time_s": 0.0009
+    },
+    {
+      "agent": "E3LigandSelectionAgent",
+      "thought": "Select E3 ligands with known attachment handles and source provenance.",
+      "action": "select_e3_ligands",
+      "observation": "e3_ligands=3, ligases=['CRBN']",
+      "processing_time_s": 0.0006
+    },
+    {
+      "agent": "ExitVectorDetectionAgent",
+      "thought": "Verify warhead and E3 ligand attachment vectors before construction.",
+      "action": "detect_exit_vectors",
+      "observation": "exit_vectors=4, ambiguous=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "LinkerGenerationAgent",
+      "thought": "Generate curated and rule-based linker candidates matching requested classes and PROTAC-aware constraints.",
+      "action": "generate_linkers",
+      "observation": "linkers=7, classes=['PEG', 'alkyl']",
+      "processing_time_s": 0.0019
+    },
+    {
+      "agent": "MolecularConstructionAgent",
+      "thought": "Construct PROTAC candidates with multi-strategy deterministic assembly and provenance tracking.",
+      "action": "construct_protacs",
+      "observation": "attempts=10, assembled=10, successes=10",
+      "processing_time_s": 0.0013
+    },
+    {
+      "agent": "CandidateValidationAgent",
+      "thought": "Sanitize, canonicalize, property-check, and deduplicate assembled PROTAC candidates.",
+      "action": "validate_protacs",
+      "observation": "valid_candidates=10",
+      "processing_time_s": 0.0004
+    },
+    {
+      "agent": "DegradationPredictionAgent",
+      "thought": "Predict DC50, Dmax, degradation probability, confidence, and model-version provenance.",
+      "action": "predict_degradation",
+      "observation": "predictions=10, low_confidence=0",
+      "processing_time_s": 0.0005
+    },
+    {
+      "agent": "ADMETAgent",
+      "thought": "Compute PROTAC-aware descriptor and toxicity-risk triage without strict Lipinski rejection.",
+      "action": "predict_admet",
+      "observation": "admet=10, high_risk_records=0",
+      "processing_time_s": 0.0003
+    },
+    {
+      "agent": "NoveltySimilarityAgent",
+      "thought": "Compare candidates against local known PROTAC-like records using fingerprints or deterministic string fallback.",
+      "action": "check_novelty",
+      "observation": "novelty_results=10, duplicates=0",
+      "processing_time_s": 0.001
+    },
+    {
+      "agent": "ApplicabilityDomainAgent",
+      "thought": "Assess whether candidates are inside the demo model domain before ranking.",
+      "action": "assess_applicability_domain",
+      "observation": "domain_results=10, outside=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "RankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "rank_candidates",
+      "observation": "ranked=10, top_score=0.579",
+      "processing_time_s": 0.0003
+    },
+    {
+      "agent": "ProximityDiversityAgent",
+      "thought": "Cluster chemically similar candidates and identify diverse representatives.",
+      "action": "diversity_clustering",
+      "observation": "clusters=1",
+      "processing_time_s": 0.0003
+    },
+    {
+      "agent": "ReflectionReviewAgent",
+      "thought": "Critique top candidates for evidence strength, overclaims, ADME/Tox risk, novelty, and synthesis plausibility.",
+      "action": "reflection_review",
+      "observation": "reviews=10, high_review_risk=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "EvolutionRefinementAgent",
+      "thought": "Use review and ADME/Tox weaknesses to propose deterministic linker replacements and re-score evolved candidates.",
+      "action": "evolution_refinement",
+      "observation": "evolved=1, candidate_pool=11",
+      "processing_time_s": 0.0028
+    },
+    {
+      "agent": "TernaryFeasibilityAgent",
+      "thought": "Run fast geometry and linker reachability scoring only on top-ranked candidates unless explicitly requested.",
+      "action": "optional_ternary_feasibility",
+      "observation": "skipped, ternary_results=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "FinalRankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "final_ranking",
+      "observation": "ranked=11, top_score=0.579",
+      "processing_time_s": 0.0015
+    },
+    {
+      "agent": "ReportAgent",
+      "thought": "Generate transparent candidate table, workflow summary, provenance, warnings, and scientific limitations.",
+      "action": "generate_report",
+      "observation": "report_chars=6703",
+      "processing_time_s": 0.0004
+    },
+    {
+      "agent": "MemoryUpdateAgent",
+      "thought": "Persist reproducible workflow summary to local memory.",
+      "action": "update_memory",
+      "observation": "memory_path=/Users/saveenasolanki/Documents/New project/protacxtend/memory/workflow_logs/run-663d9c3f5b75.json",
+      "processing_time_s": 0.0
+    }
+  ],
+  "warnings": [
+    "RDKit is not installed; local run uses approximate descriptors and unverified fallback assembly.",
+    "Target was not found locally; resolved from ChEMBL online fallback.",
+    "CHEMBL5271171: Hypothetical attachment marker added by deterministic tool; chemist review required."
+  ],
+  "errors": [],
+  "memory_updates": [
+    {
+      "run_id": "run-663d9c3f5b75",
+      "path": "/Users/saveenasolanki/Documents/New project/protacxtend/memory/workflow_logs/run-663d9c3f5b75.json"
+    }
+  ]
+}

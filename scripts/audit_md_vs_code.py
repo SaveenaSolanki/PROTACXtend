@@ -22,8 +22,8 @@ sys.path.insert(0, str(ROOT))
 import ast  # noqa: E402
 
 MD_DIR = ROOT / "md"
-AGENTS = ROOT / "synglue_agent" / "agents"
-TOOLS = ROOT / "synglue_agent" / "tools"
+AGENTS = ROOT / "protacxtend" / "agents"
+TOOLS = ROOT / "protacxtend" / "tools"
 
 results = []
 
@@ -93,7 +93,7 @@ def main() -> int:
                       "exists" if t_path.exists() else f"MISSING ({t})", doc_name)
 
     # ── 2. WorkflowState fields used by docs ──────────────────────────
-    schema = (ROOT / "synglue_agent" / "backend" / "schemas.py").read_text(encoding="utf-8")
+    schema = (ROOT / "protacxtend" / "backend" / "schemas.py").read_text(encoding="utf-8")
     fields = set(re.findall(r"^\s{4}([a-z_]+):", schema, re.M))
     for spec in specs:
         for fld in re.findall(r"`state\.([a-z_]+)`", spec.read_text(encoding="utf-8", errors="ignore")):
@@ -113,26 +113,26 @@ def main() -> int:
             continue
         text = p.read_text(encoding="utf-8", errors="ignore")
         refs = set(re.findall(r"`([a-zA-Z0-9_./\-]+\.py)`", text))
-        all_py = {p.name: p for p in (ROOT / "synglue_agent").rglob("*.py")}
+        all_py = {p.name: p for p in (ROOT / "protacxtend").rglob("*.py")}
         for ref in refs:
-            candidates = [ROOT / ref, ROOT / "synglue_agent" / ref]
+            candidates = [ROOT / ref, ROOT / "protacxtend" / ref]
             if not any(c.exists() for c in candidates):
-                # resolve by basename across synglue_agent
+                # resolve by basename across protacxtend
                 hits = [p for name, p in all_py.items() if name == Path(ref).name]
                 if hits:
                     check(f"{doc}: ref {ref}", True, f"resolved to {hits[0].relative_to(ROOT)}", doc)
                 else:
                     check(f"{doc}: ref {ref}", False, "FILE MISSING (no basename match)", doc)
         # importable modules mentioned
-        mods = set(re.findall(r"synglue_agent\.([a-z_\.]+)", text))
+        mods = set(re.findall(r"protacxtend\.([a-z_\.]+)", text))
         for mod in sorted(mods)[:40]:
             try:
-                importlib.import_module(f"synglue_agent.{mod}")
+                importlib.import_module(f"protacxtend.{mod}")
                 ok = True
             except Exception:
                 ok = False
             if not ok:
-                check(f"{doc}: module synglue_agent.{mod}", False, "IMPORT FAILS", doc)
+                check(f"{doc}: module protacxtend.{mod}", False, "IMPORT FAILS", doc)
 
     # ── output ────────────────────────────────────────────────────────
     out = ["# MD-Docs vs Implementation Audit", "",

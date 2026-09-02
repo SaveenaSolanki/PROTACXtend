@@ -44,13 +44,13 @@ logger = logging.getLogger("protacpilot.llm.eval")
 
 ROOT = Path(__file__).resolve().parents[1]
 
-from synglue_agent.llm.schemas import (
+from protacxtend.llm.schemas import (
     EvidenceDecision, DesignDecision, RepairDecision, CritiqueDecision,
     SupervisorDecision, ReportDecision, Route, RepairAction, CritiqueVerdict,
 )
-from synglue_agent.llm.tool_registry import ALLOWED_TOOLS
-from synglue_agent.llm.gateway import structured_chat
-from synglue_agent.llm.providers import get_config
+from protacxtend.llm.tool_registry import ALLOWED_TOOLS
+from protacxtend.llm.gateway import structured_chat
+from protacxtend.llm.providers import get_config
 
 
 # ── Deterministic "correct answer" checkers per role ──────────────────
@@ -95,7 +95,7 @@ def check_supervisor(decision: SupervisorDecision, case: Dict[str, Any]) -> Tupl
     # tools from the closed registry only
     if decision.selected_tools:
         try:
-            from synglue_agent.llm.tool_registry import validate_selected_tools
+            from protacxtend.llm.tool_registry import validate_selected_tools
             validate_selected_tools(decision.selected_tools)
         except ValueError as exc:
             issues.append(f"unsupported tool: {exc}")
@@ -117,7 +117,7 @@ def check_evidence(decision: EvidenceDecision, case: Dict[str, Any]) -> Tuple[bo
         ok = False
     # tool registry check
     try:
-        from synglue_agent.llm.tool_registry import validate_selected_tools
+        from protacxtend.llm.tool_registry import validate_selected_tools
         validate_selected_tools(decision.selected_tools)
     except ValueError as exc:
         issues.append(f"unsupported tool: {exc}")

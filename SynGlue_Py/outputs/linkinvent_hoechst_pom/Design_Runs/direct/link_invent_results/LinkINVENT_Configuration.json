@@ -1,0 +1,123 @@
+{
+    "version": 3,
+    "model_type": "link_invent",
+    "run_type": "reinforcement_learning",
+    "logging": {
+        "sender": "",
+        "recipient": "local",
+        "logging_path": "/app/outputs/linkinvent_hoechst_pom/Design_Runs/direct/link_invent_results/progress.log",
+        "result_folder": "/app/outputs/linkinvent_hoechst_pom/Design_Runs/direct/link_invent_results/results",
+        "job_name": "SynGlue_Constrained_Run",
+        "job_id": "N/A"
+    },
+    "parameters": {
+        "actor": "/app/models/linkinvent.prior",
+        "critic": "/app/models/linkinvent.prior",
+        "warheads": [
+            "CCN1CCN(CC1)C2=CC3=C(C=C2)C(=NN3)C4=CC5=C(C=C4)N=C(N5)C6=CC(=C(C=C6)O)OC|NC1=CC=CC2=C1C(=O)N(C1CCC(=O)NC1=O)C2=O"
+        ],
+        "n_steps": 150,
+        "learning_rate": 0.0001,
+        "batch_size": 32,
+        "randomize_warheads": true,
+        "learning_strategy": {
+            "name": "dap",
+            "parameters": {
+                "sigma": 120
+            }
+        },
+        "scoring_strategy": {
+            "name": "link_invent",
+            "diversity_filter": {
+                "bucket_size": 25,
+                "minscore": 0,
+                "minsimilarity": 0,
+                "name": "IdenticalMurckoScaffold"
+            },
+            "scoring_function": {
+                "name": "custom_product",
+                "parallel": false,
+                "parameters": [
+                    {
+                        "name": "LGL",
+                        "weight": 2,
+                        "component_type": "linker_graph_length",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 12,
+                                "low": 4,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.5
+                            }
+                        }
+                    },
+                    {
+                        "name": "LEL",
+                        "weight": 2,
+                        "component_type": "linker_effective_length",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 8,
+                                "low": 4,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.5
+                            }
+                        }
+                    },
+                    {
+                        "name": "Flex",
+                        "weight": 2,
+                        "component_type": "num_rotatable_bonds",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 12,
+                                "low": 0,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.5
+                            }
+                        }
+                    },
+                    {
+                        "name": "HBD",
+                        "weight": 1,
+                        "component_type": "linker_num_hbd",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 6,
+                                "low": 0,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.15
+                            }
+                        }
+                    },
+                    {
+                        "name": "MW",
+                        "weight": 2,
+                        "component_type": "molecular_weight",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 1000,
+                                "low": 700,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.01
+                            }
+                        }
+                    },
+                    {
+                        "name": "TPSA",
+                        "weight": 2,
+                        "component_type": "tpsa",
+                        "specific_parameters": {
+                            "transformation": {
+                                "high": 230,
+                                "low": 0,
+                                "transformation_type": "reverse_sigmoid",
+                                "k": 0.1
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

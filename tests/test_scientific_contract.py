@@ -1,5 +1,5 @@
-from synglue_agent.backend.schemas import CandidateRecord, DegradationPrediction, RankingResult, WorkflowState
-from synglue_agent.scientific_contract import (
+from protacxtend.backend.schemas import CandidateRecord, DegradationPrediction, RankingResult, WorkflowState
+from protacxtend.scientific_contract import (
     build_experiment_dossier,
     build_scientific_state,
     critique_scientific_state,

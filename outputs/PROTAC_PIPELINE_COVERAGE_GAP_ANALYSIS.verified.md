@@ -134,11 +134,11 @@ Legend: 🟢 real/validated locally · 🟡 partial or degraded · 🔴 absent/s
 54. ProtacPilot E3 ligand library status per release records (114 rows / 19 E3 groups). /storage/saveena/protacpilot/RELEASE_CLOSURE_REPORT.md (per brief B §2.1; raw CSV = 117 rows — see residual note)
 55. ProtacPilot SynGlue_Py/data/e3_ligand.csv (local artifact: 118-line table, DOI/UniProt/activity provenance; contains Nutlin, KI-696, Nimbolide, BTR2000). /storage/saveena/protacpilot/SynGlue_Py/data/e3_ligand.csv *(re-verified locally)*
 56. ProtacPilot RELEASE_CLOSURE_REPORT.md (local artifact: chemprop ρ=0.758→0.783 vs heuristic 0.42; 92.2% conformal coverage; 15,502-row PROTAC-DB 3.0 xlsx; DC50=33.9 nM/Dmax=80% container run; 293 tests). /storage/saveena/protacpilot/RELEASE_CLOSURE_REPORT.md *(re-verified locally)*
-57. ProtacPilot synglue_agent/tools/protac_repo_tool_wrappers.py (cloned repos are metadata-only/manual-only; no generative linker model wired). /storage/saveena/protacpilot/synglue_agent/tools/protac_repo_tool_wrappers.py
-58. ProtacPilot synglue_agent/tools/ternary_ensemble.py (staged proxy→P4ward→SE3 escalation; SE3 weights-missing graceful error; heuristic fallback). /storage/saveena/protacpilot/synglue_agent/tools/ternary_ensemble.py
-59. ProtacPilot synglue_agent/tools/synglue_degradation.py (GROVER→transformer→RF architecture). /storage/saveena/protacpilot/synglue_agent/tools/synglue_degradation.py
+57. ProtacPilot protacxtend/tools/protac_repo_tool_wrappers.py (cloned repos are metadata-only/manual-only; no generative linker model wired). /storage/saveena/protacpilot/protacxtend/tools/protac_repo_tool_wrappers.py
+58. ProtacPilot protacxtend/tools/ternary_ensemble.py (staged proxy→P4ward→SE3 escalation; SE3 weights-missing graceful error; heuristic fallback). /storage/saveena/protacpilot/protacxtend/tools/ternary_ensemble.py
+59. ProtacPilot protacxtend/tools/synglue_degradation.py (GROVER→transformer→RF architecture). /storage/saveena/protacpilot/protacxtend/tools/synglue_degradation.py
 60. admet-ai v2.0.1 — PyPI (Chemprop models, 106 endpoints). https://pypi.org/project/admet-ai/
-61. ProtacPilot synglue_agent/tools/admet_integration.py (ADMET-AI isolated-venv subprocess + adme-py + OpenADMET). /storage/saveena/protacpilot/synglue_agent/tools/admet_integration.py
+61. ProtacPilot protacxtend/tools/admet_integration.py (ADMET-AI isolated-venv subprocess + adme-py + OpenADMET). /storage/saveena/protacpilot/protacxtend/tools/admet_integration.py
 62. Chamelogk — chromatographic chameleonicity quantifier for bRo5. J Med Chem 2023. https://pubs.acs.org/doi/full/10.1021/acs.jmedchem.3c00823
 63. Prediction of Chameleonic Efficiency (EPSA/polarity + HBD exposure). ChemMedChem 2021. https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.202100306
 64. AiZynthFinder — neural-network-guided MCTS retrosynthesis. J Cheminform 2020. https://link.springer.com/article/10.1186/s13321-020-00472-1
@@ -146,9 +146,9 @@ Legend: 🟢 real/validated locally · 🟡 partial or degraded · 🔴 absent/s
 66. MolecularAI/aizynthfinder (GitHub). https://github.com/MolecularAI/aizynthfinder
 67. PROTAC-DB (web database). https://cadd.zju.edu.cn/protacdb/about *(URL fetched — live; PK parameters Tmax/T1/2/Cmax/AUC/Vz/Vss/CL/MRT/bioavailability confirmed)*
 68. PROTAC-DB 3.0 — PMC11701630. https://pmc.ncbi.nlm.nih.gov/articles/PMC11701630/
-69. ProtacPilot synglue_agent/agents/real_nodes.py (exit_vector_detection = not_run stub; supervisor/safety lambdas). /storage/saveena/protacpilot/synglue_agent/agents/real_nodes.py
-70. ProtacPilot synglue_agent/tools/p4ward_wrapper.py (placeholder SMILES constructor; heuristic model fallback). /storage/saveena/protacpilot/synglue_agent/tools/p4ward_wrapper.py
-71. ProtacPilot synglue_agent/tools/protac_component_wrappers.py ("BindingDB live API was not implemented; local TSV loader is the supported backend"). /storage/saveena/protacpilot/synglue_agent/tools/protac_component_wrappers.py
+69. ProtacPilot protacxtend/agents/real_nodes.py (exit_vector_detection = not_run stub; supervisor/safety lambdas). /storage/saveena/protacpilot/protacxtend/agents/real_nodes.py
+70. ProtacPilot protacxtend/tools/p4ward_wrapper.py (placeholder SMILES constructor; heuristic model fallback). /storage/saveena/protacpilot/protacxtend/tools/p4ward_wrapper.py
+71. ProtacPilot protacxtend/tools/protac_component_wrappers.py ("BindingDB live API was not implemented; local TSV loader is the supported backend"). /storage/saveena/protacpilot/protacxtend/tools/protac_component_wrappers.py
 72. Schulz JM, et al. PRosettaC outperforms AlphaFold3 for modeling PROTAC ternary complexes. Sci Rep 2025;15:37620 (benchmark of 36 crystallographic ternary complexes; DockQ). https://www.nature.com/articles/s41598-025-21502-8 *(URL fetched — live; PRosettaC vs AF3 ΔDockQ +0.11 average confirmed)*
 73. DeepTernary — end-to-end SE(3)-equivariant ternary complex prediction for TPD. Nat Commun 2025. https://www.nature.com/articles/s41467-025-61272-5
 74. Link-INVENT — REINVENT extension for RL generative linker design incl. PROTACs. Digital Discovery 2023. https://pubs.rsc.org/en/content/articlehtml/2023/dd/d2dd00115b

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from synglue_agent.memory import literature_rag, run_memory
+from protacxtend.memory import literature_rag, run_memory
 
 
 class Phase12MemoryTests(unittest.TestCase):

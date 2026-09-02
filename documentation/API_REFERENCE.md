@@ -1,15 +1,15 @@
 # PROTACXtend API & CLI Reference
 
-Complete reference for the Python API (`synglue_agent`), REST backend endpoints (FastAPI), and command-line interface (`PROTACXtend` / `protacxtend`).
+Complete reference for the Python API (`protacxtend`), REST backend endpoints (FastAPI), and command-line interface (`PROTACXtend` / `protacxtend`).
 
 ---
 
-## 🐍 Python API Reference (`synglue_agent`)
+## 🐍 Python API Reference (`protacxtend`)
 
-### Workflow Entrypoint (`synglue_agent.agents.graph`)
+### Workflow Entrypoint (`protacxtend.agents.graph`)
 
 ```python
-from synglue_agent.agents.graph import run_syn_glue_workflow
+from protacxtend.agents.graph import run_syn_glue_workflow
 
 state = run_syn_glue_workflow(
     request="Design 10 CRBN PROTAC candidates for HMGB2 with low hERG risk",
@@ -21,10 +21,10 @@ candidates = state.get("final_candidates", [])
 report = state.get("report_markdown", "")
 ```
 
-### Chemistry Engine (`synglue_agent.tools.protac_toolbox`)
+### Chemistry Engine (`protacxtend.tools.protac_toolbox`)
 
 ```python
-from synglue_agent.tools.protac_toolbox import PROTACMasterToolbox
+from protacxtend.tools.protac_toolbox import PROTACMasterToolbox
 
 toolbox = PROTACMasterToolbox()
 

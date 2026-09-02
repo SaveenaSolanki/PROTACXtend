@@ -5,7 +5,7 @@ general questions. Built on **LangGraph** routing with modular, replaceable,
 async source adapters; scientific APIs are always searched first.
 
 ```
-synglue_agent/research/
+protacxtend/research/
 ├── api.py        unified public API: deep_research / deep_research_sync
 ├── config.py     ResearchConfig — every knob env-configurable
 ├── schemas.py    pydantic contracts (evidence, claims, report, trace)
@@ -45,7 +45,7 @@ and re-searches while the iteration budget remains.
 
 ```python
 import asyncio
-from synglue_agent.research import deep_research, answer_to_markdown
+from protacxtend.research import deep_research, answer_to_markdown
 
 async def main():
     report = await deep_research(
@@ -57,7 +57,7 @@ async def main():
 asyncio.run(main())
 
 # sync:
-from synglue_agent.research import deep_research_sync
+from protacxtend.research import deep_research_sync
 report = deep_research_sync("PROTAC BRD4 cancer evidence")
 ```
 

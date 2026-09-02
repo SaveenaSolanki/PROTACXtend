@@ -6,7 +6,7 @@
 
 ## Coverage Status
 
-- **Checked directly (primary):** Local repo files read in full or in part: `ASSET_MANIFEST.md`, `RELEASE_CLOSURE_REPORT.md`, `CHANGELOG.md` (full), `synglue_agent/agents/real_nodes.py` (full), `synglue_agent/tools/p4ward_wrapper.py` (full), plus headers of `ternary_ensemble.py`, `synglue_degradation.py`, `chemprop_degradation.py` (referenced), `e3_context_engine.py`, `admet_integration.py`, `retrosynthesis.py`, `docking_pipeline.py`, `online_ligand_miner.py`, `protac_repo_tool_wrappers.py`, `tool_status.py`; directory listings of `synglue_agent/tools/` (76 tool modules) and `synglue_agent/agents/`; `data/protac_repos/repos/` (29 cloned repos); `git status`/`git log`. External tools: verified via GitHub repos, papers (abstracts/fulltext where open), and official docs found by web search. Every entry in the evidence table has a direct URL.
+- **Checked directly (primary):** Local repo files read in full or in part: `ASSET_MANIFEST.md`, `RELEASE_CLOSURE_REPORT.md`, `CHANGELOG.md` (full), `protacxtend/agents/real_nodes.py` (full), `protacxtend/tools/p4ward_wrapper.py` (full), plus headers of `ternary_ensemble.py`, `synglue_degradation.py`, `chemprop_degradation.py` (referenced), `e3_context_engine.py`, `admet_integration.py`, `retrosynthesis.py`, `docking_pipeline.py`, `online_ligand_miner.py`, `protac_repo_tool_wrappers.py`, `tool_status.py`; directory listings of `protacxtend/tools/` (76 tool modules) and `protacxtend/agents/`; `data/protac_repos/repos/` (29 cloned repos); `git status`/`git log`. External tools: verified via GitHub repos, papers (abstracts/fulltext where open), and official docs found by web search. Every entry in the evidence table has a direct URL.
 - **Not checked:** I did not re-run the local test suite (parent asked for an inventory, not verification runs); I did not read every one of the 76 tool modules end-to-end; paywalled full texts (JCIM/JMC) were assessed from abstract + GitHub + secondary benchmark sources only. Claims about external tool internals beyond what a README/abstract states are marked as inferences.
 - **Could not complete:** nothing in the assigned scope was silently skipped; deep verification of local live-network behavior (ChEMBL/PubChem calls) was not re-executed — status taken from CHANGELOG/RELEASE records.
 
@@ -211,15 +211,15 @@ Sources for this section: `ASSET_MANIFEST.md` [73], `RELEASE_CLOSURE_REPORT.md` 
 | 72 | PROTAC Design Agent (SKILL.md) | https://github.com/mdbabumiamssm/LLMs-Universal-Life-Science-and-Clinical-Skills-/tree/main/Skills/Generative_Drug_Design/PROTAC_Design_Agent | Production-listed agent skill spec for PROTAC design (Dec 2025) | secondary | low |
 | 73 | ASSET_MANIFEST.md (local) | /storage/saveena/protacpilot/ASSET_MANIFEST.md | Asset provenance: figshare/Zenodo AiZynth models, SE3 clone, in-repo models, degradation table | self-reported (primary local) | high |
 | 74 | CHANGELOG.md (local) | /storage/saveena/protacpilot/CHANGELOG.md | Full implementation history (2026-07-06 → 2026-08-12), incl. real-vs-stub fixes | self-reported (primary local) | high |
-| 75 | real_nodes.py (local) | /storage/saveena/protacpilot/synglue_agent/agents/real_nodes.py | Graph node wiring; exit_vector_detection = not_run stub; supervisor/safety lambdas | primary (local code) | high |
-| 76 | p4ward_wrapper.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/p4ward_wrapper.py | Real P4ward wrapper; placeholder SMILES constructor; heuristic model fallback | primary (local code) | high |
-| 77 | ternary_ensemble.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/ternary_ensemble.py | Staged escalation proxy→P4ward→SE3; SE3 weights-missing graceful error | primary (local code) | high |
-| 78 | synglue_degradation.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/synglue_degradation.py | GROVER→transformer→RF architecture; model locations | primary (local code) | high |
-| 79 | protac_repo_tool_wrappers.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/protac_repo_tool_wrappers.py | Cloned repos are metadata-only/manual-only; safe capabilities only | primary (local code) | high |
-| 80 | synglue_agent/tools/ directory (local) | /storage/saveena/protacpilot/synglue_agent/tools/ | 76 tool modules (chemprop_degradation, admet_integration, e3_context_engine, docking_pipeline, retrosynthesis, ternary_ensemble, etc.) | primary (local) | high |
-| 81 | admet_integration.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/admet_integration.py | ADMET-AI isolated-venv subprocess + adme-py + OpenADMET | primary (local code) | high |
-| 82 | e3_context_engine.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/e3_context_engine.py | Deterministic evidence-based E3 selection components + refs | primary (local code) | high |
-| 83 | protac_component_wrappers.py (local) | /storage/saveena/protacpilot/synglue_agent/tools/protac_component_wrappers.py | "BindingDB live API was not implemented; local TSV loader is the supported backend" | primary (local code) | high |
+| 75 | real_nodes.py (local) | /storage/saveena/protacpilot/protacxtend/agents/real_nodes.py | Graph node wiring; exit_vector_detection = not_run stub; supervisor/safety lambdas | primary (local code) | high |
+| 76 | p4ward_wrapper.py (local) | /storage/saveena/protacpilot/protacxtend/tools/p4ward_wrapper.py | Real P4ward wrapper; placeholder SMILES constructor; heuristic model fallback | primary (local code) | high |
+| 77 | ternary_ensemble.py (local) | /storage/saveena/protacpilot/protacxtend/tools/ternary_ensemble.py | Staged escalation proxy→P4ward→SE3; SE3 weights-missing graceful error | primary (local code) | high |
+| 78 | synglue_degradation.py (local) | /storage/saveena/protacpilot/protacxtend/tools/synglue_degradation.py | GROVER→transformer→RF architecture; model locations | primary (local code) | high |
+| 79 | protac_repo_tool_wrappers.py (local) | /storage/saveena/protacpilot/protacxtend/tools/protac_repo_tool_wrappers.py | Cloned repos are metadata-only/manual-only; safe capabilities only | primary (local code) | high |
+| 80 | protacxtend/tools/ directory (local) | /storage/saveena/protacpilot/protacxtend/tools/ | 76 tool modules (chemprop_degradation, admet_integration, e3_context_engine, docking_pipeline, retrosynthesis, ternary_ensemble, etc.) | primary (local) | high |
+| 81 | admet_integration.py (local) | /storage/saveena/protacpilot/protacxtend/tools/admet_integration.py | ADMET-AI isolated-venv subprocess + adme-py + OpenADMET | primary (local code) | high |
+| 82 | e3_context_engine.py (local) | /storage/saveena/protacpilot/protacxtend/tools/e3_context_engine.py | Deterministic evidence-based E3 selection components + refs | primary (local code) | high |
+| 83 | protac_component_wrappers.py (local) | /storage/saveena/protacpilot/protacxtend/tools/protac_component_wrappers.py | "BindingDB live API was not implemented; local TSV loader is the supported backend" | primary (local code) | high |
 
 ---
 
@@ -313,15 +313,15 @@ Sources for this section: `ASSET_MANIFEST.md` [73], `RELEASE_CLOSURE_REPORT.md` 
 72. PROTAC Design Agent (SKILL) — https://github.com/mdbabumiamssm/LLMs-Universal-Life-Science-and-Clinical-Skills-/tree/main/Skills/Generative_Drug_Design/PROTAC_Design_Agent
 73. ProtacPilot ASSET_MANIFEST.md — /storage/saveena/protacpilot/ASSET_MANIFEST.md
 74. ProtacPilot CHANGELOG.md — /storage/saveena/protacpilot/CHANGELOG.md
-75. ProtacPilot synglue_agent/agents/real_nodes.py — /storage/saveena/protacpilot/synglue_agent/agents/real_nodes.py
-76. ProtacPilot synglue_agent/tools/p4ward_wrapper.py — /storage/saveena/protacpilot/synglue_agent/tools/p4ward_wrapper.py
-77. ProtacPilot synglue_agent/tools/ternary_ensemble.py — /storage/saveena/protacpilot/synglue_agent/tools/ternary_ensemble.py
-78. ProtacPilot synglue_agent/tools/synglue_degradation.py — /storage/saveena/protacpilot/synglue_agent/tools/synglue_degradation.py
-79. ProtacPilot synglue_agent/tools/protac_repo_tool_wrappers.py — /storage/saveena/protacpilot/synglue_agent/tools/protac_repo_tool_wrappers.py
-80. ProtacPilot synglue_agent/tools/ (directory) — /storage/saveena/protacpilot/synglue_agent/tools/
-81. ProtacPilot synglue_agent/tools/admet_integration.py — /storage/saveena/protacpilot/synglue_agent/tools/admet_integration.py
-82. ProtacPilot synglue_agent/tools/e3_context_engine.py — /storage/saveena/protacpilot/synglue_agent/tools/e3_context_engine.py
-83. ProtacPilot synglue_agent/tools/protac_component_wrappers.py — /storage/saveena/protacpilot/synglue_agent/tools/protac_component_wrappers.py
+75. ProtacPilot protacxtend/agents/real_nodes.py — /storage/saveena/protacpilot/protacxtend/agents/real_nodes.py
+76. ProtacPilot protacxtend/tools/p4ward_wrapper.py — /storage/saveena/protacpilot/protacxtend/tools/p4ward_wrapper.py
+77. ProtacPilot protacxtend/tools/ternary_ensemble.py — /storage/saveena/protacpilot/protacxtend/tools/ternary_ensemble.py
+78. ProtacPilot protacxtend/tools/synglue_degradation.py — /storage/saveena/protacpilot/protacxtend/tools/synglue_degradation.py
+79. ProtacPilot protacxtend/tools/protac_repo_tool_wrappers.py — /storage/saveena/protacpilot/protacxtend/tools/protac_repo_tool_wrappers.py
+80. ProtacPilot protacxtend/tools/ (directory) — /storage/saveena/protacpilot/protacxtend/tools/
+81. ProtacPilot protacxtend/tools/admet_integration.py — /storage/saveena/protacpilot/protacxtend/tools/admet_integration.py
+82. ProtacPilot protacxtend/tools/e3_context_engine.py — /storage/saveena/protacpilot/protacxtend/tools/e3_context_engine.py
+83. ProtacPilot protacxtend/tools/protac_component_wrappers.py — /storage/saveena/protacpilot/protacxtend/tools/protac_component_wrappers.py
 
 ---
 

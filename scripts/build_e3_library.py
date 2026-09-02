@@ -2,7 +2,7 @@
 """Build the multi-E3 ligand library from SynGlue_Py/data/e3_ligand.csv.
 
 Merges the 117-row cited E3-ligand dataset (Target, Name, Smiles, DOI,
-Uniprot, activity) into synglue_agent/data/curated_e3_ligands.csv in the
+Uniprot, activity) into protacxtend/data/curated_e3_ligands.csv in the
 toolbox's schema. SMILES are RDKit-validated; only valid rows are kept.
 Attachment points are NOT baked in (construction adds [*:1] with an
 approximate position; provenance records this limitation).
@@ -19,7 +19,7 @@ from rdkit import Chem
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "data" / "synglue" / "data" / "e3_ligand.csv"
-DST = ROOT / "synglue_agent" / "data" / "curated_e3_ligands.csv"
+DST = ROOT / "protacxtend" / "data" / "curated_e3_ligands.csv"
 
 # e3_ligand.csv Target → canonical E3 key (toolbox _norm_name style)
 E3_SYNONYMS = {

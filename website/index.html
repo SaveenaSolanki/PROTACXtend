@@ -670,7 +670,7 @@ protacxtend scenarios       # example runs &amp; cost estimates</code></pre>
                 <li><span class="mono">Agent_Toolkit.xlsx</span> &amp; <span class="mono">data/toolkit/Agent_Toolkit_EXPANDED.xlsx</span> — agent/module capability registry (load with <span class="mono">openpyxl</span>).</li>
                 <li><span class="mono">TOOL_AUDIT.xlsx</span> — tool audit log.</li>
                 <li><span class="mono">data/protac_repos/protac_repo_registry.xlsx</span> — upstream PROTAC repo registry.</li>
-                <li><span class="mono">synglue_agent/modules/cell_context_selector/data/context_joined.csv</span> — Module 5 features (DepMap 24Q4).</li>
+                <li><span class="mono">protacxtend/modules/cell_context_selector/data/context_joined.csv</span> — Module 5 features (DepMap 24Q4).</li>
               </ul>
               <pre><code># read an xlsx asset
 from openpyxl import load_workbook
@@ -679,7 +679,7 @@ wb = load_workbook("Agent_Toolkit.xlsx")</code></pre>
 
             <div class="docs-pane" id="pane-modules">
               <h3>Modules &amp; models — status at a glance</h3>
-              <p>Built sequentially, each module gated by tests, a demo output, documented limitations and agent integration. Tracker: <span class="mono">synglue_agent/modules/PROTACXTEND_MODULE_BUILD.md</span>; status YAML: <span class="mono">config/scientific_status.yaml</span>.</p>
+              <p>Built sequentially, each module gated by tests, a demo output, documented limitations and agent integration. Tracker: <span class="mono">protacxtend/modules/PROTACXTEND_MODULE_BUILD.md</span>; status YAML: <span class="mono">config/scientific_status.yaml</span>.</p>
               <div class="ep-row"><code class="ep">M1</code><span><strong>Hook Effect Modeler</strong> — three-body equilibrium, hook onset/severity · <span class="st ok">VALIDATED BASELINE</span></span></div>
               <div class="ep-row"><code class="ep">M2</code><span><strong>Lysine Ubiquitination Feasibility</strong> — static-geometry scorer · <span class="st warn">PARTIAL</span> (real-PDB benchmark pending)</span></div>
               <div class="ep-row"><code class="ep">M3</code><span><strong>Cooperativity</strong> — feasibility/surrogate mode · <span class="st warn">DATA-GATED</span></span></div>
@@ -688,8 +688,8 @@ wb = load_workbook("Agent_Toolkit.xlsx")</code></pre>
               <div class="ep-row"><code class="ep">M6</code><span><strong>Novel E3 opportunity engine</strong> · <span class="st pl">PLANNED</span></span></div>
               <div class="ep-row"><code class="ep">M7</code><span><strong>Active learning / experiment selection</strong> · <span class="st pl">PLANNED</span> (CLI surface exists)</span></div>
               <h4>Model artifacts (committed)</h4>
-              <pre><code>synglue_agent/modules/degradation_ml/models/pdc50_model.joblib
-synglue_agent/modules/cell_context_selector/models/cell_context_model.joblib
+              <pre><code>protacxtend/modules/degradation_ml/models/pdc50_model.joblib
+protacxtend/modules/cell_context_selector/models/cell_context_model.joblib
 data/tack/tack_{dc50,dmax,bin}_model.joblib        (+ calibration parquet)
 data/synglue/models/rf_{dc50,dmax}.joblib
 data/synglue/models/multitask_transformer.pt · data/synglue/models/grover_fixed.pt
@@ -721,14 +721,14 @@ protacxtend ui       # Streamlit frontend (default :8501)</code></pre>
             <div class="docs-pane" id="pane-api">
               <h3>API &amp; data access</h3>
               <h4>Python workflow entrypoint</h4>
-              <pre><code>from synglue_agent.agents.graph import run_syn_glue_workflow
+              <pre><code>from protacxtend.agents.graph import run_syn_glue_workflow
 
 state = run_syn_glue_workflow(
     request="Design 10 CRBN PROTAC candidates for HMGB2 with low hERG risk",
     config={"persistent": True, "max_iterations": 3})
 dossier = state.get("report_markdown", "")</code></pre>
               <h4>Chemistry engine</h4>
-              <pre><code>from synglue_agent.tools.protac_toolbox import PROTACMasterToolbox
+              <pre><code>from protacxtend.tools.protac_toolbox import PROTACMasterToolbox
 tb = PROTACMasterToolbox()
 vectors   = tb.detect_exit_vectors(warhead_smiles="...")
 protac_sm = tb.assemble_protac(warhead_smiles="...", linker_smiles="...", e3_smiles="...")</code></pre>

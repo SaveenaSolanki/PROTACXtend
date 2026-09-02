@@ -48,7 +48,7 @@ sys.path.insert(0, str(ROOT))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("benchmark")
 
-from synglue_agent.tools.synglue_degradation import (
+from protacxtend.tools.synglue_degradation import (
     extract_grover_embedding,
     lookup_precomputed_embedding,
     _build_transformer,

@@ -82,7 +82,7 @@ rebuilds. Re-audit against `PROTACXTEND_EXTERNAL_GATE_AUDIT.md` and
   `install_appears_successful=True`, `safe_wrapper_integration_possible=True`,
   `recommended_wrapper_type=safe_import_and_inference_smoke`, notes record the
   repair + patch + verification; missing_dependencies documents the pin deviation.
-- `synglue_agent/tools/repo_tool_adapter.py`: added a registered safe smoke
+- `protacxtend/tools/repo_tool_adapter.py`: added a registered safe smoke
   branch for this repo (bounded CPU inference of the published example).
 - Verified: `repo_tool_status()` → `executable: true`; `smoke_test_repo_tool()`
   → `success: true` (version 1.0.2, active=True, mean_proba=0.5985, n_models=3).
@@ -116,7 +116,7 @@ rebuilds. Re-audit against `PROTACXTEND_EXTERNAL_GATE_AUDIT.md` and
 
 ### After
 
-- `synglue_agent/tools/degradation_endpoint.py`
+- `protacxtend/tools/degradation_endpoint.py`
   - New `_tack_primary()` helper: in-process, never-raises.
   - `predict_degradation_endpoint` (single) and `predict_degradation_batch`:
     when the local TACK-style models are available, TACK's
@@ -126,9 +126,9 @@ rebuilds. Re-audit against `PROTACXTEND_EXTERNAL_GATE_AUDIT.md` and
   - Batch rows now carry `model`, `tack_*`, `chemprop_*` for downstream mapping.
   - Uncertainty/AD/context gating still comes from the Chemprop conformal
     ensemble + curated context table (TACK has no calibrated uncertainty yet).
-- `synglue_agent/backend/schemas.py` — `DegradationPrediction` gains
+- `protacxtend/backend/schemas.py` — `DegradationPrediction` gains
   `tack_active_prob`, `chemprop_dc50_nM`, `chemprop_dmax_pct`.
-- `synglue_agent/tools/protac_toolbox.py` — `predict_degradation` maps endpoint
+- `protacxtend/tools/protac_toolbox.py` — `predict_degradation` maps endpoint
   rows: `model_version="tack-style-v1 (DC50/Dmax primary) + chemprop cross-check"`
   when TACK is primary; the old always-run TACK second pass now only fills
   `tack_*` when the endpoint did not already provide them (fallback semantics
@@ -177,8 +177,8 @@ ranking; external component outputs are NOT used for ranking yet.
 
 | Suite | Result |
 |-------|--------|
-| synglue_agent/tests/test_degradation_endpoint.py (incl. 2 new tests) | **15 passed** (366 s) |
-| synglue_agent/tests/test_synglue_degradation.py + test_chemprop_degradation.py + test_degradation_model.py | 39 passed (pre-change baseline; schema change is additive-optional) |
+| protacxtend/tests/test_degradation_endpoint.py (incl. 2 new tests) | **15 passed** (366 s) |
+| protacxtend/tests/test_synglue_degradation.py + test_chemprop_degradation.py + test_degradation_model.py | 39 passed (pre-change baseline; schema change is additive-optional) |
 | tests/test_repo_tool_adapter.py + test_mode_router.py + test_production_wiring.py | **21 passed** (321 s) |
 | test_architecture_unification.py | 2/10 fast tests passed before the 15-min cap; slow remainder is pre-existing agentic/chemprop loading, `degradation_interface.py` untouched by this change — rerun needed with larger timebox |
 
@@ -236,7 +236,7 @@ in `predict_degradation`; stage timing (`notes/time_degradation_batch.py`)
    a single-row predict took ~11 s per model → ~33 s per molecule →
    150 candidates ≈ 83 min. Controls: fresh tiny HGB fit 48.6 s / predict
    283 ms with default threads vs fit 0.24 s / predict 0.1 ms at
-   OMP_NUM_THREADS=1. Fix: `synglue_agent/tools/thread_limits.py`
+   OMP_NUM_THREADS=1. Fix: `protacxtend/tools/thread_limits.py`
    (`apply_thread_limits()` early env defaults OMP/OPENBLAS/MKL=4 +
    `bounded()` threadpoolctl context); wired into `runtime.py` entry and
    `tack_degradation.py` (predict wrapped in `threadpool_limits(1,'openmp')`).
@@ -293,8 +293,8 @@ report CSVs). Author-original report files untouched.
 - Repo: https://github.com/ribesstefano/PROTAC-Degradation-Predictor
 - Repair log: `data/protac_repos/install_logs/protac_degradation_predictor_gate_repair.log`
 - Registry: `data/protac_repos/all_repo_install_verification.csv`
-- Adapter: `synglue_agent/tools/external_model_adapters.py`,
-  `synglue_agent/tools/repo_tool_adapter.py`
+- Adapter: `protacxtend/tools/external_model_adapters.py`,
+  `protacxtend/tools/repo_tool_adapter.py`
 - TACK: Ribes/Dunlop/Mercado, KDD AI4Science 2026 (arXiv 2605.19579, gated
   official weights; training on public dataset via `scripts/build_tack_model.py`,
   artifacts in `data/tack/`)

@@ -25,7 +25,7 @@ jobs:
             joblib openpyxl requests pytest pandas numpy
 
       - name: Compile check
-        run: python -m compileall -q synglue_agent scripts
+        run: python -m compileall -q protacxtend scripts
 
       - name: Asset-free smoke test
         run: python scripts/ci_smoke.py
@@ -33,14 +33,14 @@ jobs:
       - name: Fast unit tests (asset-free subset)
         run: |
           python -m pytest -q \
-            synglue_agent/tests/test_heruka_integration.py \
-            synglue_agent/tests/test_retrosynthesis.py -m "not slow" \
-            synglue_agent/tests/test_rdkit_chemistry.py \
-            synglue_agent/tests/test_pareto_ranking.py \
-            synglue_agent/tests/test_memory_stores.py \
-            synglue_agent/tests/test_mode_router.py \
-            synglue_agent/tests/test_unblocked_agents.py -m "not network" \
-            synglue_agent/tests/test_binder_live.py -m "not network"
+            protacxtend/tests/test_heruka_integration.py \
+            protacxtend/tests/test_retrosynthesis.py -m "not slow" \
+            protacxtend/tests/test_rdkit_chemistry.py \
+            protacxtend/tests/test_pareto_ranking.py \
+            protacxtend/tests/test_memory_stores.py \
+            protacxtend/tests/test_mode_router.py \
+            protacxtend/tests/test_unblocked_agents.py -m "not network" \
+            protacxtend/tests/test_binder_live.py -m "not network"
 
   # ── FULL OFFLINE SUITE: full fast tests + agentic E2E (no LLM) ─────
   full-offline:
@@ -68,7 +68,7 @@ jobs:
       - name: Full fast test suite (slow + live-network tests excluded; live
           API tests verified manually, e.g. test_binder_live, patent cross-ref)
         run: |
-          python -m pytest synglue_agent/tests/ synglue_agent/agents/test_ternary_stage.py \
+          python -m pytest protacxtend/tests/ protacxtend/agents/test_ternary_stage.py \
             -m "not slow and not network" -q --timeout 300
 
       - name: End-to-end agentic suite (5 scenarios, real graph, offline LLM)
@@ -98,8 +98,8 @@ jobs:
       - name: Lint (ruff)
         run: |
           pip install ruff
-          ruff check synglue_agent/agents/real_nodes.py synglue_agent/run_records.py \
-            synglue_agent/tools/admet_integration.py scripts/e2e_agentic.py \
+          ruff check protacxtend/agents/real_nodes.py protacxtend/run_records.py \
+            protacxtend/tools/admet_integration.py scripts/e2e_agentic.py \
             scripts/ci_smoke.py scripts/run_admet_ai.py --ignore E501
 
       - name: Artifact / model availability checks (committed assets present)
@@ -113,7 +113,7 @@ jobs:
               "data/synglue/data/e3_ligand.csv",
               "data/benchmark/PROTAC-DB_3.0_protacs.xlsx",
               "outputs/benchmark/chemprop_multitarget/model_0/best.pt",
-              "ASSET_MANIFEST.md",
+              "config/scientific_status.yaml",   # status source of truth
               "scripts/bootstrap_assets.sh",
           ]
           missing = [p for p in needed if not Path(p).exists()]

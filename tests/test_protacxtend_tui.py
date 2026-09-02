@@ -14,7 +14,7 @@ def test_tui_module_imports():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import (\n"
+                "from protacxtend.tui.app import (\n"
                 "    PROTACXtendTUI, AGENT_PIPELINE, launch_tui,\n"
                 "    _detect_llm_config, _detect_chemistry_env, _detect_project_info,\n"
                 ")\n"
@@ -39,7 +39,7 @@ def test_tui_agent_pipeline_matches_architecture():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import AGENT_PIPELINE\n"
+                "from protacxtend.tui.app import AGENT_PIPELINE\n"
                 "ids = [a['id'] for a in AGENT_PIPELINE]\n"
                 "# Core pipeline nodes from the 23-node architecture\n"
                 "required = [\n"
@@ -69,7 +69,7 @@ def test_tui_detect_llm_config_returns_dict():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _detect_llm_config\n"
+                "from protacxtend.tui.app import _detect_llm_config\n"
                 "cfg = _detect_llm_config()\n"
                 "assert isinstance(cfg, dict)\n"
                 "assert 'provider' in cfg\n"
@@ -94,7 +94,7 @@ def test_tui_detect_chemistry_env():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _detect_chemistry_env\n"
+                "from protacxtend.tui.app import _detect_chemistry_env\n"
                 "env = _detect_chemistry_env()\n"
                 "assert isinstance(env, dict)\n"
                 "for pkg in ['pandas', 'numpy', 'rdkit']:\n"
@@ -119,7 +119,7 @@ def test_tui_detect_project_info():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _detect_project_info\n"
+                "from protacxtend.tui.app import _detect_project_info\n"
                 "info = _detect_project_info()\n"
                 "assert isinstance(info, dict)\n"
                 "assert 'project_root' in info\n"
@@ -141,7 +141,7 @@ def test_tui_detect_project_info():
 def test_cli_tui_subcommand_exists():
     """The tui subcommand is recognized by the CLI parser."""
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "tui", "--help"],
+        [sys.executable, "-m", "protacxtend.cli", "tui", "--help"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -153,7 +153,7 @@ def test_cli_tui_subcommand_exists():
 def test_cli_help_includes_tui():
     """CLI help output mentions the tui subcommand."""
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "--help"],
+        [sys.executable, "-m", "protacxtend.cli", "--help"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -165,7 +165,7 @@ def test_cli_help_includes_tui():
 def test_cli_capabilities_includes_tui():
     """CLI capabilities list includes the Feynman-style TUI capability."""
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "capabilities", "--json"],
+        [sys.executable, "-m", "protacxtend.cli", "capabilities", "--json"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -180,7 +180,7 @@ def test_cli_capabilities_includes_tui():
 def test_cli_scenarios_includes_tui():
     """CLI scenarios list includes the tui scenario."""
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "scenarios", "--json"],
+        [sys.executable, "-m", "protacxtend.cli", "scenarios", "--json"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -199,7 +199,7 @@ def test_tui_app_class_composes():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import PROTACXtendTUI\n"
+                "from protacxtend.tui.app import PROTACXtendTUI\n"
                 "app = PROTACXtendTUI()\n"
                 "assert app is not None\n"
                 "assert app.TITLE == 'PROTACXtend'\n"
@@ -217,7 +217,7 @@ def test_tui_app_class_composes():
 
 def test_tui_styles_css_exists():
     """The Textual CSS file exists and is valid."""
-    css_path = ROOT / "synglue_agent" / "tui" / "styles.tcss"
+    css_path = ROOT / "protacxtend" / "tui" / "styles.tcss"
     assert css_path.exists(), f"CSS file missing: {css_path}"
     content = css_path.read_text()
     assert "#header" in content
@@ -236,7 +236,7 @@ def test_tui_about_panel_text():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _build_about_panel_text\n"
+                "from protacxtend.tui.app import _build_about_panel_text\n"
                 "text = _build_about_panel_text()\n"
                 "assert 'PROTACXtend' in text\n"
                 "assert 'version' in text.lower()\n"
@@ -262,7 +262,7 @@ def test_tui_model_panel_text():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _build_model_panel_text\n"
+                "from protacxtend.tui.app import _build_model_panel_text\n"
                 "text = _build_model_panel_text()\n"
                 "assert 'MODEL SYSTEM' in text\n"
                 "assert 'CHEMISTRY' in text\n"
@@ -286,7 +286,7 @@ def test_tui_research_workflows_registered():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import RESEARCH_WORKFLOWS\n"
+                "from protacxtend.tui.app import RESEARCH_WORKFLOWS\n"
                 "assert len(RESEARCH_WORKFLOWS) >= 8\n"
                 "cmds = [w['cmd'] for w in RESEARCH_WORKFLOWS]\n"
                 "assert '/design' in cmds\n"
@@ -310,7 +310,7 @@ def test_tui_system_info_detection():
             sys.executable,
             "-c",
             (
-                "from synglue_agent.tui.app import _detect_system_info\n"
+                "from protacxtend.tui.app import _detect_system_info\n"
                 "info = _detect_system_info()\n"
                 "assert 'platform' in info\n"
                 "assert 'python' in info\n"

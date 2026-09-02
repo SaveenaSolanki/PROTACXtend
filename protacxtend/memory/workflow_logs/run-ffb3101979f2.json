@@ -1,0 +1,3132 @@
+{
+  "run_id": "run-ffb3101979f2",
+  "timestamp": "20260902-233715",
+  "user_request": "Design BRD4 PROTACs with CRBN, PEG linkers.",
+  "target": "BRD4",
+  "final_candidate_ids": [
+    "SGA-880828c48433",
+    "SGA-86e8a4bcbd6d",
+    "SGA-5628f63a4f40",
+    "SGA-5f3a9198c8bf"
+  ],
+  "warnings": [
+    "BindingDB REST needs an API key (BINDINGDB_API_KEY); ChEMBL covers binding data.",
+    "TargetBinderRetrievalAgent: Retrieved 3 binders from local_curated.",
+    "Evolution stopped: novelty_ratio<0.1 for 2 gens"
+  ],
+  "errors": [],
+  "cell_line": null,
+  "expression_overrides": {},
+  "e3_context_predictions": [
+    {
+      "candidate_id": "SGA-6a10113b669b",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-edad3bbc171e",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-a4c705301594",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-392b02a1d8fa",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-af9681e1a180",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-9e4f22f2471a",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-652e8bacb1db",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-901c5bd02331",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-d28151910fad",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-aefc53f6d14c",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-d1af7b8aa4ad",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-8a425101c77c",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-86e8a4bcbd6d",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-8b9626029959",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-e71f7537b1a8",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-5f3a9198c8bf",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-a778e578f4d2",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-1aa0f43c473a",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-263616ace273",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-1740ec829550",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-8a026e91f738",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-b1f9f69b4ab8",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-d2da41a1ffed",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-b025dad034e0",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-45682dba1406",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-4f8318037deb",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-880828c48433",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-2535ce35227c",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-8642bfaebd4c",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-dd0718534b10",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-f051868d5352",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-fed95dc85a0d",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-5628f63a4f40",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-7e8667d52fd4",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-becf1bfd87f5",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-632f4c9cf000",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-a0077b038fe7",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-67d8ba9cb54f",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-87c7775100e0",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-fd1769e287dd",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.62,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "expression:default neutral expression prior",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    }
+  ],
+  "cooperativity_predictions": [
+    {
+      "candidate_id": "SGA-263616ace273",
+      "predicted_alpha": 14.187,
+      "log_alpha": 1.152,
+      "cooperativity_score": 0.717,
+      "interface_contact_score": 0.737,
+      "linker_strain_score": 0.706,
+      "lysine_geometry_score": 0.737,
+      "ternary_geometry_score": 0.736,
+      "confidence": 0.822,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-d2da41a1ffed",
+      "predicted_alpha": 3.053,
+      "log_alpha": 0.485,
+      "cooperativity_score": 0.495,
+      "interface_contact_score": 0.374,
+      "linker_strain_score": 0.831,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.719,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-b025dad034e0",
+      "predicted_alpha": 3.222,
+      "log_alpha": 0.508,
+      "cooperativity_score": 0.503,
+      "interface_contact_score": 0.374,
+      "linker_strain_score": 0.844,
+      "lysine_geometry_score": 0.305,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.721,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-b1f9f69b4ab8",
+      "predicted_alpha": 3.03,
+      "log_alpha": 0.481,
+      "cooperativity_score": 0.494,
+      "interface_contact_score": 0.393,
+      "linker_strain_score": 0.8,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.713,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-aefc53f6d14c",
+      "predicted_alpha": 3.222,
+      "log_alpha": 0.508,
+      "cooperativity_score": 0.503,
+      "interface_contact_score": 0.374,
+      "linker_strain_score": 0.856,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.724,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-67d8ba9cb54f",
+      "predicted_alpha": 23.655,
+      "log_alpha": 1.374,
+      "cooperativity_score": 0.791,
+      "interface_contact_score": 0.736,
+      "linker_strain_score": 0.856,
+      "lysine_geometry_score": 0.895,
+      "ternary_geometry_score": 0.779,
+      "confidence": 0.872,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-7e8667d52fd4",
+      "predicted_alpha": 2.91,
+      "log_alpha": 0.464,
+      "cooperativity_score": 0.488,
+      "interface_contact_score": 0.434,
+      "linker_strain_score": 0.731,
+      "lysine_geometry_score": 0.266,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.699,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-5f3a9198c8bf",
+      "predicted_alpha": 17.365,
+      "log_alpha": 1.24,
+      "cooperativity_score": 0.747,
+      "interface_contact_score": 0.703,
+      "linker_strain_score": 0.806,
+      "lysine_geometry_score": 0.819,
+      "ternary_geometry_score": 0.736,
+      "confidence": 0.842,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-a0077b038fe7",
+      "predicted_alpha": 3.197,
+      "log_alpha": 0.505,
+      "cooperativity_score": 0.502,
+      "interface_contact_score": 0.393,
+      "linker_strain_score": 0.825,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.718,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-1740ec829550",
+      "predicted_alpha": 11.379,
+      "log_alpha": 1.056,
+      "cooperativity_score": 0.685,
+      "interface_contact_score": 0.705,
+      "linker_strain_score": 0.675,
+      "lysine_geometry_score": 0.693,
+      "ternary_geometry_score": 0.703,
+      "confidence": 0.801,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-87c7775100e0",
+      "predicted_alpha": 3.12,
+      "log_alpha": 0.494,
+      "cooperativity_score": 0.498,
+      "interface_contact_score": 0.374,
+      "linker_strain_score": 0.819,
+      "lysine_geometry_score": 0.312,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.716,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-a778e578f4d2",
+      "predicted_alpha": 3.353,
+      "log_alpha": 0.525,
+      "cooperativity_score": 0.508,
+      "interface_contact_score": 0.377,
+      "linker_strain_score": 0.869,
+      "lysine_geometry_score": 0.297,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.726,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-392b02a1d8fa",
+      "predicted_alpha": 3.077,
+      "log_alpha": 0.488,
+      "cooperativity_score": 0.496,
+      "interface_contact_score": 0.377,
+      "linker_strain_score": 0.831,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.719,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-652e8bacb1db",
+      "predicted_alpha": 2.91,
+      "log_alpha": 0.464,
+      "cooperativity_score": 0.488,
+      "interface_contact_score": 0.434,
+      "linker_strain_score": 0.731,
+      "lysine_geometry_score": 0.266,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.699,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-8b9626029959",
+      "predicted_alpha": 2.634,
+      "log_alpha": 0.421,
+      "cooperativity_score": 0.474,
+      "interface_contact_score": 0.437,
+      "linker_strain_score": 0.681,
+      "lysine_geometry_score": 0.251,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.689,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-d28151910fad",
+      "predicted_alpha": 3.197,
+      "log_alpha": 0.505,
+      "cooperativity_score": 0.502,
+      "interface_contact_score": 0.393,
+      "linker_strain_score": 0.825,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.718,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-e71f7537b1a8",
+      "predicted_alpha": 17.372,
+      "log_alpha": 1.24,
+      "cooperativity_score": 0.747,
+      "interface_contact_score": 0.725,
+      "linker_strain_score": 0.775,
+      "lysine_geometry_score": 0.811,
+      "ternary_geometry_score": 0.749,
+      "confidence": 0.842,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-f051868d5352",
+      "predicted_alpha": 3.077,
+      "log_alpha": 0.488,
+      "cooperativity_score": 0.496,
+      "interface_contact_score": 0.377,
+      "linker_strain_score": 0.831,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.719,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-d1af7b8aa4ad",
+      "predicted_alpha": 3.12,
+      "log_alpha": 0.494,
+      "cooperativity_score": 0.498,
+      "interface_contact_score": 0.374,
+      "linker_strain_score": 0.819,
+      "lysine_geometry_score": 0.312,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.716,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-8a026e91f738",
+      "predicted_alpha": 3.042,
+      "log_alpha": 0.483,
+      "cooperativity_score": 0.494,
+      "interface_contact_score": 0.394,
+      "linker_strain_score": 0.8,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.713,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-5628f63a4f40",
+      "predicted_alpha": 21.146,
+      "log_alpha": 1.325,
+      "cooperativity_score": 0.775,
+      "interface_contact_score": 0.795,
+      "linker_strain_score": 0.762,
+      "lysine_geometry_score": 0.819,
+      "ternary_geometry_score": 0.796,
+      "confidence": 0.861,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-632f4c9cf000",
+      "predicted_alpha": 3.209,
+      "log_alpha": 0.506,
+      "cooperativity_score": 0.502,
+      "interface_contact_score": 0.394,
+      "linker_strain_score": 0.825,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.718,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-8a425101c77c",
+      "predicted_alpha": 3.197,
+      "log_alpha": 0.505,
+      "cooperativity_score": 0.502,
+      "interface_contact_score": 0.371,
+      "linker_strain_score": 0.856,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.724,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-6a10113b669b",
+      "predicted_alpha": 2.779,
+      "log_alpha": 0.444,
+      "cooperativity_score": 0.481,
+      "interface_contact_score": 0.437,
+      "linker_strain_score": 0.706,
+      "lysine_geometry_score": 0.259,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.694,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-becf1bfd87f5",
+      "predicted_alpha": 2.672,
+      "log_alpha": 0.427,
+      "cooperativity_score": 0.476,
+      "interface_contact_score": 0.425,
+      "linker_strain_score": 0.7,
+      "lysine_geometry_score": 0.259,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.693,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-af9681e1a180",
+      "predicted_alpha": 3.247,
+      "log_alpha": 0.511,
+      "cooperativity_score": 0.504,
+      "interface_contact_score": 0.377,
+      "linker_strain_score": 0.844,
+      "lysine_geometry_score": 0.305,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.721,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-a4c705301594",
+      "predicted_alpha": 3.053,
+      "log_alpha": 0.485,
+      "cooperativity_score": 0.495,
+      "interface_contact_score": 0.396,
+      "linker_strain_score": 0.8,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.713,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-1aa0f43c473a",
+      "predicted_alpha": 3.028,
+      "log_alpha": 0.481,
+      "cooperativity_score": 0.494,
+      "interface_contact_score": 0.446,
+      "linker_strain_score": 0.738,
+      "lysine_geometry_score": 0.266,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.7,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-9e4f22f2471a",
+      "predicted_alpha": 3.194,
+      "log_alpha": 0.504,
+      "cooperativity_score": 0.501,
+      "interface_contact_score": 0.446,
+      "linker_strain_score": 0.762,
+      "lysine_geometry_score": 0.274,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.705,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-fd1769e287dd",
+      "predicted_alpha": 23.314,
+      "log_alpha": 1.368,
+      "cooperativity_score": 0.789,
+      "interface_contact_score": 0.732,
+      "linker_strain_score": 0.856,
+      "lysine_geometry_score": 0.894,
+      "ternary_geometry_score": 0.776,
+      "confidence": 0.87,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-8642bfaebd4c",
+      "predicted_alpha": 2.552,
+      "log_alpha": 0.407,
+      "cooperativity_score": 0.469,
+      "interface_contact_score": 0.428,
+      "linker_strain_score": 0.675,
+      "lysine_geometry_score": 0.251,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.688,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-901c5bd02331",
+      "predicted_alpha": 3.209,
+      "log_alpha": 0.506,
+      "cooperativity_score": 0.502,
+      "interface_contact_score": 0.394,
+      "linker_strain_score": 0.825,
+      "lysine_geometry_score": 0.289,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.718,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-2535ce35227c",
+      "predicted_alpha": 2.779,
+      "log_alpha": 0.444,
+      "cooperativity_score": 0.481,
+      "interface_contact_score": 0.437,
+      "linker_strain_score": 0.706,
+      "lysine_geometry_score": 0.259,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.694,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-fed95dc85a0d",
+      "predicted_alpha": 3.247,
+      "log_alpha": 0.511,
+      "cooperativity_score": 0.504,
+      "interface_contact_score": 0.377,
+      "linker_strain_score": 0.844,
+      "lysine_geometry_score": 0.305,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.721,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-edad3bbc171e",
+      "predicted_alpha": 2.552,
+      "log_alpha": 0.407,
+      "cooperativity_score": 0.469,
+      "interface_contact_score": 0.428,
+      "linker_strain_score": 0.675,
+      "lysine_geometry_score": 0.251,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.688,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-dd0718534b10",
+      "predicted_alpha": 3.053,
+      "log_alpha": 0.485,
+      "cooperativity_score": 0.495,
+      "interface_contact_score": 0.396,
+      "linker_strain_score": 0.8,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.713,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-880828c48433",
+      "predicted_alpha": 18.257,
+      "log_alpha": 1.261,
+      "cooperativity_score": 0.754,
+      "interface_contact_score": 0.78,
+      "linker_strain_score": 0.738,
+      "lysine_geometry_score": 0.781,
+      "ternary_geometry_score": 0.776,
+      "confidence": 0.847,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-86e8a4bcbd6d",
+      "predicted_alpha": 15.514,
+      "log_alpha": 1.191,
+      "cooperativity_score": 0.73,
+      "interface_contact_score": 0.761,
+      "linker_strain_score": 0.713,
+      "lysine_geometry_score": 0.743,
+      "ternary_geometry_score": 0.753,
+      "confidence": 0.831,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-4f8318037deb",
+      "predicted_alpha": 3.03,
+      "log_alpha": 0.481,
+      "cooperativity_score": 0.494,
+      "interface_contact_score": 0.371,
+      "linker_strain_score": 0.831,
+      "lysine_geometry_score": 0.282,
+      "ternary_geometry_score": 0.45,
+      "confidence": 0.719,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    },
+    {
+      "candidate_id": "SGA-45682dba1406",
+      "predicted_alpha": 13.983,
+      "log_alpha": 1.146,
+      "cooperativity_score": 0.715,
+      "interface_contact_score": 0.733,
+      "linker_strain_score": 0.706,
+      "lysine_geometry_score": 0.736,
+      "ternary_geometry_score": 0.733,
+      "confidence": 0.821,
+      "model_version": "cooperativity-proxy-v0.1+protacdb-prior",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available.; PROTAC-DB target_e3_neighborhood used as capped ternary-affinity prior; database is incomplete."
+    }
+  ],
+  "hook_effect_predictions": [
+    {
+      "candidate_id": "SGA-263616ace273",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0004,
+        0.0032,
+        0.0328,
+        0.233,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.9581
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.9581,
+      "hook_risk": "low",
+      "therapeutic_window_score": 0.99,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-d2da41a1ffed",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0,
+        0.0003,
+        0.0031,
+        0.0239,
+        0.167,
+        0.5651,
+        0.9231,
+        0.7085,
+        0.3167
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9231,
+      "high_concentration_fraction": 0.3167,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.778,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-b025dad034e0",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0006,
+        0.006,
+        0.0437,
+        0.2647,
+        0.7282,
+        0.94,
+        0.6144,
+        0.2497
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.94,
+      "high_concentration_fraction": 0.2497,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.771,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-b1f9f69b4ab8",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0006,
+        0.0064,
+        0.046,
+        0.2681,
+        0.7026,
+        0.862,
+        0.5448,
+        0.2171
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.862,
+      "high_concentration_fraction": 0.2171,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.709,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-aefc53f6d14c",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0,
+        0.0003,
+        0.0035,
+        0.0269,
+        0.1855,
+        0.6142,
+        0.9766,
+        0.7357,
+        0.3251
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9766,
+      "high_concentration_fraction": 0.3251,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.816,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-67d8ba9cb54f",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0005,
+        0.0046,
+        0.0476,
+        0.3443,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 1.0,
+      "hook_risk": "low",
+      "therapeutic_window_score": 1.0,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-7e8667d52fd4",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0,
+        0.0004,
+        0.0045,
+        0.0333,
+        0.2124,
+        0.6262,
+        0.8709,
+        0.5986,
+        0.2504
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8709,
+      "high_concentration_fraction": 0.2504,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.725,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-5f3a9198c8bf",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.0008,
+        0.0071,
+        0.0687,
+        0.4403,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.7799
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.7799,
+      "hook_risk": "low",
+      "therapeutic_window_score": 0.945,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-a0077b038fe7",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0005,
+        0.0049,
+        0.0363,
+        0.2322,
+        0.6865,
+        0.9575,
+        0.6593,
+        0.2762
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9575,
+      "high_concentration_fraction": 0.2762,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.79,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-1740ec829550",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.0007,
+        0.0056,
+        0.0533,
+        0.327,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.4389
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.4389,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.86,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-87c7775100e0",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0005,
+        0.005,
+        0.0369,
+        0.2334,
+        0.6788,
+        0.93,
+        0.6327,
+        0.2631
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.93,
+      "high_concentration_fraction": 0.2631,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.768,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-a778e578f4d2",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0014,
+        0.0136,
+        0.0864,
+        0.3967,
+        0.7988,
+        0.7556,
+        0.4052,
+        0.1479
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7988,
+      "high_concentration_fraction": 0.1479,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.645,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-392b02a1d8fa",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0,
+        0.0004,
+        0.0043,
+        0.0324,
+        0.2116,
+        0.644,
+        0.9278,
+        0.653,
+        0.2771
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9278,
+      "high_concentration_fraction": 0.2771,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.771,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-652e8bacb1db",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0005,
+        0.0047,
+        0.0348,
+        0.2192,
+        0.635,
+        0.8663,
+        0.5877,
+        0.244
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8663,
+      "high_concentration_fraction": 0.244,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.72,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-8b9626029959",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0013,
+        0.0125,
+        0.0762,
+        0.3263,
+        0.6139,
+        0.5445,
+        0.2813,
+        0.1008
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.6139,
+      "high_concentration_fraction": 0.1008,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.501,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-d28151910fad",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0005,
+        0.0049,
+        0.0369,
+        0.2347,
+        0.6898,
+        0.9559,
+        0.6553,
+        0.2738
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9559,
+      "high_concentration_fraction": 0.2738,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.789,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-e71f7537b1a8",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.001,
+        0.0083,
+        0.079,
+        0.4883,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.6895
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.6895,
+      "hook_risk": "medium",
+      "therapeutic_window_score": 0.922,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-f051868d5352",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0006,
+        0.0066,
+        0.0474,
+        0.2748,
+        0.7155,
+        0.8721,
+        0.5488,
+        0.2182
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8721,
+      "high_concentration_fraction": 0.2182,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.717,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-d1af7b8aa4ad",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0005,
+        0.0055,
+        0.0408,
+        0.25,
+        0.6984,
+        0.9164,
+        0.6056,
+        0.2477
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.9164,
+      "high_concentration_fraction": 0.2477,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.755,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-8a026e91f738",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0009,
+        0.0093,
+        0.0632,
+        0.3241,
+        0.7323,
+        0.7743,
+        0.4446,
+        0.1681
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.7743,
+      "high_concentration_fraction": 0.1681,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.635,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-5628f63a4f40",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.0016,
+        0.0134,
+        0.1233,
+        0.707,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.6571
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.6571,
+      "hook_risk": "medium",
+      "therapeutic_window_score": 0.914,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-632f4c9cf000",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0014,
+        0.0131,
+        0.0835,
+        0.3812,
+        0.7635,
+        0.7183,
+        0.384,
+        0.1399
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7635,
+      "high_concentration_fraction": 0.1399,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.618,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-8a425101c77c",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0008,
+        0.0083,
+        0.0576,
+        0.3146,
+        0.7618,
+        0.8627,
+        0.5175,
+        0.2003
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8627,
+      "high_concentration_fraction": 0.2003,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.705,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-6a10113b669b",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0008,
+        0.0075,
+        0.0522,
+        0.28,
+        0.6649,
+        0.7385,
+        0.4375,
+        0.1682
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.7385,
+      "high_concentration_fraction": 0.1682,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.611,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-becf1bfd87f5",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0015,
+        0.0139,
+        0.0828,
+        0.3388,
+        0.6102,
+        0.5196,
+        0.2624,
+        0.093
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.6102,
+      "high_concentration_fraction": 0.093,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.496,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-af9681e1a180",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0009,
+        0.0087,
+        0.0606,
+        0.326,
+        0.7765,
+        0.8649,
+        0.5133,
+        0.1976
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8649,
+      "high_concentration_fraction": 0.1976,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.706,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-a4c705301594",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0008,
+        0.0082,
+        0.057,
+        0.3065,
+        0.7301,
+        0.8132,
+        0.4826,
+        0.1858
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8132,
+      "high_concentration_fraction": 0.1858,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.667,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-1aa0f43c473a",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0015,
+        0.0139,
+        0.0858,
+        0.3722,
+        0.7092,
+        0.6365,
+        0.331,
+        0.119
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7092,
+      "high_concentration_fraction": 0.119,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.574,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-9e4f22f2471a",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0016,
+        0.0149,
+        0.0914,
+        0.3942,
+        0.7462,
+        0.6657,
+        0.3451,
+        0.1239
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7462,
+      "high_concentration_fraction": 0.1239,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.601,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-fd1769e287dd",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.001,
+        0.0085,
+        0.0832,
+        0.5459,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 1.0,
+      "hook_risk": "low",
+      "therapeutic_window_score": 1.0,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    },
+    {
+      "candidate_id": "SGA-8642bfaebd4c",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0016,
+        0.0149,
+        0.0853,
+        0.3305,
+        0.5656,
+        0.4597,
+        0.2264,
+        0.0793
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.5656,
+      "high_concentration_fraction": 0.0793,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.459,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-901c5bd02331",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0012,
+        0.0118,
+        0.0767,
+        0.367,
+        0.7704,
+        0.7581,
+        0.4164,
+        0.1538
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7704,
+      "high_concentration_fraction": 0.1538,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.628,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-2535ce35227c",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0007,
+        0.007,
+        0.0491,
+        0.2702,
+        0.6606,
+        0.7553,
+        0.4559,
+        0.1771
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.7553,
+      "high_concentration_fraction": 0.1771,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.625,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-fed95dc85a0d",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0008,
+        0.0081,
+        0.057,
+        0.3146,
+        0.7713,
+        0.8844,
+        0.5348,
+        0.208
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8844,
+      "high_concentration_fraction": 0.208,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.722,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-edad3bbc171e",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0015,
+        0.0138,
+        0.0812,
+        0.3261,
+        0.5773,
+        0.4839,
+        0.2422,
+        0.0855
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.5773,
+      "high_concentration_fraction": 0.0855,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.47,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-dd0718534b10",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0001,
+        0.0008,
+        0.0076,
+        0.0536,
+        0.2958,
+        0.7252,
+        0.8315,
+        0.5028,
+        0.1955
+      ],
+      "hook_concentration_nM": 1000.0,
+      "max_ternary_fraction": 0.8315,
+      "high_concentration_fraction": 0.1955,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.682,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-880828c48433",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0002,
+        0.0025,
+        0.0206,
+        0.1683,
+        0.7976,
+        1.0,
+        1.0,
+        1.0,
+        0.9753,
+        0.3277
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.3277,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.832,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-86e8a4bcbd6d",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0002,
+        0.0018,
+        0.0146,
+        0.1249,
+        0.6317,
+        1.0,
+        1.0,
+        1.0,
+        0.9796,
+        0.3329
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.3329,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.833,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-4f8318037deb",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0015,
+        0.0145,
+        0.0884,
+        0.3766,
+        0.7044,
+        0.6214,
+        0.3201,
+        0.1145
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.7044,
+      "high_concentration_fraction": 0.1145,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.569,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-45682dba1406",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.001,
+        0.0082,
+        0.0763,
+        0.4472,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.4649
+      ],
+      "hook_concentration_nM": 100.0,
+      "max_ternary_fraction": 1.0,
+      "high_concentration_fraction": 0.4649,
+      "hook_risk": "medium",
+      "therapeutic_window_score": 0.866,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": null
+    }
+  ],
+  "active_learning_update": {
+    "status": "no_feedback",
+    "feedback_count": 0,
+    "training_rows": 0,
+    "dataset_path": "",
+    "registry_path": "",
+    "active_model_version": "heuristic_proxy-v0.1+feedback_registry",
+    "model_artifact_path": "",
+    "rollback_model_artifact_path": "",
+    "retraining_recommendation": "collect_more_feedback_before_retraining",
+    "warnings": [
+      "No assay feedback records supplied."
+    ]
+  },
+  "workflow_log": [
+    {
+      "agent": "SupervisorAgent",
+      "thought": "Parse the user's degradation objective into a structured PROTAC workflow state.",
+      "action": "parse_user_request",
+      "observation": "target=BRD4, e3=CRBN, candidate_count=4, linkers=['PEG']",
+      "processing_time_s": 0.0017
+    },
+    {
+      "agent": "DesignPlannerAgent",
+      "thought": "Plan tool routing, retries, evidence search, user-input gates, stopping rules, and validation depth.",
+      "action": "create_design_plan",
+      "observation": "status=continue, tools=19, external_target_search=False, docking=False, questions=1",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "ControlledSearchAgent",
+      "thought": "Set bounded linker, construction, stereoisomer, cheap-filter, and expensive-modeling budgets.",
+      "action": "build_controlled_search_policy",
+      "observation": "linkers=12, construct=80, cheap_keep=40, expensive=10",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "SafetyAgent",
+      "thought": "Check user request for haz ard patterns, unreasonable targets, or missing critical information.",
+      "action": "safety_precheck",
+      "observation": "warnings=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "TargetResolverAgent",
+      "thought": "Resolve target gene/protein name to UniProt entry and AlphaFold structure.",
+      "action": "resolve_target",
+      "observation": "uniprot=M0QZD9, gene=BRD4",
+      "processing_time_s": 1.1233
+    },
+    {
+      "agent": "TargetBinderRetrievalAgent",
+      "thought": "Retrieve known ligands for the target from ChEMBL, PubChem, BindingDB.",
+      "action": "retrieve_binders",
+      "observation": "binders=3, max_pActivity=unavailable",
+      "processing_time_s": 20.0946
+    },
+    {
+      "agent": "WarheadSelectionAgent",
+      "thought": "Select warhead molecules from curated library or provided smiles.",
+      "action": "select_warheads",
+      "observation": "warheads=3, valid=3",
+      "processing_time_s": 0.0014
+    },
+    {
+      "agent": "E3LigandSelectionAgent",
+      "thought": "Select E3 ligase and ligand based on target biology and subcellular colocalization.",
+      "action": "select_e3_ligands",
+      "observation": "ligands=3, families=['CRBN']",
+      "processing_time_s": 0.0155
+    },
+    {
+      "agent": "ExitVectorDetectionAgent",
+      "thought": "Detect suitable linker attachment points on warhead and E3 ligand molecules.",
+      "action": "detect_exit_vectors",
+      "observation": "warhead_vectors=3, e3_vectors=3",
+      "processing_time_s": 0.0046
+    },
+    {
+      "agent": "LinkerGenerationAgent",
+      "thought": "Generate curated and rule-based linker candidates matching requested classes and PROTAC-aware constraints.",
+      "action": "generate_linkers",
+      "observation": "linkers=7, classes=['PEG', 'generative']",
+      "processing_time_s": 14.8426
+    },
+    {
+      "agent": "MolecularConstructionAgent",
+      "thought": "Construct PROTAC candidates with multi-strategy deterministic assembly and provenance tracking.",
+      "action": "construct_protacs",
+      "observation": "attempts=63, assembled=63, successes=63",
+      "processing_time_s": 0.2577
+    },
+    {
+      "agent": "StereochemistryEnumerationAgent",
+      "thought": "Enumerate only a capped number of undefined stereoisomers and keep stereoisomers separately scored.",
+      "action": "expand_stereoisomers_controlled",
+      "observation": "assembled_after_stereo=63, enumerated=0",
+      "processing_time_s": 0.0217
+    },
+    {
+      "agent": "CandidateValidationAgent",
+      "thought": "Sanitize, canonicalize, property-check, and deduplicate assembled PROTAC candidates.",
+      "action": "validate_protacs",
+      "observation": "valid_candidates=63",
+      "processing_time_s": 0.3006
+    },
+    {
+      "agent": "CellContextAgent",
+      "thought": "Score E3/target compatibility using explicit cell-line and expression context.",
+      "action": "score_cell_type_e3_context",
+      "observation": "context=default, e3_context_records=63, weak=0",
+      "processing_time_s": 0.0095
+    },
+    {
+      "agent": "ADMETAgent",
+      "thought": "Compute PROTAC-aware descriptor and toxicity-risk triage without strict Lipinski rejection.",
+      "action": "predict_admet",
+      "observation": "admet=63, high_risk_records=17",
+      "processing_time_s": 0.2781
+    },
+    {
+      "agent": "NoveltySimilarityAgent",
+      "thought": "Compare candidates against local known PROTAC-like records using fingerprints or deterministic string fallback.",
+      "action": "check_novelty",
+      "observation": "novelty_results=63, duplicates=0",
+      "processing_time_s": 13.2713
+    },
+    {
+      "agent": "ApplicabilityDomainAgent",
+      "thought": "Assess whether candidates are inside the demo model domain before ranking.",
+      "action": "assess_applicability_domain",
+      "observation": "domain_results=63, outside=0",
+      "processing_time_s": 0.0009
+    },
+    {
+      "agent": "CheapFilterAgent",
+      "thought": "Apply validity, property, ADMET, novelty, domain, synthesis, and E3-context filters before expensive modeling.",
+      "action": "cheap_filter_candidates",
+      "observation": "cheap_filter_kept=40/63",
+      "processing_time_s": 0.1549
+    },
+    {
+      "agent": "DegradationPredictionAgent",
+      "thought": "Predict DC50, Dmax, degradation probability, confidence, and model-version provenance.",
+      "action": "predict_degradation",
+      "observation": "predictions=40, low_confidence=33",
+      "processing_time_s": 18.2263
+    },
+    {
+      "agent": "RankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "rank_candidates",
+      "observation": "ranked=40, top_score=0.683",
+      "processing_time_s": 0.0922
+    },
+    {
+      "agent": "ProximityDiversityAgent",
+      "thought": "Cluster chemically similar candidates and identify diverse representatives.",
+      "action": "diversity_clustering",
+      "observation": "clusters=6",
+      "processing_time_s": 0.0491
+    },
+    {
+      "agent": "ReflectionReviewAgent",
+      "thought": "Critique top candidates for evidence strength, overclaims, ADME/Tox risk, novelty, and synthesis plausibility.",
+      "action": "reflection_review",
+      "observation": "reviews=20, high_review_risk=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "EvolutionRefinementAgent",
+      "thought": "Use review and ADME/Tox weaknesses to propose deterministic linker replacements and re-score evolved candidates.",
+      "action": "evolution_refinement",
+      "observation": "evolved=14, candidate_pool=40",
+      "processing_time_s": 59.9627
+    },
+    {
+      "agent": "ExpensiveModelingSelectionAgent",
+      "thought": "Select a small ranked and diverse finalist set for ternary modeling.",
+      "action": "select_expensive_modeling_finalists",
+      "observation": "expensive_modeling_finalists=10",
+      "processing_time_s": 0.0272
+    },
+    {
+      "agent": "TernaryFeasibilityAgent",
+      "thought": "Evaluate ternary complex formation via docking \u2192 P4ward pipeline.",
+      "action": "assess_ternary_feasibility",
+      "observation": "mode=none, n_results=10, affinity=N/A, feasible=0",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "CooperativityPredictionAgent",
+      "thought": "Estimate ternary cooperativity from interface, linker strain, lysine geometry, and ternary feasibility evidence.",
+      "action": "predict_cooperativity",
+      "observation": "cooperativity_records=40, anti_cooperative=0",
+      "processing_time_s": 0.0925
+    },
+    {
+      "agent": "HookEffectPredictionAgent",
+      "thought": "Model concentration-dependent ternary occupancy to detect high-dose hook-effect risk.",
+      "action": "predict_hook_effect",
+      "observation": "hook_records=40, high_hook_risk=33",
+      "processing_time_s": 0.0009
+    },
+    {
+      "agent": "FinalRankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "final_ranking",
+      "observation": "ranked=40, top_score=0.771",
+      "processing_time_s": 0.0891
+    },
+    {
+      "agent": "ActiveLearningAgent",
+      "thought": "Convert assay feedback into supervised rows and report retraining readiness.",
+      "action": "update_active_learning_from_feedback",
+      "observation": "feedback=0, training_rows=0, recommendation=collect_more_feedback_before_retraining",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "ReportAgent",
+      "thought": "Generate transparent candidate table, workflow summary, provenance, warnings, and scientific limitations.",
+      "action": "generate_report",
+      "observation": "report_chars=15148",
+      "processing_time_s": 1.9574
+    }
+  ]
+}

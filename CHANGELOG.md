@@ -147,12 +147,12 @@ dose p5/med/p95 142.0/149.2/156.9 nM; MC peak-ternary p5/med/p95
   quotes are trimmed and labelled; LLM prompt enforces the same section contract.
 - CLI: `--trace` appends the execution trace (hidden by default); traces persist
   under outputs/research_traces and are referenced in the report provenance.
-- Tests: +10 offline (synglue_agent/tests/test_research_reporting.py); suite green.
+- Tests: +10 offline (protacxtend/tests/test_research_reporting.py); suite green.
 
 ### Module 1 — Hook Effect Modeler (`simulate_hook_effect()`)
-- Mechanistic three-body equilibrium/QSP model in `synglue_agent/modules/
+- Mechanistic three-body equilibrium/QSP model in `protacxtend/modules/
   hook_effect_modeler/` (maps requested `protacxtend/modules/...` layout — the
-  protacxtend distribution's code package is synglue_agent).
+  protacxtend distribution's code package is protacxtend).
 - Solves POI/PROTAC/E3 mass action exactly (bounded least-squares in log10-space,
   relative residuals; detailed-balance-consistent α), full ternary curve, optimal
   concentration, hook onset/severity/label, max occupancy, window; seeded
@@ -166,7 +166,7 @@ dose p5/med/p95 142.0/149.2/156.9 nM; MC peak-ternary p5/med/p95
 
 ## 2026-09-02 (pm) — Scientific deep-research framework (LangGraph evidence retrieval)
 
-New low-cost, production-ready retrieval+synthesis stack: `synglue_agent/research/`
+New low-cost, production-ready retrieval+synthesis stack: `protacxtend/research/`
 with the unified `deep_research(query)` / `deep_research_sync(query)` API
 (docs: documentation/DEEP_RESEARCH.md).
 
@@ -209,7 +209,7 @@ with the unified `deep_research(query)` / `deep_research_sync(query)` API
 - Reusable tooling live-verified: EPMC 503 retried transparently (max_retries=3).
 
 ### Tests
-- New synglue_agent/tests/test_deep_research.py — 18 offline + 1 network:
+- New protacxtend/tests/test_deep_research.py — 18 offline + 1 network:
   dedup/merge, canonical URLs, scoring monotonicity, lexical rerank ordering,
   sufficiency/reformulation, no-fabrication verification, deterministic
   synthesis, full LangGraph run with stub clients (incl. reformulation loop),
@@ -221,7 +221,7 @@ Three retrosynthesis engines are now integrated as **working toolkits** behind t
 `run_retrosynthesis` stage (spec text: ASKCOS/MIT portal+Docker, AiZynthFinder
 MCTS, RDKit+OpenNMT seq2seq workflows).
 
-### New: synglue_agent/tools/retrosynthesis_engines.py
+### New: protacxtend/tools/retrosynthesis_engines.py
 - **ASKCOS (MIT)** — `AskcosClient` speaks the current ASKCOS REST API and was
   verified live against the public MIT instance (`askcos.mit.edu`):
   `POST /api/retro/controller/call-sync` (one-step), Retro* tree search via
@@ -259,7 +259,7 @@ MCTS, RDKit+OpenNMT seq2seq workflows).
   one-step + Retro* tree for aspirin).
 
 ### Tests
-- New `synglue_agent/tests/test_retrosynthesis_engines.py` (18 offline tests):
+- New `protacxtend/tests/test_retrosynthesis_engines.py` (18 offline tests):
   engine catalogue, tokenizer losslessness, ASKCOS stub-session contract (one-step,
   Retro* normalisation), unreachable-endpoint graceful failure, merge semantics,
   honest openmt downgrade; live ASKCOS marked `network`.
@@ -279,7 +279,7 @@ run_start, 112 threads, CUDA/OpenMP spin ~1400% CPU). Three stacked causes:
    single-row predict took ~11 s/model (33 s/molecule). 150 candidates ≈
    83 min. Verified: same code with OMP_NUM_THREADS=1 → fit 48 s→0.24 s,
    predict 283ms→0.1ms.
-   - NEW `synglue_agent/tools/thread_limits.py`: `apply_thread_limits()`
+   - NEW `protacxtend/tools/thread_limits.py`: `apply_thread_limits()`
      (env defaults OMP/OPENBLAS/MKL=4, early) + `bounded()` context
      (threadpoolctl). Wired into `runtime.py` entry + `tack_degradation.py`
      (predict wrapped in threadpool_limits(1, 'openmp')).
@@ -374,7 +374,7 @@ ranking/evolution/hook/cooperativity complete, full Markdown report.
 - Audit artifact: `outputs/DEGRADATION_BACKEND_REPAIR_AND_GATE_AUDIT.md`.
 
 ### BLOCKER noted: v0.1 deterministic e2e hangs pre-degradation
-- `python -m synglue_agent.agents.runtime "Design CRBN PROTACs for BRD4 degradation"
+- `python -m protacxtend.agents.runtime "Design CRBN PROTACs for BRD4 degradation"
   --mode deterministic --run-id gate_check_tack_20260901` was killed after
   ~50 min: trace stuck at `run_start`, CUDA/torch worker-thread spin (112
   threads, one `cuda*` thread, ~1400% CPU, no open TCP conns at sample time).
@@ -425,7 +425,7 @@ geometrically screened against 3600 MegaDock poses.
   Implementation_Status.
 
 ## 2026-08-01 — Structured Learning Memory (agents learn across runs)
-- **`synglue_agent/tools/learning_memory.py`** (590 lines): validated, structured learning DB.
+- **`protacxtend/tools/learning_memory.py`** (590 lines): validated, structured learning DB.
   - Controlled vocab: ProblemType (14), Outcome, LearningSource (direct_synthesis | human_feedback),
     ValidationStatus (candidate→validated/rejected/superseded), KNOWN_FAILURE_REASONS (aligned with FailureClass).
   - Every learning: problem_type, approach, outcome, human_correction, failure_reason, confidence,
@@ -436,7 +436,7 @@ geometrically screened against 3600 MegaDock poses.
   - Pattern extraction: success rates per approach, top failure reasons, top human corrections,
     deterministic why-statements; rendered to patterns.md.
   - Per-process **learnings.md** written to memory/learnings/runs/<run_id>/learnings.md.
-- **`synglue_agent/agents/learning_integration.py`** (240 lines): persist_run_learnings (auto-distills
+- **`protacxtend/agents/learning_integration.py`** (240 lines): persist_run_learnings (auto-distills
   decision_log on every run), advise_repair (reuses validated learnings incl. human corrections),
   record_human_feedback (auto-validated ground truth, conf≥0.85 to pass reuse gate),
   attach_learning_persistence_to_run decorator.
@@ -636,7 +636,7 @@ geometrically screened against 3600 MegaDock poses.
   backend 3.1.1 is incompatible with langgraph 1.2.10's checkpoint 4.x
   serialization; postgres is the production path; invoke returns
   {'__interrupt__': [...]} rather than raising in langgraph 1.2.10.
-- **Job queue**: synglue_agent/queue/job_queue.py — redis (if available) /
+- **Job queue**: protacxtend/queue/job_queue.py — redis (if available) /
   sqlite fallback; submit/claim/complete/fail/needs_human lifecycle;
   deploy/p4ward_worker.py consumes jobs (retrosynthesis/degradation done,
   p4ward → needs_human budget gate). Verified end-to-end (2 jobs → done).
@@ -775,7 +775,7 @@ geometrically screened against 3600 MegaDock poses.
   per-molecule scoring harness). Now: live ChEMBL binders, fragment linkers,
   BRICS construction, ternary ensemble, chemprop degradation, ADMET-AI,
   patent novelty, NSGA-II ranking — all wired through the adaptive graph.
-- Canonical AgentRunRecord (synglue_agent/run_records.py): run.json +
+- Canonical AgentRunRecord (protacxtend/run_records.py): run.json +
   decisions.jsonl + evidence.jsonl + candidates.parquet + pareto_front.csv +
   structures/ + docking/ + report.md per run, with reproducibility hash.
 - E2E suite (scripts/e2e_agentic.py): 5 scenarios PASS —
@@ -863,7 +863,7 @@ geometrically screened against 3600 MegaDock poses.
 - trained TACK-STYLE models on the public dataset (scripts/build_tack_model.py,
   scaffold split): DC50 log-regression rho=0.800 (val n=876), Dmax rho=0.738,
   binary active (DC50<100nM) acc 0.846 / AUC 0.917.
-- synglue_agent/tools/tack_degradation.py: inference (Morgan 1024 + descriptors
+- protacxtend/tools/tack_degradation.py: inference (Morgan 1024 + descriptors
   + E3/cell/POI one-hot) with provenance; batch API.
 - DegradationPrediction schema += tack_dc50_nM / tack_dmax_pct / tack_active;
   toolbox.predict_degradation fills them as a second opinion (never blocking).

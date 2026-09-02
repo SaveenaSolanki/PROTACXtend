@@ -1,5 +1,5 @@
-from synglue_agent.databases.database_registry import get_database_registry
-from synglue_agent.databases.database_status import check_all_database_statuses
+from protacxtend.databases.database_registry import get_database_registry
+from protacxtend.databases.database_status import check_all_database_statuses
 
 
 def test_every_requested_database_registered():

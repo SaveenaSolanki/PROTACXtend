@@ -1,0 +1,439 @@
+{
+  "run_id": "run-711a06c4a153",
+  "timestamp": "20260829-174515",
+  "user_request": "Design CRBN-based PROTACs for BRD4. Generate 3 candidates using PEG and alkyl linkers with low hERG risk.",
+  "target": "BRD4",
+  "final_candidate_ids": [
+    "SGA-15adac71e352",
+    "SGA-0a5dc6e94033",
+    "SGA-0fdb990aae3d"
+  ],
+  "warnings": [
+    "BindingDB REST needs an API key (BINDINGDB_API_KEY); ChEMBL covers binding data.",
+    "TargetBinderRetrievalAgent: Retrieved 3 binders from local_curated.",
+    "Evolution stopped: novelty_ratio<0.1 for 2 gens"
+  ],
+  "errors": [
+    "TargetBinderRetrievalAgent: max() iterable argument is empty",
+    "ExitVectorDetectionAgent: 1 validation error for ExitVectorRecord\nattachment_atom_index\n  Input should be a valid integer [type=int_type, input_value={'atom_index': 4, 'symbol...mmy_atom_map_number': 1}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/int_type"
+  ],
+  "cell_line": null,
+  "expression_overrides": {},
+  "e3_context_predictions": [
+    {
+      "candidate_id": "SGA-15adac71e352",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.68,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "default neutral",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-0a5dc6e94033",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.68,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "default neutral",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    },
+    {
+      "candidate_id": "SGA-0fdb990aae3d",
+      "e3_ligase": "CRBN",
+      "cell_line": "default",
+      "target_localization": "nuclear",
+      "expression_score": 0.6,
+      "colocalization_score": 1.0,
+      "ligand_availability_score": 1.0,
+      "structural_support_score": 0.9,
+      "resistance_risk": 0.7,
+      "total_context_score": 0.79,
+      "confidence": 0.68,
+      "contraindications": [
+        "known resistance: CRBN mutations/thalidomide resistance documented"
+      ],
+      "evidence_refs": [
+        "default neutral",
+        "ligand:pomalidomide/thalidomide",
+        "structure:4CI2 (CRBN-DDB1), 6BN7 (BRD4-CRBN)",
+        "resistance:CRBN mutations/thalidomide resistance documented"
+      ],
+      "explanation": "CRBN scores 0.79 in default: expression medium (0.60), colocalization compatible (1.00), ligand pomalidomide/thalidomide (1.00), structural support (0.90), resistance safety (0.30)."
+    }
+  ],
+  "cooperativity_predictions": [
+    {
+      "candidate_id": "SGA-15adac71e352",
+      "predicted_alpha": 3.519,
+      "log_alpha": 0.546,
+      "cooperativity_score": 0.515,
+      "interface_contact_score": 0.478,
+      "linker_strain_score": 0.769,
+      "lysine_geometry_score": 0.279,
+      "ternary_geometry_score": 0.5,
+      "confidence": 0.729,
+      "model_version": "cooperativity-proxy-v0.1",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available."
+    },
+    {
+      "candidate_id": "SGA-0a5dc6e94033",
+      "predicted_alpha": 2.792,
+      "log_alpha": 0.446,
+      "cooperativity_score": 0.482,
+      "interface_contact_score": 0.474,
+      "linker_strain_score": 0.675,
+      "lysine_geometry_score": 0.248,
+      "ternary_geometry_score": 0.5,
+      "confidence": 0.71,
+      "model_version": "cooperativity-proxy-v0.1",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available."
+    },
+    {
+      "candidate_id": "SGA-0fdb990aae3d",
+      "predicted_alpha": 3.264,
+      "log_alpha": 0.514,
+      "cooperativity_score": 0.505,
+      "interface_contact_score": 0.471,
+      "linker_strain_score": 0.738,
+      "lysine_geometry_score": 0.279,
+      "ternary_geometry_score": 0.5,
+      "confidence": 0.722,
+      "model_version": "cooperativity-proxy-v0.1",
+      "warning": "Cooperativity is proxy-only until ternary docking/P4ward evidence is available."
+    }
+  ],
+  "hook_effect_predictions": [
+    {
+      "candidate_id": "SGA-15adac71e352",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0,
+        0.0002,
+        0.0016,
+        0.0151,
+        0.095,
+        0.4246,
+        0.8323,
+        0.7672,
+        0.4053,
+        0.1468
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.8323,
+      "high_concentration_fraction": 0.1468,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.668,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-0a5dc6e94033",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.0006,
+        0.0049,
+        0.035,
+        0.1376,
+        0.331,
+        0.3762,
+        0.2207,
+        0.0935,
+        0.0307
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.3762,
+      "high_concentration_fraction": 0.0307,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.303,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    },
+    {
+      "candidate_id": "SGA-0fdb990aae3d",
+      "concentration_nM": [
+        0.1,
+        0.3,
+        1.0,
+        3.0,
+        10.0,
+        30.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0
+      ],
+      "ternary_fraction": [
+        0.0,
+        0.0001,
+        0.0007,
+        0.0057,
+        0.0407,
+        0.1607,
+        0.3878,
+        0.4418,
+        0.2597,
+        0.1101,
+        0.0362
+      ],
+      "hook_concentration_nM": 300.0,
+      "max_ternary_fraction": 0.4418,
+      "high_concentration_fraction": 0.0362,
+      "hook_risk": "high",
+      "therapeutic_window_score": 0.352,
+      "model_version": "hook-occupancy-v0.1",
+      "warning": "High-dose degradation may decline from binary target/E3 saturation."
+    }
+  ],
+  "active_learning_update": {
+    "status": "no_feedback",
+    "feedback_count": 0,
+    "training_rows": 0,
+    "dataset_path": "/storage/saveena/protacpilot/protacxtend/data/assay_feedback_training.csv",
+    "model_artifact_path": "",
+    "retraining_recommendation": "collect_more_feedback_before_retraining",
+    "warnings": [
+      "No assay feedback records supplied."
+    ]
+  },
+  "workflow_log": [
+    {
+      "agent": "SupervisorAgent",
+      "thought": "Parse the user's degradation objective into a structured PROTAC workflow state.",
+      "action": "parse_user_request",
+      "observation": "target=BRD4, e3=CRBN, candidate_count=3, linkers=['PEG', 'alkyl']",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "DesignPlannerAgent",
+      "thought": "Plan tool routing, retries, evidence search, user-input gates, stopping rules, and validation depth.",
+      "action": "create_design_plan",
+      "observation": "status=continue, tools=19, external_target_search=False, docking=False, questions=1",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "SafetyAgent",
+      "thought": "Check user request for haz ard patterns, unreasonable targets, or missing critical information.",
+      "action": "safety_precheck",
+      "observation": "warnings=0",
+      "processing_time_s": 0.0
+    },
+    {
+      "agent": "TargetResolverAgent",
+      "thought": "Resolve target gene/protein name to UniProt entry and AlphaFold structure.",
+      "action": "resolve_target",
+      "observation": "uniprot=M0QZD9, gene=BRD4",
+      "processing_time_s": 1.4873
+    },
+    {
+      "agent": "TargetBinderRetrievalAgent",
+      "thought": "Retrieve known ligands for the target from ChEMBL, PubChem, BindingDB.",
+      "action": "retrieve_binders",
+      "observation": "error=max() iterable argument is empty",
+      "processing_time_s": 20.0985
+    },
+    {
+      "agent": "WarheadSelectionAgent",
+      "thought": "Select warhead molecules from curated library or provided smiles.",
+      "action": "select_warheads",
+      "observation": "warheads=3, valid=3",
+      "processing_time_s": 0.0014
+    },
+    {
+      "agent": "E3LigandSelectionAgent",
+      "thought": "Select E3 ligase and ligand based on target biology and subcellular colocalization.",
+      "action": "select_e3_ligands",
+      "observation": "ligands=30, families=['CRBN']",
+      "processing_time_s": 0.0081
+    },
+    {
+      "agent": "ExitVectorDetectionAgent",
+      "thought": "Detect suitable linker attachment points on warhead and E3 ligand molecules.",
+      "action": "detect_exit_vectors",
+      "observation": "error=1 validation error for ExitVectorRecord\nattachment_atom_index\n  Input should be a valid integer [type=int_type, input_value={'atom_index': 4, 'symbol...mmy_atom_map_number': 1}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/int_type",
+      "processing_time_s": 0.0371
+    },
+    {
+      "agent": "LinkerGenerationAgent",
+      "thought": "Generate curated and rule-based linker candidates matching requested classes and PROTAC-aware constraints.",
+      "action": "generate_linkers",
+      "observation": "linkers=11, classes=['PEG', 'alkyl', 'generative']",
+      "processing_time_s": 16.2377
+    },
+    {
+      "agent": "MolecularConstructionAgent",
+      "thought": "Construct PROTAC candidates with multi-strategy deterministic assembly and provenance tracking.",
+      "action": "construct_protacs",
+      "observation": "attempts=3, assembled=3, successes=3",
+      "processing_time_s": 0.0247
+    },
+    {
+      "agent": "CandidateValidationAgent",
+      "thought": "Sanitize, canonicalize, property-check, and deduplicate assembled PROTAC candidates.",
+      "action": "validate_protacs",
+      "observation": "valid_candidates=3",
+      "processing_time_s": 0.0212
+    },
+    {
+      "agent": "CellContextAgent",
+      "thought": "Score E3/target compatibility using explicit cell-line and expression context.",
+      "action": "score_cell_type_e3_context",
+      "observation": "context=default, e3_context_records=3, weak=0",
+      "processing_time_s": 0.0029
+    },
+    {
+      "agent": "DegradationPredictionAgent",
+      "thought": "Predict DC50, Dmax, degradation probability, confidence, and model-version provenance.",
+      "action": "predict_degradation",
+      "observation": "predictions=3, low_confidence=3",
+      "processing_time_s": 19.2062
+    },
+    {
+      "agent": "ADMETAgent",
+      "thought": "Compute PROTAC-aware descriptor and toxicity-risk triage without strict Lipinski rejection.",
+      "action": "predict_admet",
+      "observation": "admet=3, high_risk_records=2",
+      "processing_time_s": 0.0144
+    },
+    {
+      "agent": "NoveltySimilarityAgent",
+      "thought": "Compare candidates against local known PROTAC-like records using fingerprints or deterministic string fallback.",
+      "action": "check_novelty",
+      "observation": "novelty_results=3, duplicates=0",
+      "processing_time_s": 5.7878
+    },
+    {
+      "agent": "ApplicabilityDomainAgent",
+      "thought": "Assess whether candidates are inside the demo model domain before ranking.",
+      "action": "assess_applicability_domain",
+      "observation": "domain_results=3, outside=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "RankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "rank_candidates",
+      "observation": "ranked=3, top_score=0.505",
+      "processing_time_s": 0.0005
+    },
+    {
+      "agent": "ProximityDiversityAgent",
+      "thought": "Cluster chemically similar candidates and identify diverse representatives.",
+      "action": "diversity_clustering",
+      "observation": "clusters=2",
+      "processing_time_s": 0.0026
+    },
+    {
+      "agent": "ReflectionReviewAgent",
+      "thought": "Critique top candidates for evidence strength, overclaims, ADME/Tox risk, novelty, and synthesis plausibility.",
+      "action": "reflection_review",
+      "observation": "reviews=3, high_review_risk=2",
+      "processing_time_s": 0.0002
+    },
+    {
+      "agent": "EvolutionRefinementAgent",
+      "thought": "Use review and ADME/Tox weaknesses to propose deterministic linker replacements and re-score evolved candidates.",
+      "action": "evolution_refinement",
+      "observation": "evolved=12, candidate_pool=3",
+      "processing_time_s": 93.4713
+    },
+    {
+      "agent": "TernaryFeasibilityAgent",
+      "thought": "Evaluate ternary complex formation via docking \u2192 P4ward pipeline.",
+      "action": "assess_ternary_feasibility",
+      "observation": "mode=none, n_results=0, affinity=N/A, feasible=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "CooperativityPredictionAgent",
+      "thought": "Estimate ternary cooperativity from interface, linker strain, lysine geometry, and ternary feasibility evidence.",
+      "action": "predict_cooperativity",
+      "observation": "cooperativity_records=3, anti_cooperative=0",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "HookEffectPredictionAgent",
+      "thought": "Model concentration-dependent ternary occupancy to detect high-dose hook-effect risk.",
+      "action": "predict_hook_effect",
+      "observation": "hook_records=3, high_hook_risk=3",
+      "processing_time_s": 0.0001
+    },
+    {
+      "agent": "FinalRankingTournamentAgent",
+      "thought": "Rank candidates with weighted multi-objective scoring and pairwise-comparator-compatible outputs.",
+      "action": "final_ranking",
+      "observation": "ranked=3, top_score=0.497",
+      "processing_time_s": 0.0012
+    },
+    {
+      "agent": "ReportAgent",
+      "thought": "Generate transparent candidate table, workflow summary, provenance, warnings, and scientific limitations.",
+      "action": "generate_report",
+      "observation": "report_chars=12525",
+      "processing_time_s": 1.619
+    },
+    {
+      "agent": "ActiveLearningAgent",
+      "thought": "Convert assay feedback into supervised rows and report retraining readiness.",
+      "action": "update_active_learning_from_feedback",
+      "observation": "feedback=0, training_rows=0, recommendation=collect_more_feedback_before_retraining",
+      "processing_time_s": 0.0003
+    }
+  ]
+}

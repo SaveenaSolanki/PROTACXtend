@@ -13,7 +13,7 @@ Developed at **Ahuja Lab** (Department of Computational Biology, IIIT Delhi) by 
 | **🚀 Getting Started** | Installation, environment setup, dependencies, fast-track quickstart | [GETTING_STARTED.md](file:///storage/saveena/protacpilot/documentation/GETTING_STARTED.md) |
 | **🏗️ Architecture & Feynman Stack** | 23-node agentic workflow graph, supervisor engine, physics + ML stack | [ARCHITECTURE.md](file:///storage/saveena/protacpilot/documentation/ARCHITECTURE.md) |
 | **⚡ Workflows & Slash Commands** | CLI slash commands (`/design`, `/predict`, `/dock`, `/admet`, `/audit`, `/replicate`) | [WORKFLOWS.md](file:///storage/saveena/protacpilot/documentation/WORKFLOWS.md) |
-| **🔌 API & CLI Reference** | Complete Python API (`synglue_agent`), REST endpoints, and CLI interface | [API_REFERENCE.md](file:///storage/saveena/protacpilot/documentation/API_REFERENCE.md) |
+| **🔌 API & CLI Reference** | Complete Python API (`protacxtend`), REST endpoints, and CLI interface | [API_REFERENCE.md](file:///storage/saveena/protacpilot/documentation/API_REFERENCE.md) |
 | **🐙 GitHub & Collaboration** | Repository details (`the-ahuja-lab/PROTACXtend`), Saveena Solanki collaborator setup | [GITHUB_AND_COLLABORATION.md](file:///storage/saveena/protacpilot/documentation/GITHUB_AND_COLLABORATION.md) |
 
 ---

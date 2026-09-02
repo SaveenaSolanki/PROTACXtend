@@ -1,0 +1,17 @@
+backend,repo_found,installed,wrapper,callable,runtime_connected,tested,benchmarked,production_ready,files,missing_work,notes
+RDKit,Y,Y,internal,Y,Y,Y,Y,Y,core modules/tools,-,chemistry backbone
+Chemprop (degradation ML),Y,Y,chemprop_degradation.py,Y,Y,Y,Y (G6/conformal),retrospective,outputs/benchmark/chemprop*,prospective validation,trained ensembles
+ADMET-AI,Y,venv .venvs/admet,admet_integration,Y (venv),Y,venv-gated,partial,PARTIAL,admet_integration.py; scripts/run_admet_ai.py,endpoint breadth,rules fallback default
+TACK model,Y,Y,tack_degradation.py,Y,Y,Y,scaffold rho .80,PARTIAL,data/tack/*,opinion-only role,second opinion
+P4ward,Y,docker/local,p4ward_wrapper.py,Y (env-gated),Y,gated,wiring,PARTIAL,p4ward_wrapper.py; deploy/p4ward_worker.py,default CI path,heavy external
+SE3-protacs / PROTAC-Model / PROTACFold / TERNIFY / SynGlue orig (30+ clones),Y,isolated envs,external_model_adapters.py; repo wrappers,partial,N (core graph),smoke,none,UNKNOWN,data/protac_repos/repos/*; .venvs/protac-*,runtime census + benchmark,clone inventory
+AlphaFold (DB),Y,client,alphafold_client.py,Y (network),Y,network-skip,pLDDT gate,PARTIAL,alphafold_client.py,local structure cache,monomer
+DepMap 24Q4,Y,cached raw,cell_context_selector/omics.py; e3 context.py,Y,Y,Y,M5 A-G; M6 retrieval,Y (transcriptomics),outputs/omics_cache + module data,proteomics,raw not committed
+UniProt,Y,client + cache,uniprot_client.py; localization.py,Y,Y,Y,annotation refresh,PARTIAL,module data (78 genes),coverage,-
+ChEMBL/BindingDB/PubChem/DrugBank,Y,clients,*_client.py + *_lookup.py,Y (network),Y,network-skip,binder census,PARTIAL,tools/*client.py,offline cache; dup layers,keys
+ASKCOS,Y,HTTP client,retrosynthesis_engines.AskcosClient,Y (network),Y,Y,verified-synthesis briefs,PARTIAL,retrosynthesis_engines.py,offline fallback default,-
+AiZynthFinder,Y,optional env/pkg,retrosynthesis_engines (aizynth),optional,N default,fallback tests,none,UNKNOWN,data/synthesis_prediction envs,install+wiring,optional
+Link-INVENT (official),N,N,internal style scorer,N (official),N,internal tests,internal rho .80,NOT SUPPORTED,linker_scoring.py,official package optional,re-implementation
+Rosetta/PRosettaC/MegaDock/COMPASS/Boltz/OpenMM/GROMACS,N,N,-,N,N,N,N,UNKNOWN,work/boltz_output (attempt only),-,not integrated
+Open Targets / HPA / SwissADME-like / admetSAR,N,N,-,N,N,N,N,UNKNOWN,-,-,absent
+LangGraph + LLM providers,Y,deps,agentic_core.py; gateway,Y,Y (agentic mode),architecture tests,e2e deterministic,PARTIAL,agents/runtime.py,-,deterministic mode default

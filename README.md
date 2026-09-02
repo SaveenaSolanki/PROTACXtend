@@ -12,11 +12,10 @@ PROTACXtend is a local, tool-augmented AI agent platform for component-aware PRO
 - **Lead Developer**: Saveena Solanki ([@SaveenaSolanki](https://github.com/SaveenaSolanki))
 - **Web App source**: [`website/`](website/index.html) — pure static landing page, interactive simulator & documentation hub (no build step)
 - **Documentation**: [`documentation/`](documentation/README.md) — installation, architecture (23-node core + 8 extensions = 31 documented nodes), workflows, API reference, and GitHub collaborator setup.
-- **Agent workframe**: [`AGENT_WORKFRAME.md`](AGENT_WORKFRAME.md) & [`AGENTS.md`](AGENTS.md) — orchestration model, node contract, and the final-code test protocol (local tier-1 + GitHub Actions tier-2).
 
-The system takes a natural-language design objective, converts it into a structured workflow state, and runs a governed agent graph — a 23-node core scientific workflow plus 8 controlled-search/feedback extensions (31 documented nodes, see `AGENT_WORKFRAME.md`) — to build candidate PROTAC records, score them with deterministic tools, mechanistic modules and ML models, rank candidates, and output reports, CSV and JSON data. Every executed step records its input, output, evidence source, model version and limitation.
+The system takes a natural-language design objective, converts it into a structured workflow state, and runs a governed agent graph — a 23-node core scientific workflow plus 8 controlled-search/feedback extensions (31 documented nodes; status source of truth: `config/scientific_status.yaml`) — to build candidate PROTAC records, score them with deterministic tools, mechanistic modules and ML models, rank candidates, and output reports, CSV and JSON data. Every executed step records its input, output, evidence source, model version and limitation.
 
-Quick start: [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md) · workflows: [documentation/WORKFLOWS.md](documentation/WORKFLOWS.md) · agent workframe: [AGENT_WORKFRAME.md](AGENT_WORKFRAME.md).
+Quick start: [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md) · workflows: [documentation/WORKFLOWS.md](documentation/WORKFLOWS.md) · status source of truth: [`config/scientific_status.yaml`](config/scientific_status.yaml).
 
 
 ## Architecture
@@ -28,7 +27,7 @@ User prompt / UI form / API request
 Streamlit UI / FastAPI / CLI
         |
         v
-synglue_agent.backend.main
+protacxtend.backend.main
         |
         v
 Agentic wrapper mode:
@@ -54,18 +53,18 @@ Markdown report + candidate CSV/JSON + workflow memory
 
 Main modules:
 
-- `synglue_agent/app/streamlit_app.py`: Streamlit research workspace.
-- `synglue_agent/backend/api_routes.py`: FastAPI routes.
-- `synglue_agent/backend/main.py`: CLI and workflow entry points.
-- `synglue_agent/agentic/`: seven-layer agentic control system for perception, reasoning, goal setting, decision-making, execution, learning/adaptation, and orchestration.
-- `synglue_agent/schemas/`: typed state, evidence, candidate provenance, tool result, and memory schemas.
-- `synglue_agent/agents/graph.py`: LangGraph workflow builder with a local fallback graph.
-- `synglue_agent/agents/design_planner_agent.py`: top-level planner that decides tool routing, retry policy, external evidence search, missing-input questions, stop rules, scientific invalidity rules, and deeper validation gates.
-- `synglue_agent/agents/*_agent.py`: specialist agents for target, binder, warhead, E3, linker, construction, prediction, ADME/Tox, novelty, ternary feasibility, ranking, reflection, report, and memory.
-- `synglue_agent/tools/*.py`: deterministic tools used by agents.
-- `synglue_agent/data/*.csv`: local curated targets, binders, E3 ligands, linkers, known PROTACs, and demo database files.
-- `synglue_agent/memory/`: workflow logs, chat history, and local literature/run memory.
-- `synglue_agent/outputs/`: generated reports and candidate tables.
+- `protacxtend/app/streamlit_app.py`: Streamlit research workspace.
+- `protacxtend/backend/api_routes.py`: FastAPI routes.
+- `protacxtend/backend/main.py`: CLI and workflow entry points.
+- `protacxtend/agentic/`: seven-layer agentic control system for perception, reasoning, goal setting, decision-making, execution, learning/adaptation, and orchestration.
+- `protacxtend/schemas/`: typed state, evidence, candidate provenance, tool result, and memory schemas.
+- `protacxtend/agents/graph.py`: LangGraph workflow builder with a local fallback graph.
+- `protacxtend/agents/design_planner_agent.py`: top-level planner that decides tool routing, retry policy, external evidence search, missing-input questions, stop rules, scientific invalidity rules, and deeper validation gates.
+- `protacxtend/agents/*_agent.py`: specialist agents for target, binder, warhead, E3, linker, construction, prediction, ADME/Tox, novelty, ternary feasibility, ranking, reflection, report, and memory.
+- `protacxtend/tools/*.py`: deterministic tools used by agents.
+- `protacxtend/data/*.csv`: local curated targets, binders, E3 ligands, linkers, known PROTACs, and demo database files.
+- `protacxtend/memory/`: workflow logs, chat history, and local literature/run memory.
+- `protacxtend/outputs/`: generated reports and candidate tables.
 
 ## LLM And Model Status
 
@@ -101,13 +100,13 @@ PROTACXtend now includes an additive seven-layer agentic wrapper around the dete
 
 | Capability | Implementation | Purpose |
 | --- | --- | --- |
-| Perception | `synglue_agent/agentic/perception.py` | Collects the user request, parsed entities, local datasets, available models, RDKit/docking/LangGraph status, similar memory records, missing inputs, and risk flags. |
-| Reasoning | `synglue_agent/agentic/reasoning.py` | Interprets the request using explicit PROTAC rules: target suitability, binder availability, E3 assumptions, exit-vector risk, linker strategy, ADME/Tox risk, ternary need, and heuristic-vs-model evidence. |
-| Goal Setting | `synglue_agent/agentic/goal_setting.py` | Converts the request into a typed `DesignGoal` with objectives, constraints, validation depth, fallback policy, stop criteria, and success criteria. |
-| Decision-Making | `synglue_agent/agentic/decision_making.py` | Chooses the next action and fallback based on missing inputs, tool availability, scientific risk, and previous failures. |
-| Execution | `synglue_agent/agentic/execution.py` | Calls deterministic tools through a registry, catches exceptions, records runtime, and returns typed `ToolResult` objects. |
-| Learning and Adaptation | `synglue_agent/agentic/learning.py` | Stores structured JSONL memory records for successful strategies, failures, warnings, model versions, and reusable lessons. |
-| Orchestration | `synglue_agent/agentic/orchestration.py` | Coordinates all layers and then delegates scientific generation/scoring to the existing deterministic workflow. |
+| Perception | `protacxtend/agentic/perception.py` | Collects the user request, parsed entities, local datasets, available models, RDKit/docking/LangGraph status, similar memory records, missing inputs, and risk flags. |
+| Reasoning | `protacxtend/agentic/reasoning.py` | Interprets the request using explicit PROTAC rules: target suitability, binder availability, E3 assumptions, exit-vector risk, linker strategy, ADME/Tox risk, ternary need, and heuristic-vs-model evidence. |
+| Goal Setting | `protacxtend/agentic/goal_setting.py` | Converts the request into a typed `DesignGoal` with objectives, constraints, validation depth, fallback policy, stop criteria, and success criteria. |
+| Decision-Making | `protacxtend/agentic/decision_making.py` | Chooses the next action and fallback based on missing inputs, tool availability, scientific risk, and previous failures. |
+| Execution | `protacxtend/agentic/execution.py` | Calls deterministic tools through a registry, catches exceptions, records runtime, and returns typed `ToolResult` objects. |
+| Learning and Adaptation | `protacxtend/agentic/learning.py` | Stores structured JSONL memory records for successful strategies, failures, warnings, model versions, and reusable lessons. |
+| Orchestration | `protacxtend/agentic/orchestration.py` | Coordinates all layers and then delegates scientific generation/scoring to the existing deterministic workflow. |
 
 The scientific rule is strict: let the LLM or agent layer plan, critique, route, recover, and explain. Let RDKit, docking tools, curated databases, configured trained models, or clearly marked heuristic fallback modules produce scientific evidence. This keeps reports robust, honest, and publishable.
 
@@ -125,7 +124,7 @@ The agentic output includes:
 
 ## Agent Flow
 
-The workflow in `synglue_agent/agents/graph.py` runs in this order:
+The workflow in `protacxtend/agents/graph.py` runs in this order:
 
 ```text
 1.  SupervisorAgent
@@ -242,11 +241,11 @@ Natural-language request
 
 Outputs are written to:
 
-- `synglue_agent/outputs/reports/*.md`
-- `synglue_agent/outputs/candidates/*.csv`
-- `synglue_agent/outputs/candidates/*.json`
-- `synglue_agent/memory/workflow_logs/*.json`
-- `synglue_agent/memory/agentic_design_memory.jsonl`
+- `protacxtend/outputs/reports/*.md`
+- `protacxtend/outputs/candidates/*.csv`
+- `protacxtend/outputs/candidates/*.json`
+- `protacxtend/memory/workflow_logs/*.json`
+- `protacxtend/memory/agentic_design_memory.jsonl`
 
 ## Runtime
 
@@ -255,7 +254,7 @@ Runtime depends on candidate count, RDKit availability, network/API calls, and w
 Observed local smoke run on this repository:
 
 ```bash
-/usr/bin/time -p python3 -m synglue_agent.backend.main --mode design \
+/usr/bin/time -p python3 -m protacxtend.backend.main --mode design \
   "Design CRBN-based PROTACs for BRD4. Generate 20 candidates using PEG and alkyl linkers with low hERG risk." \
   --stem readme_runtime_check
 ```
@@ -312,7 +311,7 @@ Core dependencies:
 ## Run The CLI
 
 ```bash
-python3 -m synglue_agent.backend.main --mode design \
+python3 -m protacxtend.backend.main --mode design \
   "Design CRBN-based PROTACs for BRD4. Generate 20 candidates using PEG and alkyl linkers with low hERG risk." \
   --stem brd4_crbn_demo
 ```
@@ -320,7 +319,7 @@ python3 -m synglue_agent.backend.main --mode design \
 Run the agentic architecture:
 
 ```bash
-python3 -m synglue_agent.backend.main --mode agentic-design \
+python3 -m protacxtend.backend.main --mode agentic-design \
   "Design CRBN-based PROTACs for BRD4. Generate 20 CRBN candidates using PEG and alkyl linkers with low hERG risk." \
   --stem brd4_agentic
 ```
@@ -328,13 +327,13 @@ python3 -m synglue_agent.backend.main --mode agentic-design \
 ## Run The Streamlit App
 
 ```bash
-streamlit run synglue_agent/app/streamlit_app.py
+streamlit run protacxtend/app/streamlit_app.py
 ```
 
 ## Run The API
 
 ```bash
-uvicorn synglue_agent.backend.api_routes:app --reload
+uvicorn protacxtend.backend.api_routes:app --reload
 ```
 
 Example request:
@@ -386,7 +385,7 @@ Tool categories:
 ### Retrosynthesis toolkit engines (working integrations)
 
 Three retrosynthesis engines are integrated as real toolkits behind the
-`run_retrosynthesis` stage (module: `synglue_agent/tools/retrosynthesis_engines.py`).
+`run_retrosynthesis` stage (module: `protacxtend/tools/retrosynthesis_engines.py`).
 Every engine reports availability honestly and never fabricates routes; a single
 result carries per-engine provenance (`RetrosynthesisResult.engine_outcomes`).
 
@@ -400,7 +399,7 @@ Quick checks / runs:
 
 ```bash
 python - <<'PY'
-from synglue_agent.tools.retrosynthesis_engines import render_engine_status_report
+from protacxtend.tools.retrosynthesis_engines import render_engine_status_report
 print(render_engine_status_report(skip_network=True))   # honest availability
 PY
 
@@ -415,7 +414,7 @@ Evidence is written under `outputs/retrosynthesis_toolkits/evidence.json`.
 ### Scientific deep-research framework (LangGraph)
 
 Low-cost, production-ready evidence retrieval + synthesis with a single
-`deep_research(query)` API — `synglue_agent/research/` (docs:
+`deep_research(query)` API — `protacxtend/research/` (docs:
 `documentation/DEEP_RESEARCH.md`). Pipeline: Europe PMC/PubMed first →
 OpenAlex citation graph → Crossref DOI validation → self-hosted SearXNG →
 Crawl4AI/clean full-text extraction → DOI/PMID/URL/title dedup → local
@@ -442,11 +441,11 @@ python scripts/deep_research_cli.py "PROTAC BRD4 degradation cancer" --no-llm
 Run the focused workflow test:
 
 ```bash
-python3 -m unittest synglue_agent.tests.test_workflow
+python3 -m unittest protacxtend.tests.test_workflow
 ```
 
 Run the main test suite:
 
 ```bash
-python3 -m pytest tests synglue_agent/tests
+python3 -m pytest tests protacxtend/tests
 ```

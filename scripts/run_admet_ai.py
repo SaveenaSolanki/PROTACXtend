@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Subprocess entry for ADMET-AI (isolated venv) — JSON in/out.
 
-Used by synglue_agent/tools/admet_integration.py via subprocess so the
+Used by protacxtend/tools/admet_integration.py via subprocess so the
 main environment never needs torch>=2.8.
 
 Usage:

@@ -21,9 +21,9 @@ api = ["fastapi>=0.110", "uvicorn>=0.27"]
 chemistry = ["rdkit"]
 
 [project.scripts]
-PROTACXtend = "synglue_agent.cli:main"
-protacxtend = "synglue_agent.cli:main"
+PROTACXtend = "protacxtend.cli:main"
+protacxtend = "protacxtend.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["synglue_agent*"]
+include = ["protacxtend*"]
 

@@ -1,6 +1,6 @@
-from synglue_agent.tools.tool_status import detect_all_tool_statuses, detect_tool_status
-from synglue_agent.tools.toolkit_registry import get_tool_by_name
-from synglue_agent.tools.toolkit_router import route_tool_request
+from protacxtend.tools.tool_status import detect_all_tool_statuses, detect_tool_status
+from protacxtend.tools.toolkit_registry import get_tool_by_name
+from protacxtend.tools.toolkit_router import route_tool_request
 
 
 def test_status_detection_never_crashes():

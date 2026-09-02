@@ -1,6 +1,6 @@
-from synglue_agent.databases.database_registry import get_database_entry
-from synglue_agent.databases.database_router import route_database_request
-from synglue_agent.backend.schemas import (
+from protacxtend.databases.database_registry import get_database_entry
+from protacxtend.databases.database_router import route_database_request
+from protacxtend.backend.schemas import (
     ADMETPrediction,
     ApplicabilityDomainResult,
     CandidateRecord,
@@ -9,12 +9,12 @@ from synglue_agent.backend.schemas import (
     HookEffectPrediction,
     NoveltyResult,
 )
-from synglue_agent.tools.protacdb_client import (
+from protacxtend.tools.protacdb_client import (
     load_normalized_protacdb,
     search_protacdb_evidence,
     summarize_protacdb_diversity,
 )
-from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 
 
 def test_protacdb_registry_declares_rich_evidence_outputs():

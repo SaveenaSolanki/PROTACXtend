@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_cli_help_runs():
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "--help"],
+        [sys.executable, "-m", "protacxtend.cli", "--help"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -24,7 +24,7 @@ def test_cli_help_runs():
 
 def test_cli_status_reports_frontend_and_api():
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "status", "--json"],
+        [sys.executable, "-m", "protacxtend.cli", "status", "--json"],
         cwd=ROOT,
         text=True,
         capture_output=True,

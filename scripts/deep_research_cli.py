@@ -54,8 +54,8 @@ def main() -> int:
         import os
         os.environ["RESEARCH_LLM_OFF"] = "1"
 
-    from synglue_agent.research import ResearchConfig, deep_research
-    from synglue_agent.research.reporting import render_publication_report
+    from protacxtend.research import ResearchConfig, deep_research
+    from protacxtend.research.reporting import render_publication_report
 
     cfg = ResearchConfig.from_env()
     if args.max_iterations is not None:
@@ -68,7 +68,7 @@ def main() -> int:
     if args.json:
         payload = report.model_dump()
         # machine-readable analyses that support the rendered review
-        from synglue_agent.research.reporting import (
+        from protacxtend.research.reporting import (
             evidence_score,
             excluded_evidence,
             grade_claims,

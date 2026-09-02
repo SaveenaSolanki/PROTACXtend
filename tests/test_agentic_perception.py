@@ -1,4 +1,4 @@
-from synglue_agent.agentic.perception import PerceptionAgent
+from protacxtend.agentic.perception import PerceptionAgent
 
 
 import unittest

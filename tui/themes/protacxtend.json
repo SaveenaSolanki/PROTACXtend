@@ -1,0 +1,34 @@
+{
+  "name": "protacxtend",
+  "description": "PROTACXtend theme derived from Feynman (MIT, Companion Inc)",
+  "vars": {
+    "ink": "#d3c6aa",
+    "paper": "#2d353b",
+    "paper2": "#343f44",
+    "paper3": "#3a464c",
+    "panel": "#374247",
+    "stone": "#9da9a0",
+    "ash": "#859289",
+    "darkAsh": "#5c6a72",
+    "sage": "#a7c080",
+    "teal": "#7fbbb3",
+    "rose": "#e67e80",
+    "violet": "#d699b6",
+    "orange": "#e69878",
+    "selection": "#425047",
+    "successBg": "#2f3b32",
+    "errorBg": "#3b3135"
+  },
+  "colors": {
+    "accent": "sage",
+    "border": "stone",
+    "borderAccent": "teal",
+    "borderMuted": "darkAsh",
+    "success": "sage",
+    "error": "rose",
+    "warning": "stone",
+    "dim": "ash",
+    "text": "ink",
+    "muted": "stone"
+  }
+}

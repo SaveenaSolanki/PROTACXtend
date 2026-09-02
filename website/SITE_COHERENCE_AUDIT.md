@@ -22,10 +22,10 @@ source of truth, run for the v2 scientific-coherence rewrite (2026-09-02).
 | Node count | "23-node core + 8 controlled-search/feedback extensions = 31 documented nodes" | `agents/graph.py` (31 registered nodes); `AGENT_WORKFRAME.md` (23-core + 8-extension accounting) | ✅ (qualifier added: graph stops only at terminal gates) |
 | Chemistry engine | 73 methods | `tools/protac_toolbox.py` | ✅ |
 | Retrieval sources | Europe PMC · PubMed · OpenAlex · Crossref · SearXNG (configurable) | `research/sources.py` | ✅ |
-| Module statuses | M1 validated baseline · M2 structural surrogate (real-PDB pending) · M3 data-gated surrogate · M4 trained · M5 trained (transcriptomic) · M6 planned · M7 planned | `synglue_agent/modules/PROTACXTEND_MODULE_BUILD.md` + `config/scientific_status.yaml` | ✅ |
+| Module statuses | M1 validated baseline · M2 structural surrogate (real-PDB pending) · M3 data-gated surrogate · M4 trained · M5 trained (transcriptomic) · M6 planned · M7 planned | `protacxtend/modules/PROTACXTEND_MODULE_BUILD.md` + `config/scientific_status.yaml` | ✅ |
 | Degradation predictors | Module 4, Module 5, TACK (DC50/Dmax/bin), SynGlue (DC50/Dmax) kept independent; unified engine under evaluation | model artifact paths in repo | ✅ |
 | Cell context | transcriptomic only; proteotype not claimed; unseen-line transfer not claimed | Module 5 tracker text | ✅ |
-| Workflows | real CLI subcommands: design · structure · dose · context · validate · contract · ask/learn/api | `synglue_agent/cli.py` | ✅ (old /predict /dock /admet /audit /replicate slash set removed from docs too) |
+| Workflows | real CLI subcommands: design · structure · dose · context · validate · contract · ask/learn/api | `protacxtend/cli.py` | ✅ (old /predict /dock /admet /audit /replicate slash set removed from docs too) |
 | Install | git clone + docker; PyPI "on the roadmap" | PyPI 404 (checked); Dockerfile present | ✅ (pip-install claim removed everywhere incl. README/docs) |
 | REST | POST /design · POST /mode · GET /health | `backend/api_routes.py` | ✅ |
 | Release status | "v0.3 core release · active research development" | release lineage | ✅ ("final" removed from site; README badge updated) |

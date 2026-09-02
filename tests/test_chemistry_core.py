@@ -1,4 +1,4 @@
-from synglue_agent.tools.chemistry_core import (
+from protacxtend.tools.chemistry_core import (
     analyze_protac_like_properties,
     canonicalize_smiles,
     compute_descriptors,

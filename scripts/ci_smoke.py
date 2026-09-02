@@ -38,22 +38,22 @@ def check(name: str, fn):
 def smoke():
     # 1. imports
     def t_imports():
-        import synglue_agent  # noqa: F401
-        from synglue_agent.agents import runtime  # noqa: F401
-        from synglue_agent.integrations import heruka  # noqa: F401
-        from synglue_agent.tools import retrosynthesis  # noqa: F401
+        import protacxtend  # noqa: F401
+        from protacxtend.agents import runtime  # noqa: F401
+        from protacxtend.integrations import heruka  # noqa: F401
+        from protacxtend.tools import retrosynthesis  # noqa: F401
     check("imports", t_imports)
 
     # 2. config parsing
     def t_config():
-        import synglue_agent.backend.config as cfg
+        import protacxtend.backend.config as cfg
         assert cfg.PROJECT_ROOT.exists()
         cfg.ensure_directories()
     check("config parse (backend config)", t_config)
 
     # 3. agent registry
     def t_agents():
-        from synglue_agent.agents import (
+        from protacxtend.agents import (
             agentic_core,  # noqa: F401
             graph,  # noqa: F401
             runtime,  # noqa: F401
@@ -62,7 +62,7 @@ def smoke():
 
     # 4. tool registry
     def t_tools():
-        from synglue_agent.tools.tool_registry import ToolRegistry
+        from protacxtend.tools.tool_registry import ToolRegistry
         reg = ToolRegistry()
         rows = reg.as_rows()
         assert len(rows) >= 10, f"expected >=10 tools, got {len(rows)}"
@@ -71,8 +71,8 @@ def smoke():
 
     # 5. pydantic schemas
     def t_schemas():
-        from synglue_agent.schemas.agentic_schema import DesignGoal
-        from synglue_agent.schemas.tool_schema import ToolResult
+        from protacxtend.schemas.agentic_schema import DesignGoal
+        from protacxtend.schemas.tool_schema import ToolResult
         g = DesignGoal(target="BRD4", e3="CRBN")
         assert g.target == "BRD4"
         r = ToolResult(tool="test", status="ok", payload={})
@@ -88,7 +88,7 @@ def smoke():
 
     # 7. orchestrator entry + graceful degradation (no assets)
     def t_orchestrator():
-        from synglue_agent.tools.retrosynthesis import aizynth_route_search
+        from protacxtend.tools.retrosynthesis import aizynth_route_search
         r = aizynth_route_search("CCO")  # asset-free -> tool_failed, not crash
         assert "tool_failed" in r or r.get("ran") is True
     check("orchestrator graceful degradation", t_orchestrator)
@@ -97,7 +97,7 @@ def smoke():
     def t_api():
         from fastapi.testclient import TestClient
 
-        from synglue_agent.backend.api_routes import get_app
+        from protacxtend.backend.api_routes import get_app
         app = get_app()
         c = TestClient(app)
         r = c.get("/health")

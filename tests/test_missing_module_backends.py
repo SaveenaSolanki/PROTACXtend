@@ -5,12 +5,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from synglue_agent.backend.mode_router import run_mode
-from synglue_agent.learning.design_test_learn import lock_predictions, recommend_next_batch
-from synglue_agent.tools.cooperativity_potential import score_cooperativity_potential
-from synglue_agent.tools.dose_response_simulator import simulate_ternary_dose_response
-from synglue_agent.tools.proteome_selectivity import score_proteome_context
-from synglue_agent.tools.ubiquitination_geometry import score_ubiquitination_geometry
+from protacxtend.backend.mode_router import run_mode
+from protacxtend.learning.design_test_learn import lock_predictions, recommend_next_batch
+from protacxtend.tools.cooperativity_potential import score_cooperativity_potential
+from protacxtend.tools.dose_response_simulator import simulate_ternary_dose_response
+from protacxtend.tools.proteome_selectivity import score_proteome_context
+from protacxtend.tools.ubiquitination_geometry import score_ubiquitination_geometry
 
 
 def _pdb_line(serial: int, name: str, res: str, chain: str, resid: int, x: float, y: float, z: float, element: str) -> str:
@@ -67,7 +67,7 @@ def test_proteome_context_uses_seed_atlas():
 
 
 def test_design_test_learn_locks_and_recommends(tmp_path: Path, monkeypatch):
-    monkeypatch.setattr("synglue_agent.learning.design_test_learn.REGISTRY_DIR", tmp_path)
+    monkeypatch.setattr("protacxtend.learning.design_test_learn.REGISTRY_DIR", tmp_path)
     locked = lock_predictions([{"candidate_id": "A", "score": 0.7}], run_id="unit")
     assert locked["success"]
     assert Path(locked["path"]).exists()

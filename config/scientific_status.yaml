@@ -19,13 +19,13 @@ architecture:
   extension_nodes: 8
   documented_nodes: 31
   wording: "23-node core scientific workflow + 8 controlled-search/feedback extensions = 31 documented agent nodes"
-  production_graph: "synglue_agent/agents/graph.py — deterministic state machine walks every registered node in sequence; terminal evidence/error gates may stop the run early"
+  production_graph: "protacxtend/agents/graph.py — deterministic state machine walks every registered node in sequence; terminal evidence/error gates may stop the run early"
 
 framework:
   name: "KNOW → REASON → DESIGN → DISCOVER"
   description: "evidence-grounded autonomous research loop for targeted protein degradation"
 
-retrieval_sources:            # KNOW — code: synglue_agent/research/sources.py
+retrieval_sources:            # KNOW — code: protacxtend/research/sources.py
   europepmc:    {status: TRAINED-API,  type: RETRIEVED}
   pubmed:       {status: TRAINED-API,  type: RETRIEVED}
   openalex:     {status: TRAINED-API,  type: RETRIEVED}
@@ -33,7 +33,7 @@ retrieval_sources:            # KNOW — code: synglue_agent/research/sources.py
   searxng:      {status: PARTIAL,      type: RETRIEVED, note: "requires self-hosted SEARXNG_URL"}
   fulltext_crawl: {status: PARTIAL,    type: RETRIEVED, note: "crawl4ai / httpx; robots-aware"}
 
-modules:                      # source of truth: synglue_agent/modules/PROTACXTEND_MODULE_BUILD.md
+modules:                      # source of truth: protacxtend/modules/PROTACXTEND_MODULE_BUILD.md
   hook_effect_modeler:        # Module 1
     status: VALIDATED BASELINE
     type: CALCULATED
@@ -100,7 +100,7 @@ spreadsheet_assets:           # xlsx/csv assets shipped in-repo (documentation/G
   - {file: "data/toolkit/Agent_Toolkit_EXPANDED.xlsx",    use: "expanded agent tool catalogue"}
   - {file: "TOOL_AUDIT.xlsx",                             use: "tool audit log"}
   - {file: "data/protac_repos/protac_repo_registry.xlsx", use: "upstream repo registry"}
-  - {file: "synglue_agent/modules/cell_context_selector/data/context_joined.csv", use: "Module 5 features (DepMap 24Q4)"}
+  - {file: "protacxtend/modules/cell_context_selector/data/context_joined.csv", use: "Module 5 features (DepMap 24Q4)"}
 
 databases_and_apis:           # what the platform queries / ships
   live_apis: ["UniProt", "ChEMBL", "PubChem", "BindingDB", "Europe PMC", "PubMed", "OpenAlex", "Crossref"]

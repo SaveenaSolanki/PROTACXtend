@@ -1,5 +1,68 @@
 # PROTACXtend Changelog
 
+## 2026-09-02 (module 6) — Novel E3 Ligase Opportunity Engine
+
+rank_e3_ligases(poi, cell_line, tissue, disease, warhead, poi_structure,
+top_k): 30-gene E3 catalog (families/modes/adaptors; CRL4/2/3, SCF, RING,
+IAP, HECT, RBR, U-box, TRIM) x independent evidence axes — cell-context
+expression (DepMap 24Q4 percentiles, Module 5 infra; E3+adaptor+POI),
+subcellular compatibility (78 UniProt-reviewed annotations cached offline),
+recruiter tractability (DOI-cited ligand library only; demo rows excluded),
+biological precedent (curated measured PROTAC rows), structural availability
+(ternary feasibility stays UNKNOWN without ternary data), surface-lysine
+census (only with user-supplied POI structure; Module-2 SASA), selectivity
+(lineage-expression restriction + curated paralog families), per-axis
+uncertainty/OOD. Verdicts SUPPORTED/PROMISING/EXPLORATORY/INSUFFICIENT
+EVIDENCE with hard rules: expression alone never recommends an E3 (benchmark:
+expression-only AUROC 0.49 = chance); SUPPORTED requires direct measured
+precedent for the POI; low-expression (<20th pct) caps at EXPLORATORY.
+Retrospective benchmark (270 unique measured POI-cell-E3 pairs; negatives =
+catalog E3s never used, absence-of-record documented): grouped regimes
+random/unseen-target/pair/cell/E3/family-LOO; baselines expression-only /
+recruiter-only / precedent-frequency / logistic / RF / XGBoost; RF best
+(AUROC .98 random & unseen-target, .93 unseen-E3, .99 unseen-cell);
+recruiter ablation −0.52 AUROC on unseen-E3; precedent transfers across cell
+lines but not targets; structure/lysine axes reported as coverage census (no
+POI structures in the retrospective set). Ablations and claims gated in
+VALIDATION.md. Challenges 1–7 encoded as tests (same-POI cell contrast, VHL
+vs CRBN, low-expression penalty, missing-context uncertainty, no-structure no
+mechanistic claim, absent-recruiter explicit, unknown POI graceful) +
+determinism; 17 tests. Agent tool run_e3_opportunity. Artifacts:
+artifacts/benchmark_results.json; docs README/SPEC/VALIDATION/LIMITATIONS/
+REFERENCES.
+
+
+## 2026-09-02 (module 5) — Cell-Context / Proteotype-Aware Degradation Model
+
+predict_cell_context(protac, poi, e3, cell_line). Data: PROTAC-Degradation-DB
+(arXiv 2406.02637; verified research clone) curated reproducibly 2141 -> -62
+viability-only -> 2079 -> -166 exact dups -> 1913 rows (180 cell lines, 121
+targets, 8 E3s, 231 DOIs; measured DC50 1181 / Dmax 761 / both 479). Binary
+activity labels recomputed from the paper's documented AND rule (pDC50>=6,
+Dmax>=60) — threshold-derived, never called experimental; QA vs shipped
+'Active' 700/857 agree (shipped column unused). DC50 asserted nM before pDC50;
+no label fabricated; endpoint masks throughout. Cell lines mapped to DepMap
+24Q4 Model.csv (137 mapped/2 ambiguous/41 unmapped incl. 7 qualitative
+descriptions); transcriptomic features from DepMap 24Q4 TPM-log1p (142-gene
+E3/E2/proteasome/DUB/transporter panel + POI genes) on 1512 rows; proteomics
+coverage 0 (no DepMap 24Q4 proteomics). Modules 1-3 mechanistic features
+structure/parameter-limited (22 rows reference a ternary PDB) -> reported as a
+census, not used at scale. Baselines mean->cell-mean->ridge->elasticnet->RF->ET
+->XGBoost (+RF/logistic classifier); grouped splits random/unseen-PROTAC/
+scaffold/unseen-target/unseen-E3/unseen-cell-line/unseen-PROTAC+cell,
+train-only preprocessing; R2/MAE/RMSE/Spearman/Pearson (+AUROC/AUPRC for the
+derived task), n per split. Results: pDC50 leg D (transcriptomics) beats leg B
+on unseen-PROTAC (RF R2 0.605 vs 0.513), scaffold (0.603) and random (best
+family 0.685); Dmax similar (unseen-PROTAC 0.519 vs 0.476); derived-active
+AUROC 0.894 (unseen-PROTAC leg D). Claims gated in the artifact:
+cell_context_aware True; transcriptomics_generalises_to_unseen_lines False
+(D<B on unseen-cell-line; identity codes never claimed as selectivity);
+proteotype_aware False. Production artifact cell_context_model.joblib (all
+endpoints leg D RF). M4-v1 artifact untouched; M4_FOLLOWUP memo recommends a
+versioned M4-v2 retrain from the larger set after audit. Tests 16; module
+suites + full run in status report.
+
+
 ## 2026-09-02 (module 4) — PROTAC Degradation ML Model
 
 Curated real dataset from the project's PROTAC-DB benchmark extract (64 rows

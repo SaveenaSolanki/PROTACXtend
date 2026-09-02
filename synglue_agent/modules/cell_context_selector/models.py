@@ -299,7 +299,7 @@ class Evaluator:
 
 def _cell_mean_predict(ytr, cell_tr, cell_te) -> np.ndarray:
     means = {}
-    for c, v in zip(cell_tr, ytr):
+    for c, v in zip(cell_tr, ytr, strict=False):
         means.setdefault(c, []).append(v)
     out = []
     for c in cell_te:

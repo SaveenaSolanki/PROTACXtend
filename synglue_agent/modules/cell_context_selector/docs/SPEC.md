@@ -46,15 +46,18 @@ G6 reproduction):
 |---|---|
 | Total rows | 2,141 |
 | Cell lines | 180 (K562 140, HeLa 102, MCF-7 97, …) |
-| Targets / E3s | 131 / 11 (better than M4’s CRBN/VHL-only) |
+| Targets / E3s | 121 parsed / 8 canonical E3s (CRBN, VHL, MDM2, FEM1B, RNF114, UBR1, IAP, XIAP) |
 | Source DOIs | 231 |
-| Viability/cytotox-only rows (Comments flag) | 154 → **excluded** from degradation labels |
-| Rows after exclusion | 2,079 |
-| Measured DC50 (>0 nM) | 1,342 rows |
-| Measured Dmax | 809 rows |
-| **Measured DC50 AND Dmax (clean core)** | **522 rows**; 69 targets, 9 E3s, 98 cell lines, 98 DOIs |
-| Binary “Active” column | **threshold-derived, NOT independently measured**: `Active = (pDC50 ≥ 6.0 → DC50 ≤ 1 µM) AND (Dmax ≥ 60 %)`, per the paper’s `is_active()` (defaults pDC50_threshold=6.0, Dmax_threshold=0.6); OR/AND variants exist in the DB |
-| Core-set balance | 435/522 threshold-active; heavily concentrated (VCaP 52, HEK293T 33, HeLa 31, …; 30 cell lines with ≥5 core rows) |
+| Viability/cytotox-only rows (Comments flag, strict assay-level rule) | 62 → excluded (the earlier “154” was a broad IC50-mention scan; 92 of those carry real degradation endpoints + ligand-IC50 notes and are kept) |
+| Rows after viability exclusion | 2,079 |
+| Exact-duplicate rows (same smiles/target/E3/cell/DOI) | 166 → dropped |
+| **Curated rows** | **1,913** |
+| Measured DC50 (>0 nM) | 1,181 rows |
+| Measured Dmax | 761 rows |
+| Measured DC50 AND Dmax | 479 rows (pre-dedup: 522) |
+| Binary “Active” column | **threshold-derived, NOT independently measured**: `Active = (pDC50 ≥ 6.0 → DC50 ≤ 1 µM) AND (Dmax ≥ 60 %)`, per the paper’s `is_active()` AND rule; recomputed in-module. QA vs shipped column: 700/857 agree → shipped column never used |
+| Derived-active rows (rule decides) | 775 (True 394 / False 381) |
+| Cell-line mapping (DepMap 24Q4) | 137 mapped / 2 ambiguous / 41 unmapped (7 qualitative descriptions); 1,512 of 1,913 rows have transcriptomic context; proteomics: none in DepMap 24Q4 |
 | Provenance of shipped file | Research clone; DOI-cited rows from PROTAC-DB + PROTAC-Pedia entries compiled by the paper pipeline |
 
 **Honesty decisions carried into the build**
@@ -64,9 +67,10 @@ G6 reproduction):
    “measured degradation probability” — this also keeps Module 4’s statement
    (no independent measured binary outcomes in its curated set) consistent.
 3. Viability-only rows never enter degradation labels.
-4. Dedup rule follows the paper’s: key = (Smiles, Uniprot, E3 Uniprot, Cell
-   Line Identifier); replicate DC50/Dmax merged by geometric mean, provenance
-   kept.
+4. Exact duplicates (same smiles/target/E3/cell/DOI) are dropped; distinct
+   measurements of the same series from *different DOIs* are kept as separate
+   rows (optional geometric-mean merge available via
+   `build_curated(merge_same_series=True)`, provenance aggregated).
 5. Cell-line imbalance and target/E3 concentration are reported per split, not
    hidden; grouped folds never share a compound across train/test.
 

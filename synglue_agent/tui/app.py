@@ -1,15 +1,15 @@
 """
 PROTACXtend TUI — Feynman-style terminal interface.
 
-A full-screen, panel-based TUI that shows:
-  • Header:        PROTACXtend branding + version
-  • Left sidebar:  23-agent pipeline list with live status indicators
-  • Main (top):    Model system information (LLM provider, engine, env)
-  • Main (bottom): Research workflow log — real-time agent activity, directory, what's happening
-  • Footer:        Status bar with run info
+Full-screen panel layout inspired by the Feynman AI research agent:
+  • ASCII logo header with version
+  • Two-column main: model/system info (left) + research workflows (right)
+  • Agent pipeline sidebar with live status
+  • Workflow activity log
+  • About section
 
 Launch:
-    PROTACXtend          → enters this TUI
+    PROTACXtend          → this TUI (on a TTY)
     PROTACXtend tui      → explicit TUI launch
     python -m synglue_agent.tui.app   → direct module run
 """
@@ -46,32 +46,60 @@ from synglue_agent import __version__
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TUI_CSS = Path(__file__).parent / "styles.tcss"
 
+# ── Feynman-style ASCII logo ──────────────────────────────────────
+
+PROTAC_LOGO = [
+    r"  ____   ___  _____ ____   ___  _   _ ____    _  _____",
+    r" |  _ \ / _ \|  ___|  _ \ / _ \| \ | / ___|  / \|_   _|",
+    r" | |_) | | | | |_  | |_) | | | |  \| \___ \ / _ \ | |",
+    r" |  __/| |_| |  _| |  __/| |_| | |\  |___) / ___ \| |",
+    r" |_|    \___/|_|   |_|    \___/|_| \_|____/_/   \_\_|",
+    r"",
+    r"  Agentic PROTAC Design  ·  23-node workflow  ·  73-method toolbox",
+]
+
 # ── Agent registry: the 23-node pipeline ──────────────────────────
 
 AGENT_PIPELINE: list[dict[str, str]] = [
-    {"id": "supervisor",            "name": "Supervisor",            "icon": "📋", "desc": "Parse NL request → structured objective"},
-    {"id": "planner",               "name": "Design Planner",        "icon": "🗺️", "desc": "Policy engine: tools, retry, stop conditions"},
-    {"id": "safety",                "name": "Safety Precheck",       "icon": "🛡️", "desc": "Hazard detection, SMILES validation"},
-    {"id": "target_resolver",       "name": "Target Resolver",       "icon": "🎯", "desc": "UniProt + AlphaFold lookup"},
-    {"id": "binder_retrieval",      "name": "Binder Retrieval",      "icon": "🔬", "desc": "ChEMBL + PubChem + BindingDB APIs"},
-    {"id": "warhead_selection",     "name": "Warhead Selection",     "icon": "💊", "desc": "Library + user input fusion"},
-    {"id": "e3_selection",          "name": "E3 Ligand Selection",   "icon": "🔗", "desc": "Colocalization scoring"},
-    {"id": "exit_vector_detection", "name": "Exit Vector Detection", "icon": "🚪", "desc": "RDKit attachment point detection"},
-    {"id": "linker_generation",     "name": "Linker Generation",     "icon": "⛓️", "desc": "73-method linker engine"},
-    {"id": "construction",          "name": "Molecular Construction", "icon": "🧪", "desc": "3 assembly strategies"},
-    {"id": "validation",            "name": "Candidate Validation",  "icon": "✅", "desc": "RDKit validity + property ranges"},
-    {"id": "ternary_feasibility",   "name": "Ternary Feasibility",   "icon": "📐", "desc": "P4ward wrapper + geometric proxy"},
-    {"id": "degradation_prediction","name": "Degradation Prediction", "icon": "📉", "desc": "Chemprop D-MPNN + heuristic"},
-    {"id": "admet_prediction",      "name": "ADMET Prediction",      "icon": "⚖️", "desc": "RDKit descriptors + risk flags"},
-    {"id": "novelty_check",         "name": "Novelty Check",         "icon": "🆕", "desc": "Tanimoto vs known PROTACs"},
-    {"id": "applicability_domain",  "name": "Applicability Domain",  "icon": "📊", "desc": "Domain score + in/out labels"},
-    {"id": "evidence_sufficiency",  "name": "Evidence Sufficiency",  "icon": "🔍", "desc": "Gate: enough evidence to rank?"},
-    {"id": "repair_controller",     "name": "Repair Controller",     "icon": "🔧", "desc": "Failure recovery dispatch"},
-    {"id": "ranking",               "name": "Initial Ranking",       "icon": "🏅", "desc": "Multi-parameter weighted composite"},
-    {"id": "diversity",             "name": "Diversity Clustering",  "icon": "🌈", "desc": "Tanimoto ≥ 0.62 clustering"},
-    {"id": "reflection",            "name": "Reflection Review",     "icon": "🪞", "desc": "Evidence critique, overclaim detection"},
-    {"id": "evolution",             "name": "Evolution Refinement",  "icon": "🧬", "desc": "Iterative GA-style improvement"},
-    {"id": "report",                "name": "Report Generation",     "icon": "📄", "desc": "Markdown + CSV + JSON export"},
+    {"id": "supervisor",            "name": "Supervisor",            "icon": "📋", "desc": "Parse NL request"},
+    {"id": "planner",               "name": "Design Planner",        "icon": "🗺️", "desc": "Policy engine"},
+    {"id": "safety",                "name": "Safety Precheck",       "icon": "🛡️", "desc": "Hazard detection"},
+    {"id": "target_resolver",       "name": "Target Resolver",       "icon": "🎯", "desc": "UniProt + AlphaFold"},
+    {"id": "binder_retrieval",      "name": "Binder Retrieval",      "icon": "🔬", "desc": "ChEMBL/PubChem/BindingDB"},
+    {"id": "warhead_selection",     "name": "Warhead Selection",     "icon": "💊", "desc": "Library fusion"},
+    {"id": "e3_selection",          "name": "E3 Ligand Selection",   "icon": "🔗", "desc": "Colocalization"},
+    {"id": "exit_vector_detection", "name": "Exit Vector Detection", "icon": "🚪", "desc": "RDKit attachment"},
+    {"id": "linker_generation",     "name": "Linker Generation",     "icon": "⛓️", "desc": "73-method engine"},
+    {"id": "construction",          "name": "Molecular Construction", "icon": "🧪", "desc": "3 strategies"},
+    {"id": "validation",            "name": "Candidate Validation",  "icon": "✅", "desc": "RDKit validity"},
+    {"id": "ternary_feasibility",   "name": "Ternary Feasibility",   "icon": "📐", "desc": "P4ward + geometric"},
+    {"id": "degradation_prediction","name": "Degradation Prediction", "icon": "📉", "desc": "Chemprop + heuristic"},
+    {"id": "admet_prediction",      "name": "ADMET Prediction",      "icon": "⚖️", "desc": "Descriptors + risk"},
+    {"id": "novelty_check",         "name": "Novelty Check",         "icon": "🆕", "desc": "Tanimoto similarity"},
+    {"id": "applicability_domain",  "name": "Applicability Domain",  "icon": "📊", "desc": "Domain scoring"},
+    {"id": "evidence_sufficiency",  "name": "Evidence Sufficiency",  "icon": "🔍", "desc": "Gate: enough data?"},
+    {"id": "repair_controller",     "name": "Repair Controller",     "icon": "🔧", "desc": "Failure recovery"},
+    {"id": "ranking",               "name": "Initial Ranking",       "icon": "🏅", "desc": "Weighted composite"},
+    {"id": "diversity",             "name": "Diversity Clustering",  "icon": "🌈", "desc": "Tanimoto ≥ 0.62"},
+    {"id": "reflection",            "name": "Reflection Review",     "icon": "🪞", "desc": "Evidence critique"},
+    {"id": "evolution",             "name": "Evolution Refinement",  "icon": "🧬", "desc": "GA improvement"},
+    {"id": "report",                "name": "Report Generation",     "icon": "📄", "desc": "MD + CSV + JSON"},
+]
+
+# ── Research workflows (Feynman-style) ────────────────────────────
+
+RESEARCH_WORKFLOWS: list[dict[str, str]] = [
+    {"cmd": "/design",    "desc": "Design and rank PROTAC candidates"},
+    {"cmd": "/evidence",  "desc": "Retrieve PROTAC-DB, literature, affinity data"},
+    {"cmd": "/structure", "desc": "Ternary feasibility, lysine reach, docking"},
+    {"cmd": "/cellctx",   "desc": "Score target/E3 abundance per cell line"},
+    {"cmd": "/rank",      "desc": "Multi-objective ranking with uncertainty"},
+    {"cmd": "/learn",     "desc": "Active-learning feedback and next experiments"},
+    {"cmd": "/report",    "desc": "Generate scientist-facing report"},
+    {"cmd": "/validate",  "desc": "RDKit validation + ADMET proxy for SMILES"},
+    {"cmd": "/contract",  "desc": "KNOW-REASON-DESIGN-DISCOVER contracts"},
+    {"cmd": "/run",       "desc": "Execute full agentic workflow"},
+    {"cmd": "/plan",      "desc": "Fast plan-only estimate (no execution)"},
 ]
 
 
@@ -108,23 +136,23 @@ def _detect_llm_config() -> dict[str, Any]:
 def _detect_chemistry_env() -> dict[str, Any]:
     """Detect chemistry/ML environment status."""
     checks = {
-        "rdkit": ("rdkit", "Chem"),
-        "torch": ("torch", "__version__"),
-        "chemprop": ("chemprop", None),
-        "deepchem": ("deepchem", None),
-        "scikit-learn": ("sklearn", None),
-        "pandas": ("pandas", None),
-        "numpy": ("numpy", None),
-        "biopython": ("Bio", None),
-        "langgraph": ("langgraph", None),
-        "langchain": ("langchain", None),
+        "rdkit": ("rdkit",),
+        "torch": ("torch",),
+        "chemprop": ("chemprop",),
+        "deepchem": ("deepchem",),
+        "scikit-learn": ("sklearn",),
+        "pandas": ("pandas",),
+        "numpy": ("numpy",),
+        "biopython": ("Bio",),
+        "langgraph": ("langgraph",),
+        "langchain": ("langchain",),
     }
     results: dict[str, dict[str, Any]] = {}
-    for name, (mod, attr) in checks.items():
+    for name, (mod,) in checks.items():
         try:
             m = importlib.import_module(mod)
-            ver = getattr(m, "__version__", getattr(m, attr, "✓")) if attr else getattr(m, "__version__", "✓")
-            results[name] = {"installed": True, "version": str(ver)[:20]}
+            ver = getattr(m, "__version__", "✓")
+            results[name] = {"installed": True, "version": str(ver)[:18]}
         except Exception:
             results[name] = {"installed": False, "version": "—"}
     return results
@@ -141,6 +169,86 @@ def _detect_project_info() -> dict[str, Any]:
         "data_files": len(list(data_dir.glob("*.csv"))) if data_dir.exists() else 0,
         "output_runs": len(list(output_dir.iterdir())) if output_dir.exists() else 0,
     }
+
+
+def _detect_system_info() -> dict[str, Any]:
+    """Detect system resources."""
+    import platform
+    try:
+        import os as _os
+        cpu_count = _os.cpu_count() or 0
+    except Exception:
+        cpu_count = 0
+    try:
+        import shutil
+        rdkit_ok = shutil.which("rdkit") is not None or importlib.util.find_spec("rdkit") is not None
+    except Exception:
+        rdkit_ok = False
+    return {
+        "platform": platform.system(),
+        "python": platform.python_version(),
+        "cpu_cores": cpu_count,
+        "rdkit": rdkit_ok,
+    }
+
+
+# ── Model panel builder ───────────────────────────────────────────
+
+def _build_model_panel_text() -> str:
+    """Build model system info for the panel."""
+    llm = _detect_llm_config()
+    proj = _detect_project_info()
+    sys_info = _detect_system_info()
+    healthy = llm.get("healthy", False)
+    status_dot = "[green]●[/green]" if healthy else "[red]○[/red]"
+    lines = [
+        "[bold]╔══════════════════════════════════════════════════════════════╗[/bold]",
+        "[bold cyan]║  🧠 MODEL SYSTEM                                            ║[/bold cyan]",
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+        f"[bold]║[/bold]  [dim]model[/dim]      [cyan]{llm['provider']}/{llm['model']}[/cyan]  {status_dot}",
+        f"[bold]║[/bold]  [dim]base_url[/dim]  [dim]{llm['base_url']}[/dim]",
+        f"[bold]║[/bold]  [dim]context[/dim]   [dim]{llm['num_ctx']} tokens  ·  temp {llm['temperature']}  ·  timeout {llm['timeout_s']}s[/dim]",
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+        "[bold cyan]║  ⚗️  CHEMISTRY / ML ENGINES                                 ║[/bold cyan]",
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+    ]
+    chem = _detect_chemistry_env()
+    for pkg_name, info in chem.items():
+        icon = "[green]✓[/green]" if info["installed"] else "[red]✗[/red]"
+        lines.append(f"[bold]║[/bold]  {icon} {pkg_name:<14s} [dim]{info['version']}[/dim]")
+    lines.extend([
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+        "[bold cyan]║  📁 PROJECT                                                 ║[/bold cyan]",
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+        f"[bold]║[/bold]  [dim]root[/dim]     [dim]{proj['project_root']}[/dim]",
+        f"[bold]║[/bold]  [dim]data[/dim]     [cyan]{proj['data_files']}[/cyan] CSV files  ·  [dim]outputs[/dim] [cyan]{proj['output_runs']}[/cyan] runs",
+        f"[bold]║[/bold]  [dim]system[/dim]   [dim]{sys_info['platform']} · Python {sys_info['python']} · {sys_info['cpu_cores']} cores[/dim]",
+        "[bold]╚══════════════════════════════════════════════════════════════╝[/bold]",
+    ])
+    return "\n".join(lines)
+
+
+# ── About panel builder ───────────────────────────────────────────
+
+def _build_about_panel_text() -> str:
+    """Build the About section content."""
+    lines = [
+        "[bold]╔══════════════════════════════════════════════════════════════╗[/bold]",
+        "[bold cyan]║  ℹ️  ABOUT PROTACXtend                                      ║[/bold cyan]",
+        "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
+        f"[bold]║[/bold]  [dim]version[/dim]   [cyan]v{__version__}[/cyan]",
+        "[bold]║[/bold]  [dim]type[/dim]      Agentic PROTAC design workflow",
+        "[bold]║[/bold]  [dim]agents[/dim]    23-node pipeline with conditional routing",
+        "[bold]║[/bold]  [dim]toolbox[/dim]   73-method deterministic + LLM-gated",
+        "[bold]║[/bold]  [dim]engines[/dim]   RDKit · Chemprop · P4ward · AutoDock Vina",
+        "[bold]║[/bold]  [dim]APIs[/dim]      UniProt · ChEMBL · PubChem · BindingDB · PDB",
+        "[bold]║[/bold]  [dim]schemas[/dim]   19 Pydantic models · 6 controlled-vocab reason codes",
+        "[bold]║[/bold]  [dim]modes[/dim]     deterministic · agentic · LLM-gated",
+        "[bold]║[/bold]  [dim]contract[/dim]  KNOW → REASON → DESIGN → DISCOVER",
+        "[bold]║[/bold]  [dim]homepage[/dim]  [link=file://{PROJECT_ROOT}]file://{PROJECT_ROOT}[/link]",
+        "[bold]╚══════════════════════════════════════════════════════════════╝[/bold]",
+    ]
+    return "\n".join(lines)
 
 
 # ── TUI Widgets ───────────────────────────────────────────────────
@@ -166,72 +274,36 @@ class AgentItem(ListItem):
         yield Label(f" {status_icon} {icon} {name}")
 
 
-class WorkflowLogEntry(Static):
-    """A single workflow log entry."""
-
-    def __init__(self, timestamp: str, node: str, message: str, status: str = "info", **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.timestamp = timestamp
-        self.node = node
-        self.message = message
-        self.status = status
-
-    def compose(self) -> ComposeResult:
-        status_style = {
-            "ok": "green",
-            "error": "red",
-            "running": "yellow",
-            "info": "dim",
-        }.get(self.status, "dim")
-        yield Label(
-            f"[dim]{self.timestamp}[/dim] "
-            f"[bold cyan]{self.node}[/bold cyan] "
-            f"[{status_style}]{self.message}[/{status_style}]"
-        )
-
-
 # ── Main TUI App ──────────────────────────────────────────────────
 
 class PROTACXtendTUI(App):
     """PROTACXtend Feynman-style terminal interface.
 
-    Layout:
-    ┌──────────────────────────────────────────────────────────┐
-    │  PROTACXtend v0.1.0                              TUI    │  ← Header
-    ├────────────┬─────────────────────────────────────────────┤
-    │  Agents    │  Model System                              │
-    │            │  ┌─────────────────────────────────────┐   │
-    │  ▶ Supv   │  │ Provider: ollama  Model: gpt-oss    │   │
-    │  · Plan   │  │ Base URL: http://127.0.0.1:11435    │   │
-    │  · Safe   │  │ Status: ● Healthy                   │   │
-    │  · Targ   │  └─────────────────────────────────────┘   │
-    │  · Bind   │                                            │
-    │  · Warh   │  Research Workflow                         │
-    │  · E3     │  ┌─────────────────────────────────────┐   │
-    │  · Exit   │  │ 14:32:01 supervisor  Parsed request │   │
-    │  · Link   │  │ 14:32:02 planner     Tool selection │   │
-    │  · Cons   │  │ 14:32:03 safety      No hazards     │   │
-    │  · Vald   │  │ 14:32:04 target      BRD4 → P25...  │   │
-    │  · Tern   │  │ ...                                  │   │
-    │  · Degd   │  └─────────────────────────────────────┘   │
-    │  · ADMT   │                                            │
-    │  · Novel  │  Directory: /storage/saveena/protacpilot    │
-    │  · AppD   │  Outputs: 14 runs  |  Data: 7 CSV files    │
-    │  · Evid   │                                            │
-    │  · Rpair  │                                            │
-    │  · Rank   │                                            │
-    │  · Dive   │                                            │
-    │  · Refl   │                                            │
-    │  · Evol   │                                            │
-    │  · Repo   │                                            │
-    ├────────────┴─────────────────────────────────────────────┤
-    │  PROTACXtend> _                                          │  ← Footer
-    └──────────────────────────────────────────────────────────┘
+    Layout (Feynman-inspired):
+    ┌──────────────────────────────────────────────────────────────────┐
+    │  ____   ___  _____ ____   ___  _   _ ____    _  _____          │
+    │  ...   Agentic PROTAC Design · v0.1.0               14:32:01  │
+    ├─────────────┬──────────────────────────────────────────────────┤
+    │  ⚗️ AGENTS  │  🧠 MODEL SYSTEM          │  ℹ️  ABOUT           │
+    │             │  model: ollama/gpt-oss     │  version: v0.1.0    │
+    │  ✓ 📋 Supv │  root: /storage/...        │  agents: 23 nodes   │
+    │  ✓ 🗺️ Plan │  data: 7 CSV · 14 runs     │  toolbox: 73 methods│
+    │  ✓ 🛡️ Safe │  ✓ rdkit, torch, pandas    │  contract: KNOW→... │
+    │  ✓ 🎯 Targ │                            │                     │
+    │  ✓ 🔬 Bind ├────────────────────────────┴─────────────────────┤
+    │  ▶ 💊 Warh │  🔬 RESEARCH WORKFLOWS                          │
+    │  · 🔗 E3   │  14:32:01 supervisor  Parsed request            │
+    │  · 🚪 Exit │  14:32:02 planner     Tool selection            │
+    │  ...       │  14:32:03 safety      No hazards                │
+    │  · 📄 Repo │  14:32:04 target      BRD4 → P25...             │
+    ├─────────────┴──────────────────────────────────────────────────┤
+    │  F1=Help  F2=Status  F5=Refresh  Ctrl+C=Quit                  │
+    └──────────────────────────────────────────────────────────────────┘
     """
 
     CSS_PATH = str(TUI_CSS) if TUI_CSS.exists() else None
     TITLE = "PROTACXtend"
-    SUB_TITLE = "Agentic PROTAC Design Terminal"
+    SUB_TITLE = f"v{__version__} — Agentic PROTAC Design"
 
     BINDINGS = [
         Binding("ctrl+c", "quit", "Quit"),
@@ -239,7 +311,6 @@ class PROTACXtendTUI(App):
         Binding("f1", "help", "Help"),
         Binding("f2", "status", "Status"),
         Binding("f5", "refresh_agents", "Refresh"),
-        Binding("enter", "submit_command", "Run", show=False),
     ]
 
     # Reactive state
@@ -250,7 +321,6 @@ class PROTACXtendTUI(App):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._agent_statuses: dict[str, str] = {a["id"]: "waiting" for a in AGENT_PIPELINE}
-        self._log_entries: list[tuple[str, str, str, str]] = []
 
     def compose(self) -> ComposeResult:
         """Build the Feynman-style layout."""
@@ -261,66 +331,33 @@ class PROTACXtendTUI(App):
             # Left sidebar: Agent list
             with Vertical(id="sidebar"):
                 yield Static(" ⚗️  AGENT PIPELINE ", id="sidebar-title")
-                agent_list = ListView(
+                yield ListView(
                     *[AgentItem(a, self._agent_statuses[a["id"]]) for a in AGENT_PIPELINE],
                     id="agent-list",
                 )
-                yield agent_list
 
             # Main content area
             with Vertical(id="main-content"):
                 # Model system panel
-                yield Static(self._build_model_panel(), id="model-panel")
+                yield Static(_build_model_panel_text(), id="model-panel")
+
+                # About panel
+                yield Static(_build_about_panel_text(), id="about-panel")
 
                 # Workflow log panel
                 with Vertical(id="workflow-panel"):
                     yield Static(" 🔬 RESEARCH WORKFLOW ", id="workflow-title")
                     yield RichLog(id="workflow-log", highlight=True, markup=True, wrap=True)
 
-        # Footer with command input
+        # Footer
         yield Footer()
-
-    def _build_model_panel(self) -> str:
-        """Build the model system info panel content."""
-        llm = _detect_llm_config()
-        chem = _detect_chemistry_env()
-        proj = _detect_project_info()
-
-        healthy = llm.get("healthy", False)
-        status_dot = "[green]● Healthy[/green]" if healthy else "[red]● Unavailable[/red]"
-
-        lines = [
-            "[bold]╔══════════════════════════════════════════════════════════════╗[/bold]",
-            "[bold]║  🧠 MODEL SYSTEM                                            ║[/bold]",
-            "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
-            f"[bold]║[/bold]  Provider:  [cyan]{llm['provider']:20s}[/cyan]  Status: {status_dot:<20s}  [bold]║[/bold]",
-            f"[bold]║[/bold]  Model:     [cyan]{llm['model']:20s}[/cyan]  Context: {llm['num_ctx']:<16d}  [bold]║[/bold]",
-            f"[bold]║[/bold]  Base URL:  [dim]{llm['base_url']:42s}[/dim]  [bold]║[/bold]",
-            f"[bold]║[/bold]  Temp:      {llm['temperature']:<20.1f}  Timeout: {llm['timeout_s']:<14d}s  [bold]║[/bold]",
-            "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
-            "[bold]║  ⚗️  CHEMISTRY / ML ENGINES                                 ║[/bold]",
-            "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
-        ]
-        for pkg_name, info in chem.items():
-            icon = "[green]✓[/green]" if info["installed"] else "[red]✗[/red]"
-            lines.append(f"[bold]║[/bold]  {icon} {pkg_name:<14s} {info['version']:<42s}  [bold]║[/bold]")
-        lines.extend([
-            "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
-            "[bold]║  📁 PROJECT                                                 ║[/bold]",
-            "[bold]╠══════════════════════════════════════════════════════════════╣[/bold]",
-            f"[bold]║[/bold]  Root:    [dim]{proj['project_root']:<48s}[/dim]  [bold]║[/bold]",
-            f"[bold]║[/bold]  Data:    [cyan]{proj['data_files']}[/cyan] CSV files{'':<40s}  [bold]║[/bold]",
-            f"[bold]║[/bold]  Outputs: [cyan]{proj['output_runs']}[/cyan] run dirs{'':<39s}  [bold]║[/bold]",
-            "[bold]╚══════════════════════════════════════════════════════════════╝[/bold]",
-        ])
-        return "\n".join(lines)
 
     def on_mount(self) -> None:
         """Initialize the TUI on mount."""
         self.title = f"PROTACXtend v{__version__}"
         log = self.query_one("#workflow-log", RichLog)
         log.write(
-            f"[bold green]PROTACXtend TUI v{__version__}[/bold green] initialized. "
+            f"[bold green]PROTACXtend TUI v{__version__}[/bold green] "
             f"[dim]{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]"
         )
         log.write("[dim]Type a design request or press F2 for status. /help for commands.[/dim]")
@@ -334,10 +371,9 @@ class PROTACXtendTUI(App):
         self._agent_statuses[agent_id] = status
         try:
             agent_list = self.query_one("#agent-list", ListView)
-            for i, item in enumerate(agent_list.children):
+            for item in agent_list.children:
                 if hasattr(item, "agent") and item.agent["id"] == agent_id:
                     item.agent_status = status
-                    # Refresh the label
                     item.remove_children()
                     icon = item.agent["icon"]
                     name = item.agent["name"]
@@ -361,9 +397,6 @@ class PROTACXtendTUI(App):
                 found = True
                 self.update_agent_status(agent_id, "running")
                 break
-            elif found:
-                pass  # this agent is still waiting
-        # Mark all agents before current as done
         for agent in AGENT_PIPELINE:
             if agent["id"] == agent_id:
                 break
@@ -392,20 +425,24 @@ class PROTACXtendTUI(App):
         """Show help."""
         log = self.query_one("#workflow-log", RichLog)
         log.write("")
-        log.write("[bold]═══ PROTACXtend TUI Commands ═══[/bold]")
-        log.write("  Enter a design request  →  Run the agentic workflow")
-        log.write("  /status                 →  Show system status")
-        log.write("  /capabilities           →  Show capabilities table")
-        log.write("  /scenarios              →  Show common scenarios")
-        log.write("  /validate <SMILES>      →  Validate a SMILES string")
-        log.write("  /contract               →  Show KNOW-REASON-DESIGN-DISCOVER contracts")
-        log.write("  /models                 →  Show model system details")
-        log.write("  /benchmarks             →  Show model benchmarks")
-        log.write("  /run <request>          →  Run full workflow")
-        log.write("  /plan <request>         →  Show plan + estimate (no execution)")
-        log.write("  /ui                     →  Launch Streamlit UI")
-        log.write("  /api                    →  Launch FastAPI backend")
-        log.write("  /exit                   →  Quit")
+        log.write("[bold]═══ PROTACXtend Commands ═══[/bold]")
+        log.write("  [bold cyan]/design[/bold cyan] <request>      Run PROTAC design workflow")
+        log.write("  [bold cyan]/evidence[/bold cyan] <query>       Retrieve PROTAC-DB, literature data")
+        log.write("  [bold cyan]/structure[/bold cyan] <smiles>     Ternary feasibility + docking")
+        log.write("  [bold cyan]/validate[/bold cyan] <smiles>      RDKit validation + ADMET proxy")
+        log.write("  [bold cyan]/rank[/bold cyan]                   Multi-objective ranking")
+        log.write("  [bold cyan]/learn[/bold cyan]                  Active-learning feedback")
+        log.write("  [bold cyan]/report[/bold cyan]                 Generate scientist report")
+        log.write("  [bold cyan]/contract[/bold cyan]               Scientific contracts + dossiers")
+        log.write("  [bold cyan]/models[/bold cyan]                 Model system details")
+        log.write("  [bold cyan]/benchmarks[/bold cyan]             Model benchmarks")
+        log.write("  [bold cyan]/run[/bold cyan] <request>          Execute full workflow")
+        log.write("  [bold cyan]/plan[/bold cyan] <request>         Fast plan-only (no execution)")
+        log.write("  [bold cyan]/ui[/bold cyan]                    Launch Streamlit web UI")
+        log.write("  [bold cyan]/api[/bold cyan]                   Launch FastAPI backend")
+        log.write("  [bold cyan]/status[/bold cyan]                 System status")
+        log.write("  [bold cyan]/about[/bold cyan]                  PROTACXtend information")
+        log.write("  [bold cyan]/exit[/bold cyan]                   Quit")
         log.write("[dim]  F1=Help  F2=Status  F5=Refresh  Ctrl+C=Quit[/dim]")
         log.write("")
 
@@ -416,14 +453,14 @@ class PROTACXtendTUI(App):
         proj = _detect_project_info()
         log.write("")
         log.write("[bold]═══ PROTACXtend Status ═══[/bold]")
-        log.write(f"  Version:     {__version__}")
-        log.write(f"  LLM:         {llm['provider']}/{llm['model']} ({'●' if llm['healthy'] else '○'})")
-        log.write(f"  Project:     {proj['project_root']}")
-        log.write(f"  Data files:  {proj['data_files']} CSV")
-        log.write(f"  Output runs: {proj['output_runs']}")
-        log.write(f"  Agents:      {len(AGENT_PIPELINE)} nodes")
-        log.write(f"  Current:     {self.current_node}")
-        log.write(f"  Run status:  {self.run_status}")
+        log.write(f"  [dim]version[/dim]     {__version__}")
+        log.write(f"  [dim]llm[/dim]         {llm['provider']}/{llm['model']} ({'●' if llm['healthy'] else '○'})")
+        log.write(f"  [dim]project[/dim]     {proj['project_root']}")
+        log.write(f"  [dim]data files[/dim]  {proj['data_files']} CSV")
+        log.write(f"  [dim]output runs[/dim] {proj['output_runs']}")
+        log.write(f"  [dim]agents[/dim]      {len(AGENT_PIPELINE)} nodes")
+        log.write(f"  [dim]current[/dim]     {self.current_node}")
+        log.write(f"  [dim]status[/dim]      {self.run_status}")
         log.write("")
 
     def action_refresh_agents(self) -> None:
@@ -436,19 +473,11 @@ class PROTACXtendTUI(App):
         except Exception:
             pass
 
-    def action_submit_command(self) -> None:
-        """Handle enter in the command input area — for now log a message."""
-        log = self.query_one("#workflow-log", RichLog)
-        log.write("[dim]Use the command line to submit requests: PROTACXtend \"Design ...\"[/dim]")
-
     # ── Run a design workflow (async) ──────────────────────────────
 
     @work(exclusive=True, group="workflow", thread=True)
     def run_workflow(self, request: str) -> None:
-        """Run the PROTACXtend workflow and stream status to the TUI.
-
-        This runs in a Textual worker thread so the UI stays responsive.
-        """
+        """Run the PROTACXtend workflow and stream status to the TUI."""
         import uuid
 
         run_id = f"run_{uuid.uuid4().hex[:8]}"
@@ -459,20 +488,14 @@ class PROTACXtendTUI(App):
         self.log_workflow("runtime", f"Starting workflow [{run_id}]", "running")
         self.log_workflow("runtime", f"Request: {request[:80]}{'...' if len(request) > 80 else ''}", "info")
 
-        # Walk through the agent pipeline and log each step
         for agent in AGENT_PIPELINE:
             self.mark_current_agent(agent["id"])
             self.log_workflow(agent["name"], agent["desc"], "running")
             self.run_status = f"Running: {agent['name']}"
-
-            # In a real run, each agent would be called here.
-            # For now, simulate with a brief pause to show the TUI working.
             try:
                 time.sleep(0.3)
             except Exception:
                 pass
-
-            # Mark done
             self.update_agent_status(agent["id"], "done")
             self.log_workflow(agent["name"], "Completed", "ok")
 
@@ -497,7 +520,6 @@ def launch_tui(request: str | None = None) -> None:
     """
     app = PROTACXtendTUI()
     if request:
-        # Queue a workflow run on mount
         original_mount = app.on_mount
 
         def _on_mount_with_request() -> None:

@@ -65,7 +65,7 @@ class LineageEncoder:
         self.max_lineages = max_lineages
         self.vocab: list[str] = []
 
-    def fit(self, lineages: Iterable[str]) -> "LineageEncoder":
+    def fit(self, lineages: Iterable[str]) -> LineageEncoder:
         counts = pd.Series([str(x) if x is not None and x == x else "unknown"
                             for x in lineages]).value_counts()
         known = [x for x in counts.index if x != "unknown"]
@@ -73,8 +73,6 @@ class LineageEncoder:
         return self
 
     def transform(self, lineages: Iterable[str]) -> np.ndarray:
-        n = len(list(lineages)) if not hasattr(lineages, "__len__") else 0
-        out = np.zeros((0, len(self.vocab))) if n == 0 else None
         rows = []
         for x in lineages:
             lab = str(x) if x is not None and x == x else "unknown"

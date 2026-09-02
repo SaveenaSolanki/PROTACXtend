@@ -14,15 +14,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
-from synglue_agent.modules.cell_context_selector import dataset, prepare
-from synglue_agent.modules.cell_context_selector import omics, cellline
+from synglue_agent.modules.cell_context_selector import (
+    cellline,
+    dataset,
+    omics,
+    prepare,
+)
+from synglue_agent.modules.cell_context_selector.predict import (
+    predict_cell_context,
+)
 from synglue_agent.modules.cell_context_selector.train import (
     compute_claims,
     run_benchmark,
     train_production,
-)
-from synglue_agent.modules.cell_context_selector.predict import (
-    predict_cell_context,
 )
 
 

@@ -107,10 +107,10 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           needed = [
-              "SynGlue_Py/models/multitask_transformer.pt",   # SynGlue transformer
-              "SynGlue_Py/data/grover_e3.csv",
-              "SynGlue_Py/data/grover_warhead.csv",
-              "SynGlue_Py/data/e3_ligand.csv",
+              "data/synglue/models/multitask_transformer.pt",   # SynGlue transformer
+              "data/synglue/data/grover_e3.csv",
+              "data/synglue/data/grover_warhead.csv",
+              "data/synglue/data/e3_ligand.csv",
               "data/benchmark/PROTAC-DB_3.0_protacs.xlsx",
               "outputs/benchmark/chemprop_multitarget/model_0/best.pt",
               "ASSET_MANIFEST.md",

@@ -102,8 +102,7 @@ def ensure_curated_expression(rebuild: bool = False,
         return df
     if poi_genes is None:
         from synglue_agent.modules.cell_context_selector import dataset
-        from synglue_agent.modules.cell_context_selector.genemap import (
-            target_to_gene)
+        from synglue_agent.modules.cell_context_selector.genemap import target_to_gene
         vocab = _gene_vocab_from_header()
         cur, _ = dataset.build_curated()
         poi_genes = sorted({g for g in

@@ -8,12 +8,6 @@ venv/
 
 # Data (large, cloned repos, models — never commit)
 data/protac_repos/repos/
-SynGlue_Py/data/*
-!SynGlue_Py/data/grover_e3.csv
-!SynGlue_Py/data/grover_warhead.csv
-!SynGlue_Py/data/e3_ligand.csv
-SynGlue_Py/models/*
-!SynGlue_Py/models/multitask_transformer.pt
 data/benchmark/_ad_cache/
 outputs/benchmark/chemprop_*/
 outputs/benchmark/*.log
@@ -46,10 +40,6 @@ data/synthesis_prediction/envs/
 data/synthesis_prediction/install_logs/
 
 # Cloned upstream dependency repos + generated outputs
-SynGlue_Py/repos/
-SynGlue_Py/reinvent/
-SynGlue_Py/outputs/
-SynGlue_Py/data_copy/
 
 # Large data/model binaries (re-downloadable; see README/DOCS)
 data/retrosynthesis/models/

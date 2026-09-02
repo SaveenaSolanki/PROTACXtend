@@ -16,7 +16,7 @@ PROTACXtend is a local, tool-augmented AI agent platform for component-aware PRO
 
 The system takes a natural-language design objective, converts it into a structured workflow state, and runs a governed agent graph — a 23-node core scientific workflow plus 8 controlled-search/feedback extensions (31 documented nodes, see `AGENT_WORKFRAME.md`) — to build candidate PROTAC records, score them with deterministic tools, mechanistic modules and ML models, rank candidates, and output reports, CSV and JSON data. Every executed step records its input, output, evidence source, model version and limitation.
 
-Quick start and backend map: [PROTACXTEND_README.md](PROTACXTEND_README.md) & [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md).
+Quick start: [documentation/GETTING_STARTED.md](documentation/GETTING_STARTED.md) · workflows: [documentation/WORKFLOWS.md](documentation/WORKFLOWS.md) · agent workframe: [AGENT_WORKFRAME.md](AGENT_WORKFRAME.md).
 
 
 ## Architecture

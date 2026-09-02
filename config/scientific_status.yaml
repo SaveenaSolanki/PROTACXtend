@@ -90,8 +90,8 @@ degradation_models:           # DISCOVER — independent predictors (never avera
   tack_dc50:          {endpoint: "DC50",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_dc50_model.joblib"}
   tack_dmax:          {endpoint: "Dmax",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_dmax_model.joblib"}
   tack_binary:        {endpoint: "active/inactive",type: LEARNED PREDICTION, status: TRAINED,   provenance: "TACK dataset", file: "data/tack/tack_bin_model.joblib"}
-  synglue_dc50:       {endpoint: "DC50",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "GROVER/SynGlue multitask", file: "SynGlue_Py/models/rf_dc50.joblib"}
-  synglue_dmax:       {endpoint: "Dmax",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "SynGlue", file: "SynGlue_Py/models/rf_dmax.joblib"}
+  synglue_dc50:       {endpoint: "DC50",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "GROVER/SynGlue multitask", file: "data/synglue/models/rf_dc50.joblib"}
+  synglue_dmax:       {endpoint: "Dmax",           type: LEARNED PREDICTION, status: TRAINED,   provenance: "SynGlue", file: "data/synglue/models/rf_dmax.joblib"}
   unified_engine:     {endpoint: "ensemble verdict", type: HEURISTIC, status: UNDER EVALUATION, note: "model-disagreement & uncertainty-aware integration under evaluation — never averaged silently"}
 
 spreadsheet_assets:           # xlsx/csv assets shipped in-repo (documentation/GETTING_STARTED & site docs)

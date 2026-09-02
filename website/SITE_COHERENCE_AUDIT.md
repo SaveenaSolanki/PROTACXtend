@@ -19,7 +19,7 @@ source of truth, run for the v2 scientific-coherence rewrite (2026-09-02).
 
 | Topic | Website now says | Code / doc source | Consistent |
 |---|---|---|---|
-| Node count | "23-node core + 8 controlled-search/feedback extensions = 31 documented nodes" | `agents/graph.py` (31 registered nodes); `md/00-INDEX.md` (23 core files, RankingAgent×2); AGENT_WORKFRAME.md | ✅ (qualifier added: graph stops only at terminal gates) |
+| Node count | "23-node core + 8 controlled-search/feedback extensions = 31 documented nodes" | `agents/graph.py` (31 registered nodes); `AGENT_WORKFRAME.md` (23-core + 8-extension accounting) | ✅ (qualifier added: graph stops only at terminal gates) |
 | Chemistry engine | 73 methods | `tools/protac_toolbox.py` | ✅ |
 | Retrieval sources | Europe PMC · PubMed · OpenAlex · Crossref · SearXNG (configurable) | `research/sources.py` | ✅ |
 | Module statuses | M1 validated baseline · M2 structural surrogate (real-PDB pending) · M3 data-gated surrogate · M4 trained · M5 trained (transcriptomic) · M6 planned · M7 planned | `synglue_agent/modules/PROTACXTEND_MODULE_BUILD.md` + `config/scientific_status.yaml` | ✅ |

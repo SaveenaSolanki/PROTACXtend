@@ -224,6 +224,107 @@ def test_tui_styles_css_exists():
     assert "#sidebar" in content
     assert "#workflow-panel" in content
     assert "#model-panel" in content
+    assert "#about-panel" in content
+    # Verify no undefined Textual CSS variables
+    assert "$accent-background" not in content, "Use valid Textual 8.x variables"
+
+
+def test_tui_about_panel_text():
+    """About panel contains expected PROTACXtend metadata."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from synglue_agent.tui.app import _build_about_panel_text\n"
+                "text = _build_about_panel_text()\n"
+                "assert 'PROTACXtend' in text\n"
+                "assert 'version' in text.lower()\n"
+                "assert 'agents' in text.lower()\n"
+                "assert 'toolbox' in text.lower()\n"
+                "assert 'KNOW' in text\n"
+                "assert 'DESIGN' in text\n"
+                "print('OK')"
+            ),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "OK" in result.stdout
+
+
+def test_tui_model_panel_text():
+    """Model panel contains expected system info."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from synglue_agent.tui.app import _build_model_panel_text\n"
+                "text = _build_model_panel_text()\n"
+                "assert 'MODEL SYSTEM' in text\n"
+                "assert 'CHEMISTRY' in text\n"
+                "assert 'PROJECT' in text\n"
+                "assert 'model' in text.lower()\n"
+                "print('OK')"
+            ),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "OK" in result.stdout
+
+
+def test_tui_research_workflows_registered():
+    """Research workflows are registered for the header panel."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from synglue_agent.tui.app import RESEARCH_WORKFLOWS\n"
+                "assert len(RESEARCH_WORKFLOWS) >= 8\n"
+                "cmds = [w['cmd'] for w in RESEARCH_WORKFLOWS]\n"
+                "assert '/design' in cmds\n"
+                "assert '/run' in cmds\n"
+                "assert '/validate' in cmds\n"
+                "print('OK')"
+            ),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "OK" in result.stdout
+
+
+def test_tui_system_info_detection():
+    """System info detection returns platform and Python version."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from synglue_agent.tui.app import _detect_system_info\n"
+                "info = _detect_system_info()\n"
+                "assert 'platform' in info\n"
+                "assert 'python' in info\n"
+                "assert 'cpu_cores' in info\n"
+                "assert info['cpu_cores'] > 0\n"
+                "print('OK')"
+            ),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "OK" in result.stdout
 
 
 def test_tui_wrapper_script_works():

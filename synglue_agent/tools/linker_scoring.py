@@ -2,7 +2,7 @@
 Link-INVENT-style linker scoring & ranking.
 ===========================================
 Faithful re-implementation of the Link-INVENT scoring recipe used by
-SynGlue's REINVENT wrapper (SynGlue_Py/module_4.py): per-component
+SynGlue REINVENT-style wrapper: per-component
 reverse-sigmoid transformations aggregated as a weighted product
 ("custom_product" in Link-INVENT terms).
 

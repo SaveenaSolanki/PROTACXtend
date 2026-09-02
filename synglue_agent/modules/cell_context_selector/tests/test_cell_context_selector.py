@@ -16,11 +16,12 @@ from synglue_agent.modules.cell_context_selector import (
     build_curated,
     dataset_report,
     ensure_curated,
+    omics,
+    prepare,
 )
 from synglue_agent.modules.cell_context_selector import dataset as ds
 from synglue_agent.modules.cell_context_selector import features as F
 from synglue_agent.modules.cell_context_selector import models as M
-from synglue_agent.modules.cell_context_selector import omics, prepare
 
 
 @pytest.fixture(scope="module")
@@ -71,8 +72,7 @@ class TestCleaning:
         assert np.isnan(ds.is_active_dc50_dmax(np.nan, 100.0))
 
     def test_target_to_gene_mapping(self):
-        from synglue_agent.modules.cell_context_selector.genemap import (
-            target_to_gene)
+        from synglue_agent.modules.cell_context_selector.genemap import target_to_gene
         assert target_to_gene("BRD4") == "BRD4"
         assert target_to_gene("EGFR L858R/T790M") == "EGFR"
         assert target_to_gene("HiBiT-BRD9") == "BRD9"
@@ -169,14 +169,18 @@ class TestGroupedSplits:
 class TestArtifactAndApi:
     def test_missing_artifact_raises(self):
         from synglue_agent.modules.cell_context_selector.predict import (
-            CellContextModelError, predict_cell_context)
+            CellContextModelError,
+            predict_cell_context,
+        )
         with pytest.raises(CellContextModelError):
             predict_cell_context("CC(=O)Oc1ccccc1C(=O)O", cell_line="HeLa",
                                  model_path="/tmp/does-not-exist.joblib")
 
     def test_schema(self):
         from synglue_agent.modules.cell_context_selector.schemas import (
-            MODEL_VERSION, CellContextInput)
+            MODEL_VERSION,
+            CellContextInput,
+        )
         assert MODEL_VERSION.startswith("cell_context_degradation-v")
         inp = CellContextInput(protac="CC", cell_line="HeLa")
         assert inp.poi is None

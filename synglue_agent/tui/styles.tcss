@@ -1,4 +1,4 @@
-/* PROTACXtend TUI — Feynman-style layout */
+/* PROTACXtend TUI — Feynman-style layout (Textual 8.x compatible) */
 
 Screen {
     background: $surface;
@@ -7,44 +7,29 @@ Screen {
 /* ── Header bar ── */
 #header {
     dock: top;
-    height: 3;
+    height: 1;
     background: $primary-background;
     color: $text;
     padding: 0 1;
-}
-
-#header-title {
-    width: 1fr;
     content-align: left middle;
-    text-style: bold;
-}
-
-#header-version {
-    width: auto;
-    content-align: right middle;
-    color: $text-muted;
 }
 
 /* ── Footer status bar ── */
 #footer {
     dock: bottom;
     height: 1;
-    background: $accent-background;
-    color: $text;
+    background: $primary-background;
+    color: $text-muted;
     padding: 0 1;
-}
-
-#footer-status {
-    width: 1fr;
     content-align: left middle;
 }
 
 /* ── Left sidebar: Agents ── */
 #sidebar {
     dock: left;
-    width: 36;
-    background: $panel;
-    border-right: solid $primary;
+    width: 34;
+    background: $surface;
+    border-right: tall $primary;
     padding: 0;
 }
 
@@ -69,24 +54,6 @@ Screen {
     min-height: 1;
 }
 
-.agent-item-active {
-    background: $accent-background;
-    color: $text;
-    text-style: bold;
-}
-
-.agent-item-done {
-    color: $success;
-}
-
-.agent-item-error {
-    color: $error;
-}
-
-.agent-item-waiting {
-    color: $text-muted;
-}
-
 /* ── Main content area ── */
 #main-content {
     width: 1fr;
@@ -96,29 +63,31 @@ Screen {
 
 /* ── Model system panel (top of main) ── */
 #model-panel {
-    height: 8;
-    background: $panel;
-    border: solid $primary;
+    height: auto;
+    max-height: 16;
+    background: $surface;
+    border: tall $primary;
     margin: 0 0 1 0;
-    padding: 1;
+    padding: 0 1;
+    overflow-y: auto;
 }
 
-#model-panel-title {
-    text-style: bold;
-    color: $accent;
-    height: 1;
-}
-
-#model-info {
-    height: 1fr;
+/* ── About panel ── */
+#about-panel {
+    height: auto;
+    max-height: 12;
+    background: $surface;
+    border: tall $primary;
+    margin: 0 0 1 0;
+    padding: 0 1;
     overflow-y: auto;
 }
 
 /* ── Workflow / activity log (bottom of main) ── */
 #workflow-panel {
     height: 1fr;
-    background: $panel;
-    border: solid $primary;
+    background: $surface;
+    border: tall $primary;
     padding: 0;
 }
 
@@ -135,46 +104,6 @@ Screen {
     height: 1fr;
     overflow-y: auto;
     padding: 0 1;
-}
-
-.log-entry {
-    height: auto;
-    min-height: 1;
-}
-
-.log-entry-node {
-    color: $accent;
-    text-style: bold;
-}
-
-.log-entry-status-ok {
-    color: $success;
-}
-
-.log-entry-status-error {
-    color: $error;
-}
-
-.log-entry-status-running {
-    color: $warning;
-}
-
-.log-entry-timestamp {
-    color: $text-muted;
-}
-
-/* ── Input bar ── */
-#input-bar {
-    dock: bottom;
-    height: 3;
-    background: $surface;
-    border-top: solid $primary;
-    padding: 0 1;
-}
-
-#command-input {
-    width: 1fr;
-    height: 3;
 }
 
 /* ── Scrollbar styling ── */

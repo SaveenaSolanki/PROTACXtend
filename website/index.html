@@ -276,7 +276,7 @@
               <li>Experimentally actionable candidate dossiers</li>
               <li>Active learning: CLI surface exists; BO loop planned (Module 7)</li>
             </ul>
-            <footer><span class="badge eb-learn">LEARNED PREDICTION</span><span class="src-code">modules/* · data/tack · SynGlue_Py</span></footer>
+            <footer><span class="badge eb-learn">LEARNED PREDICTION</span><span class="src-code">modules/* · data/tack · data/synglue</span></footer>
           </article>
         </div>
       </div>
@@ -361,7 +361,7 @@
               <tr class="row-eval"><td><strong>Unified degradation engine</strong></td><td>ensemble verdict</td><td><span class="badge eb-heur">HEURISTIC</span></td><td>— (integration layer)</td><td>model-disagreement &amp; uncertainty-aware integration in evaluation</td><td><span class="st ev">UNDER EVALUATION</span></td></tr>
             </tbody>
           </table>
-          <p class="table-note">Each predictor ships with its artifact path (e.g. <span class="mono">modules/degradation_ml/models/pdc50_model.joblib</span>, <span class="mono">data/tack/tack_dc50_model.joblib</span>, <span class="mono">SynGlue_Py/models/rf_dc50.joblib</span>). Verdicts cite which model produced them and with what applicability-domain state.</p>
+          <p class="table-note">Each predictor ships with its artifact path (e.g. <span class="mono">modules/degradation_ml/models/pdc50_model.joblib</span>, <span class="mono">data/tack/tack_dc50_model.joblib</span>, <span class="mono">data/synglue/models/rf_dc50.joblib</span>). Verdicts cite which model produced them and with what applicability-domain state.</p>
         </div>
       </div>
     </section>
@@ -691,8 +691,8 @@ wb = load_workbook("Agent_Toolkit.xlsx")</code></pre>
               <pre><code>synglue_agent/modules/degradation_ml/models/pdc50_model.joblib
 synglue_agent/modules/cell_context_selector/models/cell_context_model.joblib
 data/tack/tack_{dc50,dmax,bin}_model.joblib        (+ calibration parquet)
-SynGlue_Py/models/rf_{dc50,dmax}.joblib
-SynGlue_Py/models/multitask_transformer.pt · grover_fixed.pt
+data/synglue/models/rf_{dc50,dmax}.joblib
+data/synglue/models/multitask_transformer.pt · data/synglue/models/grover_fixed.pt
 outputs/benchmark/chemprop_multitarget/model_0/best.pt</code></pre>
               <p class="doc-inline">Models are invoked through tagged tools; verdicts report which model(s) produced them. The unified engine is under evaluation and is never presented as production.</p>
             </div>

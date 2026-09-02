@@ -69,7 +69,7 @@ git remote -v
 
 ```bash
 # Stage changes
-git add website/ documentation/ README.md PROTACXTEND_README.md
+git add website/ documentation/ README.md AGENTS.md AGENT_WORKFRAME.md
 
 # Commit with descriptive message
 git commit -m "feat: Add website UI, comprehensive documentation, and GitHub collaborator setup"

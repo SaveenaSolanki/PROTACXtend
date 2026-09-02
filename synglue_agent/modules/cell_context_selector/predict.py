@@ -115,8 +115,6 @@ def predict_cell_context(protac: str, poi: str | None = None, e3: str | None = N
         imp = art.get("imputer")
         if imp is not None:
             X = imp.transform(X)
-    has_expr_vec = X[:, -1] if leg == "D" else np.zeros(1)
-
     out: dict[str, Any] = {"model": MODEL_VERSION,
                            "model_path": str(art.get("model_path",
                                                      DEFAULT_MODEL_PATH))}

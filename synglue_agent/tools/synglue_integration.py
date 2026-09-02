@@ -8,7 +8,7 @@ Two modes:
   2. **API mode**: Send requests to the SynGlue Docker API
 
 Model paths are configured via environment variable PROTACPILOT_SYNGLUE_DIR
-(default: <repo>/SynGlue_Py).
+(default: <repo>/data/synglue).
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ logger = logging.getLogger("protacpilot.synglue")
 # Default SynGlue directory
 SYNGLUE_DIR = Path(os.environ.get(
     "PROTACPILOT_SYNGLUE_DIR",
-    str(Path(__file__).resolve().parents[2] / "SynGlue_Py"),
+    str(Path(__file__).resolve().parents[2] / "data" / "synglue"),
 ))
 
 

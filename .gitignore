@@ -65,3 +65,4 @@ env/protacpilot_config.json
 data/research/cache/
 outputs/research_traces/
 outputs/omics_cache/
+SynGlue_Py/

@@ -11,6 +11,7 @@ Copy-level corrections from `WEBSITE_AUDIT.md` (all verified against the repo):
 - Module 6 row updated: code-complete v1.0.0 but **report-gated** → implemented ✓, HEURISTIC badge, UNDER EVALUATION, public claim NO (status report pending audit); mirrors `config/scientific_status.yaml`.
 - Hook-effect modeler QA refreshed: **24/24 tests** (2026-09-03 re-run; QA baseline 13/13 on 2026-09-02) — mechanism card, validation matrix, status YAML, module tracker, module `VALIDATION.md`.
 - TACK wording corrected: “meta + DC50/binary calibration parquet” (no dmax parquet exists).
+- Module 7 token aligned: **PARTIAL** everywhere (YAML + validation matrix + docs pane) — CLI `/learn` surface exists, BO loop (Module 7) planned and not public-claimed; previously mixed PARTIAL/PLANNED wording.
 - `documentation/README.md` rewritten with relative links (no local `file:///` paths) and current workflow names; `GETTING_STARTED.md` next-steps links fixed.
 
 ## v2.10 — footer: single solid dark color (2026-09-03)

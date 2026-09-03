@@ -75,16 +75,19 @@ modules:                      # source of truth: protacxtend/modules/PROTACXTEND
     validation: "16 tests; grouped cross-validation"
     public_claim: true
   novel_e3_engine:            # Module 6
-    status: UNDER EVALUATION
+    status: PARTIAL
     type: HEURISTIC
     implemented: true
-    detail: "code-complete v1.0.0 (2026-09-02): 30-gene catalog x 8 evidence axes; verdicts SUPPORTED/PROMISING/EXPLORATORY/INSUFFICIENT (expression-only never recommends); status report GATED — not public-claimed until the Module-6 audit closes; Module 7 not started until audited"
-    validation: "17 tests; grouped retrospective benchmark (RF AUROC .98 easy → .93 unseen-E3; recruiter ablation −0.52)"
-    public_claim: false
+    detail: "audit-approved 2026-09-03 (docs/AUDIT.md): 30-gene catalog x 8 evidence axes; verdicts SUPPORTED/PROMISING/EXPLORATORY/INSUFFICIENT (expression-only never recommends; SUPPORTED needs direct precedent; low-expression capped); retrospective-validated; per-verdict claims governed by docs/CLAIMS.md"
+    validation: "17 tests (2026-09-03 re-run); grouped retrospective benchmark (RF AUROC .98 easy → .93 unseen-E3; recruiter ablation −0.52)"
+    limitation: "prospective validation set open; catalog scope = 30 genes (no de-novo ligand design)"
+    public_claim: true
   active_learning:            # Module 7
     status: PARTIAL
-    implemented: false
-    detail: "CLI /learn surface exists; multiobjective BO + feedback loop module not yet built"
+    type: HEURISTIC
+    implemented: true
+    detail: "module v1.0.0 (2026-09-03): multiobjective Bayesian/evolutionary optimizer over linker x dose, Pareto+diversity batch selection, Module-1 dose objective, agent tool run_active_learning; validated on deterministic synthetic benchmark only; experimental feedback loop not yet available"
+    validation: "16 tests; synthetic-objective benchmark beats random baseline (fixed seed)"
     public_claim: false
 
 degradation_models:           # DISCOVER — independent predictors (never averaged silently)

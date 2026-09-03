@@ -1,0 +1,22 @@
+{
+  "module": "active_learning",
+  "version": "0.1.0",
+  "status": "PARTIAL",
+  "public_claim": false,
+  "description": "Multiobjective Bayesian/evolutionary experiment selection over PROTAC design decisions (linker x dose, stereo cap). Validated on deterministic synthetic objectives + component tests; experimental feedback loop not yet available.",
+  "defaults": {
+    "budget_evals": 40,
+    "n_initial_random": 8,
+    "n_proposals": 200,
+    "acq": "ei",
+    "ucb_beta": 1.6,
+    "weights": {"y": 1.0},
+    "generations": 6,
+    "mu": 8,
+    "lam": 16,
+    "diversity_top_k": 10,
+    "seed": 42,
+    "dose_levels_nM": [1.0, 3.16, 10.0, 31.6, 100.0, 316.0, 1000.0],
+    "max_stereo_centers": 2
+  }
+}

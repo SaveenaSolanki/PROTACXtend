@@ -2,6 +2,12 @@
 
 Log of website changes with the scientific-coherence overhaul.
 
+## v2.12 — Module 6 audit-approved + Module 7 optimizer v1 (2026-09-03)
+
+- Novel-E3 row & docs pane: “code v1.0.0, report-gated” → **audit-approved 2026-09-03** (`e3_opportunity/docs/AUDIT.md`); status PARTIAL (retrospective-validated, prospective set open); per-verdict claims via CLAIMS register; implemented ✓.
+- Active-learning row & docs pane: **Module 7 optimizer v1.0.0** built (`modules/active_learning`: multiobjective BO/evolution, Pareto+diversity batch selection, Module-1 dose objective, agent tool `run_active_learning`, 16 tests) — validated on synthetic benchmark only; experimental feedback loop pending; **not public-claimed** (PARTIAL).
+- Mirrors `config/scientific_status.yaml` (M6 implemented+claimable-PARTIAL; M7 implemented+PARTIAL+claim false) and the module tracker.
+
 ## v2.11 — full data/model/architecture audit fixes (2026-09-03)
 
 Copy-level corrections from `WEBSITE_AUDIT.md` (all verified against the repo):

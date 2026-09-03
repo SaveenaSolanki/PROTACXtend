@@ -10,18 +10,19 @@ Developed at **Ahuja Lab** (Department of Computational Biology, IIIT Delhi) by 
 
 | Section | Description | Link |
 | :--- | :--- | :--- |
-| **🚀 Getting Started** | Installation, environment setup, dependencies, fast-track quickstart | [GETTING_STARTED.md](file:///storage/saveena/protacpilot/documentation/GETTING_STARTED.md) |
-| **🏗️ Architecture & Feynman Stack** | 23-node agentic workflow graph, supervisor engine, physics + ML stack | [ARCHITECTURE.md](file:///storage/saveena/protacpilot/documentation/ARCHITECTURE.md) |
-| **⚡ Workflows & Slash Commands** | CLI slash commands (`/design`, `/predict`, `/dock`, `/admet`, `/audit`, `/replicate`) | [WORKFLOWS.md](file:///storage/saveena/protacpilot/documentation/WORKFLOWS.md) |
-| **🔌 API & CLI Reference** | Complete Python API (`synglue_agent`), REST endpoints, and CLI interface | [API_REFERENCE.md](file:///storage/saveena/protacpilot/documentation/API_REFERENCE.md) |
-| **🐙 GitHub & Collaboration** | Repository details (`the-ahuja-lab/PROTACXtend`), Saveena Solanki collaborator setup | [GITHUB_AND_COLLABORATION.md](file:///storage/saveena/protacpilot/documentation/GITHUB_AND_COLLABORATION.md) |
+| **🚀 Getting Started** | Installation, environment setup, dependencies, fast-track quickstart | [GETTING_STARTED.md](GETTING_STARTED.md) |
+| **🏗️ Architecture & Scientific Stack** | 23-node agentic workflow graph + 8 controlled-search/feedback extensions (= 31 nodes), supervisor engine, physics + ML stack | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| **⚡ Workflows & CLI** | CLI workflows (`design`, `structure`, `dose`, `context`, `validate`, `contract`, `ask`/`learn`, `api`/`ui`) | [WORKFLOWS.md](WORKFLOWS.md) |
+| **🔌 API & CLI Reference** | Complete Python API (`protacxtend`), REST endpoints, and CLI interface | [API_REFERENCE.md](API_REFERENCE.md) |
+| **🐙 GitHub & Collaboration** | Repository details (`the-ahuja-lab/PROTACXtend`), Saveena Solanki collaborator setup | [GITHUB_AND_COLLABORATION.md](GITHUB_AND_COLLABORATION.md) |
+| **🔬 Deep research memo** | Research positioning & design rationale | [DEEP_RESEARCH.md](DEEP_RESEARCH.md) |
 
 ---
 
 ## 🌐 Web Interface
 
-Explore the interactive web landing page and local science workbench in the [`website/`](file:///storage/saveena/protacpilot/website/index.html) directory:
-- Open [`website/index.html`](file:///storage/saveena/protacpilot/website/index.html) directly in your browser.
+Explore the interactive web landing page and local science workbench in the [`website/`](../website/) directory:
+- Open [`website/index.html`](../website/index.html) directly in your browser.
 - Or launch via python local web server:
   ```bash
   python -m http.server 8000 --directory website
@@ -31,10 +32,13 @@ Explore the interactive web landing page and local science workbench in the [`we
   protacxtend serve
   ```
 
+Website status audits live beside the site: [`website/SCIENTIFIC_CLAIM_AUDIT.md`](../website/SCIENTIFIC_CLAIM_AUDIT.md) · [`website/SITE_COHERENCE_AUDIT.md`](../website/SITE_COHERENCE_AUDIT.md) · [`website/WEBSITE_AUDIT.md`](../website/WEBSITE_AUDIT.md) · [`website/WEBSITE_CHANGELOG.md`](../website/WEBSITE_CHANGELOG.md).
+
 ---
 
 ## 🔗 Official Repository
 
 - **GitHub Repository**: [`https://github.com/the-ahuja-lab/PROTACXtend`](https://github.com/the-ahuja-lab/PROTACXtend)
+- **Live site / GitHub Pages**: [`https://the-ahuja-lab.github.io/PROTACXtend/`](https://the-ahuja-lab.github.io/PROTACXtend/)
 - **Primary Maintainer**: Saveena Solanki ([@SaveenaSolanki](https://github.com/SaveenaSolanki))
 - **Organization**: Ahuja Lab ([@the-ahuja-lab](https://github.com/the-ahuja-lab))

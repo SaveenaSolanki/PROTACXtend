@@ -17,8 +17,10 @@ This guide will walk you through setting up **PROTACXtend** on your system, inst
 
 ### Option 1: Install from GitHub (Recommended)
 
+Clone the canonical repository (Ahuja Lab organization home):
+
 ```bash
-# Clone the official repository
+# Clone the repository
 git clone https://github.com/the-ahuja-lab/PROTACXtend.git
 cd PROTACXtend
 
@@ -29,8 +31,14 @@ conda activate protacxtend
 # Install key chemistry & machine learning dependencies
 pip install -r requirements.txt
 
-# Install PROTACXtend in editable mode
+# Install PROTACXtend in editable mode (PyPI publishing is on the roadmap)
 pip install -e .
+```
+
+### Option 1b: Docker
+
+```bash
+docker build -t protacxtend https://github.com/the-ahuja-lab/PROTACXtend.git
 ```
 
 ### Option 2: Repository-Local CLI Execution (No Installation Required)
@@ -82,7 +90,7 @@ protacxtend design "Design CRBN PROTAC candidates targeting BRD4 degradation"
 ```
 
 ### 2. Launching the Local Workbench UI
-Launch the interactive Feynman science workbench interface:
+Launch the interactive science workbench interface:
 ```bash
 protacxtend serve
 ```
@@ -91,7 +99,7 @@ Open your web browser at `http://localhost:8501`.
 ### 3. REST API Server Mode
 Start the FastAPI REST backend for programmatic API calls:
 ```bash
-python -m uvicorn synglue_agent.backend.api_routes:get_app --factory --host 0.0.0.0 --port 8001
+python -m uvicorn protacxtend.backend.api_routes:get_app --factory --host 0.0.0.0 --port 8001
 ```
 
 Send a POST request to design PROTAC candidates:
@@ -105,6 +113,6 @@ curl -X POST "http://localhost:8001/design" \
 
 ## 📂 Next Steps
 
-- Explore the complete **[Architecture Guide](file:///storage/saveena/protacpilot/documentation/ARCHITECTURE.md)** to understand the 23-node agentic workflow graph.
-- Learn about slash commands in **[Workflows & Slash Commands](file:///storage/saveena/protacpilot/documentation/WORKFLOWS.md)**.
-- Set up your GitHub collaboration environment in **[GitHub Setup](file:///storage/saveena/protacpilot/documentation/GITHUB_AND_COLLABORATION.md)**.
+- Explore the complete **[Architecture Guide](ARCHITECTURE.md)** to understand the 23-node agentic workflow graph + 8 controlled-search/feedback extensions.
+- Learn the CLI workflows in **[Workflows & CLI](WORKFLOWS.md)** (`design`, `structure`, `dose`, `context`, `validate`, `contract`, `ask`/`learn`, `api`/`ui`).
+- Set up your GitHub collaboration environment in **[GitHub Setup](GITHUB_AND_COLLABORATION.md)**.

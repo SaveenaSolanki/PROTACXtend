@@ -96,9 +96,9 @@ def test_cli_stepwise_commands(tmp_path: Path):
     pose = _write_pose(tmp_path / "pose.pdb")
     root = Path(__file__).resolve().parents[1]
     commands = [
-        ["./protacxtend", "dose", "--alpha", "2"],
-        ["./protacxtend", "proteome", "--target", "BRD4", "--e3", "CRBN", "--cell", "MM1.S"],
-        ["./protacxtend", "structure", "--pose", str(pose), "--target-chain", "A", "--e3-chain", "B"],
+        ["./PROTACXtend", "dose", "--alpha", "2"],
+        ["./PROTACXtend", "proteome", "--target", "BRD4", "--e3", "CRBN", "--cell", "MM1.S"],
+        ["./PROTACXtend", "structure", "--pose", str(pose), "--target-chain", "A", "--e3-chain", "B"],
     ]
     for command in commands:
         completed = subprocess.run(command, cwd=root, check=False, capture_output=True, text=True, timeout=45)

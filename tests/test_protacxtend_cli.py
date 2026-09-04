@@ -1,3 +1,4 @@
+import os
 import json
 import subprocess
 import sys
@@ -49,9 +50,10 @@ def test_repo_local_uppercase_wrapper_runs():
     assert result.stdout.strip().startswith("PROTACXtend ")
 
 
-def test_repo_local_lowercase_wrapper_runs():
+def test_repo_local_launcher_wrapper_runs():
+    # launcher is PROTACXtend (repo-root); "protacxtend" would collide with the package dir
     result = subprocess.run(
-        [str(ROOT / "protacxtend"), "--version"],
+        [str(ROOT / "PROTACXtend"), "--version"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -62,10 +64,14 @@ def test_repo_local_lowercase_wrapper_runs():
 
 
 def test_interactive_backslash_workflow_shortcut():
+    env = {**os.environ,
+           "PROTACPILOT_LLM_PROVIDER": "ollama",  # skip interactive backend picker
+           "PROTACPILOT_LLM_MODEL": "gpt-oss:20b"}
     result = subprocess.run(
-        [str(ROOT / "protacxtend")],
+        [str(ROOT / "PROTACXtend")],
         cwd=ROOT,
         input="\\evidence BRD4 CRBN PROTAC evidence\n\\exit\n",
+        env=env,
         text=True,
         capture_output=True,
         check=True,
@@ -124,7 +130,7 @@ def test_cli_capabilities_json_lists_terminal_interface():
 
 def test_cli_contract_static_summary_exposes_scientific_contract():
     result = subprocess.run(
-        [str(ROOT / "protacxtend"), "contract", "--section", "actions"],
+        [str(ROOT / "PROTACXtend"), "contract", "--section", "actions"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -140,7 +146,7 @@ def test_cli_contract_static_summary_exposes_scientific_contract():
 
 def test_cli_contract_models_lists_external_method_gates():
     result = subprocess.run(
-        [str(ROOT / "protacxtend"), "contract", "--section", "models"],
+        [str(ROOT / "PROTACXtend"), "contract", "--section", "models"],
         cwd=ROOT,
         text=True,
         capture_output=True,

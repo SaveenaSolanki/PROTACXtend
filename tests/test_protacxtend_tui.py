@@ -163,7 +163,7 @@ def test_cli_help_includes_tui():
 
 
 def test_cli_capabilities_includes_tui():
-    """CLI capabilities list includes the Feynman-style TUI capability."""
+    """CLI capabilities list includes the (python) terminal UI capability."""
     result = subprocess.run(
         [sys.executable, "-m", "protacxtend.cli", "capabilities", "--json"],
         cwd=ROOT,
@@ -174,7 +174,8 @@ def test_cli_capabilities_includes_tui():
     import json
     payload = json.loads(result.stdout)
     names = [item["name"] for item in payload["capabilities"]]
-    assert "Feynman-style TUI" in names
+    # product naming moved on: the interactive TUI entry is the source of truth
+    assert "Interactive terminal interface" in names
 
 
 def test_cli_scenarios_includes_tui():
@@ -328,8 +329,9 @@ def test_tui_system_info_detection():
 
 
 def test_tui_wrapper_script_works():
-    """The shell wrapper script launches the TUI module."""
-    wrapper = ROOT / "protacxtend"
+    """The PROTACXtend shell wrapper launches the TUI module."""
+    wrapper = ROOT / "PROTACXtend"  # executable launcher, not the python package dir
+    assert wrapper.is_file()
     result = subprocess.run(
         [str(wrapper), "tui", "--help"],
         cwd=ROOT,

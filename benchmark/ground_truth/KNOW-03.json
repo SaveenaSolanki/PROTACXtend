@@ -1,0 +1,33 @@
+{
+  "ground_truth_id": "GT-KNOW-03",
+  "task_id": "KNOW-03",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Retrospective claim check",
+  "type": "exact",
+  "expected_answer": "s1 supported; s2 supported; s3 supported; s4 contradicted (JQ1 is an inhibitor, not a degrader)",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Winter et al., Science 2015, DOI 10.1126/science.aab1433 (dBET1)"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Zengerle et al., Chem. Biol. 2015, DOI 10.1016/j.chembiol.2015.05.009 (MZ1)"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Filippakopoulos et al., Nature 2010, DOI 10.1038/nature09534 (JQ1)"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

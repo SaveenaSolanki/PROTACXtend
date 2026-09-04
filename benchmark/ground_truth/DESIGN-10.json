@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DESIGN-10",
+  "task_id": "DESIGN-10",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "hard",
+  "title": "Selectivity-first series",
+  "type": "design_rubric",
+  "expected_answer": "Series with rationale addressing BRD4 vs BRD2 selectivity; explicitly flags that selectivity claims need assay data.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "BET inhibitor selectivity literature via permitted sources"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

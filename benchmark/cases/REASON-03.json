@@ -1,0 +1,58 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "REASON-03",
+  "capability": "REASON",
+  "difficulty": "easy",
+  "title": "VHL-ligand motif integrity",
+  "scientific_question": "Assess whether the supplied VHL ligand retains critical VH032 pharmacophore motifs.",
+  "supplied_inputs": [
+    "VHL ligand SMILES (modified): N[C@@H](C(C)(C)C)C(=O)N1C[C@@H](C[C@H]1C(=O)NCc1ccc(cc1)c1scnc1C)O",
+    "reference ligand SMILES (intact): N[C@@H](C(C)(C)C)C(=O)N1C[C@@H](C[C@H]1C(=O)N[C@H](c1ccc(cc1)c1scnc1C)C)O"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "uniprot",
+    "chembl",
+    "pubchem",
+    "pdb",
+    "rdkit",
+    "ternary_feasibility",
+    "cooperativity",
+    "hook_effect"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/REASON-03.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "low",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

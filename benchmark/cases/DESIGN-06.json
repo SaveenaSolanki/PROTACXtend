@@ -1,0 +1,58 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "DESIGN-06",
+  "capability": "DESIGN",
+  "difficulty": "hard",
+  "title": "Exit-vector aware series",
+  "scientific_question": "Design a series of 3 PROTACs varying ONLY at the solvent-exposed vector of the warhead.",
+  "supplied_inputs": [
+    "warhead: COc1cc2c(cc1c1c(C)onc1C)cc(c(=O)n2Cc1ccccn1)",
+    "principle: keep pharmacophore fixed, vary vector substituent"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "rdkit",
+    "molecule_standardizer",
+    "linker_generator",
+    "warhead_library",
+    "e3_library",
+    "admet",
+    "exit_vector",
+    "novelty_check"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/DESIGN-06.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "low",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

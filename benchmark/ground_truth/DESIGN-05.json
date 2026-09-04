@@ -1,0 +1,30 @@
+{
+  "ground_truth_id": "GT-DESIGN-05",
+  "task_id": "DESIGN-05",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "ADMET-constrained design",
+  "type": "design_rubric",
+  "expected_answer": "3 candidates each passing ALL constraints as computed by the permitted RDKit validator.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": {
+    "context": {
+      "assay": "n/a (calculated descriptors)",
+      "system": "canonical SMILES",
+      "units": "Da/unitless",
+      "source": "RDKit"
+    }
+  },
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

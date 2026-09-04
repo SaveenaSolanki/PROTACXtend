@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-REASON-10",
+  "task_id": "REASON-10",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "medium",
+  "title": "ADMET-structure reasoning",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: hydrophobicity/logP/TPSA reasoning with no numeric potency claims; identifies measurable ADMET endpoints.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

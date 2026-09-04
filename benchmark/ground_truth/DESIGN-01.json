@@ -1,0 +1,31 @@
+{
+  "ground_truth_id": "GT-DESIGN-01",
+  "task_id": "DESIGN-01",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Linker design for pair",
+  "type": "design_rubric",
+  "expected_answer": "Rubric + exact checks: 5 candidates, each RDKit-parseable PROTAC SMILES containing warhead+VHL motifs; none reuses the six-BRD4 measured potency.",
+  "mandatory_answer_elements": [
+    "5 valid SMILES",
+    "components preserved"
+  ],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    },
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

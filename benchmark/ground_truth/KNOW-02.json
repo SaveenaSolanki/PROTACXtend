@@ -1,0 +1,35 @@
+{
+  "ground_truth_id": "GT-KNOW-02",
+  "task_id": "KNOW-02",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "easy",
+  "title": "Binder evidence retrieval",
+  "type": "categorical",
+  "expected_answer": "At least two canonical BET inhibitors from {JQ1, I-BET762 (GSK525762), OTX015} each with a resolvable DB identifier/citation; no fabricated affinity values.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [
+    "other canonical BET inhibitors (IBET151) accepted with citation"
+  ],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "PubChem",
+      "ref": "JQ1 (CID 46907787)"
+    },
+    {
+      "type": "public_db",
+      "name": "ChEMBL",
+      "ref": "CHEMBL406521 (JQ1)"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Filippakopoulos et al., Nature 2010, DOI 10.1038/nature09534"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

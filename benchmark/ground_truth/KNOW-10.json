@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-KNOW-10",
+  "task_id": "KNOW-10",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Cell-line context retrieval",
+  "type": "categorical",
+  "expected_answer": "BRD4 and CRBN are broadly expressed; report per-line abundance evidence if a permitted source provides it, otherwise state 'no per-line quantitative evidence found' rather than guessing.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "general expression references accepted via permitted DBs"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

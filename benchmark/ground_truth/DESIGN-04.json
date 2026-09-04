@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DESIGN-04",
+  "task_id": "DESIGN-04",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "hard",
+  "title": "E3-ligand panel design",
+  "type": "design_rubric",
+  "expected_answer": "Panel covering both E3s with >=2 ligand variants each; identity of E3 per arm explicit.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Winter 2015; Zengerle 2015"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

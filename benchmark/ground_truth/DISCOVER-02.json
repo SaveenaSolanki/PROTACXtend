@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DISCOVER-02",
+  "task_id": "DISCOVER-02",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "hard",
+  "title": "Uncertainty-first triage",
+  "type": "design_rubric",
+  "expected_answer": "Rubric: candidates with high uncertainty routed to confirmatory assays first; confidence never invented beyond supplied values.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "repository",
+      "ref": "uncertainty tooling docs"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

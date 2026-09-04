@@ -1,0 +1,35 @@
+{
+  "ground_truth_id": "GT-DESIGN-02",
+  "task_id": "DESIGN-02",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Full PROTAC construction",
+  "type": "design_rubric",
+  "expected_answer": "At least one RDKit-valid full SMILES containing both components; report MW/logP/TPSA from the validator.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    },
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    }
+  ],
+  "numerical_context": {
+    "context": {
+      "assay": "n/a (calculated descriptor)",
+      "system": "canonical SMILES",
+      "units": "Da/unitless",
+      "source": "RDKit"
+    }
+  },
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DESIGN-11",
+  "task_id": "DESIGN-11",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Degradation-motif design",
+  "type": "design_rubric",
+  "expected_answer": "Candidates with reported predicted Dmax band from the model; separates predicted from measured.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "repository",
+      "ref": "degradation model docs"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

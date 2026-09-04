@@ -1,0 +1,62 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "KNOW-03",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Retrospective claim check",
+  "scientific_question": "Mark each supplied statement supported / contradicted / unverifiable using permitted sources only.",
+  "supplied_inputs": [
+    "statement 1: BRD4 is a BET family member with two bromodomains",
+    "statement 2: dBET1 recruits CRBN E3 ligase",
+    "statement 3: MZ1 recruits VHL E3 ligase",
+    "statement 4: JQ1 is a PROTAC"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "uniprot",
+    "chembl",
+    "pubchem",
+    "bindingdb",
+    "rcsb_pdb",
+    "protacdb",
+    "europepmc",
+    "pubmed",
+    "openalex",
+    "crossref"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/KNOW-03.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "medium",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

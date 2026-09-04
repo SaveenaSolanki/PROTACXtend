@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DESIGN-12",
+  "task_id": "DESIGN-12",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Photocaged/control design",
+  "type": "design_rubric",
+  "expected_answer": "One control: same linker+E3 ligand, warhead pharmacophore ablated (e.g., remove dimethylisoxazole methyls or block pocket contact); explicit ablation rationale.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

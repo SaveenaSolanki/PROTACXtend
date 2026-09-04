@@ -1,0 +1,56 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "DISCOVER-09",
+  "capability": "DISCOVER",
+  "difficulty": "medium",
+  "title": "Replication protocol",
+  "scientific_question": "State replication and controls for a supplied wet-lab result claim.",
+  "supplied_inputs": [
+    "result claim: candidate degrades BRD4 in one cell line at one concentration"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "rdkit",
+    "pareto_ranking",
+    "diversity",
+    "degradation_predictor",
+    "admet",
+    "uncertainty",
+    "evidence_logs"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/DISCOVER-09.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "low",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

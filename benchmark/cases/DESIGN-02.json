@@ -1,0 +1,59 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "DESIGN-02",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Full PROTAC construction",
+  "scientific_question": "Construct and validate a full PROTAC SMILES from the supplied components.",
+  "supplied_inputs": [
+    "warhead: COc1cc2c(cc1c1c(C)onc1C)cc(c(=O)n2Cc1ccccn1)",
+    "E3 ligand: N[C@@H](C(C)(C)C)C(=O)N1C[C@@H](C[C@H]1C(=O)N[C@H](c1ccc(cc1)c1scnc1C)C)O",
+    "linker rule: any chain >=6 atoms"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "rdkit",
+    "molecule_standardizer",
+    "linker_generator",
+    "warhead_library",
+    "e3_library",
+    "admet",
+    "exit_vector",
+    "novelty_check"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/DESIGN-02.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "low",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

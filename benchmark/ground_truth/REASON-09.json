@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-REASON-09",
+  "task_id": "REASON-09",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "Lysine accessibility reasoning",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: reason from structure about solvent-exposed lysines on the BRD4 surface; mark as hypothesis needing experimental ubiquitination assay; never assert measured ubiquitination sites.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "rcsb_pdb",
+      "ref": "5T35"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

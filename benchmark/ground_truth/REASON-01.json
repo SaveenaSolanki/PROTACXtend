@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-REASON-01",
+  "task_id": "REASON-01",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "Hook-effect mechanism",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: names ternary vs binary competition; distinguishes ligand depletion / binary complex formation as drivers; separates prediction from measurement.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "hook-effect equilibrium literature (permitted sources)"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

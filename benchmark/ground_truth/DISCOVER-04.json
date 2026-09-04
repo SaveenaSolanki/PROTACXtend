@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DISCOVER-04",
+  "task_id": "DISCOVER-04",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "hard",
+  "title": "Pareto portfolio selection",
+  "type": "ranked",
+  "expected_answer": "Portfolio on Pareto front of supplied metrics; ties resolved by locked rule (prefer admet_pass).",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

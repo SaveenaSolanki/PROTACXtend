@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-KNOW-05",
+  "task_id": "KNOW-05",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "E3 suitability evidence",
+  "type": "categorical",
+  "expected_answer": "CRBN (pomalidomide/lenalidomide-type ligands: dBET1/dBET6/ARV-825) and VHL (VH032-type: MZ1, AT1) both recur.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Winter 2015 (Science)"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Zengerle 2015 (Chem Biol)"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

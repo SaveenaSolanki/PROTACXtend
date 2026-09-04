@@ -1,0 +1,58 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "REASON-11",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "Uncertainty reasoning",
+  "scientific_question": "For a supplied prediction with reported model confidence, state what evidence would change the confidence.",
+  "supplied_inputs": [
+    "prediction: predicted DC50 band for supplied PROTAC",
+    "reported confidence: model-provided (value withheld from inputs)"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "uniprot",
+    "chembl",
+    "pubchem",
+    "pdb",
+    "rdkit",
+    "ternary_feasibility",
+    "cooperativity",
+    "hook_effect"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/REASON-11.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "medium",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

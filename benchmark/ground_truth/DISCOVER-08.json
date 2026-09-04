@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DISCOVER-08",
+  "task_id": "DISCOVER-08",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "hard",
+  "title": "Cost-aware prioritisation",
+  "type": "ranked",
+  "expected_answer": "Priority set by locked rule (max value within budget, greedy by value/cost); no hidden data.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

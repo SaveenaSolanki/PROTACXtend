@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-KNOW-07",
+  "task_id": "KNOW-07",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Ternary evidence retrieval",
+  "type": "exact",
+  "expected_answer": "PDB 5T35 (BRD4 BD2-MZ1-VHL ternary complex).",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Gadd et al., Nat. Chem. Biol. 2017 DOI 10.1038/nchembio.2329"
+    },
+    {
+      "type": "public_db",
+      "name": "rcsb_pdb",
+      "ref": "https://www.rcsb.org/structure/5T35"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

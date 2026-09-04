@@ -1,0 +1,26 @@
+{
+  "ground_truth_id": "GT-DISCOVER-01",
+  "task_id": "DISCOVER-01",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "hard",
+  "title": "Rank and justify",
+  "type": "ranked",
+  "expected_answer": "Deterministic ranking produced by applying the locked rule to the supplied table; ranking recorded before outcome access.",
+  "mandatory_answer_elements": [
+    "rule applied transparently",
+    "no outcome data used"
+  ],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

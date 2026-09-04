@@ -1,0 +1,25 @@
+{
+  "ground_truth_id": "GT-KNOW-08",
+  "task_id": "KNOW-08",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Dataset provenance audit",
+  "type": "categorical",
+  "expected_answer": "Field-level audit: rows with source=verified carry retrievable citation; rows with empty source are reported unverified (never silently assumed correct).",
+  "mandatory_answer_elements": [
+    "explicit verified/unverified split"
+  ],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "repository",
+      "ref": "blinded_components_sample.csv (authored for this task)"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

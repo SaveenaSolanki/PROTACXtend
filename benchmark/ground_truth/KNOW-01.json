@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-KNOW-01",
+  "task_id": "KNOW-01",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "easy",
+  "title": "Resolve target identity",
+  "type": "exact",
+  "expected_answer": "UniProt Q60885; bromodomain-containing protein 4; two bromodomains (BD1, BD2) + extraterminal (ET) domain",
+  "mandatory_answer_elements": [
+    "Q60885",
+    "BD1/BD2 architecture"
+  ],
+  "acceptable_alternatives": [
+    "aliases: BRD4, HUNK1"
+  ],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "UniProt",
+      "ref": "https://www.uniprot.org/uniprotkb/Q60885"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

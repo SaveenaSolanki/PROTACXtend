@@ -1,0 +1,60 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "KNOW-10",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Cell-line context retrieval",
+  "scientific_question": "Which of the supplied cell lines express the supplied target-E3 pair according to permitted sources?",
+  "supplied_inputs": [
+    "target/E3: BRD4 / CRBN",
+    "cell lines: MM1.S, H1299, HEK293T"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "uniprot",
+    "chembl",
+    "pubchem",
+    "bindingdb",
+    "rcsb_pdb",
+    "protacdb",
+    "europepmc",
+    "pubmed",
+    "openalex",
+    "crossref"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/KNOW-10.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "medium",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

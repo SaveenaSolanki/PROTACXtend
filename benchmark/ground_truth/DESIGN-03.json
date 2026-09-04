@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DESIGN-03",
+  "task_id": "DESIGN-03",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "hard",
+  "title": "Scaffold-hop design",
+  "type": "design_rubric",
+  "expected_answer": "Two distinct core scaffolds each containing a dimethylisoxazole-type mimic; rationale for preserved contacts; no measured potency claims.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "BET SAR via permitted sources"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

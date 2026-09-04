@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-REASON-08",
+  "task_id": "REASON-08",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "medium",
+  "title": "Exit-vector feasibility",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: attachment must point into solvent from the acetyl-lysine binding face; uses 5T35-derived reasoning; no unsupported vectors.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    },
+    {
+      "type": "public_db",
+      "name": "rcsb_pdb",
+      "ref": "5T35"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

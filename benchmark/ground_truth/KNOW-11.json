@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-KNOW-11",
+  "task_id": "KNOW-11",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "Citation grounding check",
+  "type": "exact",
+  "expected_answer": "DOI 10.1126/science.aab1433 (Winter et al., Science 2015).",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Winter 2015, Science, DOI 10.1126/science.aab1433"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

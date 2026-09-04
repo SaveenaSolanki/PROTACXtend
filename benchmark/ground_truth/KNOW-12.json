@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-KNOW-12",
+  "task_id": "KNOW-12",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "hard",
+  "title": "Retrieval completeness check",
+  "type": "categorical",
+  "expected_answer": "Report any additional canonical BRD4 BET ligands found (e.g., IBET762) as missing; never assert absence without a per-source statement.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Filippakopoulos 2010 Nature DOI 10.1038/nature09534"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

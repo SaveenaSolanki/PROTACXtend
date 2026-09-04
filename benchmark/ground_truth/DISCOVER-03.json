@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DISCOVER-03",
+  "task_id": "DISCOVER-03",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "hard",
+  "title": "Next-experiment design",
+  "type": "design_rubric",
+  "expected_answer": "Rubric: concrete assay list with controls (vehicle, no-treatment, positive control) and cost band; no fabricated results.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "repository",
+      "ref": "experiment design conventions"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

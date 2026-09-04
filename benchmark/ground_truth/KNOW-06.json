@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-KNOW-06",
+  "task_id": "KNOW-06",
+  "schema_version": "1.0.0",
+  "capability": "KNOW",
+  "difficulty": "easy",
+  "title": "Warhead precedent search",
+  "type": "categorical",
+  "expected_answer": "JQ1, I-BET762, OTX015, I-BET151 are documented dimethylisoxazole-family BET ligands (BD-selective differences may be noted).",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Filippakopoulos 2010 Nature DOI 10.1038/nature09534"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Chung et al., J. Med. Chem. 2011 DOI 10.1021/jm201108q (I-BET151)"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

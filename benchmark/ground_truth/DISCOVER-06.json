@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-DISCOVER-06",
+  "task_id": "DISCOVER-06",
+  "schema_version": "1.0.0",
+  "capability": "DISCOVER",
+  "difficulty": "medium",
+  "title": "Cell-line recommendation",
+  "type": "design_rubric",
+  "expected_answer": "Rubric: rationale based on expression + assay tractability; explicitly flags that per-line expression should be verified.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "general expression references via permitted DBs"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

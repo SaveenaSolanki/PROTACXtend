@@ -1,0 +1,30 @@
+{
+  "ground_truth_id": "GT-DESIGN-09",
+  "task_id": "DESIGN-09",
+  "schema_version": "1.0.0",
+  "capability": "DESIGN",
+  "difficulty": "medium",
+  "title": "Novelty-filtered generation",
+  "type": "design_rubric",
+  "expected_answer": "3 valid candidates each with Tanimoto <0.6 to the reference (computed via permitted fingerprint tool).",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "calculated",
+      "name": "rdkit",
+      "ref": "RDKit deterministic calculation"
+    }
+  ],
+  "numerical_context": {
+    "context": {
+      "assay": "n/a (similarity metric)",
+      "system": "Morgan r=2",
+      "units": "unitless",
+      "source": "RDKit"
+    }
+  },
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "KNOW-05",
+  "capability": "KNOW",
+  "difficulty": "medium",
+  "title": "E3 suitability evidence",
+  "scientific_question": "Summarize which E3 ligases recur among documented BRD4 degraders and which ligands are used.",
+  "supplied_inputs": [
+    "target: BRD4",
+    "documented degraders: dBET1, MZ1, ARV-825, AT1"
+  ],
+  "hidden_information": [
+    "ground truth + outcome-derived ranking (locked)"
+  ],
+  "permitted_tools_databases": [
+    "uniprot",
+    "chembl",
+    "pubchem",
+    "bindingdb",
+    "rcsb_pdb",
+    "protacdb",
+    "europepmc",
+    "pubmed",
+    "openalex",
+    "crossref"
+  ],
+  "forbidden_information": [
+    "hidden ground truth",
+    "live web except permitted databases",
+    "six-BRD4 measured potency",
+    "unverifiable citations",
+    "answers from other systems' outputs"
+  ],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/KNOW-05.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "contamination_risk": "low",
+  "data_cutoff_date": "2026-08-31",
+  "systems": [
+    "PROTACXtend",
+    "Biomni",
+    "AI-Co-Scientist-compatible",
+    "Base-LLM-control",
+    "DeepSeek-Flash-control",
+    "Local-Ollama-control"
+  ],
+  "blindness": {
+    "locked_before_outcome": true,
+    "uses_measured_outcomes": false
+  },
+  "budget": {
+    "runtime_s": 600,
+    "max_tool_calls": 60,
+    "seed": 42,
+    "repeat": 3
+  }
+}

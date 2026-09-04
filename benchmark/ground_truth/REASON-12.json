@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-REASON-12",
+  "task_id": "REASON-12",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "Chameleon-linker hypothesis",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: plausible shielding hypothesis; states it is a hypothesis and how NMR/permeability experiments would test it.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "chameleon behaviour literature via permitted sources"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

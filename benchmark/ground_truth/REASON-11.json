@@ -1,0 +1,23 @@
+{
+  "ground_truth_id": "GT-REASON-11",
+  "task_id": "REASON-11",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "Uncertainty reasoning",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: identifies concrete experiments/data that would raise/lower confidence; does not invent confidence values.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "public_db",
+      "name": "repository",
+      "ref": "model outputs policy"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

@@ -1,0 +1,28 @@
+{
+  "ground_truth_id": "GT-REASON-06",
+  "task_id": "REASON-06",
+  "schema_version": "1.0.0",
+  "capability": "REASON",
+  "difficulty": "hard",
+  "title": "E3 recruitment path",
+  "type": "mechanistic_rubric",
+  "expected_answer": "Rubric: ligand->VHL->ternary->ubiquitination geometry chain; notes structural uncertainty; no fabrication.",
+  "mandatory_answer_elements": [],
+  "acceptable_alternatives": [],
+  "evidence_sources": [
+    {
+      "type": "repository",
+      "name": "repository",
+      "ref": "tui/outputs/BRD4_VHL_PROTAC_ranking.md"
+    },
+    {
+      "type": "public_db",
+      "name": "publication",
+      "ref": "Gadd 2017 Nat Chem Biol"
+    }
+  ],
+  "numerical_context": null,
+  "data_cutoff_date": "2026-08-31",
+  "immutable": true,
+  "frozen_at": "2026-09-04T14:48:12.959746+00:00"
+}

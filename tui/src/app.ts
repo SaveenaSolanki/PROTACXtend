@@ -258,6 +258,7 @@ export class ProtacXtendApp {
   private workflows: { cmd: string; desc: string }[] = [];
   private lastActivity = "";
   private skillsCache: Record<string, unknown>[] | null = null;
+  private latestSchema: Record<string, unknown> | null = null;
 
   constructor() {
     this.bridge = new PythonBridge();
@@ -308,6 +309,18 @@ export class ProtacXtendApp {
         this.skillsCache = (event.skills as Record<string, unknown>[]) || [];
         this.skillsCount = this.skillsCache.length;
         break;
+      case "tool_result": {
+        const payload = event.result as Record<string, unknown> | undefined;
+        if (payload && typeof payload.workflow === "string" && typeof payload.summary === "string") {
+          this.latestSchema = payload;
+        }
+        break;
+      }
+      case "scientific_result": {
+        const sr = event.result as Record<string, unknown> | undefined;
+        if (sr && sr.workflow) this.latestSchema = sr;
+        break;
+      }
       case "databases_list":
         this.databaseCount = ((event.databases as Record<string, unknown>[]) || []).length;
         break;
@@ -569,7 +582,11 @@ export class ProtacXtendApp {
         await this.runWorkflow("experiment", args);
         break;
       case "/evidence":
-        await this.runWorkflow("evidence", args);
+        if (args) {
+          await this.runWorkflow("evidence", args);
+        } else {
+          this.showEvidenceProvenance();
+        }
         break;
       case "/run":
         await this.runWorkflow("run", args);
@@ -639,6 +656,66 @@ export class ProtacXtendApp {
   private showUsage(cmd: string, what: string, example: string): void {
     printInfo(`Usage: ${cmd} ${what}`);
     printLine(`  ${theme.dim("example")}  ${theme.semantic("text", example)}`);
+  }
+
+  /** /evidence — expose provenance + evidence from the last schema result. */
+  private showEvidenceProvenance(): void {
+    const sr = this.latestSchema;
+    printLine("");
+    printLine(`  ${theme.grad("EVIDENCE & PROVENANCE", "#9B94F0", "#5AB9CD")}`);
+    if (!sr) {
+      printLine(`  ${theme.dim("No result captured yet in this session.")}`);
+      printInfo("Run /design <objective>, a tool (/validate, /admet …) or /evidence <query> first.");
+      printLine("");
+      return;
+    }
+    const evidence = (sr.evidence as Array<Record<string, unknown>>) || [];
+    const provenance = (sr.provenance as Array<Record<string, unknown>>) || [];
+    const warnings = (sr.warnings as string[]) || [];
+
+    printKv("workflow", theme.semantic("text", String(sr.workflow ?? "")), 14);
+    printKv("status", String(sr.status ?? ""), 14);
+    printKv("summary", theme.semantic("text", truncateToWidth(String(sr.summary ?? ""), 66)), 14);
+    if (sr.confidence !== undefined && sr.confidence !== null) {
+      printKv("confidence", `${((Number(sr.confidence)) * 100).toFixed(0)}% (reported by model)`, 14);
+    }
+    if (Array.isArray(sr.uncertainty) && sr.uncertainty.length) {
+      printKv("uncertainty", theme.dim((sr.uncertainty as string[]).join(" · ")), 14);
+    }
+
+    if (evidence.length) {
+      printSection("EVIDENCE");
+      const kinds: Record<string, string> = {
+        measured: "mint", retrieved: "cyan", calculated: "violet", predicted: "purple", missing: "amber",
+      };
+      for (const e of evidence) {
+        const kind = String(e.kind ?? "retrieved");
+        const chip = theme.fg((kinds[kind] as "mint" | "cyan" | "violet" | "purple" | "amber") ?? "cyan", `[${kind}]`);
+        printLine(`  ${chip} ${theme.semantic("text", String(e.summary ?? ""))}`);
+        const src = String(e.source ?? "");
+        if (src) printLine(`      ${theme.dim("source")} ${src}`);
+        const ref = String(e.reference ?? "");
+        if (ref) printLine(`      ${theme.dim("ref")} ${ref}`);
+      }
+    } else {
+      printLine(`  ${theme.muted("no evidence items attached to this result")}`);
+    }
+
+    if (warnings.length) {
+      printSection("WARNINGS");
+      for (const w of warnings) printLine(`  ${theme.warning("\u26a0")} ${theme.dim(String(w))}`);
+    }
+    if (provenance.length) {
+      printSection("PROVENANCE");
+      for (const p of provenance) {
+        const tool = String(p.tool ?? "");
+        const source = String(p.source ?? "");
+        printLine(`  ${theme.fg("mint", tool)}${source ? theme.dim(`  ·  ${source}`) : ""}`);
+      }
+    } else {
+      printLine(`  ${theme.muted("no provenance recorded (nothing was invented here)")}`);
+    }
+    printLine("");
   }
 
   // ── Primary workflow dispatcher ────────────────────────────────

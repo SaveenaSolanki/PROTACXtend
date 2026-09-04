@@ -99,6 +99,24 @@ def handle_status() -> None:
     })
 
 
+def _schema_tool(tool: str, workflow: str, payload: dict, status: str = "ok", source: str = "",
+                kind: str = "calculated", evidence: list[str] | None = None,
+                provenance_tool: str = "") -> dict:
+    """Wrap a tool payload in the shared ScientificResult envelope."""
+    from protacxtend.results.schema import EvidenceItem, ScientificResult, Provenance
+    evidence = evidence or [f"{tool} returned {status}"]
+    res = ScientificResult(
+        workflow=workflow,
+        status="ok" if status == "ok" else "failed",
+        summary=evidence[0],
+        result=payload,
+        evidence=[EvidenceItem(summary=ev, source=source, kind=kind) for ev in evidence],
+        warnings=[payload.get("error", "")] if payload.get("error") else [],
+        provenance=[Provenance(tool=provenance_tool or f"protacxtend.tools.{tool}", source=source)],
+    )
+    return res.to_dict()
+
+
 def handle_run(request: str) -> None:
     """Run the PROTACXtend workflow and emit streaming events."""
     run_id = emit_run_start(request)
@@ -114,8 +132,9 @@ def handle_run(request: str) -> None:
                 emit_agent_complete(agent["id"], status="error", detail=str(exc)[:200])
                 emit_warning(f"Agent {agent['name']} failed: {exc}", source=agent["id"])
 
-        # Emit final results
+        # Emit final results (rich + standardised schema)
         _emit_results()
+        _emit_schema_result(request, run_id)
         emit_run_complete("ok", run_id, {
             "agents_completed": len(AGENT_PIPELINE),
         })
@@ -217,15 +236,74 @@ def _emit_results() -> None:
     })
 
 
+def _emit_schema_result(request: str, run_id: str) -> None:
+    """Emit the shared ScientificResult envelope for a workflow run."""
+    if not hasattr(_run_agent, "_state_cache") or _run_agent._state_cache is None:
+        return
+    state = _run_agent._state_cache
+
+    from protacxtend.results.schema import ScientificResult, Provenance
+
+    n_binders = len(getattr(state, "retrieved_binders", []) or [])
+    n_warheads = len(getattr(state, "selected_warheads", []) or [])
+    n_e3 = len(getattr(state, "selected_e3_ligands", []) or [])
+    n_linkers = len(getattr(state, "generated_linkers", []) or [])
+    n_candidates = len(getattr(state, "valid_candidates", []) or [])
+    n_ranked = len(getattr(state, "final_ranked_candidates", []) or getattr(state, "ranking_results", []) or [])
+
+    summary = (f"{n_candidates} candidates \u00b7 {n_ranked} ranked \u00b7 {n_binders} binders "
+               f"\u00b7 {n_warheads} warheads \u00b7 {n_e3} E3 \u00b7 {n_linkers} linkers")
+    res = ScientificResult(
+        workflow="run",
+        status="ok",
+        summary=summary,
+        result={
+            "request": request,
+            "candidates_generated": n_candidates,
+            "candidates_ranked": n_ranked,
+            "binders_found": n_binders,
+            "warheads_selected": n_warheads,
+            "e3_ligands_selected": n_e3,
+            "linkers_generated": n_linkers,
+            "run_id": run_id,
+        },
+        provenance=[Provenance(tool="run_syn_glue_workflow", source="protacxtend.agents.graph")],
+    )
+    if n_binders:
+        res.add_evidence(f"{n_binders} binder record(s) retrieved for the target",
+                         source="ChEMBL/PubChem/BindingDB", kind="retrieved")
+    if n_candidates:
+        res.add_evidence(f"{n_candidates} candidate(s) constructed and validated",
+                         source="RDKit", kind="calculated")
+    preds = getattr(state, "degradation_predictions", []) or []
+    if preds:
+        res.add_evidence(f"{len(preds)} degradation prediction(s) from trained model(s)",
+                         source="chemprop/heuristic", kind="predicted")
+    if not n_candidates and not n_binders:
+        res.add_evidence("no measured potency data present for this objective",
+                         source="run state", kind="missing")
+        res.status = "partial"
+    emit({"type": "scientific_result", "result": res.to_dict()})
+
+
 def handle_validate(smiles: str) -> None:
     """Validate a SMILES string."""
     emit_tool_call("validate_smiles", {"smiles": smiles})
     try:
         from protacxtend.tools.molecule_standardizer import compute_basic_properties
         props = compute_basic_properties(smiles)
-        emit_tool_result("validate_smiles", result=props, status="ok")
+        summary = (f"MW {props.get('mw')} \u00b7 logP {props.get('logp')} \u00b7 TPSA {props.get('tpsa')} "
+                   f"\u00b7 HBD {props.get('hbd')} \u00b7 HBA {props.get('hba')}")
+        emit_tool_result("validate_smiles",
+                         result=_schema_tool("validate_smiles", "admet", props, source="RDKit",
+                                             kind="calculated", evidence=[summary],
+                                             provenance_tool="protacxtend.tools.molecule_standardizer.compute_basic_properties"),
+                         status="ok")
     except Exception as exc:
-        emit_tool_result("validate_smiles", result={"error": str(exc)}, status="error")
+        emit_tool_result("validate_smiles",
+                         result=_schema_tool("validate_smiles", "admet", {"error": str(exc)}, status="error",
+                                             kind="missing", evidence=[f"validation failed: {exc}"]),
+                         status="error")
 
 
 def handle_skills() -> None:
@@ -245,12 +323,18 @@ def handle_generator(request: str) -> None:
         from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
         toolbox = ProtacDesignToolbox()
         linkers = toolbox.generate_rule_based_linkers() if hasattr(toolbox, 'generate_rule_based_linkers') else []
-        emit_tool_result("molecular_generator", result={
-            "linkers_generated": len(linkers),
-            "linker_types": ["PEG", "alkyl", "piperazine", "triazole", "semi-rigid"],
-        }, status="ok")
+        payload = {"linkers_generated": len(linkers),
+                    "linker_types": ["PEG", "alkyl", "piperazine", "triazole", "semi-rigid"]}
+        emit_tool_result("molecular_generator",
+                         result=_schema_tool("molecular_generator", "generator", payload,
+                                             kind="calculated", evidence=[f"{len(linkers)} linkers generated"],
+                                             provenance_tool="protacxtend.tools.protac_toolbox"),
+                         status="ok")
     except Exception as exc:
-        emit_tool_result("molecular_generator", result={"error": str(exc)}, status="error")
+        emit_tool_result("molecular_generator",
+                         result=_schema_tool("molecular_generator", "generator", {"error": str(exc)}, status="error",
+                                             kind="missing", evidence=[f"generation failed: {exc}"]),
+                         status="error")
 
 
 def handle_retrosynthesis(smiles: str) -> None:
@@ -260,13 +344,18 @@ def handle_retrosynthesis(smiles: str) -> None:
         from protacxtend.tools.retrosynthesis_engines import run_retrosynthesis
         result = run_retrosynthesis(smiles)
         routes = result.get("routes", []) if isinstance(result, dict) else []
-        emit_tool_result("retrosynthesis", result={
-            "smiles": smiles,
-            "routes_found": len(routes),
-            "routes": routes[:3],
-        }, status="ok")
+        payload = {"smiles": smiles, "routes_found": len(routes), "routes": routes[:3]}
+        emit_tool_result("retrosynthesis",
+                         result=_schema_tool("retrosynthesis", "synthesis", payload,
+                                             kind="calculated",
+                                             evidence=[f"{len(routes)} retrosynthetic route(s) proposed for the target"],
+                                             provenance_tool="protacxtend.tools.retrosynthesis_engines"),
+                         status="ok")
     except Exception as exc:
-        emit_tool_result("retrosynthesis", result={"error": str(exc)}, status="error")
+        emit_tool_result("retrosynthesis",
+                         result=_schema_tool("retrosynthesis", "synthesis", {"error": str(exc)}, status="error",
+                                             kind="missing", evidence=[f"retrosynthesis failed: {exc}"]),
+                         status="error")
 
 
 def handle_docking(smiles: str, target: str = "") -> None:
@@ -275,14 +364,19 @@ def handle_docking(smiles: str, target: str = "") -> None:
     try:
         from protacxtend.tools.docking_pipeline import run_docking
         result = run_docking(smiles, target_pdb=target) if target else run_docking(smiles)
-        emit_tool_result("docking", result={
-            "smiles": smiles,
-            "target": target,
-            "binding_energy": getattr(result, "binding_energy", None),
-            "poses": getattr(result, "n_poses", 0),
-        }, status="ok")
+        payload = {"smiles": smiles, "target": target,
+                    "binding_energy": getattr(result, "binding_energy", None),
+                    "poses": getattr(result, "n_poses", 0)}
+        emit_tool_result("docking",
+                         result=_schema_tool("docking", "structure", payload, kind="predicted",
+                                             evidence=["docking pose scored with AutoDock Vina"],
+                                             provenance_tool="protacxtend.tools.docking_pipeline"),
+                         status="ok")
     except Exception as exc:
-        emit_tool_result("docking", result={"error": str(exc)}, status="error")
+        emit_tool_result("docking",
+                         result=_schema_tool("docking", "structure", {"error": str(exc)}, status="error",
+                                             kind="missing", evidence=[f"docking failed: {exc}"]),
+                         status="error")
 
 
 def handle_stereo(smiles: str) -> None:
@@ -291,14 +385,19 @@ def handle_stereo(smiles: str) -> None:
     try:
         from protacxtend.tools.stereochemistry_engine import get_stereochemistry_profile
         profile = get_stereochemistry_profile(smiles)
-        emit_tool_result("stereochemistry", result={
-            "smiles": smiles,
-            "chiral_centers": getattr(profile, "n_chiral_centers", 0),
-            "ez_bonds": getattr(profile, "n_ez_bonds", 0),
-            "stereoisomers": getattr(profile, "n_stereoisomers", 1),
-        }, status="ok")
+        payload = {"smiles": smiles, "chiral_centers": getattr(profile, "n_chiral_centers", 0),
+                    "ez_bonds": getattr(profile, "n_ez_bonds", 0),
+                    "stereoisomers": getattr(profile, "n_stereoisomers", 1)}
+        emit_tool_result("stereochemistry",
+                         result=_schema_tool("stereochemistry", "structure", payload, kind="calculated",
+                                             evidence=["stereochemistry profile enumerated"],
+                                             provenance_tool="protacxtend.tools.stereochemistry_engine"),
+                         status="ok")
     except Exception as exc:
-        emit_tool_result("stereochemistry", result={"error": str(exc)}, status="error")
+        emit_tool_result("stereochemistry",
+                         result=_schema_tool("stereochemistry", "structure", {"error": str(exc)}, status="error",
+                                             kind="missing", evidence=[f"stereochemistry failed: {exc}"]),
+                         status="error")
 
 
 def handle_command(cmd: str, args: dict[str, Any]) -> None:

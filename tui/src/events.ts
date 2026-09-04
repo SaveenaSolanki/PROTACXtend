@@ -45,11 +45,33 @@ function statusColor(status: string): "success" | "error" | "muted" {
 // ── Tool result → one-line summary formatter ─────────────────────
 
 /** Compact single-line summary of a tool result payload (CLI-first). */
+function isSchema(r: Record<string, unknown>): boolean {
+  return typeof r.workflow === "string" && typeof r.summary === "string" && "result" in r;
+}
+
+/** One-line output derived from the shared ScientificResult schema. */
+export function summarizeSchema(r: Record<string, unknown>): string {
+  const workflow = String(r.workflow ?? "tool");
+  const summary = String(r.summary ?? "");
+  const status = String(r.status ?? "ok");
+  const evidence = (r.evidence as Array<Record<string, unknown>>) || [];
+  const warnings = (r.warnings as string[]) || [];
+  const kinds = [...new Set(evidence.map((e) => String(e.kind ?? "retrieved")))];
+  const kindTxt = kinds.length ? theme.dim(` · evidence: ${kinds.join("/")}`) : "";
+  const warnTxt = warnings.length ? theme.warning(` · ${warnings.length} warning(s)`) : "";
+  const head = status === "ok" ? theme.success("ok") : theme.error(status);
+  return `${theme.fg("cyan", workflow)} ${head} · ${summary}${kindTxt}${warnTxt}`;
+}
+
 export function summarizeToolResult(tool: string, result: unknown): string {
   if (result === null || result === undefined) return String(result ?? "");
   if (typeof result !== "object") return String(result).slice(0, 120);
 
   const r = result as Record<string, unknown>;
+  if (isSchema(r)) {
+    // one-line outputs are generated from the standardised schema envelope
+    return summarizeSchema(r);
+  }
   const parts: string[] = [];
 
   // Scientific tools with known payload shapes
@@ -284,6 +306,14 @@ export function renderEvent(event: Record<string, unknown>): void {
     case "run_complete":
       renderRunComplete(event.status as string, event.run_id as string, event.summary as Record<string, unknown>);
       break;
+    case "scientific_result": {
+      const sr = (event.result as Record<string, unknown>) || {};
+      if (sr.workflow && sr.summary) {
+        printLine(`  ${theme.grad("\u2500".repeat(56), "#9B94F0", "#5AB9CD")}`);
+        printLine(`  ${theme.accent("SCIENTIFIC RESULT")}  ${summarizeSchema(sr)}`);
+      }
+      break;
+    }
     case "skills_list":
       renderSkillsList(event.skills as Record<string, unknown>[]);
       break;

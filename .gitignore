@@ -97,3 +97,6 @@ npm-debug.log*
 yarn-error.log*
 # derived GROVER embedding caches (regenerate from SMILES - see data/synglue/data/README.md)
 data/synglue/data/grover_*.csv
+
+# benchmark manifests are auto-generated from live registries
+benchmark/manifests/*.json

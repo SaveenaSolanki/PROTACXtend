@@ -1,0 +1,11 @@
+{
+  "status": "tool_failure",
+  "raw": "",
+  "error": "permitted tool crashed",
+  "tool_calls": 3,
+  "tokens_in": 80,
+  "tokens_out": 20,
+  "cost_usd": 0.0006,
+  "fixture_kind": "tool_failure",
+  "fixture_name": "DEV-tool_failure"
+}

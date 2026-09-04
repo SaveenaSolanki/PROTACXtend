@@ -1,0 +1,11 @@
+{
+  "status": "timeout",
+  "raw": "",
+  "error": "budget exceeded",
+  "tool_calls": 1,
+  "tokens_in": 50,
+  "tokens_out": 0,
+  "cost_usd": 0.0003,
+  "fixture_kind": "timeout",
+  "fixture_name": "DEV-timeout"
+}

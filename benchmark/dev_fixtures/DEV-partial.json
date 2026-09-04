@@ -1,0 +1,13 @@
+{
+  "status": "partial",
+  "raw": "DEV-PARTIAL: one mandatory element missing.",
+  "answer": {
+    "target": null
+  },
+  "tool_calls": 1,
+  "tokens_in": 90,
+  "tokens_out": 40,
+  "cost_usd": 0.0008,
+  "fixture_kind": "partial",
+  "fixture_name": "DEV-partial"
+}

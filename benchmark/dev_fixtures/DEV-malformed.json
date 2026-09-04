@@ -1,0 +1,11 @@
+{
+  "status": "malformed",
+  "raw": "{not valid json",
+  "error": "unparseable payload",
+  "tool_calls": 0,
+  "tokens_in": 30,
+  "tokens_out": 5,
+  "cost_usd": 0.0001,
+  "fixture_kind": "malformed",
+  "fixture_name": "DEV-malformed"
+}

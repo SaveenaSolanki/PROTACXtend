@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "raw": "DEV-PERFECT response with correct structured answer.",
+  "answer": {
+    "target": "Q60885"
+  },
+  "tool_calls": 2,
+  "tokens_in": 120,
+  "tokens_out": 60,
+  "cost_usd": 0.001,
+  "fixture_kind": "perfect",
+  "fixture_name": "DEV-perfect"
+}

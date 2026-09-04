@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "raw": "DEV-INCORRECT wrong answer.",
+  "answer": {
+    "target": "P99999"
+  },
+  "tool_calls": 1,
+  "tokens_in": 70,
+  "tokens_out": 30,
+  "cost_usd": 0.0005,
+  "fixture_kind": "incorrect",
+  "fixture_name": "DEV-incorrect"
+}

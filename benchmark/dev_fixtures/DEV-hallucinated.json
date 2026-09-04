@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "raw": "DEV-HALLUCINATED cites fabricated DOI 10.9999/nonexistent.",
+  "answer": {
+    "citation": "10.9999/nonexistent"
+  },
+  "tool_calls": 0,
+  "tokens_in": 60,
+  "tokens_out": 50,
+  "cost_usd": 0.0004,
+  "fixture_kind": "hallucinated",
+  "fixture_name": "DEV-hallucinated"
+}

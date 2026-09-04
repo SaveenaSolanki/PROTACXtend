@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "raw": "DEV-MISSING no deliverable produced.",
+  "answer": null,
+  "tool_calls": 0,
+  "tokens_in": 40,
+  "tokens_out": 10,
+  "cost_usd": 0.0002,
+  "fixture_kind": "missing",
+  "fixture_name": "DEV-missing"
+}

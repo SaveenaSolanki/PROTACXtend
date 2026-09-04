@@ -1,0 +1,54 @@
+{
+  "success": true,
+  "artifacts": [
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/01_external_status.json",
+      "top_keys": [
+        "mode",
+        "action",
+        "success",
+        "integration_order",
+        "records",
+        "limitations"
+      ]
+    },
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/02_dose_response.json",
+      "top_keys": [
+        "mode",
+        "dose_response"
+      ]
+    },
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/03_structure_scores.json",
+      "top_keys": [
+        "mode",
+        "input",
+        "ubiquitination_geometry",
+        "cooperativity_potential"
+      ]
+    },
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/04_proteome_context.json",
+      "top_keys": [
+        "mode",
+        "proteome_context"
+      ]
+    },
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/05_active_learning.json",
+      "top_keys": [
+        "mode",
+        "action",
+        "decision"
+      ]
+    },
+    {
+      "file": "/storage/saveena/protacpilot/outputs/stepwise_module_smoke/06_context_degradation.json",
+      "top_keys": [
+        "mode",
+        "context_degradation"
+      ]
+    }
+  ]
+}

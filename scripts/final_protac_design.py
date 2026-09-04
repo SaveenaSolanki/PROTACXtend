@@ -4,7 +4,7 @@
 import sys, os, csv, json, subprocess, tempfile
 sys.path.insert(0, '/storage/saveena/protacpilot')
 
-from synglue_agent.tools.admet_integration import protac_admet_summary, predict_admet_properties
+from protacxtend.tools.admet_integration import protac_admet_summary, predict_admet_properties
 
 WORK_DIR = "/storage/saveena/protacpilot/work/protac_final"
 os.makedirs(WORK_DIR, exist_ok=True)
@@ -150,8 +150,8 @@ addons = [
      "  Estimated runtime: 3-8 hours for 3600 docking poses (fast mode)"),
     
     ("ADMET via adme-py + OpenADMET",
-     "Already integrated: synglue_agent/tools/admet_integration.py\n"
-     "  from synglue_agent.tools.admet_integration import predict_admet_properties\n"
+     "Already integrated: protacxtend/tools/admet_integration.py\n"
+     "  from protacxtend.tools.admet_integration import predict_admet_properties\n"
      "  props = predict_admet_properties('SMILES')\n"
      "  Returns: MW, cLogP, TPSA, HBD, HBA, RotB, Lipinski, Veber, PK (HIA, BBB, CYP)"),
     

@@ -1,5 +1,5 @@
-from synglue_agent.agentic.learning import LearningAgent
-from synglue_agent.backend.schemas import CandidateRecord, ParsedObjective, WorkflowState
+from protacxtend.agentic.learning import LearningAgent
+from protacxtend.backend.schemas import CandidateRecord, ParsedObjective, WorkflowState
 
 import tempfile
 import unittest

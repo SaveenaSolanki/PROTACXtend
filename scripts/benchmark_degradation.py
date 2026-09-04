@@ -9,7 +9,7 @@ Data: PROTAC-DB 3.0 (cadd.zju.edu.cn/protacdb) — 15,502 PROTACs, 2,275 with DC
 Method (mirrors SynGlue's own inference design from its generation pipeline):
   - full PROTAC SMILES → GROVER 4800-dim embedding (real extraction)
   - E3 embedding: pre-computed GROVER vector matched to E3 family
-      CRBN → pomalidomide, VHL → VH032 (both in SynGlue_Py/data/grover_e3.csv)
+      CRBN → pomalidomide, VHL → VH032 (both in data/synglue/data/grover_e3.csv)
   - warhead embedding: constant vector (SynGlue's generation pipeline uses
     iloc[0] of grover_warhead.csv — the model was trained that way)
   - tensor (3, 4800) → MultiTaskProtacModel → predicted DC50 / Dmax
@@ -48,7 +48,7 @@ sys.path.insert(0, str(ROOT))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("benchmark")
 
-from synglue_agent.tools.synglue_degradation import (
+from protacxtend.tools.synglue_degradation import (
     extract_grover_embedding,
     lookup_precomputed_embedding,
     _build_transformer,

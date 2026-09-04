@@ -3,7 +3,7 @@
 **Reviewer mode:** adversarial auditor (evidence-integrity pass)
 **Date:** 2026-08-12
 **Artifact reviewed:** `outputs/PROTAC_PIPELINE_COVERAGE_GAP_ANALYSIS.md`
-**Evidence consulted:** `outputs/deepresearch_A.md`, `outputs/deepresearch_B.md`, `outputs/deepresearch_C.md`; local code/records (`synglue_agent/agents/real_nodes.py`, `SynGlue_Py/data/e3_ligand.csv`, `RELEASE_CLOSURE_REPORT.md`, `CHANGELOG.md`); full texts of Wurz et al. *Nat Commun* 2023 (10.1038/s41467-023-39904-5) and Schulz et al. *Sci Rep* 2025 (10.1038/s41598-025-21502-8); FDA/Reuters/Arvinas approval records.
+**Evidence consulted:** `outputs/deepresearch_A.md`, `outputs/deepresearch_B.md`, `outputs/deepresearch_C.md`; local code/records (`protacxtend/agents/real_nodes.py`, `SynGlue_Py/data/e3_ligand.csv`, `RELEASE_CLOSURE_REPORT.md`, `CHANGELOG.md`); full texts of Wurz et al. *Nat Commun* 2023 (10.1038/s41467-023-39904-5) and Schulz et al. *Sci Rep* 2025 (10.1038/s41598-025-21502-8); FDA/Reuters/Arvinas approval records.
 
 **Verification performed this run (independent of the briefs):**
 1. `real_nodes.py` — confirmed `exit_vector_detection` is a `not_run` stub (line 388); `supervisor`/`safety` are passthrough lambdas (lines 381, 383). ✔ analysis's stub list.
@@ -79,7 +79,7 @@ Solid, largely honest evidence synthesis on the capability axis — the pipeline
 **[F1]:** Correct statement of the literature (verified: rate↔α r=0.67 SMARCA2 / 0.99 BRD4BD2; BRD4 rate↔half-life r=0.95; SMARCA2 rate↔half-life weak r=0.5, ns). But the fix proposed for this gap (BSA/α proxy) does not predict α — it predicts K_LPT. Either re-scope the fix or state that α remains unpredicted.
 
 > "**Honest stub list (from deepresearch_B Part 2):** `exit_vector_detection` graph node = not_run stub; supervisor/safety graph nodes = passthrough lambdas …"
-**[S1]:** Verified against `synglue_agent/agents/real_nodes.py` (line 388 for exit_vector; lines 381/383 for supervisor/safety). This disclosure is the document's strongest asset; keep it.
+**[S1]:** Verified against `protacxtend/agents/real_nodes.py` (line 388 for exit_vector; lines 381/383 for supervisor/safety). This disclosure is the document's strongest asset; keep it.
 
 > "| 6 Degradation | DC50/Dmax/kdeg | 🟢 trained Chemprop ensemble (ρ=0.783, conformal 92.2%) + SynGlue transformer fallback; 🟡 kinetics (kdeg) not modeled; Zhao DC50 model not implemented | **Core covered; kinetics gap** |"
 **[F6]:** ρ=0.783 is a 64-molecule scaffold-split retrospective on PROTAC-DB 3.0 (heterogeneous assay conditions; log-DC50); "conformal 92.2%" is wrapper calibration (target 90%), not prediction accuracy. Add scope qualifiers in the cell and note that DC50 training labels pool heterogeneous assays — relevant to Q3. The 🟡 kinetics caveat is correctly present.
@@ -117,5 +117,5 @@ Solid, largely honest evidence synthesis on the capability axis — the pipeline
 - FDA. FDA approves vepdegestrant for ER-positive, HER2-negative, ESR1-mutated advanced or metastatic breast cancer (2026-05-01). https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-vepdegestrant-er-positive-her2-negative-esr1-mutated-advanced-or-metastatic-breast
 - Reuters. US FDA approves Pfizer, Arvinas' breast cancer drug (2026-05-01). https://www.reuters.com/business/healthcare-pharmaceuticals/us-fda-approves-pfizer-arvinas-breast-cancer-drug-2026-05-01/
 - Arvinas press release. VEPPANU approval. https://ir.arvinas.com/news-releases/news-release-details/arvinas-announces-fda-approval-veppanu-vepdegestrant-treatment
-- Local: `RELEASE_CLOSURE_REPORT.md` (ρ=0.758→0.783; conformal 92.2%; 64-molecule holdout; 15,502-row xlsx; 17/17), `synglue_agent/agents/real_nodes.py` (exit_vector stub L388; supervisor/safety lambdas L381/L383), `SynGlue_Py/data/e3_ligand.csv` (117 rows/20 groups), `CHANGELOG.md` (90 BRD4 binders in 9 s; e2e 6/6)
+- Local: `RELEASE_CLOSURE_REPORT.md` (ρ=0.758→0.783; conformal 92.2%; 64-molecule holdout; 15,502-row xlsx; 17/17), `protacxtend/agents/real_nodes.py` (exit_vector stub L388; supervisor/safety lambdas L381/L383), `SynGlue_Py/data/e3_ligand.csv` (117 rows/20 groups), `CHANGELOG.md` (90 BRD4 binders in 9 s; e2e 6/6)
 - Evidence briefs: `outputs/deepresearch_A.md`, `outputs/deepresearch_B.md`, `outputs/deepresearch_C.md`

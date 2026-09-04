@@ -1,5 +1,5 @@
-from synglue_agent.agentic.perception import PerceptionAgent
-from synglue_agent.agentic.reasoning import ReasoningAgent
+from protacxtend.agentic.perception import PerceptionAgent
+from protacxtend.agentic.reasoning import ReasoningAgent
 
 import unittest
 

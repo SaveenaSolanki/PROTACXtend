@@ -8,12 +8,6 @@ venv/
 
 # Data (large, cloned repos, models — never commit)
 data/protac_repos/repos/
-SynGlue_Py/data/*
-!SynGlue_Py/data/grover_e3.csv
-!SynGlue_Py/data/grover_warhead.csv
-!SynGlue_Py/data/e3_ligand.csv
-SynGlue_Py/models/*
-!SynGlue_Py/models/multitask_transformer.pt
 data/benchmark/_ad_cache/
 outputs/benchmark/chemprop_*/
 outputs/benchmark/*.log
@@ -21,11 +15,11 @@ outputs/p4ward_evidence/*.pse
 outputs/p4ward_evidence/*.tar.gz
 outputs/runs/
 outputs/coverage/
-synglue_agent/outputs/candidates/*.csv
-synglue_agent/outputs/candidates/*.json
-synglue_agent/outputs/reports/*.md
-synglue_agent/memory/workflow_logs/*.json
-synglue_agent/memory/learnings/runs/
+protacxtend/outputs/candidates/*.csv
+protacxtend/outputs/candidates/*.json
+protacxtend/outputs/reports/*.md
+protacxtend/memory/workflow_logs/*.json
+protacxtend/memory/learnings/runs/
 
 # Notebooks / checkpoints
 .ipynb_checkpoints/
@@ -46,10 +40,6 @@ data/synthesis_prediction/envs/
 data/synthesis_prediction/install_logs/
 
 # Cloned upstream dependency repos + generated outputs
-SynGlue_Py/repos/
-SynGlue_Py/reinvent/
-SynGlue_Py/outputs/
-SynGlue_Py/data_copy/
 
 # Large data/model binaries (re-downloadable; see README/DOCS)
 data/retrosynthesis/models/
@@ -75,3 +65,35 @@ env/protacpilot_config.json
 data/research/cache/
 outputs/research_traces/
 outputs/omics_cache/
+SynGlue_Py/
+artifacts/
+docs/
+protacxtend/outputs/
+protacxtend/memory/workflow_logs/
+protacxtend/memory/learnings/runs/
+protacxtend/memory/agentic_design_memory.jsonl
+
+# TUI build artifacts (regenerable via npm run build)
+tui/node_modules/
+tui/dist/
+tui/package-lock.json
+
+
+
+# release-hygiene audit additions (2026-09-03)
+# pi-agent runtime install (never publish)
+/runtime/
+# dependency installs (any depth)
+node_modules/
+# decision/learning + workflow logs (internal)
+**/memory/learnings/
+**/memory/workflow_logs/
+# generated ranking outputs
+tui/outputs/
+*.tmp
+*.swp
+*~
+npm-debug.log*
+yarn-error.log*
+# derived GROVER embedding caches (regenerate from SMILES - see data/synglue/data/README.md)
+data/synglue/data/grover_*.csv

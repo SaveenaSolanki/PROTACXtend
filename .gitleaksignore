@@ -9,3 +9,5 @@
 7f8e116db24c2502b6c4c113008da08b2452c9af:data/protac_repos/env_specs/PROTAC-Degradation-Predictor__environment.yml:generic-api-key:180
 7f8e116db24c2502b6c4c113008da08b2452c9af:data/protac_repos/env_specs/PROTAC-Degradation-Predictor__environment.yml:generic-api-key:236
 7f8e116db24c2502b6c4c113008da08b2452c9af:data/protac_repos/env_specs/PROTAC-Degradation-Predictor__environment.yml:generic-api-key:265
+data/toolkit/protac_agent_gap_audit.csv:generic-api-key:3
+protacxtend/scientific_contract.py:generic-api-key:327

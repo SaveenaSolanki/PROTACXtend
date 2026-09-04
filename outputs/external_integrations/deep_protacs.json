@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "reproduce examples under current splits",
+  "integration_wave": 2,
+  "method_id": "deep_protacs",
+  "name": "DeepPROTACs",
+  "repo_available": true,
+  "repo_name": "DeepPROTACs",
+  "repo_registered": true,
+  "role": "legacy structure-aware classification baseline and ablation comparator",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.595768+00:00"
+}

@@ -1,0 +1,116 @@
+/* PROTACXtend TUI — Feynman-style layout (Textual 8.x compatible) */
+
+Screen {
+    background: $surface;
+}
+
+/* ── Header bar ── */
+#header {
+    dock: top;
+    height: 1;
+    background: $primary-background;
+    color: $text;
+    padding: 0 1;
+    content-align: left middle;
+}
+
+/* ── Footer status bar ── */
+#footer {
+    dock: bottom;
+    height: 1;
+    background: $primary-background;
+    color: $text-muted;
+    padding: 0 1;
+    content-align: left middle;
+}
+
+/* ── Left sidebar: Agents ── */
+#sidebar {
+    dock: left;
+    width: 34;
+    background: $surface;
+    border-right: tall $primary;
+    padding: 0;
+}
+
+#sidebar-title {
+    height: 3;
+    content-align: left middle;
+    text-style: bold;
+    background: $primary-background;
+    color: $text;
+    padding: 0 1;
+}
+
+#agent-list {
+    height: 1fr;
+    overflow-y: auto;
+    padding: 0 0;
+}
+
+.agent-item {
+    height: auto;
+    padding: 0 1;
+    min-height: 1;
+}
+
+/* ── Main content area ── */
+#main-content {
+    width: 1fr;
+    height: 1fr;
+    padding: 0;
+}
+
+/* ── Model system panel (top of main) ── */
+#model-panel {
+    height: auto;
+    max-height: 16;
+    background: $surface;
+    border: tall $primary;
+    margin: 0 0 1 0;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+/* ── About panel ── */
+#about-panel {
+    height: auto;
+    max-height: 12;
+    background: $surface;
+    border: tall $primary;
+    margin: 0 0 1 0;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+/* ── Workflow / activity log (bottom of main) ── */
+#workflow-panel {
+    height: 1fr;
+    background: $surface;
+    border: tall $primary;
+    padding: 0;
+}
+
+#workflow-title {
+    height: 3;
+    content-align: left middle;
+    text-style: bold;
+    background: $primary-background;
+    color: $text;
+    padding: 0 1;
+}
+
+#workflow-log {
+    height: 1fr;
+    overflow-y: auto;
+    padding: 0 1;
+}
+
+/* ── Scrollbar styling ── */
+ScrollBar {
+    background: $surface-darken-1;
+}
+
+ScrollBar > .thumb {
+    background: $text-muted;
+}

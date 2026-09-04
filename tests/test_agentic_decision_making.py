@@ -1,8 +1,8 @@
-from synglue_agent.agentic.decision_making import DecisionMakingAgent
-from synglue_agent.agentic.goal_setting import GoalSettingAgent
-from synglue_agent.agentic.perception import PerceptionAgent
-from synglue_agent.agentic.reasoning import ReasoningAgent
-from synglue_agent.schemas.tool_schema import ToolResult
+from protacxtend.agentic.decision_making import DecisionMakingAgent
+from protacxtend.agentic.goal_setting import GoalSettingAgent
+from protacxtend.agentic.perception import PerceptionAgent
+from protacxtend.agentic.reasoning import ReasoningAgent
+from protacxtend.schemas.tool_schema import ToolResult
 
 import unittest
 

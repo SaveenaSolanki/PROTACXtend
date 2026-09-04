@@ -1,0 +1,4 @@
+target,e3,cell_line,target_expression_score,e3_expression_score,resistance_risk,off_target_risk,source
+BRD4,CRBN,MM1.S,0.88,0.82,0.22,0.38,local_seed_prior
+BRD4,VHL,MM1.S,0.88,0.56,0.34,0.42,local_seed_prior
+BRD4,CRBN,DEFAULT,0.75,0.70,0.30,0.45,local_seed_prior

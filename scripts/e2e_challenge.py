@@ -40,11 +40,11 @@ def _gpu_summary() -> dict:
 
 def run_case(case_name: str, smiles: str, target: str, e3: str, note: str) -> dict:
     """Run one case through the degradation endpoint + full record."""
-    from synglue_agent.tools.degradation_endpoint import predict_degradation_endpoint
-    from synglue_agent.tools.retrosynthesis import assess_retrosynthesis
-    from synglue_agent.tools.ternary_ensemble import geometric_proxy_score
-    from synglue_agent.tools.pareto_ranking import objectives_from_candidate, pareto_rank_candidates
-    from synglue_agent.tools.e3_context_engine import select_best_e3
+    from protacxtend.tools.degradation_endpoint import predict_degradation_endpoint
+    from protacxtend.tools.retrosynthesis import assess_retrosynthesis
+    from protacxtend.tools.ternary_ensemble import geometric_proxy_score
+    from protacxtend.tools.pareto_ranking import objectives_from_candidate, pareto_rank_candidates
+    from protacxtend.tools.e3_context_engine import select_best_e3
 
     t0 = time.time()
     record = {

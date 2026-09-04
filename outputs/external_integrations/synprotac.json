@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "reproduce BRD4 examples and route validity",
+  "integration_wave": 1,
+  "method_id": "synprotac",
+  "name": "SynPROTAC",
+  "repo_available": true,
+  "repo_name": "SynPROTAC",
+  "repo_registered": true,
+  "role": "synthesis-aware generation baseline",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.594872+00:00"
+}

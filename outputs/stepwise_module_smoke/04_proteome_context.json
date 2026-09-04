@@ -1,0 +1,36 @@
+{
+  "mode": "proteome",
+  "proteome_context": {
+    "target": "BRD4",
+    "e3": "CRBN",
+    "cell_line": "MM1.S",
+    "status": "SUPPORTED",
+    "selectivity_score": 0.8,
+    "off_target_risk": 0.38,
+    "context_dependency": 0.17,
+    "evidence_rows": [
+      {
+        "target": "BRD4",
+        "e3": "CRBN",
+        "cell_line": "MM1.S",
+        "target_expression_score": "0.88",
+        "e3_expression_score": "0.82",
+        "resistance_risk": "0.22",
+        "off_target_risk": "0.38",
+        "source": "local_seed_prior"
+      },
+      {
+        "target": "BRD4",
+        "e3": "CRBN",
+        "cell_line": "DEFAULT",
+        "target_expression_score": "0.75",
+        "e3_expression_score": "0.70",
+        "resistance_risk": "0.30",
+        "off_target_risk": "0.45",
+        "source": "local_seed_prior"
+      }
+    ],
+    "warnings": [],
+    "backend": "protacxtend_proteome_context_v0.1"
+  }
+}

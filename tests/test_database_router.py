@@ -1,4 +1,4 @@
-from synglue_agent.databases.database_router import route_database_request
+from protacxtend.databases.database_router import route_database_request
 
 
 def _has_all(output, names):

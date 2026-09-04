@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "audit AF3/Boltz licenses, compute profile, and confidence calibration",
+  "integration_wave": 1,
+  "method_id": "protacfold",
+  "name": "PROTACFold",
+  "repo_available": true,
+  "repo_name": "PROTACFold",
+  "repo_registered": true,
+  "role": "gated ternary structure-generation branch",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.591732+00:00"
+}

@@ -1,6 +1,6 @@
-from synglue_agent.agentic.goal_setting import GoalSettingAgent
-from synglue_agent.agentic.perception import PerceptionAgent
-from synglue_agent.agentic.reasoning import ReasoningAgent
+from protacxtend.agentic.goal_setting import GoalSettingAgent
+from protacxtend.agentic.perception import PerceptionAgent
+from protacxtend.agentic.reasoning import ReasoningAgent
 
 import unittest
 

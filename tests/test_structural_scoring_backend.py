@@ -1,6 +1,6 @@
-from synglue_agent.backend.schemas import CandidateRecord, TernaryFeasibilityResult
-from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
-from synglue_agent.tools.structural_scoring import parse_pdb_atoms, score_ternary_pose_for_candidate
+from protacxtend.backend.schemas import CandidateRecord, TernaryFeasibilityResult
+from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
+from protacxtend.tools.structural_scoring import parse_pdb_atoms, score_ternary_pose_for_candidate
 
 
 def _pdb_atom(serial, name, resname, chain, resid, x, y, z, element):

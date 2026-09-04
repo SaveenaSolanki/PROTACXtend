@@ -1,5 +1,5 @@
-from synglue_agent.agentic.execution import ExecutionAgent
-from synglue_agent.schemas.tool_schema import NextAction
+from protacxtend.agentic.execution import ExecutionAgent
+from protacxtend.schemas.tool_schema import NextAction
 
 import unittest
 

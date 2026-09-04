@@ -1,0 +1,17 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": false,
+  "gate": "reproduce open PRosettaC branch and license boundaries",
+  "integration_wave": 1,
+  "method_id": "rover_schapira_benchmark",
+  "name": "Rovers/Schapira ternary benchmark",
+  "repo_available": true,
+  "repo_name": "PROTAC_ternary",
+  "repo_registered": true,
+  "role": "primary structural benchmark",
+  "status": "registered_status_only",
+  "warnings": [
+    "Local checkout exists, but no validated isolated executable is available yet."
+  ],
+  "checked_at": "2026-09-01T15:31:35.592820+00:00"
+}

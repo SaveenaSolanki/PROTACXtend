@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import importlib.util
 import json
 import subprocess
@@ -312,6 +313,15 @@ def _print_workflow_hint(command: str, request: str = "") -> None:
 
 def _interactive_command() -> int:
     """Launch the terminal UI when on a TTY, else fallback."""
+    # Startup question: which LLM backend (API vs Ollama)?
+    import os as _os
+    from protacxtend.llm.providers import USER_CONFIG_PATH
+    if not _os.environ.get("PROTACPILOT_LLM_PROVIDER") and not USER_CONFIG_PATH.exists():
+        try:
+            from protacxtend.llm.setup import interactive_setup
+            interactive_setup(ask=input, out=print)
+        except Exception as exc:  # never block the UI on setup problems
+            print(f"(llm setup skipped: {exc})")
     if sys.stdin.isatty():
         try:
             from protacxtend.tui.app import launch_tui
@@ -622,6 +632,193 @@ def _status_command(args: argparse.Namespace) -> int:
     return 0
 
 
+
+
+# ── LLM backend + assistant chat ───────────────────────────────────────
+
+def _print_llm_status(out=print) -> None:
+    from protacxtend.llm.setup import read_config
+    info = read_config()
+    h = info["health"]
+    out("")
+    out(f"  provider   {info['provider']}")
+    out(f"  model      {info['model']}")
+    out(f"  base_url   {info['base_url']}")
+    out(f"  api_key    {'set' if info['api_key_set'] else 'not set'}")
+    out(f"  health     {'OK (' + str(h.get('n_models')) + ' models visible)' if h.get('ok') else 'UNREACHABLE: ' + str(h.get('error', ''))}")
+    if info.get("config_file"):
+        out(f"  config     {info['config_file']}")
+    out("")
+
+
+def _llm_command(args: argparse.Namespace) -> int:
+    from protacxtend.llm.providers import get_config
+    if getattr(args, "setup", False):
+        from protacxtend.llm.setup import interactive_setup
+        interactive_setup(ask=input, out=print)
+        _print_llm_status()
+        return 0
+    if args.provider or args.model or args.base_url or args.api_key:
+        from protacxtend.llm.setup import apply_config
+        try:
+            apply_config(provider=args.provider or get_config().provider,
+                         model=args.model or "",
+                         base_url=args.base_url or "",
+                         api_key=args.api_key or "")
+        except ValueError as exc:
+            print(f"llm: {exc}")
+            return 1
+    _print_llm_status()
+    return 0
+
+
+def _chat_command(args: argparse.Namespace) -> int:
+    """Pi-style conversational scientific agent (tools → graph handoff)."""
+    import os
+    from protacxtend.agentic.chat_agent import ConversationalAgent, ClarificationNeeded
+    from protacxtend.agentic.registry import TOOL_SPECS
+    from protacxtend.llm.providers import USER_CONFIG_PATH, get_config
+
+    if not os.environ.get("PROTACPILOT_LLM_PROVIDER") and not USER_CONFIG_PATH.exists():
+        from protacxtend.llm.setup import interactive_setup
+        interactive_setup(ask=input, out=print)
+
+    cfg = get_config()
+    agent = ConversationalAgent(cfg)
+
+    def banner() -> str:
+        from protacxtend.llm.chat_client import backend_banner
+        return backend_banner(cfg)
+
+    def print_run(run) -> None:
+        for ev in run.events:
+            print("  " + ev.render())
+
+    def finish(run, newline=True) -> None:
+        print_run(run)
+        k = (run.summary or {}).get("kind")
+        if k == "answer":
+            print("\n" + str(run.summary.get("answer", "")))
+        elif k == "handoff":
+            print("\n" + str(run.summary.get("answer", "")))
+        elif k == "clarification":
+            print("\n" + str(run.summary.get("question", "")))
+        elif k == "error":
+            print("\n[error] " + str(run.summary.get("error", "unknown")))
+
+    def fresh_agent() -> None:
+        nonlocal agent
+        agent = ConversationalAgent(get_config())
+
+    message = " ".join(getattr(args, "message", None) or [])
+    if message:
+        try:
+            run = agent.turn(message, ask=None if not sys.stdin.isatty() else input)
+        except ClarificationNeeded as need:
+            print("\nACTION REQUIRED — " + need.question)
+            return 2
+        finish(run)
+        return 0
+
+    print("")
+    print("  PROTACXtend agent — " + banner())
+    print("  ask scientifically · /llm switch backend · /tools · /agents · /status · /clear · /help · /exit")
+    print("")
+    while True:
+        try:
+            line = input("PROTACXtend> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nbye")
+            return 0
+        if not line:
+            continue
+        low = line.lower()
+        if low in ("/exit", "/quit", "exit", "quit"):
+            return 0
+        if low in ("/clear", "clear"):
+            fresh_agent()
+            print("(session cleared)")
+            continue
+        if low in ("/help", "help", "?"):
+            print("  /llm /model set NAME   switch backend / model (shared config)")
+            print("  /tools                 show the strict tool registry")
+            print("  /agents                deterministic specialist agents (under the graph)")
+            print("  /run <objective>       force a full workflow handoff")
+            print("  /status                active provider + health")
+            print("  /clear /exit           session controls")
+            continue
+        if low in ("/llm", "/model"):
+            from protacxtend.llm.setup import interactive_setup
+            interactive_setup(ask=input, out=print)
+            fresh_agent()
+            print("  → " + banner())
+            continue
+        if low.startswith("/model set ") or low.startswith("/models set "):
+            name = line.split("set", 1)[1].strip()
+            from protacxtend.llm.setup import apply_config
+            try:
+                apply_config(provider=cfg.provider, model=name)
+                fresh_agent()
+                print("  → model set to " + name)
+            except Exception as exc:
+                print("  model set failed: " + str(exc))
+            continue
+        if low in ("/models", "model") or low == "/model status":
+            _print_llm_status()
+            continue
+        if low in ("/tools", "tools"):
+            for sp in TOOL_SPECS:
+                print(f"  {sp['name']:<28} [{sp['readiness']}] {sp['kind']} · {sp['evidence_type']}")
+            continue
+        if low in ("/agents", "agents"):
+            print("  deterministic specialist agents live inside the SynGlue graph:")
+            print("  Supervisor · Planner · Target · Binder · Warhead · E3 · Exit Vector · Linker ·")
+            print("  Construction · Ternary · ADMET · Prediction · Cell Context · Ranking · Report")
+            continue
+        if low.startswith("/run "):
+            line = "Design: " + line[5:].strip()
+        text = line
+        print("")
+        try:
+            run = agent.turn(text, ask=input)
+        except ClarificationNeeded as need:
+            print("\nACTION REQUIRED — " + need.question)
+            continue
+        finish(run)
+
+
+
+def _runtime_command(args: argparse.Namespace) -> int:
+    from protacxtend.pi_launcher import print_runtime_status
+    return print_runtime_status()
+
+
+
+def _pilot_command(args: argparse.Namespace) -> int:
+    """PROTACpilot structural workflow — registered engines run, externals block honestly."""
+    from protacxtend.workflows.pilot_runner import run_protacpilot_pipeline
+    ctx = {"target": args.target or "", "e3": args.e3 or "", "protac_smiles": args.smiles or "",
+           "objective": " ".join(args.request or [])}
+
+    def emit(evt) -> None:
+        line = f"[{evt.get('kind')}] {evt.get('stage','')} {evt.get('name')} ({evt.get('status')}) → {evt.get('summary')}"
+        print("  " + line)
+
+    result = run_protacpilot_pipeline(ctx, emit)
+    print("")
+    print(f"PROTACpilot pipeline: {result['status']}")
+    print(f"  steps executed: {len(result['results'])}")
+    if getattr(args, "requirements", False):
+        from protacxtend.workflows.pilot_runner import protac_model_requirements
+        print(protac_model_requirements())
+    if result.get("blocked_at"):
+        detail = "NOT AVAILABLE — no fabrication"
+        if result["blocked_at"] == "ternary_generator":
+            detail += " · PROTAC-Model deps required (add --requirements for exact install steps)"
+        print(f"  blocked at: {result['blocked_at']} ({detail})")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="PROTACXtend",
@@ -730,6 +927,31 @@ def build_parser() -> argparse.ArgumentParser:
     api.add_argument("--reload", action="store_true")
     api.set_defaults(func=_api_command)
 
+    pilot = sub.add_parser("pilot", help="Run the PROTACpilot structural workflow.")
+    pilot.add_argument("request", nargs="*", help="Optional objective text (informational).")
+    pilot.add_argument("--target", default="", help="Target, e.g. BRD4")
+    pilot.add_argument("--e3", default="CRBN", help="E3 ligase, e.g. CRBN")
+    pilot.add_argument("--smiles", default="", help="PROTAC/Warhead SMILES for decomposer/conformers")
+    pilot.add_argument("--requirements", action="store_true", help="Print PROTAC-Model install requirements.")
+    pilot.set_defaults(func=_pilot_command)
+
+    runtime = sub.add_parser("runtime", help="Inspect the Pi runtime (status).")
+    runtime.add_argument("action", nargs="?", default="status", choices=["status"])
+    runtime.set_defaults(func=_runtime_command)
+
+    llm = sub.add_parser("llm", help="Configure or inspect the LLM backend (API vs Ollama).")
+    llm.add_argument("--setup", action="store_true", help="Interactive backend picker (API or Ollama).")
+    llm.add_argument("--status", action="store_true", help="Show active backend and health.")
+    llm.add_argument("--provider", default="", help="Provider: ollama|openai|openrouter|anthropic|google|openai_compatible")
+    llm.add_argument("--model", default="")
+    llm.add_argument("--base-url", default="")
+    llm.add_argument("--api-key", default="")
+    llm.set_defaults(func=_llm_command)
+
+    chat = sub.add_parser("chat", help="Pi-style assistant chat with the configured LLM backend.")
+    chat.add_argument("message", nargs="*", help="Optional one-shot question; omit for an interactive chat.")
+    chat.set_defaults(func=_chat_command)
+
     status = sub.add_parser("status", help="Show local PROTACXtend runtime status.")
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=_status_command)
@@ -748,6 +970,10 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     command_names = {
         "run",
+        "llm",
+        "chat",
+        "runtime",
+        "pilot",
         "design",
         "ask",
         "validate",
@@ -767,6 +993,10 @@ def main(argv: list[str] | None = None) -> int:
         "capabilities",
     }
     if not argv:
+        if sys.stdin.isatty() and os.environ.get("PXT_PI", "1") != "0":
+            from protacxtend.pi_launcher import resolve_pi_command, launch_pi
+            if resolve_pi_command() is not None:
+                return launch_pi()
         return _interactive_command()
     if "-p" in argv or "--print" in argv:
         mode = "agentic"

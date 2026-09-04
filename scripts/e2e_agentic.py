@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from synglue_agent.agents.runtime import run_protacpilot
+from protacxtend.agents.runtime import run_protacpilot
 
 SCENARIOS = [
     {

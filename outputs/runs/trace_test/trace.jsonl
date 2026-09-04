@@ -73,3 +73,33 @@
 {"event": "node_end", "ts": 1786528902.3784118, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
 {"event": "decision", "ts": 1786528902.3784413, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
 {"event": "run_end", "ts": 1786528902.3784692, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788285895.5299783, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788285895.5300643, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788285895.530098, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788285895.5301244, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788285895.5301566, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788287105.7293692, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788287105.7294528, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788287105.729485, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788287105.7295115, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788287105.7295415, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788288319.133026, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788288319.1331277, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788288319.133162, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788288319.1331892, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788288319.133224, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788289532.9257832, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788289532.925859, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788289532.9258912, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788289532.9259174, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788289532.925943, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788324936.1221116, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788324936.1221795, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788324936.122209, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788324936.1222334, "elapsed_s": 0.0001, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788324936.1222653, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}
+{"event": "run_start", "ts": 1788372999.6831737, "elapsed_s": 0.0, "run_id": "trace_test", "meta": {"mode": "agentic"}}
+{"event": "node_start", "ts": 1788372999.6832807, "elapsed_s": 0.0001, "node": "ternary"}
+{"event": "node_end", "ts": 1788372999.6833155, "elapsed_s": 0.01, "node": "ternary", "status": "ok"}
+{"event": "decision", "ts": 1788372999.6833415, "elapsed_s": 0.0002, "node": "ternary", "decision_type": "accept", "reason_codes": ["ternary_conf_ok"], "confidence": 0.85, "next_node": "degradation"}
+{"event": "run_end", "ts": 1788372999.6833684, "elapsed_s": 0.0002, "status": "ok", "summary": {}, "events": 4}

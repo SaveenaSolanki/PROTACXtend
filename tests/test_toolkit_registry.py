@@ -1,4 +1,4 @@
-from synglue_agent.tools.toolkit_registry import get_toolkit_registry
+from protacxtend.tools.toolkit_registry import get_toolkit_registry
 
 
 def test_registry_contains_all_requested_tools():

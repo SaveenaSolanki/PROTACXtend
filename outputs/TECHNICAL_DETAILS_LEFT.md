@@ -11,7 +11,7 @@ code inspection.
 | Item | Old status | Corrected status | Evidence |
 |------|-----------|-----------------|----------|
 | **P4ward A1_4COOH run** | "Not executed (2-4h compute)" | ✅ **COMPLETED 2026-07-10** — verdict `COMPUTATIONALLY SUPPORTED` | `p4ward_run/p4ward_verdict.json`, `p4ward_analysis_results.json` |
-| Degradation prediction | "Heuristic only (no ML)" | ✅ **Trained SynGlue transformer wired** (9M params) + RF heads + GROVER embeddings | `synglue_agent/tools/synglue_degradation.py` (742 lines), 17 tests |
+| Degradation prediction | "Heuristic only (no ML)" | ✅ **Trained SynGlue transformer wired** (9M params) + RF heads + GROVER embeddings | `protacxtend/tools/synglue_degradation.py` (742 lines), 17 tests |
 
 ### P4ward verdict detail (the honest version)
 - A1_4COOH COOH min distance to CRBN: **8.3 Å** (vs OH27 9.7 Å) — 1.4 Å closer

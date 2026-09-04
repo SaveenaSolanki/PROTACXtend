@@ -1,0 +1,44 @@
+{
+  "name": "@protacxtend/tui",
+  "version": "0.3.0",
+  "description": "PROTACXtend \u201cLaboratory Night\u201d terminal command centre \u2014 dependency-free Node TUI for evidence-grounded PROTAC design (JSONL bridge to the Python agent graph).",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "protacxtend": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "node --import tsx --test tests/*.test.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.7.0",
+    "@types/node": "^20.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "protac",
+    "protacxtend",
+    "targeted-protein-degradation",
+    "tui",
+    "cli",
+    "terminal",
+    "rdkit",
+    "chemprop"
+  ],
+  "homepage": "https://github.com/the-ahuja-lab/PROTACXtend",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/the-ahuja-lab/PROTACXtend.git"
+  }
+}

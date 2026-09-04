@@ -8,9 +8,9 @@ for mod in list(sys.modules.keys()):
         del sys.modules[mod]
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-from synglue_agent.tools.docking_pipeline import prepare_receptor_for_docking, dock_and_prepare_for_p4ward
-from synglue_agent.tools.admet_integration import protac_admet_summary
-from synglue_agent.tools.synglue_integration import SynGlueAPIClient
+from protacxtend.tools.docking_pipeline import prepare_receptor_for_docking, dock_and_prepare_for_p4ward
+from protacxtend.tools.admet_integration import protac_admet_summary
+from protacxtend.tools.synglue_integration import SynGlueAPIClient
 
 WORK_DIR = "/storage/saveena/protacpilot/work/protac_design"
 RECEPTOR_PDB = "/storage/saveena/protacpilot/pdb/hmgb2_full.pdb"

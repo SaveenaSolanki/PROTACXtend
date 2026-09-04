@@ -96,13 +96,13 @@ def ablation_degredation_layer() -> dict:
 # ═══════════════════════════════════════════════════════════════
 
 def ablation_graph_repair_loop() -> dict:
-    from synglue_agent.tests.test_linker_stage import FakeScanResult, make_scan_fn
-    from synglue_agent.tests.test_linker_stage import run_stage as run_agentic
-    from synglue_agent.agents.linker_stage import compile_linker_graph
+    from protacxtend.tests.test_linker_stage import FakeScanResult, make_scan_fn
+    from protacxtend.tests.test_linker_stage import run_stage as run_agentic
+    from protacxtend.agents.linker_stage import compile_linker_graph
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.graph import StateGraph, START, END
-    from synglue_agent.agents.state import WorkflowState
-    from synglue_agent.agents.linker_stage import (
+    from protacxtend.agents.state import WorkflowState
+    from protacxtend.agents.linker_stage import (
         linker_evidence_gate, linker_generation, strain_check, linker_ranking, build_linker_stage,
     )
 
@@ -159,7 +159,7 @@ def ablation_graph_repair_loop() -> dict:
 # ═══════════════════════════════════════════════════════════════
 
 def ablation_uncertainty_flagging() -> dict:
-    from synglue_agent.tools.applicability_domain import assess_applicability_domain
+    from protacxtend.tools.applicability_domain import assess_applicability_domain
 
     bench = pd.read_csv(ROOT / "outputs" / "benchmark" / "benchmark_predictions.csv")
     icm = "CC1(C2=CCN3C(=O)N(C(=O)N3C2C4=C(C=CC(=C4O)C1)O)C5=CC=C(C=C5)C(=O)O)"

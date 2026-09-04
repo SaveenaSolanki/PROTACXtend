@@ -1,0 +1,422 @@
+{
+  "mode": "dose",
+  "dose_response": {
+    "status": "SUPPORTED",
+    "dc50_pred_nM": 21.96707,
+    "dmax_pred_percent": 78.12,
+    "hook_concentration_nM": 360.54712,
+    "ternary_peak_concentration_nM": 126.26001,
+    "dose_window_width": 23.286,
+    "curve": [
+      {
+        "dose_nM": 0.01,
+        "ternary_nM": 1e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.01191,
+        "ternary_nM": 1e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.01419,
+        "ternary_nM": 2e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.0169,
+        "ternary_nM": 3e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.02013,
+        "ternary_nM": 4e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.02397,
+        "ternary_nM": 5e-05,
+        "degradation_percent": 0.0
+      },
+      {
+        "dose_nM": 0.02856,
+        "ternary_nM": 8e-05,
+        "degradation_percent": 0.001
+      },
+      {
+        "dose_nM": 0.03401,
+        "ternary_nM": 0.00011,
+        "degradation_percent": 0.001
+      },
+      {
+        "dose_nM": 0.04051,
+        "ternary_nM": 0.00015,
+        "degradation_percent": 0.001
+      },
+      {
+        "dose_nM": 0.04826,
+        "ternary_nM": 0.00022,
+        "degradation_percent": 0.001
+      },
+      {
+        "dose_nM": 0.05748,
+        "ternary_nM": 0.00031,
+        "degradation_percent": 0.002
+      },
+      {
+        "dose_nM": 0.06846,
+        "ternary_nM": 0.00044,
+        "degradation_percent": 0.003
+      },
+      {
+        "dose_nM": 0.08154,
+        "ternary_nM": 0.00062,
+        "degradation_percent": 0.004
+      },
+      {
+        "dose_nM": 0.09713,
+        "ternary_nM": 0.00088,
+        "degradation_percent": 0.006
+      },
+      {
+        "dose_nM": 0.11569,
+        "ternary_nM": 0.00125,
+        "degradation_percent": 0.008
+      },
+      {
+        "dose_nM": 0.1378,
+        "ternary_nM": 0.00177,
+        "degradation_percent": 0.012
+      },
+      {
+        "dose_nM": 0.16413,
+        "ternary_nM": 0.0025,
+        "degradation_percent": 0.017
+      },
+      {
+        "dose_nM": 0.1955,
+        "ternary_nM": 0.00355,
+        "degradation_percent": 0.024
+      },
+      {
+        "dose_nM": 0.23286,
+        "ternary_nM": 0.00502,
+        "degradation_percent": 0.033
+      },
+      {
+        "dose_nM": 0.27736,
+        "ternary_nM": 0.00711,
+        "degradation_percent": 0.047
+      },
+      {
+        "dose_nM": 0.33036,
+        "ternary_nM": 0.01006,
+        "degradation_percent": 0.067
+      },
+      {
+        "dose_nM": 0.39349,
+        "ternary_nM": 0.01423,
+        "degradation_percent": 0.095
+      },
+      {
+        "dose_nM": 0.46869,
+        "ternary_nM": 0.02012,
+        "degradation_percent": 0.134
+      },
+      {
+        "dose_nM": 0.55826,
+        "ternary_nM": 0.02841,
+        "degradation_percent": 0.189
+      },
+      {
+        "dose_nM": 0.66494,
+        "ternary_nM": 0.0401,
+        "degradation_percent": 0.267
+      },
+      {
+        "dose_nM": 0.79202,
+        "ternary_nM": 0.05653,
+        "degradation_percent": 0.375
+      },
+      {
+        "dose_nM": 0.94337,
+        "ternary_nM": 0.07961,
+        "degradation_percent": 0.528
+      },
+      {
+        "dose_nM": 1.12365,
+        "ternary_nM": 0.11194,
+        "degradation_percent": 0.741
+      },
+      {
+        "dose_nM": 1.33839,
+        "ternary_nM": 0.15715,
+        "degradation_percent": 1.037
+      },
+      {
+        "dose_nM": 1.59416,
+        "ternary_nM": 0.22019,
+        "degradation_percent": 1.447
+      },
+      {
+        "dose_nM": 1.89881,
+        "ternary_nM": 0.30779,
+        "degradation_percent": 2.011
+      },
+      {
+        "dose_nM": 2.26168,
+        "ternary_nM": 0.42908,
+        "degradation_percent": 2.781
+      },
+      {
+        "dose_nM": 2.69389,
+        "ternary_nM": 0.59626,
+        "degradation_percent": 3.823
+      },
+      {
+        "dose_nM": 3.2087,
+        "ternary_nM": 0.82546,
+        "degradation_percent": 5.216
+      },
+      {
+        "dose_nM": 3.82189,
+        "ternary_nM": 1.13775,
+        "degradation_percent": 7.05
+      },
+      {
+        "dose_nM": 4.55227,
+        "ternary_nM": 1.56018,
+        "degradation_percent": 9.421
+      },
+      {
+        "dose_nM": 5.42222,
+        "ternary_nM": 2.12676,
+        "degradation_percent": 12.418
+      },
+      {
+        "dose_nM": 6.45842,
+        "ternary_nM": 2.87919,
+        "degradation_percent": 16.104
+      },
+      {
+        "dose_nM": 7.69265,
+        "ternary_nM": 3.86706,
+        "degradation_percent": 20.496
+      },
+      {
+        "dose_nM": 9.16274,
+        "ternary_nM": 5.14696,
+        "degradation_percent": 25.547
+      },
+      {
+        "dose_nM": 10.91377,
+        "ternary_nM": 6.78015,
+        "degradation_percent": 31.13
+      },
+      {
+        "dose_nM": 12.99942,
+        "ternary_nM": 8.82806,
+        "degradation_percent": 37.049
+      },
+      {
+        "dose_nM": 15.48365,
+        "ternary_nM": 11.34537,
+        "degradation_percent": 43.064
+      },
+      {
+        "dose_nM": 18.44263,
+        "ternary_nM": 14.37048,
+        "degradation_percent": 48.928
+      },
+      {
+        "dose_nM": 21.96707,
+        "ternary_nM": 17.91398,
+        "degradation_percent": 54.427
+      },
+      {
+        "dose_nM": 26.16505,
+        "ternary_nM": 21.94658,
+        "degradation_percent": 59.401
+      },
+      {
+        "dose_nM": 31.16527,
+        "ternary_nM": 26.38872,
+        "degradation_percent": 63.758
+      },
+      {
+        "dose_nM": 37.12105,
+        "ternary_nM": 31.10495,
+        "degradation_percent": 67.466
+      },
+      {
+        "dose_nM": 44.215,
+        "ternary_nM": 35.90592,
+        "degradation_percent": 70.534
+      },
+      {
+        "dose_nM": 52.66462,
+        "ternary_nM": 40.55991,
+        "degradation_percent": 73.002
+      },
+      {
+        "dose_nM": 62.729,
+        "ternary_nM": 44.81375,
+        "degradation_percent": 74.922
+      },
+      {
+        "dose_nM": 74.71671,
+        "ternary_nM": 48.42049,
+        "degradation_percent": 76.348
+      },
+      {
+        "dose_nM": 88.9953,
+        "ternary_nM": 51.16902,
+        "degradation_percent": 77.331
+      },
+      {
+        "dose_nM": 106.00258,
+        "ternary_nM": 52.90962,
+        "degradation_percent": 77.912
+      },
+      {
+        "dose_nM": 126.26001,
+        "ternary_nM": 53.57048,
+        "degradation_percent": 78.125
+      },
+      {
+        "dose_nM": 150.38869,
+        "ternary_nM": 53.16202,
+        "degradation_percent": 77.994
+      },
+      {
+        "dose_nM": 179.12845,
+        "ternary_nM": 51.76927,
+        "degradation_percent": 77.535
+      },
+      {
+        "dose_nM": 213.36045,
+        "ternary_nM": 49.535,
+        "degradation_percent": 76.757
+      },
+      {
+        "dose_nM": 254.1343,
+        "ternary_nM": 46.63783,
+        "degradation_percent": 75.664
+      },
+      {
+        "dose_nM": 302.70017,
+        "ternary_nM": 43.26995,
+        "degradation_percent": 74.258
+      },
+      {
+        "dose_nM": 360.54712,
+        "ternary_nM": 39.61791,
+        "degradation_percent": 72.536
+      },
+      {
+        "dose_nM": 429.4488,
+        "ternary_nM": 35.8486,
+        "degradation_percent": 70.501
+      },
+      {
+        "dose_nM": 511.51781,
+        "ternary_nM": 32.10087,
+        "degradation_percent": 68.153
+      },
+      {
+        "dose_nM": 609.27047,
+        "ternary_nM": 28.48232,
+        "degradation_percent": 65.503
+      },
+      {
+        "dose_nM": 725.70396,
+        "ternary_nM": 25.06994,
+        "degradation_percent": 62.565
+      },
+      {
+        "dose_nM": 864.38826,
+        "ternary_nM": 21.91335,
+        "degradation_percent": 59.364
+      },
+      {
+        "dose_nM": 1029.57557,
+        "ternary_nM": 19.03937,
+        "degradation_percent": 55.933
+      },
+      {
+        "dose_nM": 1226.33068,
+        "ternary_nM": 16.45695,
+        "degradation_percent": 52.316
+      },
+      {
+        "dose_nM": 1460.68632,
+        "ternary_nM": 14.16185,
+        "degradation_percent": 48.563
+      },
+      {
+        "dose_nM": 1739.82805,
+        "ternary_nM": 12.14071,
+        "degradation_percent": 44.732
+      },
+      {
+        "dose_nM": 2072.31465,
+        "ternary_nM": 10.37446,
+        "degradation_percent": 40.885
+      },
+      {
+        "dose_nM": 2468.34047,
+        "ternary_nM": 8.84084,
+        "degradation_percent": 37.083
+      },
+      {
+        "dose_nM": 2940.04806,
+        "ternary_nM": 7.51639,
+        "degradation_percent": 33.382
+      },
+      {
+        "dose_nM": 3501.90046,
+        "ternary_nM": 6.37775,
+        "degradation_percent": 29.834
+      },
+      {
+        "dose_nM": 4171.12461,
+        "ternary_nM": 5.40257,
+        "degradation_percent": 26.48
+      },
+      {
+        "dose_nM": 4968.23959,
+        "ternary_nM": 4.57003,
+        "degradation_percent": 23.352
+      },
+      {
+        "dose_nM": 5917.68575,
+        "ternary_nM": 3.86119,
+        "degradation_percent": 20.472
+      },
+      {
+        "dose_nM": 7048.57404,
+        "ternary_nM": 3.25901,
+        "degradation_percent": 17.849
+      },
+      {
+        "dose_nM": 8395.57862,
+        "ternary_nM": 2.74842,
+        "degradation_percent": 15.485
+      },
+      {
+        "dose_nM": 10000.0,
+        "ternary_nM": 2.31617,
+        "degradation_percent": 13.376
+      }
+    ],
+    "parameter_sensitivity": {
+      "alpha": 0.489,
+      "target_conc_nM": 0.5,
+      "kd_balance": 0.5
+    },
+    "warnings": [
+      "Hook-effect risk detected: ternary complex declines at high PROTAC concentration."
+    ],
+    "backend": "protacxtend_deep_qsp_hook_adapter_v0.1"
+  }
+}

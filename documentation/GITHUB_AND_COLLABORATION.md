@@ -69,7 +69,7 @@ git remote -v
 
 ```bash
 # Stage changes
-git add website/ documentation/ README.md PROTACXTEND_README.md
+git add website/ documentation/ README.md AGENTS.md AGENT_WORKFRAME.md
 
 # Commit with descriptive message
 git commit -m "feat: Add website UI, comprehensive documentation, and GitHub collaborator setup"
@@ -95,7 +95,7 @@ PROTACXtend/
 │   ├── WORKFLOWS.md           # Slash commands & CLI workflows
 │   ├── API_REFERENCE.md       # Python & REST API reference
 │   └── GITHUB_AND_COLLABORATION.md # GitHub & collaborator guide
-├── synglue_agent/             # Core Python package & agents
+├── protacxtend/             # Core Python package & agents
 ├── PROTACXtend                # Executable CLI wrapper
 ├── pyproject.toml             # Package setup configuration
 └── README.md                  # Main repository README

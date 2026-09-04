@@ -4,7 +4,7 @@ _ProtacPilot / SynGlue v0.3.0-agentic-core · 2026-08-08 · evidence-based_
 
 ## 1. What "the agents" are
 
-The runtime contains **25 agent classes** (`synglue_agent/agents/*.py`): 21 concrete
+The runtime contains **25 agent classes** (`protacxtend/agents/*.py`): 21 concrete
 task agents + 4 supporting classes (Supervisor, ReAct, Validation, MemoryUpdate).
 The often-quoted "23 agents" ≈ this set. Each agent owns 1–3 registered tools.
 
@@ -87,7 +87,7 @@ Bounding used: docking with bounded exhaustiveness + heuristic ranking.
 
 ## 4. Why the formal registry says "registered, not executable"
 
-`synglue_agent/toolkit/status.py` / `registry.py` compute executability from
+`protacxtend/toolkit/status.py` / `registry.py` compute executability from
 `Agent_Toolkit.xlsx` + strict availability checks. All 21 tools currently
 report `executable=False, available=False, registered=True`. The reason is
 **resource availability** in the executing environment:
@@ -131,9 +131,9 @@ These are fixable with credentials/compute — they are **not** NP-hardness.
 | Full-upstream envs | — | 27 repos' conda envs only needed for repo-wrapper tests that CI bootstraps (5 repos, shallow) |
 
 _Evidence (updated 2026-08-08): `test_binder_live.py`, `test_unblocked_agents.py` (10 passed),
-313-test regression green; `data/toolkit/protac_agent_gap_audit.csv`, `synglue_agent/toolkit/status.py`,
-`synglue_agent/tools/{retrosynthesis,admet_integration}.py`,
-`synglue_agent/agents/{linker_stage,ternary_stage,evolution_agent,binder_agent,novelty_agent}.py`,
+313-test regression green; `data/toolkit/protac_agent_gap_audit.csv`, `protacxtend/toolkit/status.py`,
+`protacxtend/tools/{retrosynthesis,admet_integration}.py`,
+`protacxtend/agents/{linker_stage,ternary_stage,evolution_agent,binder_agent,novelty_agent}.py`,
 test suite (299 passed), CI run 5604c30 (green)._
 
 ## 2026-08-11 addendum — E2E scientific-agent milestone

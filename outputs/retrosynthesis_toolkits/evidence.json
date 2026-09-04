@@ -1,0 +1,215 @@
+{
+  "task": "retrosynthesis toolkit engines (working-toolkit evidence)",
+  "smiles": "CC(=O)Oc1ccccc1C(=O)O",
+  "engines_requested": [
+    "askcos"
+  ],
+  "offline": false,
+  "checked_at": "2026-09-02T06:20:58.094541+00:00",
+  "status_report": {
+    "askcos": {
+      "meta": {
+        "engine": "askcos",
+        "display_name": "ASKCOS (MIT)",
+        "license": "MIT",
+        "reliability": "research",
+        "executable_type": "api_or_docker",
+        "local_executable": true,
+        "web_service": true,
+        "summary": "MIT open-source retrosynthesis suite: one-step predictions, template enumeration and Retro* tree search against building-block catalogs."
+      },
+      "status": {
+        "available": true,
+        "probe": {
+          "reachable": true,
+          "base_url": "https://askcos.mit.edu",
+          "latency_ms": 1858.9,
+          "detail": {
+            "reachable": true,
+            "http_status": 200,
+            "api_title": "FastAPI",
+            "api_version": "0.1.0",
+            "path_count": 172
+          },
+          "note": "Public MIT portal by default; set ASKCOS_API_URL for a local Docker deployment."
+        }
+      }
+    },
+    "aizynth": {
+      "meta": {
+        "engine": "aizynth",
+        "display_name": "AiZynthFinder (AstraZeneca)",
+        "license": "MIT",
+        "reliability": "production",
+        "executable_type": "python_package",
+        "local_executable": true,
+        "web_service": false,
+        "summary": "MCTS + neural-network expansion-policy retrosynthetic tree search (local; USPTO policy + ZINC stock assets)."
+      },
+      "status": {
+        "available": false,
+        "package_installed": false,
+        "assets_present": true,
+        "assets_dir": "/storage/saveena/protacpilot/data/retrosynthesis/models/aizynth"
+      }
+    },
+    "openmt": {
+      "meta": {
+        "engine": "openmt",
+        "display_name": "RDKit + OpenNMT (Molecular Transformer)",
+        "license": "open-source (RDKit BSD-3, OpenNMT MIT, model research-use)",
+        "reliability": "experimental",
+        "executable_type": "python_pipeline",
+        "local_executable": true,
+        "web_service": false,
+        "summary": "Custom local sequence-to-sequence retrosynthesis workflow: RDKit preprocessing + SMILES tokenization + OpenNMT-py transformer inference + RDKit re-validation."
+      },
+      "status": {
+        "available": false,
+        "package_installed": false,
+        "checkpoint_present": false,
+        "checkpoint_dir": "/storage/saveena/protacpilot/data/retrosynthesis/models/openmt"
+      }
+    }
+  },
+  "summary": {
+    "engines_requested": [
+      "askcos"
+    ],
+    "engines_available": [
+      "askcos"
+    ],
+    "engines_ran": [
+      "askcos"
+    ],
+    "any_route_found": true,
+    "best_engine": "askcos",
+    "route_count": 11,
+    "shortest_steps": 1,
+    "routes": [
+      "CC(=O)OC(C)=O.O=C(O)c1ccccc1O",
+      "CC(=O)Cl.O=C(O)c1ccccc1O",
+      "O=C(O)c1ccccc1O"
+    ],
+    "purchasable_fraction": 1.0,
+    "outcomes": [
+      {
+        "engine": "askcos",
+        "display_name": "ASKCOS (MIT)",
+        "license_type": "MIT",
+        "available": true,
+        "ran": true,
+        "route_found": true,
+        "route_count": 11,
+        "shortest_steps": 1,
+        "routes": [
+          "CC(=O)OC(C)=O.O=C(O)c1ccccc1O",
+          "CC(=O)Cl.O=C(O)c1ccccc1O",
+          "O=C(O)c1ccccc1O"
+        ],
+        "precursors": [
+          {
+            "precursor_smiles": "CC(=O)OC(C)=O.O=C(O)c1ccccc1O",
+            "model_score": 0.4066826403141022,
+            "normalized_model_score": 0.4066826403141022,
+            "template_set": "reaxys",
+            "reaction_smarts": "[C;D1;H3:3]-[C:2](=[O;D1;H0:4])-[O;H0;D2;+0:1]-[c;H0;D3;+0:5](:[c:6]):[c:7]-[C:8](=[O;D1;H0:9])-[O;D1;H1:10]>>C-C(=O)-[O;H0;D2;+0:1]-[C:2](-[C;D1;H3:3])=[O;D1;H0:4].O-[c;H0;D3;+0:5](:[c:6]):[c:7]-[C:8](=[O;D1;H0:9])-[O;D1;H1:10]"
+          },
+          {
+            "precursor_smiles": "CC(=O)Cl.O=C(O)c1ccccc1O",
+            "model_score": 0.10942771285772324,
+            "normalized_model_score": 0.10942771285772324,
+            "template_set": "reaxys",
+            "reaction_smarts": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[O;D1;H0:3])-[O;H0;D2;+0:4]-[c:5]>>Cl-[C;H0;D3;+0:1](-[C;D1;H3:2])=[O;D1;H0:3].[OH;D1;+0:4]-[c:5]"
+          },
+          {
+            "precursor_smiles": "O=C(O)c1ccccc1O",
+            "model_score": 0.08631467074155807,
+            "normalized_model_score": 0.08631467074155807,
+            "template_set": "reaxys",
+            "reaction_smarts": "[C;H3;D1;+0]-[C;H0;D3;+0](=[O;H0;D1;+0])-[O;H0;D2;+0:1]-[c:2]>>[OH;D1;+0:1]-[c:2]"
+          },
+          {
+            "precursor_smiles": "CC(=O)Oc1ccccc1C=O",
+            "model_score": 0.025203321129083633,
+            "normalized_model_score": 0.025203321129083633,
+            "template_set": "reaxys",
+            "reaction_smarts": "[O;D1;H0:1]=[C;H0;D3;+0:2](-[O;H1;D1;+0])-[c:3]>>[O;D1;H0:1]=[CH;D2;+0:2]-[c:3]"
+          },
+          {
+            "precursor_smiles": "C=C=O.O=C(O)c1ccccc1O",
+            "model_score": 0.005424992647022009,
+            "normalized_model_score": 0.005424992647022009,
+            "template_set": "reaxys",
+            "reaction_smarts": "[CH3;D1;+0:1]-[C;H0;D3;+0:2](=[O;D1;H0:3])-[O;H0;D2;+0:4]-[c:5]>>[CH2;D1;+0:1]=[C;H0;D2;+0:2]=[O;D1;H0:3].[OH;D1;+0:4]-[c:5]"
+          },
+          {
+            "precursor_smiles": "COC(=O)c1ccccc1OC(C)=O",
+            "model_score": 0.005137279164046049,
+            "normalized_model_score": 0.005137279164046049,
+            "template_set": "reaxys",
+            "reaction_smarts": "[O;D1;H0:3]=[C:2]-[OH;D1;+0:1]>>C-[O;H0;D2;+0:1]-[C:2]=[O;D1;H0:3]"
+          },
+          {
+            "precursor_smiles": "CC(=O)Oc1ccccc1CO",
+            "model_score": 0.005085831508040428,
+            "normalized_model_score": 0.005085831508040428,
+            "template_set": "reaxys",
+            "reaction_smarts": "[O;D1;H1:1]-[C;H0;D3;+0:2](=[O;H0;D1;+0])-[c:3]>>[O;D1;H1:1]-[CH2;D2;+0:2]-[c:3]"
+          },
+          {
+            "precursor_smiles": "CC(=O)Oc1ccccc1C",
+            "model_score": 0.004972976166754961,
+            "normalized_model_score": 0.004972976166754961,
+            "template_set": "reaxys",
+            "reaction_smarts": "[O;H0;D1;+0]=[C;H0;D3;+0:1](-[O;H1;D1;+0])-[c:2]>>[CH3;D1;+0:1]-[c:2]"
+          },
+          {
+            "precursor_smiles": "CC(=O)[O-].O=C(O)c1ccccc1O",
+            "model_score": 0.004231722559779882,
+            "normalized_model_score": 0.004231722559779882,
+            "template_set": "reaxys",
+            "reaction_smarts": "[C;D1;H3:1]-[C;H0;D3;+0:2](=[O;D1;H0:3])-[O;H0;D2;+0:4]-[c:5]>>[C;D1;H3:1]-[C;H0;D3;+0:2](-[O-])=[O;D1;H0:3].[OH;D1;+0:4]-[c:5]"
+          },
+          {
+            "precursor_smiles": "CC(=O)O.O=C(O)c1ccccc1O",
+            "model_score": 0.004183235578238964,
+            "normalized_model_score": 0.004183235578238964,
+            "template_set": "reaxys",
+            "reaction_smarts": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[O;H0;D1;+0:3])-[O;H0;D2;+0:4]-[c:5]>>O=[C;H0;D3;+0:1](-[C;D1;H3:2])-[OH;D1;+0:3].[OH;D1;+0:4]-[c:5]"
+          },
+          {
+            "precursor_smiles": "CCOC(=O)c1ccccc1OC(C)=O",
+            "model_score": 0.0033130133524537086,
+            "normalized_model_score": 0.0033130133524537086,
+            "template_set": "reaxys",
+            "reaction_smarts": "[O;D1;H0:3]=[C:2]-[OH;D1;+0:1]>>C-C-[O;H0;D2;+0:1]-[C:2]=[O;D1;H0:3]"
+          }
+        ],
+        "purchasable_fraction": 1.0,
+        "tool_failed": "",
+        "note": "ASKCOS predictions verified live (MIT portal or local Docker deployment).",
+        "provenance": {
+          "engine": "askcos",
+          "base_url": "https://askcos.mit.edu",
+          "endpoint": "retro/controller one-step",
+          "probe": {
+            "reachable": true,
+            "base_url": "https://askcos.mit.edu",
+            "latency_ms": 1875.2,
+            "detail": {
+              "reachable": true,
+              "http_status": 200,
+              "api_title": "FastAPI",
+              "api_version": "0.1.0",
+              "path_count": 172
+            },
+            "note": "Public MIT portal by default; set ASKCOS_API_URL for a local Docker deployment."
+          },
+          "available": true
+        },
+        "latency_s": 0.562
+      }
+    ]
+  }
+}

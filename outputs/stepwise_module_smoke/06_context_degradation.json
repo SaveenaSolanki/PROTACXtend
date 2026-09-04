@@ -1,0 +1,32 @@
+{
+  "mode": "context",
+  "context_degradation": {
+    "candidate_id": "context_input",
+    "status": "REVISE",
+    "p_active": 0.0,
+    "pdc50_pred": 7.402,
+    "dmax_pred": null,
+    "uncertainty": 1.0,
+    "ood_flags": [
+      "chemical_applicability_domain"
+    ],
+    "calibration_bin": "calibrated_adapter",
+    "model_votes": [
+      {
+        "model": "chemprop_uncertainty",
+        "smiles": "CCO",
+        "dc50_nM": 39.6,
+        "log_dc50": 1.5977,
+        "unc_log10": 1.4058,
+        "ad_status": "out_of_domain",
+        "nn_tanimoto": 0.0594,
+        "verdict": "low_confidence",
+        "confidence": 0.25
+      }
+    ],
+    "warnings": [
+      "TACK prediction exceeded 12.0s timeout."
+    ],
+    "backend": "protacxtend_context_degradation_adapter_v0.1"
+  }
+}

@@ -1,4 +1,4 @@
-from synglue_agent.tools.aromaticity_adapter import (
+from protacxtend.tools.aromaticity_adapter import (
     aromaticity_summary,
     detect_aromaticity_backend,
     rdkit_aromaticity_summary,

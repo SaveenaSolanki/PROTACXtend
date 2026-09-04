@@ -1,0 +1,15 @@
+{
+  "adapter": "safe_status_and_smoke_job",
+  "executable": true,
+  "gate": "run package tests, reproduce published experiments, recalibrate probabilities",
+  "integration_wave": 1,
+  "method_id": "protac_degradation_predictor",
+  "name": "PROTAC-Degradation-Predictor",
+  "repo_available": true,
+  "repo_name": "PROTAC-Degradation-Predictor",
+  "repo_registered": true,
+  "role": "primary immediate baseline",
+  "status": "adapter_ready",
+  "warnings": [],
+  "checked_at": "2026-09-01T17:54:35.846255+00:00"
+}

@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_cli_help_runs():
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "--help"],
+        [sys.executable, "-m", "protacxtend.cli", "--help"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -24,7 +24,7 @@ def test_cli_help_runs():
 
 def test_cli_status_reports_frontend_and_api():
     result = subprocess.run(
-        [sys.executable, "-m", "synglue_agent.cli", "status", "--json"],
+        [sys.executable, "-m", "protacxtend.cli", "status", "--json"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -120,3 +120,34 @@ def test_cli_capabilities_json_lists_terminal_interface():
     names = [item["name"] for item in payload["capabilities"]]
     assert "Interactive terminal interface" in names
     assert "Print/plan mode" in names
+
+
+def test_cli_contract_static_summary_exposes_scientific_contract():
+    result = subprocess.run(
+        [str(ROOT / "protacxtend"), "contract", "--section", "actions"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+
+    payload = json.loads(result.stdout)
+    assert payload["mode"] == "contract"
+    assert payload["section"] == "actions"
+    assert any(action["action_id"] == "reason.dynamic_action_selection" for action in payload["actions"])
+    assert all("usable_in_paper_run" in gate for gate in payload["quality_gates"])
+
+
+def test_cli_contract_models_lists_external_method_gates():
+    result = subprocess.run(
+        [str(ROOT / "protacxtend"), "contract", "--section", "models"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+
+    payload = json.loads(result.stdout)
+    names = [item["name"] for item in payload["external_method_registry"]]
+    assert "PROTAC-Degradation-Predictor" in names
+    assert "PROTACFold" in names

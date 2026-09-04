@@ -10,7 +10,7 @@ for mod in list(sys.modules.keys()):
 logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')
 logger = logging.getLogger('virtual_screen')
 
-from synglue_agent.tools.docking_pipeline import (
+from protacxtend.tools.docking_pipeline import (
     prepare_receptor_for_docking,
     prepare_warhead_for_docking,
     run_vina_docking,

@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 DATA = ROOT / "data" / "linkers" / "linker_smiles.txt"
-CURATED = ROOT / "synglue_agent" / "data" / "curated_linkers.csv"
+CURATED = ROOT / "protacxtend" / "data" / "curated_linkers.csv"
 OUT = ROOT / "data" / "linkers" / "linker_generator.pt"
 
 

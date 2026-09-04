@@ -1,5 +1,5 @@
-from synglue_agent.agentic.provenance import ProvenanceBuilder
-from synglue_agent.backend.schemas import CandidateRecord, DegradationPrediction, WorkflowState
+from protacxtend.agentic.provenance import ProvenanceBuilder
+from protacxtend.backend.schemas import CandidateRecord, DegradationPrediction, WorkflowState
 
 import unittest
 

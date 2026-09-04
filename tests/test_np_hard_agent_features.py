@@ -1,4 +1,4 @@
-from synglue_agent.backend.schemas import (
+from protacxtend.backend.schemas import (
     ADMETPrediction,
     AssayFeedbackRecord,
     BinderRecord,
@@ -13,10 +13,10 @@ from synglue_agent.backend.schemas import (
     WarheadRecord,
     WorkflowState,
 )
-from synglue_agent.agents.binder_agent import TargetBinderRetrievalAgent
-from synglue_agent.agents.exit_vector_agent import ExitVectorDetectionAgent
-from synglue_agent.tools.assay_feedback import record_assay_feedback
-from synglue_agent.tools.protac_toolbox import ProtacDesignToolbox
+from protacxtend.agents.binder_agent import TargetBinderRetrievalAgent
+from protacxtend.agents.exit_vector_agent import ExitVectorDetectionAgent
+from protacxtend.tools.assay_feedback import record_assay_feedback
+from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 
 
 def _candidate(candidate_id="cand1", e3="CRBN"):
@@ -107,7 +107,7 @@ def test_expensive_modeling_finalists_are_bounded():
     candidates = [_candidate(f"cand{i}") for i in range(20)]
     rankings = []
     for i, candidate in enumerate(candidates):
-        from synglue_agent.backend.schemas import RankingResult
+        from protacxtend.backend.schemas import RankingResult
 
         rankings.append(RankingResult(candidate_id=candidate.candidate_id, final_priority_score=1.0 - i * 0.01, confidence=0.8))
 
@@ -142,7 +142,7 @@ def test_cooperativity_and_hook_predictions_are_rankable():
 
 
 def test_measured_cooperativity_and_hook_calibration_override_proxy(tmp_path, monkeypatch):
-    import synglue_agent.tools.protac_toolbox as toolbox_module
+    import protacxtend.tools.protac_toolbox as toolbox_module
 
     monkeypatch.setattr(toolbox_module, "DATA_DIR", tmp_path)
     (tmp_path / "cooperativity_calibration.csv").write_text(
@@ -169,7 +169,7 @@ def test_measured_cooperativity_and_hook_calibration_override_proxy(tmp_path, mo
 
 
 def test_active_learning_writes_feedback_rows(tmp_path, monkeypatch):
-    import synglue_agent.tools.protac_toolbox as toolbox_module
+    import protacxtend.tools.protac_toolbox as toolbox_module
 
     monkeypatch.setattr(toolbox_module, "DATA_DIR", tmp_path)
     toolbox = ProtacDesignToolbox()
@@ -197,9 +197,9 @@ def test_active_learning_writes_feedback_rows(tmp_path, monkeypatch):
 
 
 def test_record_assay_feedback_closes_training_and_memory_loop(tmp_path, monkeypatch):
-    import synglue_agent.tools.assay_feedback as feedback_module
-    import synglue_agent.tools.learning_memory as learning_module
-    import synglue_agent.tools.protac_toolbox as toolbox_module
+    import protacxtend.tools.assay_feedback as feedback_module
+    import protacxtend.tools.learning_memory as learning_module
+    import protacxtend.tools.protac_toolbox as toolbox_module
 
     monkeypatch.setattr(toolbox_module, "DATA_DIR", tmp_path)
     monkeypatch.setattr(feedback_module, "LearningMemory", lambda: learning_module.LearningMemory(store_path=tmp_path / "learning.jsonl", runs_dir=tmp_path / "runs"))
@@ -222,7 +222,7 @@ def test_record_assay_feedback_closes_training_and_memory_loop(tmp_path, monkeyp
 
 
 def test_exit_vector_agent_accepts_structured_atom_records(monkeypatch):
-    import synglue_agent.agents.exit_vector_agent as module
+    import protacxtend.agents.exit_vector_agent as module
 
     monkeypatch.setattr(
         module,

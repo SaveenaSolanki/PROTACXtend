@@ -1,10 +1,10 @@
-from synglue_agent.tools.repo_tool_adapter import (
+from protacxtend.tools.repo_tool_adapter import (
     get_repo_tool,
     repo_tool_status,
     route_repo_tool_request,
     smoke_test_repo_tool,
 )
-from synglue_agent.tools.toolkit_router import route_tool_request
+from protacxtend.tools.toolkit_router import route_tool_request
 
 
 def test_linchemin_repo_tool_is_addressable():
@@ -75,6 +75,6 @@ def test_general_tool_router_exposes_protac_wrapper_dispatch():
     routed = route_tool_request("protac degradation tool setup")
     assert routed["repo_wrapper_capabilities"]
     assert all(
-        item["callable_dispatch"] == "synglue_agent.tools.protac_repo_tool_wrappers.execute_protac_repo_tool"
+        item["callable_dispatch"] == "protacxtend.tools.protac_repo_tool_wrappers.execute_protac_repo_tool"
         for item in routed["repo_wrapper_capabilities"]
     )

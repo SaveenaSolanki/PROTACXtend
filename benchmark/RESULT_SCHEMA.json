@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PROTACXtend benchmark result envelope",
+  "description": "One result per task-system run. Anchored to the frozen Sprint-1 result schema 1.0.0 (protacxtend/results/schema.py, SCHEMA_VERSION '1.0.0'); this benchmark envelope adds system/run/scoring metadata without changing the base schema.",
+  "type": "object",
+  "required": [
+    "benchmark_envelope_version",
+    "base_schema_version",
+    "status",
+    "task_id",
+    "capability",
+    "system",
+    "workflow",
+    "metadata",
+    "provider",
+    "model",
+    "answer",
+    "summary",
+    "evidence",
+    "tools",
+    "artifacts",
+    "warnings",
+    "errors",
+    "provenance",
+    "run",
+    "scoring"
+  ],
+  "properties": {
+    "benchmark_envelope_version": { "const": "1.0.0" },
+    "base_schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["ok", "partial", "failed", "contaminated"] },
+    "task_id": { "type": "string" },
+    "capability": { "enum": ["KNOW", "REASON", "DESIGN", "DISCOVER"] },
+    "system": { "type": "string" },
+    "workflow": { "type": "string" },
+    "metadata": { "type": "object" },
+    "provider": { "type": ["string", "null"] },
+    "model": { "type": ["string", "null"] },
+    "answer": { "type": ["string", "object", "array", "null"] },
+    "summary": { "type": "string" },
+    "evidence": { "type": "array" },
+    "tools": { "type": "array", "items": { "type": "string" } },
+    "artifacts": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "errors": { "type": "array", "items": { "type": "string" } },
+    "provenance": { "type": "array" },
+    "run": {
+      "type": "object",
+      "properties": {
+        "seed": { "type": "integer" },
+        "repeat": { "type": "integer" },
+        "tool_calls": { "type": "integer" },
+        "runtime_s": { "type": "number" },
+        "tokens_in": { "type": ["integer", "null"] },
+        "tokens_out": { "type": ["integer", "null"] },
+        "api_cost_usd": { "type": ["number", "null"] },
+        "provider_model_version": { "type": ["string", "null"] },
+        "blinded": { "type": "boolean" }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "properties": {
+        "automatic": { "type": "object", "description": "dimension -> score 0..1" },
+        "expert_review": { "type": "object", "description": "expert fields, recorded after automatic scoring is hidden" },
+        "aggregate": { "type": ["number", "null"] },
+        "verdict": { "enum": ["PASS", "CONDITIONAL", "FAIL"] }
+      }
+    }
+  },
+  "additionalProperties": true
+}

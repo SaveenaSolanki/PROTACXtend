@@ -1,65 +1,61 @@
-# PROTACXtend Benchmark Infrastructure
+# PROTACXtend Scientific-Agent Benchmark (Sprint 2 — specification & skeleton)
 
-**Infrastructure only.** No scientific benchmark has been executed and no
-scientific conclusion is claimed from this directory. The six BRD4–VHL
-PROTACs live under `protacxtend/case_study/` as a **prospective case study** —
-never as benchmark ground truth.
+**Status: SPECIFICATION ONLY — no benchmark experiments have been run.**
+Do not execute Biomni, AI Co-Scientist-compatible workflows, PROTACXtend, or
+any LLM benchmark runs until this framework is approved and runners exist.
+
+The framework organises scientific-agent evaluation around the governed
+contract **KNOW → REASON → DESIGN → DISCOVER**.
 
 ## Layout
 
 ```
 benchmark/
-├── manifests/           auto-discovered live registries (written by
-│   ├── tools.json           protacxtend.benchmark.manifest.write_manifests)
-│   ├── agents.json
-│   └── workflows.json
-├── tasks/               one JSON file per benchmark task (BenchmarkTask schema)
-├── ground_truth/        curated, outcome-derived ground truth (never inferred
-│                        from prospective case-study inputs)
-├── configs/             task configuration files
-├── outputs/             raw task outputs (git-ignored after runs)
-└── reports/             human + machine readable reports
+├── README.md                 this overview
+├── BENCHMARK_PROTOCOL.md     full protocol: task records, systems, matrix, execution
+├── BLINDNESS_RULES.md        leakage & contamination prevention (binding)
+├── TASK_SCHEMA.json          canonical per-task record schema
+├── RESULT_SCHEMA.json        benchmark result envelope (anchored to result schema 1.0.0)
+├── SCORING_RUBRIC.md         scoring dimensions, weights, aggregation
+├── BASELINES.md              benchmark systems & control policy
+├── benchmark_manifest.csv    task registry (~48 tasks, 12 per capability)
+├── cases/                    one record file per task (JSON, TASK_SCHEMA.json)
+├── ground_truth/             objective/measured ground truth with citations (no predictions)
+├── runners/                  per-system adapter stubs (to be implemented; none run yet)
+├── scoring/                  scoring implementation stubs + verified score records
+├── manifests/                auto-discovered tools/agents/workflows (Sprint-1 infra)
+├── configs/                  per-run configuration
+├── outputs/                  raw run outputs (git-ignored at run time)
+└── reports/                  human + machine reports
 ```
 
-## Manifests — auto-discovery
+## Benchmark systems
 
-`benchmark/manifests/*.json` are generated from the **live** registries:
+- **PROTACXtend** (candidate system under evaluation)
+- **Biomni**
+- **AI Co-Scientist-compatible workflow**
+- **Base LLM control** — same model/provider as the candidate where technically possible
+- **DeepSeek Flash control**
+- **Local Ollama control** where appropriate
 
-| Manifest | Registry source |
-|----------|-----------------|
-| `tools.json`    | `protacxtend.toolkit.registry.get_tools()` + skill catalogue + databases |
-| `agents.json`   | `protacxtend.tui_bridge.events.AGENT_PIPELINE` |
-| `workflows.json`| `protacxtend.tui_bridge.events.RESEARCH_WORKFLOWS` |
+## Balanced task matrix (objective ground truth wherever possible)
 
-Counts are whatever the running registries report — never hard-coded.
+| Capability | Tasks | Ground-truth style |
+|---|---|---|
+| KNOW (retrieval/evidence) | 12 | objective (citation/existence checks) |
+| REASON (mechanistic reasoning) | 12 | semi-objective (modeled, expert-audited) |
+| DESIGN (generation/ranking) | 12 | objective rules + expert review |
+| DISCOVER (prioritise/uncertainty/actionability) | 12 | expert + experimental actionability |
 
-```bash
-python -c "from protacxtend.benchmark.manifest import write_manifests; print(write_manifests())"
-```
+Total: **48 tasks** (within the 40–60 target; 10–15 per capability).
 
-## Task schema
+## Binding constraints
 
-`protacxtend.benchmark.task_schema.BenchmarkTask` supports three kinds:
+- The existing **six-BRD4/VHL workflow stays a controlled blinded case study
+  outside the main benchmark** (see `protacxtend/case_study/`); its measured
+  potency is never used during inference (see `BLINDNESS_RULES.md`).
+- Sprint-1 code, result schema **1.0.0**, website, and scientific modules are
+  **not modified** by this framework.
 
-- `tool`   — invoke one registered tool and check output/status
-- `agent`  — run an agent-graph stage/objective and check state
-- `system` — end-to-end KNOW → REASON → DESIGN → DISCOVER run + artefacts
-
-Fields: `task_id, kind, name, manifest_ref, description, inputs, expected,
-ground_truth_ref, uses_ground_truth, status, created_at, metadata`.
-
-Tasks are stored as JSON under `benchmark/tasks/`.
-
-## Ground truth policy
-
-- `benchmark/ground_truth/` may only contain **measured/outcome-derived**
-  values with citations.
-- Prospective case-study predictions must never be written into ground truth.
-- `uses_ground_truth: false` is the default and the only setting allowed for
-  tasks whose inputs were authored before outcomes were known.
-
-## Running a benchmark
-
-Nothing here runs automatically. A runner that consumes `BenchmarkTask`
-entries and writes into `outputs/` + `reports/` will be added when a task
-set is approved.
+Read `BENCHMARK_PROTOCOL.md` first, then `BLINDNESS_RULES.md`,
+`SCORING_RUBRIC.md`, and `BASELINES.md`.

@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "KNOW-XX",
+  "capability": "KNOW",
+  "title": "<short title>",
+  "scientific_question": "<question>",
+  "supplied_inputs": ["<input file/object>"],
+  "hidden_information": ["<ground truth and any outcome-derived material>"],
+  "permitted_tools_databases": ["<permitted tool/db ids>"],
+  "forbidden_information": ["live web", "ground truth", "six-BRD4 measured potency"],
+  "expected_answer": null,
+  "ground_truth_ref": "ground_truth/KNOW-XX.json",
+  "evidence_sources": [],
+  "automatic_scoring_fields": [],
+  "expert_review_fields": [],
+  "failure_criteria": [],
+  "budget": { "runtime_s": 600, "max_tool_calls": 60, "seed": 42, "repeat": 3 },
+  "systems": ["PROTACXtend", "Base-LLM-control"],
+  "blindness": { "locked_before_outcome": true, "uses_measured_outcomes": false }
+}

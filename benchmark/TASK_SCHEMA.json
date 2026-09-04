@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PROTACXtend benchmark task record",
+  "description": "Canonical per-task record. One file per task under benchmark/cases/. Never modify the Sprint-1 result schema 1.0.0; this is the benchmark task definition only.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "capability",
+    "title",
+    "scientific_question",
+    "supplied_inputs",
+    "hidden_information",
+    "permitted_tools_databases",
+    "forbidden_information",
+    "expected_answer",
+    "evidence_sources",
+    "automatic_scoring_fields",
+    "expert_review_fields",
+    "failure_criteria",
+    "budget",
+    "systems"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "task_id": { "type": "string", "pattern": "^(KNOW|REASON|DESIGN|DISCOVER)-\\d{2}$" },
+    "capability": { "enum": ["KNOW", "REASON", "DESIGN", "DISCOVER"] },
+    "title": { "type": "string" },
+    "scientific_question": { "type": "string" },
+    "supplied_inputs": { "type": "array", "items": { "type": "string" } },
+    "hidden_information": { "type": "array", "items": { "type": "string" } },
+    "permitted_tools_databases": { "type": "array", "items": { "type": "string" } },
+    "forbidden_information": { "type": "array", "items": { "type": "string" } },
+    "expected_answer": { "type": ["string", "object", "array", "null"] },
+    "ground_truth_ref": { "type": ["string", "null"] },
+    "evidence_sources": { "type": "array", "items": { "type": "string" } },
+    "automatic_scoring_fields": { "type": "array", "items": { "type": "string" } },
+    "expert_review_fields": { "type": "array", "items": { "type": "string" } },
+    "failure_criteria": { "type": "array", "items": { "type": "string" } },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "runtime_s": { "type": "number" },
+        "max_tool_calls": { "type": "integer" },
+        "seed": { "type": "integer" },
+        "repeat": { "type": "integer" }
+      }
+    },
+    "systems": {
+      "type": "array",
+      "items": { "enum": ["PROTACXtend", "Biomni", "AI-Co-Scientist-compatible", "Base-LLM-control", "DeepSeek-Flash-control", "Local-Ollama-control"] }
+    },
+    "blindness": { "type": "object" }
+  },
+  "additionalProperties": true
+}

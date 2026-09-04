@@ -409,6 +409,7 @@ export class ProtacXtendApp {
     for (const g of COMMAND_GROUPS) for (const [cmd] of g.rows) list.add(cmd);
     for (const k of Object.keys(SKILL_GUIDE)) list.add(`/skill ${k}`);
     list.add("/retrosynthesis");
+    list.add("/doctor");
     return [...list];
   }
 
@@ -492,6 +493,9 @@ export class ProtacXtendApp {
         else printWarning("No agents payload received.");
         break;
       }
+      case "/doctor":
+        await this.runDoctor(args.toLowerCase().includes("json"));
+        break;
       case "/workflows": {
         printInfo("Requesting workflow catalogue…");
         const ev = await this.ask("workflows", ["workflows"]);
@@ -951,42 +955,151 @@ export class ProtacXtendApp {
     printLine("");
   }
 
+  // ── /doctor ─────────────────────────────────────────────────────
+
+  /**
+   * /doctor — real diagnostics from the Python backend plus a local
+   * node/path check. `json` argument prints machine-readable output.
+   */
+  private async runDoctor(jsonOut: boolean): Promise<void> {
+    printLine("");
+    if (jsonOut) {
+      printLine(`  ${theme.dim("Requesting machine-readable diagnostics…")}`);
+    } else {
+      printLine(`  ${theme.grad("═══ PROTACXtend /doctor ═══", "#9B94F0", "#5AB9CD")}`);
+      printRuleHeader("SYSTEM CHECKS");
+    }
+
+    const ev = await this.ask("doctor", ["doctor"], 30_000);
+    const report = ((ev?.report ?? {}) as Record<string, unknown>);
+    const checks = ((report.checks ?? []) as Array<Record<string, unknown>>);
+
+    if (!ev || !checks.length) {
+      if (jsonOut) printLine(JSON.stringify({ error: "doctor report unavailable" }));
+      else printWarning("No /doctor report received from backend.");
+      return;
+    }
+
+    // local node/path check (TUI side, always accurate here)
+    const nodeInfo = { name: "node (TUI)", level: "required", status: "ok", ok: true,
+      detail: `v${process.versions.node} · ${process.execPath}` };
+    const all = [nodeInfo, ...checks];
+
+    if (jsonOut) {
+      const merged = {
+        system: report.system ?? "ready",
+        required_ok: report.required_ok ?? false,
+        optional_warnings: report.optional_warnings ?? 0,
+        summary: report.summary ?? {},
+        required_failures: report.required_failures ?? [],
+        checks: all,
+      };
+      printLine(JSON.stringify(merged, null, 2));
+      printLine("");
+      printSuccess(merged.required_ok ? "required checks ready" : "required checks FAILED");
+      return;
+    }
+
+    for (const c of all) {
+      const name = String(c.name ?? "");
+      const detail = String(c.detail ?? "");
+      const level = String(c.level ?? "optional");
+      const ok = Boolean(c.ok);
+      const statusTxt = level === "required"
+        ? (ok ? theme.success("✓ ready") : theme.error("✗ required failure"))
+        : (ok ? theme.success("✓ ready") : theme.warning("⚠ optional/unconfigured"));
+      printKv(name, statusTxt, 34);
+      if (!ok && level === "required") printInfo(`  ${truncateToWidth(detail, 74)}`);
+      if (ok && detail && !detail.startsWith("v")) printInfo(`  ${theme.dim(truncateToWidth(detail, 74))}`);
+    }
+
+    printRuleHeader("RESULT");
+    const fails = (report.required_failures as string[]) || [];
+    const warnCount = Number(report.optional_warnings ?? 0);
+    const summary = (report.summary ?? {}) as Record<string, unknown>;
+    if (fails.length === 0) {
+      printSuccess(`ready — ${String(summary.ok ?? "?")} ok · ${warnCount} optional ⚠ (non-blocking)`);
+    } else {
+      printWarning(`required failures: ${fails.join(", ")} — see /status for detail`);
+      printInfo("Optional warnings never block the system.");
+    }
+    printLine("");
+  }
+
   // ── Help ───────────────────────────────────────────────────────
 
   private showHelp(): void {
     const width = Math.min(this.termWidth(), 112);
     const lineW = width - 6;
+    const cmdW = 24;
+    const col = (c: string) => theme.fg("mint", padRight(c, cmdW));
+    const dim = (t: string, max = lineW - cmdW - 2) => theme.dim(truncateToWidth(t, Math.max(20, max)));
+
     printLine("");
-    printLine(`  ${theme.grad("PROTACXtend — COMMAND CENTRE", "#9B94F0", "#5AB9CD")}`);
-    printLine(`  ${theme.dim("─".repeat(Math.min(lineW, 78)))}`);
+    printLine(`  ${theme.grad("PROTACXtend \u2014 COMMAND CENTRE", "#9B94F0", "#5AB9CD")}`);
+    printLine(`  ${theme.dim("\u2500".repeat(Math.min(lineW, 80)))}`);
     printLine("");
 
-    for (const group of COMMAND_GROUPS) {
-      printSection(group.title);
-      const cmdW = 22;
-      for (const [cmd, desc] of group.rows) {
-        const c = theme.fg("mint", padRight(cmd, cmdW));
-        const d = theme.dim(truncateToWidth(desc, Math.max(20, lineW - cmdW - 2)));
-        printLine(`  ${c} ${d}`);
-      }
-      printLine("");
+    // 1 ── Primary Research Workflows
+    printSection("PRIMARY RESEARCH WORKFLOWS");
+    for (const w of RESEARCH_WORKFLOWS) {
+      printLine(`  ${col(w.cmd)} ${dim(w.desc)}`);
     }
+    printLine(`  ${theme.dim("Tip: a workflow with no arguments opens its definition card; add an objective to execute it.")}`);
+    printLine("");
 
-    printSection("TRY IT");
-    const examples: [string, string][] = [
-      ["/plan", "BRD4 degradation programme"],
-      ["/investigate", "BRD4 cereblon degraders and ligands"],
-      ["/design", "CRBN PROTACs for BRD4 degradation"],
-      ["/synthesis", "CC(=O)Nc1ccc(O)cc1"],
-      ["/skill", "stereochemistry CC(=O)Nc1ccc(O)cc1"],
+    // 2 ── System / Utility Commands
+    printSection("SYSTEM / UTILITY COMMANDS");
+    const sysRows: [string, string][] = [
+      ["/doctor", "Run system diagnostics (bridge, package, deps, llm)"],
+      ["/status", "System, model and dependency health"],
+      ["/agents", "23-node agent pipeline view"],
+      ["/skills", "Full skill catalogue \u2014 18 scientific categories"],
+      ["/skill <id> [args]", "Skill profile \u2014 and run it with args"],
+      ["/databases", "API databases & data sources"],
+      ["/workflows", "The 14 primary research workflows"],
+      ["/contract", "KNOW \u2192 REASON \u2192 DESIGN \u2192 DISCOVER"],
+      ["/about", "Project, architecture, validation, launch"],
+      ["/launch", "Launch recipes"],
+      ["/clear", "Clear screen + redraw header"],
+      ["/quit", "Exit PROTACXtend"],
     ];
-    for (const [cmd, rest] of examples) {
-      printLine(`  ${theme.fg("cyan", cmd)} ${theme.dim(rest)}`);
+    for (const [c, d] of sysRows) printLine(`  ${col(c)} ${dim(d)}`);
+    printLine(`  ${theme.dim("Advanced skill tools (low-level): /validate <SMILES> \u00b7 /retro \u00b7 /docking \u00b7 /stereo \u00b7 /generator")}`);
+    printLine("");
+
+    // 3 ── Common examples
+    printSection("TRY THESE");
+    const examples: [string, string][] = [
+      ["/plan", "Design a BRD4 degrader using VHL"],
+      ["/investigate", "BRD4"],
+      ["/compare", "examples/brd4_vhl_6.csv"],
+      ["/design", "BRD4 VHL"],
+      ["/structure", "<SMILES>"],
+      ["/admet", "<SMILES>"],
+      ["/run", "<objective>  (full KNOW \u2192 REASON \u2192 DESIGN \u2192 DISCOVER)"],
+    ];
+    for (const [c, rest] of examples) {
+      printLine(`  ${theme.fg("cyan", padRight(c, cmdW))} ${theme.dim(rest)}`);
     }
     printLine("");
-    printLine(`  ${theme.dim("Tip: a workflow without arguments opens its evidence-grounded definition card.")}`);
-    printLine(`  ${theme.dim("Type a natural-language objective directly (no slash) to run /design autonomously.")}`);
-    printLine(`  ${theme.dim("Global launch:")} ${theme.fg("amber", "protacxtend")}  ${theme.dim("· or locally:")} ${theme.fg("amber", "node dist/index.js")}`);
+
+    // 4 ── Launch / usage
+    printSection("LAUNCH / USAGE");
+    const launchRows: [string, string][] = [
+      ["protacxtend", "Global launch \u2014 from any directory (npm link / install)"],
+      ["cd tui && node dist/index.js", "Local development launch"],
+      ["npm link", "Development symlink (run once)"],
+      ["PROTACXTEND_MODEL=ollama/gpt-oss:20b", "Model override (or your provider/model)"],
+      ["PROTACXTEND_PYTHON=python3", "Python interpreter override"],
+    ];
+    for (const [c, d] of launchRows) {
+      const cc = theme.fg("mint", padRight(c, 36));
+      const dd = theme.dim(truncateToWidth(d, Math.max(20, lineW - 38)));
+      printLine(`  ${cc} ${dd}`);
+    }
+    printLine("");
+    printLine(`  ${theme.dim("You can also type a natural-language objective without a slash \u2014 it runs /design autonomously.")}`);
     printLine("");
     printLine(`  ${centerText(renderContract(lineW), lineW)}`);
     printLine("");

@@ -36,6 +36,18 @@ from protacxtend.tui_bridge.events import (
 )
 
 
+def handle_doctor() -> None:
+    """Emit machine-readable /doctor diagnostics."""
+    try:
+        from protacxtend.diagnostics import build_doctor_report
+        report = build_doctor_report()
+        emit({"type": "doctor", "report": report, "ok": report.get("required_ok", False)})
+    except Exception as exc:
+        emit({"type": "doctor", "report": {"required_ok": False, "summary": {"ok": 0, "warn": 0, "fail": 1},
+                                            "required_failures": ["diagnostics"], "checks": []},
+              "ok": False, "error": str(exc)})
+
+
 def handle_status() -> None:
     """Emit system status."""
     import importlib
@@ -293,6 +305,8 @@ def handle_command(cmd: str, args: dict[str, Any]) -> None:
     """Dispatch a command from the TUI."""
     if cmd == "run":
         handle_run(args.get("request", ""))
+    elif cmd == "doctor":
+        handle_doctor()
     elif cmd == "status":
         handle_status()
     elif cmd == "validate":

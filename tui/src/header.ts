@@ -12,7 +12,7 @@
  * the upgraded "Laboratory Night" theme.
  */
 
-import { PROTACXTEND_LOGO, SUBTITLE, TAGLINE, CONTRACT, PHASES } from "./logo.js";
+import { PROTACXTEND_LOGO, BRAND_NAME, SUBTITLE, TAGLINE, CONTRACT, PHASES } from "./logo.js";
 import {
   visibleWidth,
   truncateToWidth,
@@ -80,20 +80,31 @@ export function renderHeader(data: HeaderData, terminalWidth: number): string[] 
   const leftW = useWide ? Math.floor(contentW * 0.42) : contentW;
   const rightW = useWide ? contentW - leftW - gap : 0;
 
-  // ── ASCII wordmark in gradient beam ────────────────────────────
-  const logoRows = PROTACXTEND_LOGO.filter((l) => visibleWidth(l.trim()) > 0);
-  const logoW = Math.max(...logoRows.map((l) => visibleWidth(l)));
-  for (let i = 0; i < logoRows.length; i++) {
-    const row = logoRows[i];
+  // ── Wordmark (block when it fits, simple textual gradient below) ──
+  // Rendered above the card, centered; both the block art (≈75 cols) and the
+  // fallback text are exact-case PROTACXtend.
+  const WORDMARK_MIN_WIDTH = 78; // block art width (75) + comfortable margins
+  const NAME_STOPS = ["#8E86E8", "#6B7FDB", "#5AB9CD"]; // violet → blue → cyan
+  const useBlockWordmark = terminalWidth >= WORDMARK_MIN_WIDTH;
+  if (useBlockWordmark) {
+    const logoRows = PROTACXTEND_LOGO.filter((l) => visibleWidth(l.trim()) > 0);
+    const logoW = Math.max(...logoRows.map((l) => visibleWidth(l)));
     const pad = Math.max(0, Math.floor((cardW - logoW) / 2));
-    push(theme.grad(" ".repeat(pad) + row, "#9B94F0", "#5AB9CD", { span: logoW + pad, offset: i * 14 }));
+    for (const row of logoRows) {
+      push(" ".repeat(pad) + theme.grad(row, undefined, undefined, { stops: NAME_STOPS, span: logoW, offset: 0 }));
+    }
+  } else {
+    // Simple textual wordmark — never clipped or corrupted on narrow terminals.
+    push(" ".repeat(Math.max(0, Math.floor((cardW - visibleWidth(BRAND_NAME)) / 2))) +
+      theme.grad(BRAND_NAME, undefined, undefined, { stops: NAME_STOPS }));
   }
 
-  // ── Subtitle + tagline (centered) ──────────────────────────────
+  // ── Subtitle + tagline — always rendered fully and centered ──
   push("");
+  const centerPad = (textWidth: number) => Math.max(0, Math.floor((cardW - textWidth) / 2));
   const sub = theme.semantic("borderAccent", SUBTITLE);
-  push(" ".repeat(Math.max(0, Math.floor((cardW - visibleWidth(SUBTITLE)) / 2))) + sub);
-  push(theme.dim(" ".repeat(Math.max(0, Math.floor((cardW - visibleWidth(TAGLINE)) / 2))) + TAGLINE));
+  push(" ".repeat(centerPad(visibleWidth(SUBTITLE))) + sub);
+  push(" ".repeat(centerPad(visibleWidth(TAGLINE))) + theme.dim(TAGLINE));
   push("");
 
   // ── Card ───────────────────────────────────────────────────────
@@ -176,7 +187,7 @@ export function renderSimpleHeader(): string[] {
   const lines: string[] = [];
   lines.push("");
   for (const row of PROTACXTEND_LOGO.filter((l) => visibleWidth(l.trim()) > 0)) {
-    lines.push(`  ${theme.grad(row, "#9B94F0", "#5AB9CD", { span: 64, offset: 0 })}`);
+    lines.push(`  ${theme.grad(row, undefined, undefined, { stops: ["#8E86E8", "#6B7FDB", "#5AB9CD"], span: 64, offset: 0 })}`);
   }
   lines.push("");
   lines.push(`  ${theme.semantic("borderAccent", SUBTITLE)}`);

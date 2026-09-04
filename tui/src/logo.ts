@@ -6,9 +6,10 @@
  * earlier all-caps art so it stays a one-piece header wordmark.
  */
 
-// ── Glyph set (5 wide × 5 tall, baseline-aligned) ───────────────
-// Uppercase letters are full cap-height; lowercase t/d carry ascenders,
-// e/n sit at x-height (blank top row) — so the casing reads correctly.
+// ── Glyph set (5 wide × 5 tall) ──────────────────────────────────
+// Height model (from the PROTACXtend header reference): caps are full
+// height; lowercase e/n sit at x-height (top row empty, baseline aligned);
+// lowercase t/d keep visible ascenders. Bottom rows are baseline-aligned.
 
 type Glyph = [string, string, string, string, string];
 
@@ -21,11 +22,14 @@ const GLYPHS: Record<string, Glyph> = {
   C: ["█████", "█    ", "█    ", "█    ", "█████"],
   X: ["█   █", " █ █ ", "  █  ", " █ █ ", "█   █"],
   // lowercase tail of the exact brand name (PROTAC**Xtend**)
-  t: ["     ", " ███ ", "  █  ", "  █  ", "  █  "],
-  e: ["     ", " ███ ", "█   █", "█████", "█   █"],
-  n: ["     ", "████ ", "█  █ ", "█  █ ", "█  █ "],
-  d: ["   █ ", " ███ ", "█  █ ", "█  █ ", " ███ "],
+  t: ["  █  ", " ███ ", "  █  ", "  █  ", "  ███"],
+  e: ["     ", " ███ ", "█   █", "█████", " ████"],
+  n: ["     ", "█████", "█   █", "█   █", "█   █"],
+  d: ["    █", " ██ █", "█  ██", "█  ██", " ██ █"],
 };
+
+/** Inter-character gap in the wordmark (keeps adjacent glyphs apart). */
+const GLYPH_GAP = 2;
 
 /** Assemble a glyph-string wordmark from per-letter rows. */
 export function renderWordmark(text: string): string[] {
@@ -34,7 +38,7 @@ export function renderWordmark(text: string): string[] {
     const glyph = GLYPHS[text[i]];
     if (!glyph) continue;
     if (i > 0) {
-      for (let r = 0; r < 5; r++) rows[r] += " ";
+      for (let r = 0; r < 5; r++) rows[r] += " ".repeat(GLYPH_GAP);
     }
     for (let r = 0; r < 5; r++) rows[r] += glyph[r];
   }

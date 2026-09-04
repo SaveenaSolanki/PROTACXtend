@@ -103,10 +103,21 @@ export function lerpColor(hexA: string, hexB: string, t: number): string {
   return `#${to(ch(0))}${to(ch(1))}${to(ch(2))}`;
 }
 
-/** True-color gradient string: from color -> to color over visible chars. */
-function gradientString(text: string, c1: string, c2: string, offset: number, span: number): string {
-  // color positions run across *visible* glyphs only (spaces skipped),
-  // so spacing/gaps never distort the violet → cyan sweep.
+/** Sample a piecewise-linear colour from an ordered stop list at t in [0,1]. */
+function sampleStops(stops: string[], t: number): string {
+  const n = stops.length;
+  if (n <= 1) return stops[0] ?? "#ffffff";
+  if (n === 2) return lerpColor(stops[0], stops[1], t);
+  const seg = Math.max(0, Math.min(1, t)) * (n - 1);
+  const i = Math.min(Math.floor(seg), n - 2);
+  const f = seg - i;
+  return lerpColor(stops[i], stops[i + 1], f);
+}
+
+/** True-color gradient over visible glyphs with arbitrary colour stops. */
+function gradientStops(text: string, stops: string[], offset: number, span: number): string {
+  // colour positions run across *visible* glyphs only (spaces skipped),
+  // so spacing/gaps never distort the violet → blue → cyan sweep.
   const len = Math.max(1, span);
   const glyphCount = [...text].filter((ch) => ch !== " ").length;
   let out = "";
@@ -116,11 +127,16 @@ function gradientString(text: string, c1: string, c2: string, offset: number, sp
       out += " "; // spaces need no color
       continue;
     }
-    const pos = glyphCount > 1 ? ((idx + offset) % len) / Math.min(glyphCount - 1, len - 1) : 0;
-    out += `${rgb(lerpColor(c1, c2, pos))}${ch}${RESET}`;
+    const t = glyphCount > 1 ? ((idx + offset) % len) / Math.min(glyphCount - 1, len - 1) : 0;
+    out += `${rgb(sampleStops(stops, t))}${ch}${RESET}`;
     idx++;
   }
   return out;
+}
+
+/** Two-stop convenience: from color -> to color over visible chars. */
+function gradientString(text: string, c1: string, c2: string, offset: number, span: number): string {
+  return gradientStops(text, [c1, c2], offset, span);
 }
 
 // ── Theme object ─────────────────────────────────────────────────
@@ -130,6 +146,8 @@ export interface GradOptions {
   offset?: number;
   /** span over which the gradient is stretched (use logo width for coherence) */
   span?: number;
+  /** ordered colour stops (≥2) overriding from/to — e.g. violet→blue→cyan */
+  stops?: string[];
 }
 
 export interface Theme {
@@ -161,7 +179,8 @@ export interface Theme {
   hex(name: SemanticName): string;
   /** Resolve a color name or hex string to its hex value */
   hexOf(name: ColorName | string): string;
-  /** Per-character violet→cyan gradient text (brand signature). */
+  /** Per-character gradient text (brand signature) — 2 stops by default,
+   * or an arbitrary ordered `opts.stops` list (e.g. violet→blue→cyan). */
   grad(text: string, from?: ColorName | string, to?: ColorName | string, opts?: GradOptions): string;
 }
 
@@ -190,7 +209,9 @@ function createTheme(overrides?: Record<string, string>): Theme {
     hex: (name) => (vars as Record<string, string>)[SEMANTIC[name]] ?? vars.ink,
     hexOf: (name) => resolveHex(name),
     grad: (text, from = GRAD_DEFAULT_FROM, to = GRAD_DEFAULT_TO, opts = {}) =>
-      gradientString(text, resolveHex(from), resolveHex(to), opts.offset ?? 0, opts.span ?? text.length),
+      (opts.stops && opts.stops.length >= 2
+        ? gradientStops(text, opts.stops.map((st) => resolveHex(st)), opts.offset ?? 0, opts.span ?? text.length)
+        : gradientString(text, resolveHex(from), resolveHex(to), opts.offset ?? 0, opts.span ?? text.length)),
   };
 }
 

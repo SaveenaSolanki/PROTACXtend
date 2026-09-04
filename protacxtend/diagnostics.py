@@ -130,17 +130,42 @@ def build_doctor_report() -> dict[str, Any]:
         checks.append(_probe("required", "toolkit registry", False,
                              f"registry read failed ({type(exc).__name__}: {exc})"))
 
-    # ── llm / model availability (optional) ───────────────────────────
+    # ── provider manager: model/auth/inference/capabilities (optional) ─
+    llm_summary: dict[str, Any] = {}
     try:
-        from protacxtend.llm.providers import get_config, provider_health
+        from protacxtend.llm import manager
+        from protacxtend.llm.providers import get_config
         cfg = get_config()
-        health = provider_health(cfg)
-        ok = bool(health.get("ok"))
-        checks.append(_probe("optional", "llm", ok,
-                             f"{getattr(cfg, 'provider', '?')}/{getattr(cfg, 'model', '?')} · "
-                             + ("healthy" if ok else str(health.get("error", "unhealthy")))))
+        chk = manager.validate(live=True)
+        auth = manager.auth_state()
+        llm_summary = {
+            "provider": chk["provider"],
+            "model": chk["model"],
+            "base_url": chk["base_url"] or "",
+            "authentication": chk["authentication"],
+            "endpoint": chk["endpoint"],
+            "inference": chk["inference"],
+            "structured_output": chk["structured_output"],
+            "tool_calling": chk["tool_calling"],
+            "verdict": chk["verdict"],
+        }
+        checks.append(_probe("optional", "llm:provider", chk["provider"] in manager.PROVIDER_META,
+                             f"{chk['provider']} ({manager.meta(chk['provider']).label})"))
+        checks.append(_probe("optional", "llm:model", bool(chk["model"]), chk["model"] or "none set"))
+        auth_ok = bool(auth.get("authenticated"))
+        checks.append(_probe("optional", "llm:authentication",
+                             auth_ok or bool(auth.get("local")),
+                             "key stored/local" if auth_ok else f"not authenticated (set {auth.get('key_env')})"))
+        checks.append(_probe("optional", "llm:inference",
+                             bool(chk["inference"].get("ok")),
+                             chk["inference"].get("reason") or "inference available"))
+        checks.append(_probe("optional", "llm:structured-output",
+                             bool(chk["structured_output"].get("ok")), "supported"))
+        checks.append(_probe("optional", "llm:tool-calling",
+                             bool(chk["tool_calling"].get("ok")), "supported"))
     except Exception as exc:
-        checks.append(_probe("optional", "llm", False, f"not configured ({type(exc).__name__})"))
+        llm_summary = {"verdict": "NOT READY", "error": str(exc)}
+        checks.append(_probe("optional", "llm:provider", False, f"manager unavailable ({exc})"))
 
     # ── api/database clients (optional) ───────────────────────────────
     present = [name for name in API_CLIENTS if _import_ok(f"protacxtend.tools.{name}")]
@@ -161,8 +186,14 @@ def build_doctor_report() -> dict[str, Any]:
     else:
         system = "READY"
 
+    llm_verdict = str(llm_summary.get("verdict", "NOT READY"))
+    if llm_verdict not in ("READY", "DEGRADED", "NOT READY"):
+        llm_verdict = "NOT READY"
+
     return {
         "system": system,
+        "llm": llm_summary,
+        "llm_verdict": llm_verdict,
         "required_ok": len(required_fail) == 0,
         "optional_warnings": len(optional_warn),
         "summary": {

@@ -227,6 +227,15 @@ class OpenAIProvider(OpenAICompatibleProvider):
     name = "openai"
 
 
+class DeepSeekProvider(OpenAICompatibleProvider):
+    """DeepSeek API — OpenAI-compatible chat completions endpoint."""
+    name = "deepseek"
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._default_base = "https://api.deepseek.com"
+
+
 # ── Anthropic ─────────────────────────────────────────────────────────
 
 class AnthropicProvider:
@@ -281,10 +290,12 @@ class GoogleProvider:
 PROVIDER_REGISTRY: Dict[str, LLMProvider] = {
     "ollama": OllamaProvider(),
     "openai": OpenAIProvider(),
+    "deepseek": DeepSeekProvider(),
     "openrouter": OpenRouterProvider(),
     "anthropic": AnthropicProvider(),
     "google": GoogleProvider(),
-    "openai_compatible": OpenAICompatibleProvider(),
+    "gemini": GoogleProvider(),          # friendly alias for Google/Gemini
+    "openai_compatible": OpenAICompatibleProvider(),  # vLLM/LM Studio/DeepSeek-style custom
 }
 
 

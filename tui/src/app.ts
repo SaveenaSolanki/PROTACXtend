@@ -1159,6 +1159,24 @@ export class ProtacXtendApp {
       if (ok && detail && !detail.startsWith("v")) printInfo(`  ${theme.dim(truncateToWidth(detail, 74))}`);
     }
 
+    const llmInfo = (report.llm ?? {}) as Record<string, unknown>;
+    const llmVerdict = String(report.llm_verdict ?? "");
+    if (llmInfo.provider || llmVerdict) {
+      printRuleHeader("LLM PROVIDER");
+      if (llmInfo.provider) printKv("provider", theme.semantic("text", `${String(llmInfo.provider)}/${String(llmInfo.model ?? "?")}`), 16);
+      const auth = (llmInfo.authentication ?? {}) as Record<string, unknown>;
+      if (auth.ok !== undefined) printKv("authentication", Boolean(auth.ok) ? theme.success("authenticated") : theme.warning("not authenticated"), 16);
+      const inf = (llmInfo.inference ?? {}) as Record<string, unknown>;
+      if (inf.ok !== undefined) printKv("inference", Boolean(inf.ok) ? theme.success("available") : theme.warning(String(inf.reason ?? "unavailable")), 16);
+      const so = (llmInfo.structured_output ?? {}) as Record<string, unknown>;
+      const tc = (llmInfo.tool_calling ?? {}) as Record<string, unknown>;
+      if (so.supported !== undefined) printKv("structured-output", Boolean(so.supported) ? theme.success("yes") : theme.error("no"), 16);
+      if (tc.supported !== undefined) printKv("tool calling", Boolean(tc.supported) ? theme.success("yes") : theme.error("no"), 16);
+      if (llmVerdict) {
+        const vc = llmVerdict === "READY" ? theme.success(llmVerdict) : llmVerdict === "DEGRADED" ? theme.warning(llmVerdict) : theme.error(llmVerdict);
+        printKv("llm verdict", vc, 16);
+      }
+    }
     printRuleHeader("VERDICT");
     const fails = (report.required_failures as string[]) || [];
     const warnCount = Number(report.optional_warnings ?? 0);

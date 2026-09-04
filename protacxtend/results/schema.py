@@ -14,6 +14,9 @@ from typing import Any, Optional
 # Evidence provenance kinds used across the system. Every datum carries one.
 EVIDENCE_KINDS = ("measured", "retrieved", "calculated", "predicted", "inferred", "missing")
 
+# Frozen, stable schema for result.json (Sprint 1).
+SCHEMA_VERSION = "1.0.0"
+
 
 @dataclass
 class Provenance:
@@ -64,13 +67,24 @@ class EvidenceItem:
 
 @dataclass
 class ScientificResult:
-    """Canonical envelope emitted by every workflow / tool."""
+    """Canonical envelope emitted by every workflow / tool (schema 1.0.0)."""
 
     workflow: str
     summary: str
     task_id: Optional[str] = None  # stable id for this task/run
     status: str = "ok"  # ok | partial | failed
-    result: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)   # run metadata (request, timestamps, version)
+    provider: Optional[str] = None
+    model: Optional[str] = None
+    result: dict[str, Any] = field(default_factory=dict)     # structured answer
+    tools: list[str] = field(default_factory=list)
+    artifacts: list[str] = field(default_factory=list)       # file paths (outputs/…)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    evidence: list[EvidenceItem] = field(default_factory=list)
+    confidence: Optional[float] = None  # only when a real model provides it
+    uncertainty: Optional[list[str]] = None  # only when provided
+    provenance: list[Provenance] = field(default_factory=list)
     evidence: list[EvidenceItem] = field(default_factory=list)
     confidence: Optional[float] = None  # only when a real model provides it
     uncertainty: Optional[list[str]] = None  # only when provided
@@ -96,13 +110,20 @@ class ScientificResult:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
+            "schema_version": SCHEMA_VERSION,
             "status": self.status,
             "task_id": self.task_id,
             "workflow": self.workflow,
+            "metadata": dict(self.metadata),
+            "provider": self.provider,
+            "model": self.model,
             "summary": self.summary,
-            "result": self.result,
+            "result": dict(self.result),
+            "tools": list(self.tools),
+            "artifacts": list(self.artifacts),
             "evidence": [e.to_dict() for e in self.evidence],
             "warnings": list(self.warnings),
+            "errors": list(self.errors),
             "provenance": [p.to_dict() for p in self.provenance],
         }
         if self.confidence is not None:
@@ -119,7 +140,13 @@ def from_dict(data: dict[str, Any]) -> ScientificResult:
         summary=str(data.get("summary", "")),
         task_id=data.get("task_id"),
         status=str(data.get("status", "ok")),
+        metadata=dict(data.get("metadata") or {}),
+        provider=data.get("provider"),
+        model=data.get("model"),
         result=dict(data.get("result") or {}),
+        tools=list(data.get("tools") or []),
+        artifacts=list(data.get("artifacts") or []),
+        errors=list(data.get("errors") or []),
         evidence=[
             EvidenceItem(
                 summary=str(e.get("summary", "")),

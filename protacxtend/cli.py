@@ -819,6 +819,126 @@ def _pilot_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _auth_command(args: argparse.Namespace) -> int:
+    """protacxtend auth login|status|logout — API keys are never printed."""
+    from protacxtend.llm import manager
+    sub = (args.auth_cmd or "status").lower()
+    provider = args.provider or None
+    try:
+        if sub == "login":
+            if args.key_stdin:
+                api_key = sys.stdin.readline().strip()
+            else:
+                import getpass
+                api_key = getpass.getpass("API key (hidden): ").strip()
+            result = manager.login(provider or "deepseek", api_key,
+                                   model=args.model or None, base_url=args.base_url or None)
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"\u2713 logged in \u2014 provider={result['provider']} model={result['model']} "
+                      f"(key stored in {result['saved']}, never printed)")
+            return 0
+        if sub == "logout":
+            result = manager.logout()
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"\u2713 logged out \u2014 provider={result['provider']} model={result['model']} (key removed)")
+            return 0
+        state = manager.auth_state(provider)
+        check = manager.validate(provider, live=args.live)
+        if args.json:
+            print(json.dumps({"auth": state, "validate": check}, indent=2))
+        else:
+            print(f"provider       {state['provider']}")
+            print(f"model          {state['model']}")
+            print(f"endpoint       {check['base_url'] or '(set via auth login --base-url)'}")
+            print(f"authentication {'authenticated' if state['authenticated'] else 'NOT authenticated'}")
+            print(f"local          {state['local']}")
+            print(f"structured-out {check['structured_output']['supported']}")
+            print(f"tool calling   {check['tool_calling']['supported']}")
+            print(f"verdict        {check['verdict']}")
+        return 0
+    except Exception as exc:
+        print(f"auth {sub} failed: {exc}", file=sys.stderr)
+        return 1
+
+
+def _model_command(args: argparse.Namespace) -> int:
+    """protacxtend model list|set|status."""
+    from protacxtend.llm import manager
+    sub = (args.model_cmd or "status").lower()
+    provider = args.provider or None
+    try:
+        if sub == "list":
+            payload = manager.list_models(provider)
+            if args.json:
+                print(json.dumps(payload, indent=2))
+            else:
+                print(f"provider  {payload['provider']}")
+                print(f"source    {payload['source']}")
+                for m in payload["models"]:
+                    print(f"  \u2022 {m}")
+            return 0
+        if sub == "set":
+            result = manager.set_model(provider, args.model, args.base_url)
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"\u2713 model set \u2014 provider={result['provider']} model={result['model']}")
+            return 0
+        state = manager.auth_state(provider)
+        check = manager.validate(provider, live=args.live)
+        if args.json:
+            print(json.dumps({"state": state, "validate": check}, indent=2))
+        else:
+            print(f"provider  {state['provider']}")
+            print(f"model     {state['model']}")
+            print(f"auth      {'authenticated' if state['authenticated'] else 'NOT authenticated'}")
+            print(f"verdict   {check['verdict']}")
+        return 0
+    except Exception as exc:
+        print(f"model {sub} failed: {exc}", file=sys.stderr)
+        return 1
+
+
+def _case_study_command(args: argparse.Namespace) -> int:
+    """Six BRD4\u2013VHL blinded molecules end-to-end smoke (prospective case study).
+
+    input \u2192 engine/tool execution \u2192 frozen result.json \u2192 readable CLI output.
+    Experimental potency stays hidden; this is not a benchmark.
+    """
+    from protacxtend.case_study.brd4_vhl_six import run_brd4_vhl_six_case_study
+    from protacxtend.llm.providers import get_config
+    from protacxtend.results.io import human_summary, write_result_json
+    from protacxtend.results.schema import from_dict
+    try:
+        out = run_brd4_vhl_six_case_study(args.dataset or None)
+        schema = from_dict(out["schema"])
+        cfg = get_config()
+        schema.provider = cfg.provider
+        schema.model = cfg.model
+        schema.tools = sorted(set(schema.tools) | {"molecule_standardizer(rdkit)", "structural_score"})
+        schema.metadata = {
+            "request": "case-study brd4-vhl (blinded six-PROTAC smoke)",
+            "inference_used": False,          # deterministic tool execution
+            "scientific_benchmark": False,     # prospective case study, never ground truth
+        }
+        out_path = write_result_json(args.out or str(PROJECT_ROOT / "outputs" / "case_study_brd4_vhl_result.json"),
+                                     schema, metadata={"run_mode": "cli"})
+        schema.artifacts = [str(out_path)]
+        if args.json:
+            print(__import__("json").dumps(schema.to_dict(), indent=2, default=str))
+        else:
+            print(human_summary(schema))
+            print(f"\n  result.json written to {out_path}")
+        return 0
+    except Exception as exc:
+        print(f"case-study failed: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="PROTACXtend",
@@ -948,6 +1068,41 @@ def build_parser() -> argparse.ArgumentParser:
     llm.add_argument("--api-key", default="")
     llm.set_defaults(func=_llm_command)
 
+    auth = sub.add_parser("auth", help="Manage LLM provider authentication (keys never printed).")
+    auth.add_argument("auth_cmd", nargs="?", default="status",
+                      choices=["login", "status", "logout"])
+    auth.add_argument("--provider", default="")
+    auth.add_argument("--model", default="")
+    auth.add_argument("--base-url", default="")
+    auth.add_argument("--json", action="store_true")
+    auth.add_argument("--key-stdin", action="store_true",
+                      help="Read the API key from stdin (for scripts).")
+    auth.add_argument("--no-live", dest="live", action="store_false",
+                      help="Skip live endpoint probes.")
+    auth.set_defaults(func=_auth_command, live=True)
+
+    model = sub.add_parser("model", help="List, set or inspect the LLM model.")
+    model.add_argument("model_cmd", nargs="?", default="status",
+                       choices=["list", "set", "status"])
+    model.add_argument("--provider", default="")
+    model.add_argument("--model", default="")
+    model.add_argument("--base-url", default="")
+    model.add_argument("--json", action="store_true")
+    model.add_argument("--no-live", dest="live", action="store_false",
+                       help="Skip live endpoint probes.")
+    model.set_defaults(func=_model_command, live=True)
+
+    case_study = sub.add_parser("case-study", help="Run the six BRD4\u2013VHL blinded-molecule smoke (prospective case study).")
+    case_study.add_argument("name", nargs="?", default="brd4-vhl",
+                            help="Case study id (brd4-vhl).")
+    case_study.add_argument("--dataset", default="",
+                            help="Path to a blinded six-PROTAC CSV (default: examples/brd4_vhl_6.csv)")
+    case_study.add_argument("--out", default="",
+                            help="Output result.json path (default: outputs/case_study_brd4_vhl_result.json)")
+    case_study.add_argument("--json", action="store_true",
+                            help="Also emit the full frozen result.json to stdout")
+    case_study.set_defaults(func=_case_study_command)
+
     chat = sub.add_parser("chat", help="Pi-style assistant chat with the configured LLM backend.")
     chat.add_argument("message", nargs="*", help="Optional one-shot question; omit for an interactive chat.")
     chat.set_defaults(func=_chat_command)
@@ -972,6 +1127,9 @@ def main(argv: list[str] | None = None) -> int:
         "run",
         "llm",
         "chat",
+        "auth",
+        "model",
+        "case-study",
         "runtime",
         "pilot",
         "design",

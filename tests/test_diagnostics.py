@@ -34,9 +34,15 @@ def test_required_registries_are_present():
 
 def test_optional_warnings_never_block_system():
     report = build_doctor_report()
-    # The overall state must be a function of REQUIRED checks only:
-    assert (report["system"] == "ready") == (len(report["required_failures"]) == 0)
+    # Overall verdict is a function of REQUIRED checks only:
+    # READY (all ok) · WARNING (optional problems) · REQUIRED_FAILURE
     assert report["required_ok"] == (len(report["required_failures"]) == 0)
+    assert report["system"] in {"READY", "WARNING", "REQUIRED_FAILURE"}
+    if report["required_failures"]:
+        assert report["system"] == "REQUIRED_FAILURE"
+    else:
+        assert report["system"] in {"READY", "WARNING"}
+        assert report["system"] == "WARNING" if report["optional_warnings"] else report["system"] == "READY"
     # optional-only failures cannot appear in required_failures
     optional_names = {c["name"] for c in report["checks"] if c["level"] == "optional"}
     assert set(report["required_failures"]).isdisjoint(optional_names)
@@ -54,7 +60,7 @@ def test_optional_failure_does_not_fail_required_ok(monkeypatch):
         monkeypatch.setattr(diag, "OPTIONAL_MODULES", diag.OPTIONAL_MODULES + ["not_a_real_optional_pkg_xyz"])
         report = build_doctor_report()
         assert report["required_ok"] is True
-        assert report["system"] == "ready"
+        assert report["system"] in {"READY", "WARNING"}  # optional absence never blocks
         assert any(c["name"] == "backend:not_a_real_optional_pkg_xyz" and c["status"] == "warn"
                    for c in report["checks"])
     finally:
@@ -66,7 +72,7 @@ def test_required_failure_flips_system(monkeypatch):
     monkeypatch.setattr(diag, "REQUIRED_MODULES", ["does_not_exist_required_pkg_zz"])
     report = build_doctor_report()
     assert report["required_ok"] is False
-    assert report["system"] == "degraded"
+    assert report["system"] == "REQUIRED_FAILURE"
     assert "does_not_exist_required_pkg_zz" in report["required_failures"]
 
 

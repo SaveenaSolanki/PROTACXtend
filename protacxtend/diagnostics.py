@@ -151,8 +151,18 @@ def build_doctor_report() -> dict[str, Any]:
     required_fail = [c for c in checks if c["level"] == "required" and not c["ok"]]
     optional_warn = [c for c in checks if c["level"] == "optional" and not c["ok"]]
 
+    # Overall verdict is drawn from the live checks only (never hard-coded):
+    # READY (all ok) · WARNING (optional problems, required pass) ·
+    # REQUIRED_FAILURE (any required check fails)
+    if required_fail:
+        system = "REQUIRED_FAILURE"
+    elif optional_warn:
+        system = "WARNING"
+    else:
+        system = "READY"
+
     return {
-        "system": "ready" if not required_fail else "degraded",
+        "system": system,
         "required_ok": len(required_fail) == 0,
         "optional_warnings": len(optional_warn),
         "summary": {
@@ -163,6 +173,7 @@ def build_doctor_report() -> dict[str, Any]:
         },
         "required_failures": [c["name"] for c in required_fail],
         "optional_warning_names": [c["name"] for c in optional_warn],
+        "checks": checks,
         "checks": checks,
     }
 

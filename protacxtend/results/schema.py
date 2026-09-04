@@ -11,8 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-# Evidence provenance kinds used across the system.
-EVIDENCE_KINDS = ("measured", "retrieved", "calculated", "predicted", "missing")
+# Evidence provenance kinds used across the system. Every datum carries one.
+EVIDENCE_KINDS = ("measured", "retrieved", "calculated", "predicted", "inferred", "missing")
 
 
 @dataclass
@@ -34,8 +34,9 @@ class Provenance:
 class EvidenceItem:
     """A single piece of evidence with an explicit provenance kind.
 
-    kind ∈ {measured, retrieved, calculated, predicted, missing} — nothing
-    is labelled as measured unless an experiment produced it.
+    kind ∈ {measured, retrieved, calculated, predicted, inferred, missing} —
+    nothing is labelled as measured unless an experiment produced it, and
+    "inferred" is used only when a model reasoned from other data.
     """
 
     summary: str
@@ -67,6 +68,7 @@ class ScientificResult:
 
     workflow: str
     summary: str
+    task_id: Optional[str] = None  # stable id for this task/run
     status: str = "ok"  # ok | partial | failed
     result: dict[str, Any] = field(default_factory=dict)
     evidence: list[EvidenceItem] = field(default_factory=list)
@@ -94,8 +96,9 @@ class ScientificResult:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
-            "workflow": self.workflow,
             "status": self.status,
+            "task_id": self.task_id,
+            "workflow": self.workflow,
             "summary": self.summary,
             "result": self.result,
             "evidence": [e.to_dict() for e in self.evidence],
@@ -113,8 +116,9 @@ def from_dict(data: dict[str, Any]) -> ScientificResult:
     """Rebuild a ScientificResult from its dict form (strict about kinds)."""
     return ScientificResult(
         workflow=str(data.get("workflow", "")),
-        status=str(data.get("status", "ok")),
         summary=str(data.get("summary", "")),
+        task_id=data.get("task_id"),
+        status=str(data.get("status", "ok")),
         result=dict(data.get("result") or {}),
         evidence=[
             EvidenceItem(

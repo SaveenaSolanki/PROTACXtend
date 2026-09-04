@@ -48,6 +48,25 @@ def handle_doctor() -> None:
               "ok": False, "error": str(exc)})
 
 
+def handle_compare(path: str) -> None:
+    """Run the BRD4\u2013VHL six-PROTAC benchmark (/compare <file>)."""
+    emit_tool_call("brd4_vhl_six_benchmark", {"dataset": path or "bundled examples/brd4_vhl_6.csv"})
+    try:
+        from protacxtend.benchmark.brd4_vhl_six import run_brd4_vhl_six_benchmark
+        out = run_brd4_vhl_six_benchmark(path or None)
+        payload = out["result"]
+        emit({"type": "compare_result", "payload": payload})
+        emit({"type": "scientific_result", "result": out["schema"]})
+        emit_tool_result("brd4_vhl_six_benchmark",
+                         result=out["schema"],
+                         status="ok")
+    except Exception as exc:
+        emit_tool_result("brd4_vhl_six_benchmark",
+                         result={"error": str(exc)},
+                         status="error")
+        emit({"type": "error", "message": f"benchmark failed: {exc}"})
+
+
 def handle_status() -> None:
     """Emit system status."""
     import importlib
@@ -406,6 +425,8 @@ def handle_command(cmd: str, args: dict[str, Any]) -> None:
         handle_run(args.get("request", ""))
     elif cmd == "doctor":
         handle_doctor()
+    elif cmd == "compare":
+        handle_compare(args.get("path", "") or args.get("file", ""))
     elif cmd == "status":
         handle_status()
     elif cmd == "validate":

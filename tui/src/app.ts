@@ -321,6 +321,9 @@ export class ProtacXtendApp {
         if (sr && sr.workflow) this.latestSchema = sr;
         break;
       }
+      case "compare_result":
+        this.renderComparePanel((event.payload as Record<string, unknown>) || {});
+        break;
       case "databases_list":
         this.databaseCount = ((event.databases as Record<string, unknown>[]) || []).length;
         break;
@@ -330,7 +333,8 @@ export class ProtacXtendApp {
   }
 
   /** Ask backend for a payload and resolve when the matching event arrives. */
-  private ask(type: string, want: string[], timeoutMs = 10_000): Promise<Record<string, unknown> | undefined> {
+  private ask(type: string, want: string[], timeoutMs = 10_000,
+               extra: Record<string, unknown> = {}): Promise<Record<string, unknown> | undefined> {
     return new Promise((resolve) => {
       const onEvent = (event: BridgeEvent) => {
         if (event.type === want.find((w) => w === event.type)) {
@@ -348,7 +352,7 @@ export class ProtacXtendApp {
       }, timeoutMs);
       this.bridge.on("event", onEvent);
       try {
-        this.bridge.send(type);
+        this.bridge.send(type, extra);
       } catch {
         cleanup();
         resolve(undefined);
@@ -555,7 +559,7 @@ export class ProtacXtendApp {
         await this.runWorkflow("reason", args);
         break;
       case "/compare":
-        await this.runWorkflow("compare", args);
+        await this.runCompare(args || "");
         break;
       case "/design":
         await this.runWorkflow("design", args);
@@ -589,7 +593,11 @@ export class ProtacXtendApp {
         }
         break;
       case "/run":
-        await this.runWorkflow("run", args);
+        if (/brd4-vhl-benchmark/i.test(args)) {
+          await this.runCompare("");
+        } else {
+          await this.runWorkflow("run", args);
+        }
         break;
 
       // ── low-level skill tools (kept for direct access) ──
@@ -715,6 +723,69 @@ export class ProtacXtendApp {
     } else {
       printLine(`  ${theme.muted("no provenance recorded (nothing was invented here)")}`);
     }
+    printLine("");
+  }
+
+  /** /compare <six-protac-file> · /run brd4-vhl-benchmark */
+  private async runCompare(path: string): Promise<void> {
+    printInfo(`Running BRD4\u2013VHL six-PROTAC benchmark${path ? ` \u2190 ${path}` : " (bundled dataset)"}…`);
+    const ev = await this.ask("compare", ["compare_result"], 60_000, { path });
+    if (!ev) {
+      printWarning("Benchmark did not return a result — check the dataset path.");
+      return;
+    }
+    // renderComparePanel runs via onBridgeEvent when the payload arrives;
+    // ask resolves on the same event so nothing else is needed here.
+  }
+
+  private renderComparePanel(payload: Record<string, unknown>): void {
+    const ranking = (payload.ranking as Array<Record<string, unknown>>) || [];
+    const stages = (payload.stages as Array<Record<string, unknown>>) || [];
+    const cls = (payload.classification as Record<string, unknown>) || {};
+    const unc = (payload.uncertainty as string[]) || [];
+    const winner = (payload.winner as Record<string, unknown>) || {};
+
+    printLine("");
+    printLine(`  ${theme.grad("BRD4 \u2013 VHL SIX-PROTAC BENCHMARK", "#9B94F0", "#5AB9CD")}  ${theme.dim("· KNOW \u2192 REASON \u2192 DESIGN \u2192 DISCOVER")}`);
+    printLine(`  ${theme.dim("dataset")}  ${theme.semantic("text", truncateToWidth(String(payload.dataset ?? ""), 70))}`);
+    printRuleHeader("EVIDENCE TYPE ACCOUNTING");
+    const label: Record<string, string> = {
+      measured: theme.success("measured"), retrieved: theme.fg("cyan", "retrieved"),
+      calculated: theme.fg("violet", "calculated"), predicted: theme.fg("purple", "predicted"),
+      missing: theme.warning("missing"),
+    };
+    printLine(`  ${Object.entries(label).map(([k, v]) => `${v} ${String(cls[k] ?? 0)}`).join("   ")}`);
+    printLine("");
+    for (const st of stages) {
+      const ph = String(st.phase ?? "");
+      const pc = ph === "KNOW" ? "violet" : ph === "REASON" ? "purple" : ph === "DESIGN" ? "cyan" : "mint";
+      printLine(`  ${theme.fg(pc, `[${ph}]`)} ${theme.dim(String(st.note ?? ""))}`);
+    }
+    printLine("");
+
+    printRuleHeader("RANKING (predicted, from retrieved + calculated features)");
+    const headW = 70;
+    for (const row of ranking) {
+      const rank = theme.accent(`#${String(row.rank)}`);
+      const id = theme.semantic("text", padRight(String(row.id ?? ""), 7));
+      const score = theme.fg("cyan", String(row.score));
+      const band = theme.dim(truncateToWidth(String(row.band ?? ""), 26));
+      const vhl = String(row.vhl_ligand_status ?? "") === "modified"
+        ? theme.error("[VHL modified]") : theme.success("[VHL intact]");
+      printLine(`  ${rank}  ${id} ${score}  ${band}  ${vhl}`);
+      const adv = String(row.advantage ?? "");
+      const liab = String(row.liability ?? "");
+      if (adv && adv !== "None") printLine(`      ${theme.dim("strength")} ${truncateToWidth(adv, headW)}`);
+      if (liab && liab !== "None") printLine(`      ${theme.dim("liability")} ${truncateToWidth(liab, headW)}`);
+      if (row.md_predicted_rank) {
+        printLine(`      ${theme.dim(`md analysis predicted rank ${row.md_predicted_rank} (retrieved \u00b7 not used for this ranking)`)}`);
+      }
+    }
+    printLine("");
+    printLine(`  ${theme.accent("TOP")}  ${theme.semantic("text", String(winner.name ?? winner.id ?? "?"))}  ${theme.fg("cyan", String(winner.score ?? ""))}  ${theme.dim(String(winner.band ?? ""))}`);
+    printSection("UNCERTAINTY & NEXT EXPERIMENTS");
+    for (const u of unc) printLine(`  ${theme.warning("\u26a0")} ${theme.dim(truncateToWidth(u, 78))}`);
+    printLine(`  ${theme.dim("Next: measure DC50/Dmax in a VHL-proficient line (e.g. H1299) with DMSO controls to convert these predictions into measured evidence.")}`);
     printLine("");
   }
 

@@ -1,14 +1,18 @@
-"""Tests for the BRD4–VHL six-PROTAC benchmark (commit 3)."""
+"""Tests for the BRD4–VHL six-PROTAC PROSPECTIVE CASE STUDY.
+
+Classification: prospective case study — the six molecules are never
+benchmark ground truth; inputs are blinded (no outcome-derived ranking).
+"""
 
 import csv
 from pathlib import Path
 
 import pytest
 
-from protacxtend.benchmark.brd4_vhl_six import (
+from protacxtend.case_study.brd4_vhl_six import (
     DEFAULT_DATASETS,
     resolve_dataset,
-    run_brd4_vhl_six_benchmark,
+    run_brd4_vhl_six_case_study,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +40,7 @@ def test_resolve_default_finds_bundled():
 
 
 def test_runner_shape_and_classification(bundled):
-    out = run_brd4_vhl_six_benchmark(str(bundled))
+    out = run_brd4_vhl_six_case_study(str(bundled))
     res = out["result"]
     assert res["n_records"] == 6
     assert res["measured_present"] == 0
@@ -52,7 +56,7 @@ def test_runner_shape_and_classification(bundled):
 
 def test_winner_is_computed_not_hardcoded(bundled, tmp_path):
     # baseline: mol1 wins
-    base = run_brd4_vhl_six_benchmark(str(bundled))["result"]
+    base = run_brd4_vhl_six_case_study(str(bundled))["result"]
     assert base["winner"]["id"] == "mol1"
 
     # sabotage mol1's VHL ligand in a *copy* of the dataset -> winner must change
@@ -67,19 +71,30 @@ def test_winner_is_computed_not_hardcoded(bundled, tmp_path):
         w.writeheader()
         w.writerows(rows)
 
-    out = run_brd4_vhl_six_benchmark(str(patched))["result"]
+    out = run_brd4_vhl_six_case_study(str(patched))["result"]
     assert out["winner"]["id"] != "mol1"
 
 
 def test_deterministic(bundled):
-    a = run_brd4_vhl_six_benchmark(str(bundled))
-    b = run_brd4_vhl_six_benchmark(str(bundled))
+    a = run_brd4_vhl_six_case_study(str(bundled))
+    b = run_brd4_vhl_six_case_study(str(bundled))
     assert a == b
 
 
-def test_ranking_reports_md_prediction_separately(bundled):
-    res = run_brd4_vhl_six_benchmark(str(bundled))["result"]
-    # the shipped analysis prediction is surfaced as a retrieved field,
-    # never used to set the winner (mol2 is last in both, from its data)
-    ranks = {r["id"]: r["md_predicted_rank"] for r in res["ranking"]}
-    assert ranks["mol2"] == 6
+def test_input_is_blinded_and_not_ground_truth(bundled):
+    with open(bundled, newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    assert "md_rank" not in rows[0]  # no outcome-derived ranking in inputs
+    res = run_brd4_vhl_six_case_study(str(bundled))["result"]
+    # ranking rows carry no outcome-derived field
+    for row in res["ranking"]:
+        assert "md_predicted_rank" not in row
+    out = run_brd4_vhl_six_case_study(str(bundled))
+    # case study never claims measured status
+    assert out["result"]["measured_present"] == 0
+    # lock statement documented
+    notes = " ".join(st["note"] for st in res["stages"])
+    assert "lock" in notes.lower()
+    schema = out["schema"]
+    assert schema["workflow"] == "case_study:brd4-vhl-six"
+    assert any("ground truth" in w for w in schema["warnings"])

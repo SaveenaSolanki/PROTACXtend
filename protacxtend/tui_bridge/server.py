@@ -49,22 +49,22 @@ def handle_doctor() -> None:
 
 
 def handle_compare(path: str) -> None:
-    """Run the BRD4\u2013VHL six-PROTAC benchmark (/compare <file>)."""
-    emit_tool_call("brd4_vhl_six_benchmark", {"dataset": path or "bundled examples/brd4_vhl_6.csv"})
+    """Prospective BRD4\u2013VHL six-PROTAC case study (/compare <file>)."""
+    emit_tool_call("brd4_vhl_six_case_study", {"dataset": path or "bundled examples/brd4_vhl_6.csv"})
     try:
-        from protacxtend.benchmark.brd4_vhl_six import run_brd4_vhl_six_benchmark
-        out = run_brd4_vhl_six_benchmark(path or None)
+        from protacxtend.case_study.brd4_vhl_six import run_brd4_vhl_six_case_study
+        out = run_brd4_vhl_six_case_study(path or None)
         payload = out["result"]
         emit({"type": "compare_result", "payload": payload})
         emit({"type": "scientific_result", "result": out["schema"]})
-        emit_tool_result("brd4_vhl_six_benchmark",
+        emit_tool_result("brd4_vhl_six_case_study",
                          result=out["schema"],
                          status="ok")
     except Exception as exc:
-        emit_tool_result("brd4_vhl_six_benchmark",
+        emit_tool_result("brd4_vhl_six_case_study",
                          result={"error": str(exc)},
                          status="error")
-        emit({"type": "error", "message": f"benchmark failed: {exc}"})
+        emit({"type": "error", "message": f"case study failed: {exc}"})
 
 
 def handle_status() -> None:
@@ -124,10 +124,12 @@ def _schema_tool(tool: str, workflow: str, payload: dict, status: str = "ok", so
     """Wrap a tool payload in the shared ScientificResult envelope."""
     from protacxtend.results.schema import EvidenceItem, ScientificResult, Provenance
     evidence = evidence or [f"{tool} returned {status}"]
+    from uuid import uuid4
     res = ScientificResult(
         workflow=workflow,
-        status="ok" if status == "ok" else "failed",
         summary=evidence[0],
+        task_id=f"{tool}_{uuid4().hex[:8]}",
+        status="ok" if status == "ok" else "failed",
         result=payload,
         evidence=[EvidenceItem(summary=ev, source=source, kind=kind) for ev in evidence],
         warnings=[payload.get("error", "")] if payload.get("error") else [],
@@ -274,8 +276,9 @@ def _emit_schema_result(request: str, run_id: str) -> None:
                f"\u00b7 {n_warheads} warheads \u00b7 {n_e3} E3 \u00b7 {n_linkers} linkers")
     res = ScientificResult(
         workflow="run",
-        status="ok",
         summary=summary,
+        task_id=run_id,
+        status="ok",
         result={
             "request": request,
             "candidates_generated": n_candidates,

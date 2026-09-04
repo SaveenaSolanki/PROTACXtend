@@ -593,7 +593,7 @@ export class ProtacXtendApp {
         }
         break;
       case "/run":
-        if (/brd4-vhl-benchmark/i.test(args)) {
+        if (/brd4-vhl-(case-study|benchmark)/i.test(args)) {
           await this.runCompare("");
         } else {
           await this.runWorkflow("run", args);
@@ -726,9 +726,9 @@ export class ProtacXtendApp {
     printLine("");
   }
 
-  /** /compare <six-protac-file> · /run brd4-vhl-benchmark */
+  /** /compare <six-protac-file> · /run brd4-vhl-case-study (alias: brd4-vhl-benchmark) */
   private async runCompare(path: string): Promise<void> {
-    printInfo(`Running BRD4\u2013VHL six-PROTAC benchmark${path ? ` \u2190 ${path}` : " (bundled dataset)"}…`);
+    printInfo(`Running BRD4\u2013VHL prospective case study${path ? ` \u2190 ${path}` : " (bundled blinded dataset)"}…`);
     const ev = await this.ask("compare", ["compare_result"], 60_000, { path });
     if (!ev) {
       printWarning("Benchmark did not return a result — check the dataset path.");
@@ -746,7 +746,7 @@ export class ProtacXtendApp {
     const winner = (payload.winner as Record<string, unknown>) || {};
 
     printLine("");
-    printLine(`  ${theme.grad("BRD4 \u2013 VHL SIX-PROTAC BENCHMARK", "#9B94F0", "#5AB9CD")}  ${theme.dim("· KNOW \u2192 REASON \u2192 DESIGN \u2192 DISCOVER")}`);
+    printLine(`  ${theme.grad("BRD4 \u2013 VHL SIX-PROTAC PROSPECTIVE CASE STUDY", "#9B94F0", "#5AB9CD")}  ${theme.dim("· NOT a benchmark · no ground truth")}`);
     printLine(`  ${theme.dim("dataset")}  ${theme.semantic("text", truncateToWidth(String(payload.dataset ?? ""), 70))}`);
     printRuleHeader("EVIDENCE TYPE ACCOUNTING");
     const label: Record<string, string> = {
@@ -763,7 +763,7 @@ export class ProtacXtendApp {
     }
     printLine("");
 
-    printRuleHeader("RANKING (predicted, from retrieved + calculated features)");
+    printRuleHeader("PREDICTED RANKING — LOCK BEFORE WET-LAB OUTCOME ACCESS");
     const headW = 70;
     for (const row of ranking) {
       const rank = theme.accent(`#${String(row.rank)}`);
@@ -777,12 +777,10 @@ export class ProtacXtendApp {
       const liab = String(row.liability ?? "");
       if (adv && adv !== "None") printLine(`      ${theme.dim("strength")} ${truncateToWidth(adv, headW)}`);
       if (liab && liab !== "None") printLine(`      ${theme.dim("liability")} ${truncateToWidth(liab, headW)}`);
-      if (row.md_predicted_rank) {
-        printLine(`      ${theme.dim(`md analysis predicted rank ${row.md_predicted_rank} (retrieved \u00b7 not used for this ranking)`)}`);
-      }
     }
     printLine("");
     printLine(`  ${theme.accent("TOP")}  ${theme.semantic("text", String(winner.name ?? winner.id ?? "?"))}  ${theme.fg("cyan", String(winner.score ?? ""))}  ${theme.dim(String(winner.band ?? ""))}`);
+    printLine(`  ${theme.dim("Lock: this predicted ranking is provisional and will be frozen before any wet-lab outcome is accessed.")}`);
     printSection("UNCERTAINTY & NEXT EXPERIMENTS");
     for (const u of unc) printLine(`  ${theme.warning("\u26a0")} ${theme.dim(truncateToWidth(u, 78))}`);
     printLine(`  ${theme.dim("Next: measure DC50/Dmax in a VHL-proficient line (e.g. H1299) with DMSO controls to convert these predictions into measured evidence.")}`);
@@ -1161,15 +1159,18 @@ export class ProtacXtendApp {
       if (ok && detail && !detail.startsWith("v")) printInfo(`  ${theme.dim(truncateToWidth(detail, 74))}`);
     }
 
-    printRuleHeader("RESULT");
+    printRuleHeader("VERDICT");
     const fails = (report.required_failures as string[]) || [];
     const warnCount = Number(report.optional_warnings ?? 0);
     const summary = (report.summary ?? {}) as Record<string, unknown>;
-    if (fails.length === 0) {
-      printSuccess(`ready — ${String(summary.ok ?? "?")} ok · ${warnCount} optional ⚠ (non-blocking)`);
+    const system = String(report.system ?? (fails.length ? "REQUIRED_FAILURE" : warnCount ? "WARNING" : "READY"));
+    if (system === "REQUIRED_FAILURE") {
+      printError(`REQUIRED FAILURE — ${fails.join(", ")}`);
+      printInfo("Optional warnings never block the system, required failures do.");
+    } else if (system === "WARNING") {
+      printWarning(`WARNING — ${String(summary.ok ?? "?")} ok · ${warnCount} optional ⚠ (non-blocking)`);
     } else {
-      printWarning(`required failures: ${fails.join(", ")} — see /status for detail`);
-      printInfo("Optional warnings never block the system.");
+      printSuccess(`READY — ${String(summary.ok ?? "?")} checks ok`);
     }
     printLine("");
   }

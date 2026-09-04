@@ -7,7 +7,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import { renderHeader, renderSimpleHeader, renderContract, phaseWord } from "../src/header.js";
-import { renderEvent, renderAgentStart, renderAgentComplete, renderToolCall, renderToolResult, renderEvidence, renderWarning, renderCandidate, summarizeToolResult, phaseChip } from "../src/events.js";
+import { renderEvent, renderAgentStart, renderAgentComplete, renderToolCall, renderToolResult, renderEvidence, renderWarning, renderCandidate, summarizeToolResult, summarizeSchema, phaseChip } from "../src/events.js";
 import { createTheme, lerpColor } from "../src/theme.js";
 import { visibleWidth, truncateToWidth, padRight, padLeft, boxTop, boxBottom, gradientBand, splitRow } from "../src/terminal.js";
 
@@ -289,5 +289,27 @@ describe("Terminal helpers v2", () => {
   it("splitRow fills a width", () => {
     const row = splitRow("left", "right", 20);
     assert.strictEqual(visibleWidth(row), 20);
+  });
+});
+
+describe("Scientific result schema one-liners (commit 2)", () => {
+  it("summarizeSchema renders schema-driven one-line", () => {
+    const line = summarizeSchema({
+      workflow: "admet", status: "ok", summary: "MW 151.16 · logP 1.35",
+      evidence: [{ kind: "calculated", summary: "descriptors" }],
+      warnings: [], provenance: [],
+    });
+    const plain = line.replace(/\x1b\[[0-9;]*m/g, "");
+    assert.ok(plain.includes("admet"));
+    assert.ok(plain.includes("ok"));
+    assert.ok(plain.includes("MW 151.16"));
+    assert.ok(plain.includes("calculated"));
+  });
+
+  it("summarizeToolResult prefers the schema envelope when present", () => {
+    const out = summarizeToolResult("validate_smiles", {
+      workflow: "admet", status: "ok", summary: "SMILES ok", result: { mw: 1 }, evidence: [], warnings: [],
+    });
+    assert.ok(out.replace(/\x1b\[[0-9;]*m/g, "").includes("SMILES ok"));
   });
 });

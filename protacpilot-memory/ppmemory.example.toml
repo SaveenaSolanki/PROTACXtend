@@ -1,0 +1,64 @@
+# PROTACpilot Cognitive Memory — example configuration.
+# Copy to ~/.protacpilot-memory/config.toml or pass via PROTACPILOT_MEMORY_CONFIG.
+# All values are engineering hyperparameters, not biological constants.
+
+project_name = "protacpilot"
+agent_name = "protacpilot"
+token_budget = 2500
+embeddings_enabled = false
+embedding_dim = 256
+max_search_results = 20
+
+[encoding]
+goal_relevance = 0.20
+novelty = 0.20
+surprise = 0.15
+evidence_strength = 0.25
+recurrence = 0.05
+decision_impact = 0.15
+
+[thresholds]
+t_ignore = 0.20
+t_episode = 0.30
+t_priority = 0.65
+
+[retrieval]
+lexical = 1.00
+semantic = 0.60
+entity = 0.90
+graph = 0.50
+context = 0.85
+evidence = 0.50
+confidence = 0.50
+strength = 0.40
+goal = 0.60
+temporal = 0.30
+
+[consolidation]
+min_episodes = 3
+min_independent_sources = 2
+max_contradiction_ratio = 0.34
+min_aggregate_evidence = 1.5
+min_confidence = 0.40
+require_experimental_or_literature = true
+
+[replay]
+prediction_error = 0.30
+uncertainty = 0.20
+decision_importance = 0.20
+unresolved_conflict = 0.15
+forgetting_risk = 0.15
+prospective_relevance = 0.10
+min_priority = 0.20
+batch_size = 50
+
+[confidence]
+base = 0.10
+support_gain = 0.20
+independence_gain = 0.15
+replication_gain = 0.10
+quality_gain = 0.20
+consistency_gain = 0.15
+accuracy_gain = 0.10
+contradiction_penalty = 0.30
+ceiling = 0.97

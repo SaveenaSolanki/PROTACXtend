@@ -34,6 +34,21 @@ logger = logging.getLogger("protacpilot.runtime")
 VALID_MODES = {"deterministic", "agentic"}
 
 
+def _as_state_dict(state: Any) -> Dict[str, Any]:
+    """Normalize a runtime state (dict or pydantic WorkflowState) to the dict
+    shape consumed by run_records.build_agent_run_record / write_run_record."""
+    if state is None:
+        return {}
+    if isinstance(state, dict):
+        return state
+    if hasattr(state, "model_dump"):
+        try:
+            return state.model_dump()
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("state.model_dump() failed: %s", exc)
+    return {}
+
+
 def run_protacpilot(
     user_request: str,
     mode: str = "deterministic",
@@ -57,6 +72,15 @@ def run_protacpilot(
     run_id = config.get("run_id") or f"run_{uuid.uuid4().hex[:8]}"
     t0 = time.time()
 
+    # One canonical run id everywhere: expose it to in-graph workflow-memory
+    # writes (protac_toolbox.write_workflow_memory) for the duration of this run.
+    from protacxtend.tools.protac_toolbox import reset_active_run_id, set_active_run_id
+    _rid_token = None
+    try:
+        _rid_token = set_active_run_id(run_id)
+    except Exception:  # pragma: no cover - defensive
+        _rid_token = None
+
     # Central tracing: every run writes outputs/runs/<run_id>/trace.jsonl
     try:
         from protacxtend.observability.tracing import TraceSession
@@ -73,6 +97,8 @@ def run_protacpilot(
         if trace:
             trace.error("runtime", str(exc))
             trace.end(status="failed")
+        if _rid_token is not None:
+            reset_active_run_id(_rid_token)
         raise
 
     runtime_s = round(time.time() - t0, 2)
@@ -94,15 +120,25 @@ def run_protacpilot(
 
     # Canonical AgentRunRecord (auditable run artifact set)
     try:
-        if mode == "agentic" and config.get("record_run", True):
+        if config.get("record_run", mode == "agentic"):
             from protacxtend.run_records import build_agent_run_record, write_run_record, OUTPUT_ROOT
-            record = build_agent_run_record(result, run_id, user_request, runtime_s)
+            state_dict = _as_state_dict(result.get("state"))
+            record = build_agent_run_record({**result, "state": state_dict},
+                                            run_id, user_request, runtime_s)
             run_dir = OUTPUT_ROOT / run_id
             run_json = write_run_record(
-                run_dir, record, result.get("state") or {},
-                report_text=(result.get("state") or {}).get("report", ""),
+                run_dir, record, state_dict,
+                report_text=state_dict.get("report", ""),
             )
             result["run_record"] = {"run_id": run_id, "dir": str(run_dir), "file": str(run_json)}
+            # Optional cognitive-memory ingestion (opt-in via
+            # PROTACPILOT_COGNITIVE_MEMORY=1; default OFF so frozen run
+            # artifacts and benchmarks are unchanged).  Never fatal.
+            try:
+                from protacxtend.memory.cognitive_bridge import maybe_ingest
+                result["cognitive_memory"] = maybe_ingest(record, state_dict)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.warning("cognitive memory ingestion skipped: %s", exc)
     except Exception as exc:
         logger.warning("run record write failed: %s", exc)
 
@@ -125,6 +161,9 @@ def run_protacpilot(
             "events": trace._events,
         }
 
+    if _rid_token is not None:
+        reset_active_run_id(_rid_token)
+
     return {
         "request": user_request,
         "mode": mode,
@@ -136,6 +175,7 @@ def run_protacpilot(
         "artifacts": result.get("artifacts", {}),
         "state": result.get("state"),
         "trace": trace_info,
+        "run_record": result.get("run_record"),
     }
 
 

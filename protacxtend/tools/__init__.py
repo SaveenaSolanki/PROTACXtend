@@ -1,4 +1,4 @@
-"""Scientific tool layer for SynGlue-Agent."""
+"""Scientific tool layer for PROTACXtend."""
 
 from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 from protacxtend.tools.protac_autopilot_toolbox import ProtacAutopilotToolbox, ProtacXtendToolbox

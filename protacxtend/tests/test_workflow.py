@@ -28,7 +28,7 @@ class SynGlueWorkflowTests(unittest.TestCase):
         self.assertGreater(summary["linkers_generated"], 0)
         self.assertGreater(summary["valid_candidates"], 0)
         self.assertGreater(len(state.ranking_results), 0)
-        self.assertIn("SynGlue-Agent PROTAC Design Report", state.report)
+        self.assertIn("PROTACXtend PROTAC Design Report", state.report)
 
     def test_planner_stops_when_required_target_is_missing(self) -> None:
         state = run_workflow_from_request("")

@@ -1,3 +1,16 @@
+# PROTACXtend API/runtime image.
+#
+# Build:
+#   docker build -t protacxtend .
+# Run (API):
+#   docker run --rm -p 8000:8000 protacxtend
+# Run (CLI):
+#   docker run --rm protacxtend python -m protacxtend.cli doctor
+#
+# The image installs the *package* (not just loose files) so the console
+# entry points and package metadata are present, and it installs only the
+# API/UI extras.  Heavy scientific engines (RDKit, Chemprop, docking) are
+# optional and are documented separately for workstation/HPC images.
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,13 +27,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies first for better layer caching.
-COPY requirements.txt /app/requirements.txt
-RUN python -m pip install --upgrade pip && \
-    pip install -r /app/requirements.txt
+# Packaging metadata first for better layer caching.
+COPY pyproject.toml README.md MANIFEST.in /app/
 
-# Copy source code.
-COPY . /app
+# Package source (including package data under protacxtend/data).
+COPY protacxtend /app/protacxtend
+
+# Install the project itself with the API + UI extras.  This creates the
+# ``protacxtend`` / ``PROTACXtend`` entry points and installs runtime deps.
+RUN python -m pip install --upgrade pip && \
+    pip install ".[api,ui]"
 
 # Create non-root runtime user.
 RUN useradd -m -u 10001 appuser && \
@@ -31,4 +47,3 @@ EXPOSE 8000 8501
 
 # Default to API server; override CMD for CLI/Streamlit.
 CMD ["python", "-m", "uvicorn", "protacxtend.backend.api_routes:app", "--host", "0.0.0.0", "--port", "8000"]
-

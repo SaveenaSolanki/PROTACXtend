@@ -5,7 +5,7 @@ and emits JSONL events to stdout. The TypeScript TUI spawns this
 as a subprocess and communicates via this protocol.
 
 Usage:
-    python -m synglue_agent.tui_bridge.server
+    python -m protacxtend.tui_bridge.server
 """
 
 from __future__ import annotations
@@ -139,47 +139,69 @@ def _schema_tool(tool: str, workflow: str, payload: dict, status: str = "ok", so
 
 
 def handle_run(request: str) -> None:
-    """Run the PROTACXtend workflow and emit streaming events."""
-    run_id = emit_run_start(request)
+    """Run a workflow through the PRODUCTION runtime and emit streaming events.
 
+    Execution goes through protacxtend.agents.runtime.run_protacpilot
+    (deterministic mode = the same scientific graph as before), which owns the
+    canonical run id, TraceSession and the outputs/runs/<run_id>/ artifact
+    bundle (run.json / summary.json / trace.jsonl / decisions.jsonl /
+    evidence.jsonl / candidates.parquet / report.md).
+
+    The bridge-generated run id is passed in as config run_id so TUI, runtime,
+    trace, output directory, run.json and workflow memory all share ONE id.
+    No module-level state cache survives between independent user runs.
+    """
+    run_id = emit_run_start(request)
+    saved_dir = ""
     try:
+        # Single canonical execution through the existing runtime wrapper.
+        from protacxtend.agents.runtime import run_protacpilot
+        emit_tool_call("run_protacpilot",
+                       {"mode": "deterministic", "request": request[:120], "run_id": run_id})
+        result = run_protacpilot(request, mode="deterministic",
+                                 config={"run_id": run_id, "record_run": True})
+        state = result.get("state")
+        emit_tool_result("run_protacpilot",
+                         result={"run_id": run_id, "status": result.get("status")},
+                         status="ok")
+
+        record = result.get("run_record") or {}
+        saved_dir = str(record.get("dir") or "")
+
+        # Progress + evidence stream (kept: Supervisor, Target Resolver, ...).
         for agent in AGENT_PIPELINE:
             emit_agent_start(agent["id"])
-
             try:
-                _run_agent(agent["id"], request)
+                _emit_agent_evidence(agent["id"], state)
                 emit_agent_complete(agent["id"], status="ok")
             except Exception as exc:
                 emit_agent_complete(agent["id"], status="error", detail=str(exc)[:200])
                 emit_warning(f"Agent {agent['name']} failed: {exc}", source=agent["id"])
 
-        # Emit final results (rich + standardised schema)
-        _emit_results()
-        _emit_schema_result(request, run_id)
+        # Final results (rich + standardised schema) — only on success, with
+        # the exact persisted directory (empty when persistence failed).
+        status = result.get("status") or "ok"
+        warnings = list(getattr(state, "warnings", []) or [])
+        _emit_results(state, run_id=run_id, saved_dir=saved_dir,
+                      status=status, warnings=warnings)
+        _emit_schema_result(request, run_id, state)
         emit_run_complete("ok", run_id, {
             "agents_completed": len(AGENT_PIPELINE),
+            "run_id": run_id,
+            "saved_dir": saved_dir,
+            "persisted": bool(saved_dir),
+            "status": status,
+            "warnings": warnings[:10],
         })
     except Exception as exc:
-        emit_run_complete("error", run_id, {"error": str(exc)})
+        emit_run_complete("error", run_id, {"error": str(exc), "run_id": run_id})
 
 
-def _run_agent(agent_id: str, request: str) -> None:
-    """Run a single agent node. This delegates to the real Python backend."""
-    from protacxtend.agents.graph import run_syn_glue_workflow
+def _emit_agent_evidence(agent_id: str, state: Any) -> None:
+    """Emit per-agent evidence from a completed workflow state (no graph run)."""
+    if state is None:
+        return
 
-    # Cache the full workflow state
-    if not hasattr(_run_agent, "_state_cache"):
-        _run_agent._state_cache = None  # type: ignore
-
-    if _run_agent._state_cache is None:  # type: ignore
-        emit_tool_call("run_syn_glue_workflow", {"request": request[:120]})
-        state = run_syn_glue_workflow(request)
-        _run_agent._state_cache = state  # type: ignore
-        emit_tool_result("run_syn_glue_workflow", status="ok")
-
-    state = _run_agent._state_cache  # type: ignore
-
-    # Emit evidence based on agent
     if agent_id == "target_resolver":
         target = getattr(state, "target_record", None)
         if target:
@@ -226,12 +248,11 @@ def _run_agent(agent_id: str, request: str) -> None:
             )
 
 
-def _emit_results() -> None:
-    """Emit final workflow results summary."""
-    if not hasattr(_run_agent, "_state_cache") or _run_agent._state_cache is None:  # type: ignore
+def _emit_results(state: Any, run_id: str = "", saved_dir: str = "",
+                  status: str = "ok", warnings: list | None = None) -> None:
+    """Emit final workflow results summary (with exact persisted path)."""
+    if state is None:
         return
-
-    state = _run_agent._state_cache  # type: ignore
 
     # Count results
     n_candidates = len(getattr(state, "valid_candidates", []) or [])
@@ -254,14 +275,18 @@ def _emit_results() -> None:
         "e3_ligands_selected": n_e3,
         "linkers_generated": n_linker,
         "report_preview": report_preview,
+        "run_id": run_id,
+        "saved_dir": saved_dir,
+        "persisted": bool(saved_dir),
+        "status": status,
+        "warnings": list(warnings or [])[:10],
     })
 
 
-def _emit_schema_result(request: str, run_id: str) -> None:
+def _emit_schema_result(request: str, run_id: str, state: Any) -> None:
     """Emit the shared ScientificResult envelope for a workflow run."""
-    if not hasattr(_run_agent, "_state_cache") or _run_agent._state_cache is None:
+    if state is None:
         return
-    state = _run_agent._state_cache
 
     from protacxtend.results.schema import ScientificResult, Provenance
 
@@ -289,7 +314,7 @@ def _emit_schema_result(request: str, run_id: str) -> None:
             "linkers_generated": n_linkers,
             "run_id": run_id,
         },
-        provenance=[Provenance(tool="run_syn_glue_workflow", source="protacxtend.agents.graph")],
+        provenance=[Provenance(tool="run_protacpilot", source="protacxtend.agents.runtime")],
     )
     if n_binders:
         res.add_evidence(f"{n_binders} binder record(s) retrieved for the target",
@@ -344,9 +369,10 @@ def handle_generator(request: str) -> None:
     try:
         from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
         toolbox = ProtacDesignToolbox()
-        linkers = toolbox.generate_rule_based_linkers() if hasattr(toolbox, 'generate_rule_based_linkers') else []
-        payload = {"linkers_generated": len(linkers),
-                    "linker_types": ["PEG", "alkyl", "piperazine", "triazole", "semi-rigid"]}
+        linker_types = ["PEG", "alkyl", "piperazine", "triazole", "semi-rigid"]
+        linkers = (toolbox.generate_rule_based_linkers(linker_types)
+                   if hasattr(toolbox, "generate_rule_based_linkers") else [])
+        payload = {"linkers_generated": len(linkers), "linker_types": linker_types}
         emit_tool_result("molecular_generator",
                          result=_schema_tool("molecular_generator", "generator", payload,
                                              kind="calculated", evidence=[f"{len(linkers)} linkers generated"],
@@ -363,15 +389,23 @@ def handle_retrosynthesis(smiles: str) -> None:
     """Run retrosynthesis planning."""
     emit_tool_call("retrosynthesis", {"smiles": smiles})
     try:
-        from protacxtend.tools.retrosynthesis_engines import run_retrosynthesis
-        result = run_retrosynthesis(smiles)
-        routes = result.get("routes", []) if isinstance(result, dict) else []
-        payload = {"smiles": smiles, "routes_found": len(routes), "routes": routes[:3]}
+        from protacxtend.tools.retrosynthesis import assess_retrosynthesis
+        result = assess_retrosynthesis(smiles, use_aizynth=True, max_steps=3)
+        routes = list(getattr(result, "route_files", []) or [])
+        payload = {
+            "smiles": smiles,
+            "routes_found": getattr(result, "route_count", len(routes)),
+            "routes": routes[:3],
+            "status": getattr(result, "status", "unknown"),
+            "rascore": getattr(result, "rascore", None),
+            "engines_ran": getattr(result, "engines_ran", []),
+            "note": getattr(result, "note", ""),
+        }
         emit_tool_result("retrosynthesis",
                          result=_schema_tool("retrosynthesis", "synthesis", payload,
                                              kind="calculated",
-                                             evidence=[f"{len(routes)} retrosynthetic route(s) proposed for the target"],
-                                             provenance_tool="protacxtend.tools.retrosynthesis_engines"),
+                                             evidence=[f"{payload['routes_found']} retrosynthetic route(s) proposed for the target"],
+                                             provenance_tool="protacxtend.tools.retrosynthesis"),
                          status="ok")
     except Exception as exc:
         emit_tool_result("retrosynthesis",
@@ -452,6 +486,15 @@ def handle_command(cmd: str, args: dict[str, Any]) -> None:
         handle_stereo(args.get("smiles", ""))
     elif cmd == "ping":
         emit({"type": "pong"})
+    elif cmd == "capability":
+        from protacxtend.runtime.executor import run_capability
+        emit({"type": "capability_result",
+              "result": run_capability(args.get("name", ""), args.get("params") or {})})
+    elif cmd == "capabilities":
+        from protacxtend.runtime.registry import build_registry, summary
+        recs = build_registry()
+        emit({"type": "capabilities", "summary": summary(recs),
+              "capabilities": [r.to_row() for r in recs]})
     else:
         emit({"type": "error", "message": f"Unknown command: {cmd}"})
 

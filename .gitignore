@@ -100,3 +100,17 @@ data/synglue/data/grover_*.csv
 
 # benchmark manifests are auto-generated from live registries
 benchmark/manifests/*.json
+
+# --- session 3 deliberate hygiene: large local experiment artifacts ---
+/results/
+/sota/
+/dist/
+/build/
+/validation_runs/
+/benchmark_results/
+/benchmark/frozen_cache/
+/outputs/atlas/
+/outputs/capabilities/
+/outputs/gap_completion/
+*.npy
+protac_tui.png

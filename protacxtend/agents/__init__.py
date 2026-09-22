@@ -1,1 +1,1 @@
-"""Agent orchestration layer for SynGlue-Agent."""
+"""Agent orchestration layer for PROTACXtend."""

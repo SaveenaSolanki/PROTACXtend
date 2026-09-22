@@ -1,4 +1,4 @@
-"""Configuration helpers for SynGlue-Agent."""
+"""Configuration helpers for PROTACXtend."""
 
 from __future__ import annotations
 

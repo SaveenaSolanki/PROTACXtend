@@ -1,0 +1,17 @@
+# Ship ONLY scientific runtime assets as package data (see protacxtend/resources.py).
+# Whitelist per tracked asset directory — never generated state/logs.
+recursive-include protacxtend/data *.csv *.xlsx *.txt *.joblib *.pt *.json
+recursive-include protacxtend/data/benchmark *.csv *.xlsx *.json
+include protacxtend/data/parser_validation_set.json
+recursive-include protacxtend/tui *.tcss *.md
+recursive-include protacxtend/data/tack *.joblib
+recursive-include protacxtend/data/linkers *.pt *.txt
+recursive-include protacxtend/data/toolkit *.xlsx
+recursive-include protacxtend/modules/active_learning/configs *.json
+recursive-include protacxtend/modules/cell_context_selector/data *.csv *.json
+recursive-include protacxtend/modules/cell_context_selector/models *.joblib
+recursive-include protacxtend/modules/cooperativity_alpha_predictor/data *.csv
+recursive-include protacxtend/modules/degradation_ml/models *.joblib
+recursive-include protacxtend/modules/e3_opportunity/data *.csv
+recursive-include protacxtend/modules/e3_opportunity/artifacts *.json
+recursive-include protacxtend/modules/hook_effect_modeler/configs *.json

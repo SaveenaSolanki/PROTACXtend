@@ -1,1 +1,1 @@
-"""Backend package for SynGlue-Agent."""
+"""Backend package for PROTACXtend."""

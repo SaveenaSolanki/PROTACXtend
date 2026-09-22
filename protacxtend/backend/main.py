@@ -1,4 +1,4 @@
-"""Backend entry points for SynGlue-Agent."""
+"""Backend entry points for PROTACXtend."""
 
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ def write_outputs(state: WorkflowState, stem: str = "synglue_run") -> dict[str, 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the SynGlue-Agent PROTAC workflow.")
+    parser = argparse.ArgumentParser(description="Run the PROTACXtend PROTAC workflow.")
     parser.add_argument(
         "--mode",
         default="design",

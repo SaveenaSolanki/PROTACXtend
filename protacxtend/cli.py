@@ -281,8 +281,254 @@ def _scenarios_command(args: argparse.Namespace) -> int:
 
 
 def _capabilities_command(args: argparse.Namespace) -> int:
-    _render_capabilities(json_output=bool(args.json))
+    from protacxtend.runtime.registry import build_registry, find, summary, trace
+
+    name = getattr(args, "name", None)
+    recs = build_registry()
+    if name:
+        import json as _json
+        if getattr(args, "run", False):
+            from protacxtend.runtime.executor import run_capability
+            params = _json.loads(args.params) if getattr(args, "params", "") else {}
+            payload = run_capability(name, params)
+        else:
+            payload = trace(recs, name)
+        # compact single-line JSON so machine callers (e2e audit) can parse it
+        print(_json.dumps(payload, default=str))
+        return 0
+    if bool(getattr(args, "json", False)) or not RICH_AVAILABLE or Table is None:
+        _print_json({"summary": summary(recs), "capabilities": [r.to_row() for r in recs]})
+        return 0
+    console = _console()
+    table = Table(title="PROTACxtend canonical capability registry", show_lines=False)
+    table.add_column("Kind", style="bold")
+    table.add_column("Count")
+    for kind, n in sorted(summary(recs)["by_kind"].items()):
+        table.add_row(kind, str(n))
+    console.print(table)
     return 0
+
+
+def _install_command(args: argparse.Namespace) -> int:
+    """Install an APPROVED, pinned capability recipe into an isolated env."""
+    from protacxtend.runtime import acquisition as acq
+    from protacxtend.runtime.recipes import list_recipes
+
+    if getattr(args, "list", False) or not getattr(args, "name", ""):
+        _print_json({"approved_recipes": list_recipes()})
+        return 0
+    allow = bool(getattr(args, "allow", False))
+    result = acq.install(args.name, allow=allow, dry_run=not allow)
+    _print_json(result)
+    return 0 if (result.get("success") or result.get("state") == "PLANNED") else 1
+
+
+def _audit_command(args: argparse.Namespace) -> int:
+    """Execute the complete runtime capability audit suite."""
+    from protacxtend.runtime.audit import run_audit
+
+    audit = run_audit(e2e_n=int(getattr(args, "e2e", 50)),
+                      install_sample=not getattr(args, "no_install", False),
+                      budget_s=float(getattr(args, "budget", 1800)))
+    if bool(getattr(args, "json", False)):
+        _print_json(audit)
+    else:
+        print(f"audit written to results/audit/ ({', '.join(audit['files'])})")
+        print(f"  registry: {audit['registry']['summary']['total']} capabilities")
+        for k in ("capability_audit", "tool_audit", "tui_api_web_audit",
+                  "service_database_audit", "installation_audit"):
+            print(f"  {k}: {audit[k]}")
+        print(f"  end_to_end: {audit['end_to_end']}")
+        print(f"  elapsed: {audit['elapsed_s']}s")
+    return 0
+
+
+def _toolkit_command(args: argparse.Namespace) -> int:
+    """Provision, verify and document the external scientific toolkit."""
+    import json as _json
+
+    from protacxtend.toolkit import catalog, provision
+    from protacxtend.toolkit.environments import toolkit_envs
+
+    action = getattr(args, "action", "plan")
+    as_json = bool(getattr(args, "json", False))
+
+    if action == "envs":
+        envs = [e.to_dict() for e in toolkit_envs()]
+        if as_json:
+            print(_json.dumps(envs, indent=2))
+        else:
+            for e in envs:
+                print(f"{e['name']:<16} {e['kind']:<8} {e['python']}")
+        return 0
+
+    if action == "plan":
+        plans = catalog.plan_all_tools()
+        summary = catalog.summarize_plans(plans)
+        if as_json:
+            print(_json.dumps({"summary": summary, "plans": plans}, indent=2))
+        else:
+            print("Toolkit provisioning summary:")
+            for method, count in summary.items():
+                print(f"  {method:<12} {count}")
+            print()
+            print(f"{'tool':<28}{'method':<10}{'auto':<6}command/reason")
+            for p in plans:
+                detail = p["command"] or p["reason"]
+                print(f"{p['tool_name']:<28}{p['method']:<10}{'yes' if p['auto_installable'] else 'no':<6}{detail[:60]}")
+        return 0
+
+    if action == "provision":
+        mode = getattr(args, "mode", "check")
+        categories = [c for c in (getattr(args, "categories", "") or "").split(",") if c]
+        rows = provision.provision_batch(
+            [getattr(args, "tool", "")] if getattr(args, "tool", "") else None,
+            mode=mode, categories=categories or None,
+            max_tools=int(getattr(args, "max", 0) or 0),
+        )
+        if as_json:
+            print(_json.dumps(rows, indent=2, default=str))
+        else:
+            for r in rows:
+                flag = "OK " if r.get("success") or r.get("verified") else "-- "
+                print(f"{flag}{r['tool_name']:<28}{r['method']:<10}{r.get('version_after') or r.get('version_before') or '':<34}{(r.get('detail') or '')[:50]}")
+        return 0
+
+    if action == "verify":
+        rows = []
+        for row in provision.manifest_table():
+            if row["installed"]:
+                rows.append(provision.verify_tool(row["tool_name"]))
+        if as_json:
+            print(_json.dumps(rows, indent=2, default=str))
+        else:
+            for r in rows:
+                flag = "OK " if r["verified"] else "!! "
+                print(f"{flag}{r['tool_name']:<28}{r['method']:<12}{r['env']:<14}{r.get('version','')[:40]}")
+        return 0
+
+    if action == "manifest":
+        rows = provision.manifest_table()
+        if as_json:
+            print(_json.dumps(rows, indent=2, default=str))
+        else:
+            for r in rows:
+                print(f"{r['tool_name']:<28}{'installed' if r['installed'] else 'missing':<12}"
+                      f"{'callable' if r['callable'] else '':<10}{r['version'][:34]}")
+        return 0
+
+    if action == "truth":
+        from protacxtend.toolkit.truth import write_truth
+
+        xlsx, md = write_truth(compute_hash=not getattr(args, "fast", False))
+        print(f"Toolkit truth written:\n  {xlsx}\n  {md}")
+        return 0
+
+    print(f"Unknown toolkit action: {action}")
+    return 2
+
+
+def _escalation_command(args: argparse.Namespace) -> int:
+    """Failure diagnosis, external fallback resolution and audit."""
+    import json as _json
+
+    from protacxtend.escalation import (
+        build_escalation_report,
+        get_ledgers,
+        resolve_candidates,
+        resolve_tool,
+    )
+    from protacxtend.escalation.registry import DynamicToolRegistry
+    from protacxtend.escalation.installer import InstallManager
+
+    action = getattr(args, "action", "status")
+    capability = getattr(args, "capability", "") or ""
+    tool = getattr(args, "tool", "") or ""
+    mode = getattr(args, "mode", "check") or "check"
+    as_json = bool(getattr(args, "json", False))
+    ledgers = get_ledgers()
+
+    if action == "status":
+        payload = {"ledger_paths": ledgers.paths(), "counts": ledgers.counts()}
+        if as_json:
+            print(_json.dumps(payload, indent=2))
+        else:
+            print("Escalation ledgers:")
+            for k, v in payload["ledger_paths"].items():
+                print(f"  {k}: {v}")
+            print("Counts:", payload["counts"])
+        return 0
+
+    if action == "audit":
+        report = build_escalation_report()
+        if as_json:
+            print(_json.dumps(report, indent=2, default=str))
+        else:
+            from protacxtend.escalation.report import render_markdown
+
+            print(render_markdown(report))
+        return 0
+
+    if action == "capabilities":
+        from protacxtend.escalation.report import capability_readiness
+
+        rows = capability_readiness()
+        if as_json:
+            print(_json.dumps(rows, indent=2))
+        else:
+            print(f"{'capability':<32}{'installed':>10}{'installable':>12}{'web':>6}  {'readiness':<12}best")
+            for r in rows:
+                print(f"{r['capability']:<32}{r['installed']:>10}{r['installable']:>12}"
+                      f"{r['web_fallbacks']:>6}  {r['readiness']:<12}{r['best_candidate']}")
+        return 0
+
+    if action == "resolve":
+        if not capability:
+            print("Provide --capability <name>")
+            return 2
+        rows = [c.to_dict() for c in resolve_candidates(capability)]
+        print(_json.dumps(rows, indent=2) if as_json else "\n".join(
+            f"{c['tool_name']:<28} installed={c['installed']!s:<5} status={c['status']:<28} method={c['install_method']}"
+            for c in rows
+        ))
+        return 0
+
+    if action == "registry":
+        reg = DynamicToolRegistry(ledgers=ledgers)
+        rows = reg.list()
+        print(_json.dumps(rows, indent=2) if as_json else "\n".join(
+            f"{r['tool_name']:<28} v{r.get('version',''):<24} {','.join(r.get('capabilities', []))}"
+            for r in rows
+        ) or "(dynamic registry empty)")
+        return 0
+
+    if action == "clear-registry":
+        DynamicToolRegistry(ledgers=ledgers).clear()
+        print("Dynamic registry cleared.")
+        return 0
+
+    if action == "install":
+        if not tool:
+            print("Provide --tool <toolkit tool name>")
+            return 2
+        candidate = resolve_tool(tool, capability)
+        if candidate is None:
+            print(f"Tool '{tool}' is not in the toolkit registry.")
+            return 2
+        manager = InstallManager(ledgers)
+        plan = manager.plan(candidate)
+        if mode in {"check", "dry_run"} and not candidate.installed:
+            record = manager.install(candidate, allow=(mode == "install"))
+        else:
+            record = manager.check(candidate)
+        payload = {"plan": plan, "candidate": candidate.to_dict(), "record": record.to_dict()}
+        print(_json.dumps(payload, indent=2) if as_json else
+              f"tool={candidate.tool_name}\nmethod={plan['install_method']}\ncommand={plan['command']}\n"
+              f"action={record.action}\nsuccess={record.success}\nversion={record.version_after or candidate.version}")
+        return 0
+
+    print(f"Unknown escalation action: {action}")
+    return 2
 
 
 def _normalize_interactive_prompt(prompt: str) -> str:
@@ -313,13 +559,13 @@ def _print_workflow_hint(command: str, request: str = "") -> None:
 
 def _interactive_command() -> int:
     """Launch the terminal UI when on a TTY, else fallback."""
-    # Startup question: which LLM backend (API vs Ollama)?
+    # First-run: open the setup wizard when no provider is configured (unless
+    # already handled by the main() gate or explicitly skipped).
     import os as _os
-    from protacxtend.llm.providers import USER_CONFIG_PATH
-    if not _os.environ.get("PROTACPILOT_LLM_PROVIDER") and not USER_CONFIG_PATH.exists():
+    if _os.environ.get("PROTACXTEND_SETUP_HANDLED") != "1":
         try:
-            from protacxtend.llm.setup import interactive_setup
-            interactive_setup(ask=input, out=print)
+            from protacxtend.llm.setup_wizard import first_run_gate
+            first_run_gate(ask=input, out=print)
         except Exception as exc:  # never block the UI on setup problems
             print(f"(llm setup skipped: {exc})")
     if sys.stdin.isatty():
@@ -506,6 +752,45 @@ def _design_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _strategy_command(args: argparse.Namespace) -> int:
+    """Run the canonical control plane and emit a typed TherapeuticStrategy.
+
+    This is the single consolidated entry point: the deterministic graph and
+    the legacy agentic layer are execution engines reached *through* the
+    canonical ToolExecutor, not parallel front doors.
+    """
+    from protacxtend.canonical import run_canonical
+
+    request = _request_from_parts(args.request, "Design CRBN PROTACs for BRD4 degradation.")
+    result = run_canonical(request, config={"engine": args.engine})
+    strategy = result.strategy
+    out_dir = PROJECT_ROOT / "outputs" / "strategies"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    identifier = strategy.strategy_id or result.run_id or "strategy"
+    strategy_path = out_dir / f"{identifier}.strategy.json"
+    manifest_path = out_dir / f"{identifier}.manifest.json"
+    strategy_path.write_text(
+        json.dumps(strategy.model_dump(), indent=2, default=str), encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(strategy.run_manifest.model_dump(), indent=2, default=str), encoding="utf-8")
+    payload = {
+        "run_id": result.run_id,
+        "status": result.status,
+        "strategy": str(strategy_path),
+        "manifest": str(manifest_path),
+        "stopping_state": strategy.stopping_state,
+        "critic": result.critic.model_dump(),
+    }
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"run_id:   {result.run_id}")
+        print(f"status:   {result.status}")
+        print(f"strategy: {strategy_path}")
+        print(f"manifest: {manifest_path}")
+    return 0
+
+
 def _mode_command(mode: str, args: argparse.Namespace) -> int:
     payload: dict[str, Any] = {"mode": mode}
     if getattr(args, "request", None):
@@ -654,13 +939,15 @@ def _print_llm_status(out=print) -> None:
 def _llm_command(args: argparse.Namespace) -> int:
     from protacxtend.llm.providers import get_config
     if getattr(args, "setup", False):
-        from protacxtend.llm.setup import interactive_setup
-        interactive_setup(ask=input, out=print)
+        from protacxtend.llm.setup_wizard import run_setup
+        run_setup(ask=input, out=print)
         _print_llm_status()
         return 0
     if args.provider or args.model or args.base_url or args.api_key:
         from protacxtend.llm.setup import apply_config
         try:
+            if args.api_key and not (args.provider or get_config().provider):
+                raise ValueError("provider required (protacxtend setup) before an API key can be saved")
             apply_config(provider=args.provider or get_config().provider,
                          model=args.model or "",
                          base_url=args.base_url or "",
@@ -680,10 +967,13 @@ def _chat_command(args: argparse.Namespace) -> int:
     from protacxtend.llm.providers import USER_CONFIG_PATH, get_config
 
     if not os.environ.get("PROTACPILOT_LLM_PROVIDER") and not USER_CONFIG_PATH.exists():
-        from protacxtend.llm.setup import interactive_setup
-        interactive_setup(ask=input, out=print)
+        from protacxtend.llm.setup_wizard import run_setup
+        run_setup(ask=input, out=print)
 
     cfg = get_config()
+    if not cfg.provider:
+        print("chat: no LLM provider configured — run `protacxtend setup` first.", file=sys.stderr)
+        return 2
     agent = ConversationalAgent(cfg)
 
     def banner() -> str:
@@ -748,8 +1038,8 @@ def _chat_command(args: argparse.Namespace) -> int:
             print("  /clear /exit           session controls")
             continue
         if low in ("/llm", "/model"):
-            from protacxtend.llm.setup import interactive_setup
-            interactive_setup(ask=input, out=print)
+            from protacxtend.llm.setup_wizard import run_setup
+            run_setup(ask=input, out=print)
             fresh_agent()
             print("  → " + banner())
             continue
@@ -823,21 +1113,36 @@ def _auth_command(args: argparse.Namespace) -> int:
     """protacxtend auth login|status|logout — API keys are never printed."""
     from protacxtend.llm import manager
     sub = (args.auth_cmd or "status").lower()
-    provider = args.provider or None
+    provider = (args.provider or "").strip() or None
     try:
         if sub == "login":
+            from protacxtend.llm.providers import get_config
+            cfg = get_config()
+            if not provider:
+                if cfg.provider:
+                    provider = cfg.provider
+                else:
+                    raise ValueError(
+                        "provider required — choose one: protacxtend provider list"
+                        " (or pass --provider NAME)")
             if args.key_stdin:
                 api_key = sys.stdin.readline().strip()
             else:
                 import getpass
                 api_key = getpass.getpass("API key (hidden): ").strip()
-            result = manager.login(provider or "deepseek", api_key,
+            if not api_key and not manager.PROVIDER_META[provider].local and provider != "openai_compatible":
+                raise ValueError(f"API key required for provider '{provider}'")
+            result = manager.login(provider, api_key,
                                    model=args.model or None, base_url=args.base_url or None)
+            # Auth check: probe the endpoint with the stored key (no inference).
+            probe = manager.probe_connection()
             if args.json:
-                print(json.dumps(result, indent=2))
+                print(json.dumps({**result, "auth_probe": probe}, indent=2))
             else:
-                print(f"\u2713 logged in \u2014 provider={result['provider']} model={result['model']} "
-                      f"(key stored in {result['saved']}, never printed)")
+                auth_note = ("✓" if probe.get("ok") else "!")
+                print(f"\u2713 logged in \u2014 provider={result['provider']} model={result['model']}"
+                      f" (key stored in {result['saved']}, never printed)")
+                print(f"  auth probe  {auth_note} — {probe.get('detail', '')}")
             return 0
         if sub == "logout":
             result = manager.logout()
@@ -939,6 +1244,178 @@ def _case_study_command(args: argparse.Namespace) -> int:
         return 1
 
 
+
+
+
+def _doctor_command(args: argparse.Namespace) -> int:
+    """protacxtend doctor — Provider/Model/Auth/Connection/Inference/Status."""
+    if getattr(args, "scientific", False):
+        from protacxtend.scientific_backends.doctor import (
+            render_scientific_doctor, scientific_doctor,
+        )
+
+        payload = scientific_doctor()
+        if getattr(args, "json", False):
+            print(json.dumps(payload, indent=2, default=str))
+        else:
+            print(render_scientific_doctor(payload))
+        return 0 if payload["failed"] == 0 else 1
+    from protacxtend.llm import manager
+    from protacxtend.llm.providers import ProviderConfig
+    cfg = None
+    if getattr(args, "provider", ""):
+        prov = args.provider.strip()
+        if prov not in manager.PROVIDER_META:
+            print(f"unknown provider {prov!r}", file=sys.stderr)
+            return 1
+        from protacxtend.llm.providers import get_config
+        cur = get_config()
+        m = manager.PROVIDER_META[prov]
+        if cur.provider == prov:
+            cfg = ProviderConfig(provider=prov, model=cur.model or m.default_model or "",
+                                 base_url=cur.base_url or m.default_base_url or "",
+                                 api_key=cur.api_key or "")
+        else:
+            cfg = ProviderConfig(provider=prov, model=m.default_model or "",
+                                 base_url=m.default_base_url or "",
+                                 api_key=manager.effective_key(prov))
+    checks = manager.runtime_checks(live=bool(getattr(args, "live", True)), cfg=cfg)
+    try:
+        from protacxtend.scientific_backends.doctor import backend_readiness
+
+        checks["scientific_backends"] = backend_readiness()
+    except Exception as exc:  # never block doctor on the backend layer
+        checks["scientific_backends"] = {"error": str(exc)}
+    if args.json:
+        print(json.dumps(checks, indent=2, default=str))
+    else:
+        def flag(ok: bool) -> str:
+            return "PASS" if ok else "FAIL"
+        model = checks.get("model") or "(none)"
+        print("Provider     " + (checks.get("provider") or "(none)"))
+        print("Model        " + model)
+        print("Auth         " + flag(checks["auth"]["ok"]) + "  · " + checks["auth"]["detail"])
+        print("Connection   " + flag(checks["connection"]["ok"]) + "  · " + checks["connection"]["detail"])
+        print("Inference    " + flag(checks["inference"]["ok"]) + "  · " + checks["inference"]["detail"])
+        for issue in checks.get("issues", []):
+            print(f"issue        {issue}")
+        print("Status       " + checks.get("status", "NOT READY"))
+        if checks.get("verified") and checks["inference"].get("ok"):
+            print("Note         auth + inference verified at setup")
+        elif checks.get("verified"):
+            print("Note         config matches a past verification but current probe failed")
+        sc = checks.get("scientific_backends") or {}
+        if sc.get("rows"):
+            print("")
+            from protacxtend.scientific_backends.doctor import render_backend_readiness
+
+            print(render_backend_readiness(sc))
+    return 0 if checks.get("status") == "READY" else 1
+
+
+def _validate_complex_command(args: argparse.Namespace) -> int:
+    """End-to-end scientific validation pipeline."""
+    from protacxtend.workflows.validation_pipeline import ValidationRequest, run_validation
+
+    req = ValidationRequest(
+        target=args.target,
+        ligand_smiles=args.smiles or "",
+        ligand_sdf=args.ligand or "",
+        partner=args.partner or "",
+        reference_ligand=args.reference_ligand or "",
+        known_pocket=[float(x) for x in args.known_pocket.split(",")] if args.known_pocket else None,
+        mode=args.mode,
+        replicas=int(args.replicas or 0),
+        output=args.output or "",
+        solvent=args.solvent,
+        seed=int(args.seed),
+        run_apo_bound=not args.no_apo,
+        run_mmpbsa=not args.no_mmpbsa,
+    )
+    report = run_validation(req)
+    print(json.dumps({k: report.get(k) for k in
+                      ("run_id", "evidence_tier", "qc_verdict", "wall_seconds",
+                       "warnings")}, indent=2, default=str))
+    print(f"\nFinal report: {req.output or 'validation_runs/*'}/final_report.json")
+    return 0
+
+
+def _backends_command(args: argparse.Namespace) -> int:
+    """Show the capability-first scientific backend readiness matrix."""
+    from protacxtend.scientific_backends.doctor import backend_readiness, render_backend_readiness
+    from protacxtend.scientific_backends.runner import capability_matrix
+
+    action = getattr(args, "action", "status")
+    if action == "matrix":
+        rows = capability_matrix()
+        if args.json:
+            print(json.dumps(rows, indent=2, default=str))
+        else:
+            for r in rows:
+                print(f"{r['capability']:<26}{r['status']:<18}{r['best_backend']}")
+        return 0
+    payload = backend_readiness()
+    if args.json:
+        print(json.dumps(payload, indent=2, default=str))
+    else:
+        print(render_backend_readiness(payload))
+    return 0
+
+
+def _setup_command(args: argparse.Namespace) -> int:
+    """protacxtend setup — API / Local / Configure later wizard."""
+    from protacxtend.llm.setup_wizard import run_setup, needs_setup
+    from protacxtend.llm.providers import get_config
+    if not getattr(args, "json", False):
+        print("\nPROTACXtend setup — universal install & LLM configuration.")
+    result = run_setup(ask=input, out=print)
+    cfg = get_config()
+    if getattr(args, "json", False):
+        print(__import__("json").dumps({**result, "configured": bool(cfg.provider)}, indent=2))
+        return 0 if cfg.provider else 1
+    if cfg.provider and result.get("ok"):
+        print("\nConfigured. Verify with: protacxtend doctor")
+        return 0
+    print("\nNot configured yet. Run `protacxtend setup` when ready.")
+    return 1 if needs_setup() else 0
+
+
+def _provider_command(args: argparse.Namespace) -> int:
+    """protacxtend provider list|current."""
+    from protacxtend.llm import manager
+    sub = (args.provider_cmd or "list").lower()
+    try:
+        if sub == "current":
+            cur = manager.provider_current()
+            if args.json:
+                print(json.dumps(cur, indent=2))
+            elif cur.get("configured"):
+                print(f"provider    {cur['provider']}")
+                print(f"model       {cur['model']}")
+                print(f"base_url    {cur['base_url'] or '(default)'}")
+                print(f"source      {cur['source']}")
+                print(f"auth        {'authenticated' if cur.get('authenticated') else 'NOT authenticated'}")
+                print(f"local       {cur.get('local')}")
+            else:
+                print("provider    (none configured)")
+                print("hint        run: protacxtend setup")
+            return 0
+        payload = manager.provider_list()
+        if args.json:
+            print(json.dumps(payload, indent=2))
+        else:
+            print(f"current     {payload['current']}")
+            print(f"{'provider':<18}{'label':<32}{'local':<6}{'default model':<22}status")
+            for row in payload["providers"]:
+                tag = "▶ current" if row["current"] else ("configured" if row["configured"] else "available")
+                local = "local" if row["local"] else "cloud"
+                print(f"{row['provider']:<18}{row['label']:<32}{local:<6}{row['default_model'] or '-':<22}{tag}")
+        return 0
+    except Exception as exc:
+        print(f"provider {sub} failed: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="PROTACXtend",
@@ -947,6 +1424,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"PROTACXtend {__version__}")
     parser.add_argument("-p", "--print", action="store_true", help="Pi-style print mode: show plan and runtime estimate without running.")
     parser.add_argument("--mode", choices=["agentic", "deterministic"], default="agentic", help="Mode used by print mode or direct request.")
+    parser.add_argument(
+        "--execution-mode", choices=["demo", "test", "scientific"], default=None,
+        help="Execution mode: demo/test allow labelled fixtures; scientific forbids "
+             "fixtures, placeholder SMILES and synthetic structures and fails closed on "
+             "missing inputs.",
+    )
     sub = parser.add_subparsers(dest="command")
 
     run = sub.add_parser("run", help="Run the unified PROTACXtend runtime.")
@@ -962,6 +1445,15 @@ def build_parser() -> argparse.ArgumentParser:
     design.add_argument("request", nargs="*", help="Natural-language PROTAC design request.")
     design.add_argument("--stem", default="protacxtend_run", help="Output filename stem.")
     design.set_defaults(func=_design_command)
+
+    strategy = sub.add_parser(
+        "strategy",
+        help="Run the canonical control plane and emit a typed TherapeuticStrategy + RunManifest.",
+    )
+    strategy.add_argument("request", nargs="*", help="Natural-language PROTAC design request.")
+    strategy.add_argument("--engine", choices=["deterministic", "agentic"], default="deterministic")
+    strategy.add_argument("--json", action="store_true", help="Print the result paths as JSON.")
+    strategy.set_defaults(func=_strategy_command)
 
     ask = sub.add_parser("ask", help="Search tools, databases, skills, and local literature context.")
     ask.add_argument("query", nargs="*", help="Question or search query.")
@@ -1107,6 +1599,47 @@ def build_parser() -> argparse.ArgumentParser:
     chat.add_argument("message", nargs="*", help="Optional one-shot question; omit for an interactive chat.")
     chat.set_defaults(func=_chat_command)
 
+    doctor = sub.add_parser("doctor", help="Provider-aware system checks (Provider/Model/Auth/Connection/Inference/Status).")
+    doctor.add_argument("--provider", default="")
+    doctor.add_argument("--json", action="store_true")
+    doctor.add_argument("--no-live", dest="live", action="store_false", default=True)
+    doctor.add_argument("--scientific", action="store_true",
+                        help="Run miniature functional tests of the scientific stack.")
+    doctor.set_defaults(func=_doctor_command)
+
+    backends = sub.add_parser("backends", help="Show capability-first scientific backend readiness.")
+    backends.add_argument("--action", choices=["status", "matrix"], default="status")
+    backends.add_argument("--json", action="store_true")
+    backends.set_defaults(func=_backends_command)
+
+    validate = sub.add_parser("validate-complex",
+                              help="Run the end-to-end scientific validation pipeline.")
+    validate.add_argument("--target", required=True, help="Target protein PDB.")
+    validate.add_argument("--ligand", default="", help="Ligand SDF.")
+    validate.add_argument("--smiles", default="", help="Ligand SMILES (alternative to --ligand).")
+    validate.add_argument("--partner", default="", help="Optional partner/E3 protein PDB.")
+    validate.add_argument("--reference-ligand", dest="reference_ligand", default="",
+                          help="Reference/crystal ligand SDF for pose-RMSD benchmarking.")
+    validate.add_argument("--known-pocket", dest="known_pocket", default="",
+                          help="Known pocket center 'x,y,z' to compare with prediction.")
+    validate.add_argument("--mode", choices=["fast", "standard", "thorough"], default="fast")
+    validate.add_argument("--replicas", type=int, default=0)
+    validate.add_argument("--output", default="")
+    validate.add_argument("--solvent", choices=["implicit", "explicit"], default="implicit")
+    validate.add_argument("--seed", type=int, default=42)
+    validate.add_argument("--no-apo", action="store_true", help="Skip matched apo comparison.")
+    validate.add_argument("--no-mmpbsa", action="store_true", help="Skip MM/GBSA.")
+    validate.set_defaults(func=_validate_complex_command)
+
+    setup = sub.add_parser("setup", help="Configure the LLM backend (API / Local / Configure later) with auth + inference test.")
+    setup.add_argument("--json", action="store_true", help="Emit the wizard result as JSON.")
+    setup.set_defaults(func=_setup_command)
+
+    provider = sub.add_parser("provider", help="Show supported LLM providers and the resolved current one.")
+    provider.add_argument("provider_cmd", nargs="?", default="list", choices=["list", "current"])
+    provider.add_argument("--json", action="store_true")
+    provider.set_defaults(func=_provider_command)
+
     status = sub.add_parser("status", help="Show local PROTACXtend runtime status.")
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=_status_command)
@@ -1116,8 +1649,44 @@ def build_parser() -> argparse.ArgumentParser:
     scenarios.set_defaults(func=_scenarios_command)
 
     capabilities = sub.add_parser("capabilities", help="Show PROTACXtend terminal and scientific capabilities.")
+    capabilities.add_argument("name", nargs="?", default=None, help="Capability id or name for a detailed trace.")
+    capabilities.add_argument("--run", action="store_true", help="Execute the capability through the shared executor.")
+    capabilities.add_argument("--params", default="", help="JSON params for --run.")
     capabilities.add_argument("--json", action="store_true")
     capabilities.set_defaults(func=_capabilities_command)
+
+    install = sub.add_parser("install", help="Install an APPROVED, pinned capability recipe (isolated env).")
+    install.add_argument("name", nargs="?", default="", help="Approved recipe name (see --list).")
+    install.add_argument("--allow", action="store_true", help="Actually execute (default is dry-run).")
+    install.add_argument("--list", action="store_true", help="List allow-listed pinned recipes.")
+    install.add_argument("--json", action="store_true")
+    install.set_defaults(func=_install_command)
+
+    audit = sub.add_parser("audit", help="Execute the complete runtime capability audit suite.")
+    audit.add_argument("--e2e", type=int, default=50, help="Number of end-to-end requests.")
+    audit.add_argument("--no-install", action="store_true", help="Skip real isolated install sample.")
+    audit.add_argument("--budget", type=float, default=1800, help="Audit time budget (s).")
+    audit.add_argument("--json", action="store_true")
+    audit.set_defaults(func=_audit_command)
+
+    escalation = sub.add_parser("escalation", help="Diagnose internal failures and resolve external fallback tools.")
+    escalation.add_argument("--action", choices=["status", "audit", "capabilities", "resolve", "registry", "clear-registry", "install"], default="status")
+    escalation.add_argument("--capability", default="", help="Capability key (e.g. ligand_docking).")
+    escalation.add_argument("--tool", default="", help="Toolkit tool name for --action install.")
+    escalation.add_argument("--mode", choices=["check", "dry_run", "install", "auto"], default="check")
+    escalation.add_argument("--json", action="store_true")
+    escalation.set_defaults(func=_escalation_command)
+
+    toolkit = sub.add_parser("toolkit", help="Provision, verify and document the external scientific toolkit.")
+    toolkit.add_argument("--action", choices=["plan", "envs", "provision", "verify", "manifest", "truth"],
+                         default="plan")
+    toolkit.add_argument("--mode", choices=["check", "verify", "dry_run", "install", "auto"], default="check")
+    toolkit.add_argument("--tool", default="", help="Single toolkit tool name.")
+    toolkit.add_argument("--categories", default="", help="Comma-separated toolkit categories.")
+    toolkit.add_argument("--max", type=int, default=0, help="Limit number of tools processed.")
+    toolkit.add_argument("--fast", action="store_true", help="Skip content hashing in truth.")
+    toolkit.add_argument("--json", action="store_true")
+    toolkit.set_defaults(func=_toolkit_command)
     return parser
 
 
@@ -1129,8 +1698,13 @@ def main(argv: list[str] | None = None) -> int:
         "chat",
         "auth",
         "model",
+        "setup",
+        "provider",
         "case-study",
         "runtime",
+        "auth",
+        "model",
+        "doctor",
         "pilot",
         "design",
         "ask",
@@ -1149,8 +1723,21 @@ def main(argv: list[str] | None = None) -> int:
         "status",
         "scenarios",
         "capabilities",
+        "escalation",
+        "toolkit",
+        "backends",
+        "install",
+        "audit",
+        "validate-complex",
     }
     if not argv:
+        # First run automatically opens setup when no provider is configured.
+        try:
+            from protacxtend.llm.setup_wizard import first_run_gate
+            first_run_gate(ask=input, out=print)
+        except Exception as exc:  # never block the TUI on setup problems
+            print(f"(setup skipped: {exc})")
+        os.environ["PROTACXTEND_SETUP_HANDLED"] = "1"
         if sys.stdin.isatty() and os.environ.get("PXT_PI", "1") != "0":
             from protacxtend.pi_launcher import resolve_pi_command, launch_pi
             if resolve_pi_command() is not None:
@@ -1178,6 +1765,10 @@ def main(argv: list[str] | None = None) -> int:
         argv = ["run", *argv]
     parser = build_parser()
     args = parser.parse_args(argv)
+    if getattr(args, "execution_mode", None):
+        from protacxtend.runtime import modes
+
+        modes.set_execution_mode(args.execution_mode)
     if not hasattr(args, "func"):
         parser.print_help()
         return 0

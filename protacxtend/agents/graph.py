@@ -1,4 +1,4 @@
-"""Workflow graph for SynGlue-Agent.
+"""Workflow graph for PROTACXtend.
 
 The graph uses LangGraph when installed. In minimal environments, the same node
 order is executed by ``LocalSynGlueWorkflowGraph``.

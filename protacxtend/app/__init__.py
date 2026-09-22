@@ -1,1 +1,1 @@
-"""Streamlit app package for SynGlue-Agent."""
+"""Streamlit app package for PROTACXtend."""

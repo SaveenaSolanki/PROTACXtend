@@ -184,7 +184,7 @@ class PredictionAndADMETToolbox:
         degradation = self.core.predict_degradation(candidates, target_record)
         admet = self.core.predict_admet(candidates)
         domain = self.core.compute_applicability_domain(candidates)
-        return {"degradation": degradation, "admet": admet, "domain": domain, "model_status": "heuristic_demo_replace_with_syn_glue"}
+        return {"degradation": degradation, "admet": admet, "domain": domain, "model_status": "heuristic_demo_replace_with_protacxtend"}
 
     def protac_aware_prefilter(self, candidates: Sequence[CandidateRecord], max_tpsa: float | None = None) -> list[CandidateRecord]:
         retained = []

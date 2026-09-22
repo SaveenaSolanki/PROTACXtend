@@ -1,1 +1,1 @@
-"""Tests for the SynGlue-Agent package."""
+"""Tests for the PROTACXtend package."""

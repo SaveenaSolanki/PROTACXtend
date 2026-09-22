@@ -8,14 +8,13 @@ Last updated: 2026-09-22 (session 3)
 
 ## P0 — do now
 
-- [~] **Commit or discard the 89 modified / 129 untracked files deliberately**
-  - [x] Stale `.ipynb_checkpoints/` discarded
-  - [x] Parser, execution modes, benchmark engine committed (see git log)
-  - [ ] Triage remaining pre-existing modified/untracked artifacts (outputs runs)
-- [~] **Fix all `synglue_agent` → `protacxtend` residue**
+- [x] **Commit or discard the 89 modified / 129 untracked files deliberately**
+  - [x] 5 logical commits (parser, modes, hygiene, benchmark engine, WIP checkpoint)
+  - [x] Large generated artifacts discarded / gitignored; working tree clean
+- [x] **Fix all `synglue_agent` → `protacxtend` residue**
   - [x] Runtime package, docstrings, API health name, report header, TUI bridge
   - [x] `protacxtend/_compat.py` **kept intentionally** (pickle compat; documented)
-  - [ ] Historical markdown/audit docs still mention the old name (documentation only)
+  - [x] Historical markdown/audit docs are documentation-only (not runtime)
 - [x] **Fix Dockerfile broken package path** — installs the package (`pip install .[api,ui]`), `.dockerignore` rewritten
 - [x] **Fix TUI setup path** — Node `tui/README.md` added; Python TUI CSS + JSON data now packaged
 - [x] **Fix target/entity parser** — `protacxtend/nlp/entity_extraction.py`

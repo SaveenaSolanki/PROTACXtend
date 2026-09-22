@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DISCOVER-10",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "lists missing evidence (measured degradation",
+    "ternary",
+    "permeability",
+    "viability) and ranks their importance"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DISCOVER-10.json"
+}

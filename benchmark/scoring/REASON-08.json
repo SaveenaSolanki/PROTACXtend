@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-08",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "attachment must point into solvent from the acetyl-lysine binding face",
+    "uses 5T35-derived reasoning",
+    "no unsupported vectors"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-08.json"
+}

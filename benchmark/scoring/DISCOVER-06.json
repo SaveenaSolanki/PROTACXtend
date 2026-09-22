@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DISCOVER-06",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "rationale based on expression + assay tractability",
+    "explicitly flags that per-line expression should be verified"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DISCOVER-06.json"
+}

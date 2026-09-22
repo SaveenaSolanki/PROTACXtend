@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-10",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "hydrophobicity/logP/TPSA reasoning with no numeric potency claims",
+    "identifies measurable ADMET endpoints"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-10.json"
+}

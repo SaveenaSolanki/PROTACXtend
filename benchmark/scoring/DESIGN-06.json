@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-06",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "3 molecules sharing identical binding pharmacophore",
+    "variation confined to the vector region"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-06.json"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-01",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "names ternary vs binary competition",
+    "distinguishes ligand depletion / binary complex formation as drivers",
+    "separates prediction from measurement"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-01.json"
+}

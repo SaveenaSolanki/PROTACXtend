@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-09",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "3 valid candidates each with Tanimoto <0.6 to the reference (computed via permitted fingerprint tool)"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-09.json"
+}

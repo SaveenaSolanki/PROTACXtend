@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-05",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "loss of amide directionality",
+    "basic amine protonated at pH 7.4 -> permeability/charge liability",
+    "does not state potency numbers"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/REASON-05.json"
+}

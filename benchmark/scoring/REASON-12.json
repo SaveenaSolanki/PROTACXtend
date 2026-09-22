@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-12",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "plausible shielding hypothesis",
+    "states it is a hypothesis and how NMR/permeability experiments would test it"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-12.json"
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-01",
+  "gt_type": "exact",
+  "mandatory_elements": [
+    "O60885",
+    "BD1/BD2 architecture"
+  ],
+  "acceptable_alternatives": [
+    "aliases: BRD4, HUNK1"
+  ],
+  "derived": false,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-01.json"
+}

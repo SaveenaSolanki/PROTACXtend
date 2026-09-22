@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-10",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "BRD4 and CRBN are broadly expressed",
+    "report per-line abundance evidence if a permitted source provides it",
+    "otherwise state 'no per-line quantitative evidence found' rather than guessing"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-10.json"
+}

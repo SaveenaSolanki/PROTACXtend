@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-06",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "JQ1",
+    "I-BET762",
+    "OTX015",
+    "I-BET151 are documented dimethylisoxazole-family BET ligands (BD-selective differences may be noted)"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-06.json"
+}

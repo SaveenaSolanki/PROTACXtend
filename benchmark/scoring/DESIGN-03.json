@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-03",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "Two distinct core scaffolds each containing a dimethylisoxazole-type mimic",
+    "rationale for preserved contacts",
+    "no measured potency claims"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-03.json"
+}

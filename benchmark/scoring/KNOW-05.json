@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-05",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "CRBN (pomalidomide/lenalidomide-type ligands: dBET1/dBET6/ARV-825) and VHL (VH032-type: MZ1",
+    "AT1) both recur"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-05.json"
+}

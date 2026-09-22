@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-11",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "Candidates with reported predicted Dmax band from the model",
+    "separates predicted from measured"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-11.json"
+}

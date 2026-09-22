@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-04",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "correct E3 attribution per degrader"
+  ],
+  "acceptable_alternatives": [
+    "other documented BRD4 degraders accepted with citation"
+  ],
+  "derived": false,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-04.json"
+}

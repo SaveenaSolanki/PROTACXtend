@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DISCOVER-01",
+  "gt_type": "ranked",
+  "mandatory_elements": [
+    "rule applied transparently",
+    "no outcome data used"
+  ],
+  "acceptable_alternatives": [],
+  "derived": false,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/DISCOVER-01.json"
+}

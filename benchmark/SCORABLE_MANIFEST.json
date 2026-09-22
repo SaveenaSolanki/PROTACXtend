@@ -1,0 +1,530 @@
+{
+  "schema_version": "1.0.0",
+  "n_cases": 48,
+  "n_ground_truth": 48,
+  "cases_without_ground_truth": [],
+  "ground_truth_without_case": [],
+  "n_automatically_scorable": 48,
+  "n_requires_expert_review": 29,
+  "n_not_scorable": 0,
+  "tasks": [
+    {
+      "task_id": "DESIGN-01",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "DESIGN-02",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-03",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-04",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-05",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-06",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-07",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-08",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-09",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-10",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-11",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DESIGN-12",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-01",
+      "gt_type": "ranked",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_ranking"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "DISCOVER-02",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-03",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-04",
+      "gt_type": "ranked",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_ranking"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-05",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-06",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-07",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-08",
+      "gt_type": "ranked",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_ranking"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-09",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-10",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-11",
+      "gt_type": "ranked",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_ranking"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "DISCOVER-12",
+      "gt_type": "design_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-01",
+      "gt_type": "exact",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_value"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "KNOW-02",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-03",
+      "gt_type": "exact",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_value"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-04",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "KNOW-05",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-06",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-07",
+      "gt_type": "exact",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_value"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-08",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "KNOW-09",
+      "gt_type": "exact",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_value"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": true
+    },
+    {
+      "task_id": "KNOW-10",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-11",
+      "gt_type": "exact",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_value"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "KNOW-12",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-01",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-02",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-03",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-04",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-05",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-06",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-07",
+      "gt_type": "categorical",
+      "mode": "checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": false,
+      "missing_fields": [
+        "expected_set"
+      ],
+      "reason": "structured field absent; grading explicit checklist",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-08",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-09",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-10",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-11",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    },
+    {
+      "task_id": "REASON-12",
+      "gt_type": "mechanistic_rubric",
+      "mode": "rubric_checklist",
+      "automatically_scorable": true,
+      "requires_expert_review": true,
+      "missing_fields": [],
+      "reason": "",
+      "has_mandatory_checklist": false
+    }
+  ]
+}

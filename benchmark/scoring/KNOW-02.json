@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-02",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "At least two canonical BET inhibitors from {JQ1",
+    "I-BET762 (GSK525762)",
+    "OTX015} each with a resolvable DB identifier/citation",
+    "no fabricated affinity values"
+  ],
+  "acceptable_alternatives": [
+    "other canonical BET inhibitors (IBET151) accepted with citation"
+  ],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-02.json"
+}

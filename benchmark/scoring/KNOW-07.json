@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-07",
+  "gt_type": "exact",
+  "mandatory_elements": [
+    "PDB 5T35 (BRD4 BD2-MZ1-VHL ternary complex)"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-07.json"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-09",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "reason from structure about solvent-exposed lysines on the BRD4 surface",
+    "mark as hypothesis needing experimental ubiquitination assay",
+    "never assert measured ubiquitination sites"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-09.json"
+}

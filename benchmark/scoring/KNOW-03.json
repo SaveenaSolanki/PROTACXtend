@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-03",
+  "gt_type": "exact",
+  "mandatory_elements": [
+    "s1 supported",
+    "s2 supported",
+    "s3 supported",
+    "s4 contradicted (JQ1 is an inhibitor, not a degrader)"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-03.json"
+}

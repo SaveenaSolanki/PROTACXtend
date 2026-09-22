@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-02",
+  "gt_type": "mechanistic_rubric",
+  "mandatory_elements": [
+    "uses known cooperative ternary evidence (5T35) without asserting alpha>1 from memory",
+    "states needed measured alpha and how to obtain it"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/REASON-02.json"
+}

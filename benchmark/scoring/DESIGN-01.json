@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-01",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "5 valid SMILES",
+    "components preserved"
+  ],
+  "acceptable_alternatives": [],
+  "derived": false,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-01.json"
+}

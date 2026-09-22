@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-10",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "Series with rationale addressing BRD4 vs BRD2 selectivity",
+    "explicitly flags that selectivity claims need assay data"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-10.json"
+}

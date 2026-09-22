@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "REASON-03",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "tert-leucine cap present",
+    "4-hydroxyproline present",
+    "C-terminal arm changed (benzylamine vs chiral (S)-1-phenylethylamine)",
+    "chiral methyl lost -> loss of documented hydrophobic contact",
+    "classify as modified/liability"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/REASON-03.json"
+}

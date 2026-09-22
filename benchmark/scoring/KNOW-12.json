@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-12",
+  "gt_type": "categorical",
+  "mandatory_elements": [
+    "Report any additional canonical BRD4 BET ligands found (e.g., IBET762) as missing",
+    "never assert absence without a per-source statement"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-12.json"
+}

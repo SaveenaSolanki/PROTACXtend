@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "DESIGN-05",
+  "gt_type": "design_rubric",
+  "mandatory_elements": [
+    "3 candidates each passing ALL constraints as computed by the permitted RDKit validator"
+  ],
+  "acceptable_alternatives": [],
+  "derived": true,
+  "requires_expert_review": true,
+  "source": "benchmark/ground_truth/DESIGN-05.json"
+}

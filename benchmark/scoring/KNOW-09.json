@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "KNOW-09",
+  "gt_type": "exact",
+  "mandatory_elements": [
+    "InChIKey",
+    "canonical SMILES"
+  ],
+  "acceptable_alternatives": [],
+  "derived": false,
+  "requires_expert_review": false,
+  "source": "benchmark/ground_truth/KNOW-09.json"
+}

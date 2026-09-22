@@ -56,8 +56,16 @@ class WarheadSelectionAgent(ReActAgent):
                 if not any(w.smiles == record.smiles for w in warheads):
                     warheads.append(record)
 
-        # 3. If no warheads found, add demo warheads from curated list
+        # 3. If no warheads found, add demo warheads from curated list.
+        #    SCIENTIFIC mode forbids this silent substitution and abstains.
         if not warheads:
+            from protacxtend.runtime.modes import SyntheticInputNotAllowed, is_scientific
+
+            if is_scientific():
+                raise SyntheticInputNotAllowed(
+                    "No warheads selected: target-matched warheads are unavailable "
+                    "and demo/placeholder warheads are forbidden in SCIENTIFIC mode"
+                )
             for row in curated[:5]:
                 smiles = row.get("smiles", "")
                 from rdkit import Chem

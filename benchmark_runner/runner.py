@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from benchmark_runner import freeze
+from protacxtend.runtime import modes
 
 SYSTEM_IDS = [
     "PROTACXtend", "Biomni", "AI-Co-Scientist-compatible",
@@ -116,6 +117,9 @@ class _StubAdapter(SystemAdapter):
         raise AdapterError(f"adapter {self.system_id} not implemented")
 
 
+# Live adapters (Sprint 2C) live in benchmark_runner.live. They preserve the
+# fail-closed contract: with allow_real=False they raise AdapterError exactly
+# like the stubs; with allow_real=True they execute the real system.
 ADAPTER_FACTORY: Dict[str, type] = {
     "PROTACXtend": _StubAdapter,
     "Biomni": _StubAdapter,
@@ -125,12 +129,22 @@ ADAPTER_FACTORY: Dict[str, type] = {
     "Local-Ollama-control": _StubAdapter,
 }
 
+_LIVE_SYSTEMS = {"PROTACXtend", "AI-Co-Scientist-compatible", "Base-LLM-control"}
+
 
 def build_adapter(system_id: str, allow_real: bool = False) -> SystemAdapter:
     if system_id == "DEV":
         return DevFixtureAdapter()
     if system_id not in ADAPTER_FACTORY:
         raise ValueError(f"unknown system {system_id!r}")
+    if allow_real and system_id in _LIVE_SYSTEMS:
+        from benchmark_runner import live  # local import avoids heavy deps at import time
+        cls = {
+            "PROTACXtend": live.PROTACXtendLiveAdapter,
+            "AI-Co-Scientist-compatible": live.AICoScientistLiveAdapter,
+            "Base-LLM-control": live.BaseLLMLiveAdapter,
+        }[system_id]
+        return cls(system_id, allow_real=True)
     return ADAPTER_FACTORY[system_id](system_id, allow_real=allow_real)
 
 
@@ -140,6 +154,7 @@ class DevFixtureAdapter(SystemAdapter):
     system_id = "DEV"
 
     def execute(self, task: TaskInput, ctx: Dict[str, Any]) -> Dict[str, Any]:
+        modes.reject_fixture("DevFixtureAdapter")
         if not task.task_id.startswith("DEV-"):
             raise AdapterError("DevFixtureAdapter refuses non-DEV (benchmark) tasks")
         from benchmark_runner.fixtures import load_fixture_response
@@ -172,6 +187,8 @@ class RunConfig:
     retries: int = 0
     allow_real: bool = False  # infra lock: real systems off unless explicitly allowed
     system_id: str = "PROTACXtend"
+    #: Benchmark execution is SCIENTIFIC by default: fixtures are forbidden.
+    mode: modes.ExecutionMode = modes.ExecutionMode.SCIENTIFIC
 
 
 class BenchmarkRunner:
@@ -186,6 +203,13 @@ class BenchmarkRunner:
 
     # ── task lifecycle ────────────────────────────────────────────────
     def run(self, task: TaskInput) -> Dict[str, Any]:
+        # Benchmarks must never execute a fixture: DEV replay is only permitted
+        # under DEMO/TEST.  This guard runs before any adapter is constructed.
+        if self.config.mode is modes.ExecutionMode.SCIENTIFIC and self.config.system_id == "DEV":
+            raise modes.FixtureUsageError(
+                "BenchmarkRunner: DEV fixture adapter cannot execute in SCIENTIFIC "
+                "benchmark mode; use DEMO/TEST for fixture replays"
+            )
         adapter = build_adapter(self.config.system_id, allow_real=self.config.allow_real)
         run_id = uuid.uuid4().hex[:12]
         started = datetime.now(timezone.utc).isoformat()
@@ -193,18 +217,19 @@ class BenchmarkRunner:
         last_error: Optional[str] = None
         attempts = self.config.retries + 1
         outcome: Dict[str, Any] = {}
-        for attempt in range(1, attempts + 1):
-            try:
-                outcome = self._execute_once(adapter, task, attempt)
-                break
-            except AdapterTimeout as exc:
-                last_error = f"timeout: {exc}"
-                outcome = {"status": "timeout", "raw": "",
-                           "error": last_error}
-            except AdapterError as exc:
-                last_error = f"tool_failure: {exc}"
-                outcome = {"status": "tool_failure", "raw": "",
-                           "error": last_error}
+        with modes.execution_mode(self.config.mode):
+            for attempt in range(1, attempts + 1):
+                try:
+                    outcome = self._execute_once(adapter, task, attempt)
+                    break
+                except AdapterTimeout as exc:
+                    last_error = f"timeout: {exc}"
+                    outcome = {"status": "timeout", "raw": "",
+                               "error": last_error}
+                except AdapterError as exc:
+                    last_error = f"tool_failure: {exc}"
+                    outcome = {"status": "tool_failure", "raw": "",
+                               "error": last_error}
         latency_s = round(time.monotonic() - t0, 4)
         ended = datetime.now(timezone.utc).isoformat()
         return self._envelope(task, run_id, outcome, started, ended,
@@ -243,6 +268,7 @@ class BenchmarkRunner:
                 "run_id": run_id,
                 "attempts": attempts,
                 "fixture_only": not self.config.allow_real,
+                "execution_mode": self.config.mode.value,
                 "frozen_at": freeze.load_freeze_manifest(self.root).get("frozen_at"),
             },
             "provider": outcome.get("provider", self.config.provider),

@@ -17,6 +17,7 @@ from benchmark_runner.runner import (BenchmarkRunner, RunConfig, TaskInput,
 from benchmark_runner import fixtures as fx
 from benchmark_runner import scoring as sc
 from benchmark_runner import rubric as rb
+from protacxtend.runtime.modes import ExecutionMode
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCH = ROOT / "benchmark"
@@ -38,6 +39,7 @@ def run_kind(kind: str, **cfg) -> dict:
     fx.ensure_fixtures(write_files=False)
     runner = BenchmarkRunner(RunConfig(system_id="DEV", provider="dev",
                                        model="dev-model", seed=1,
+                                       mode=ExecutionMode.TEST,
                                        retries=cfg.get("retries", 0),
                                        timeout_s=cfg.get("timeout_s", 60)),
                              benchmark_root=BENCH)

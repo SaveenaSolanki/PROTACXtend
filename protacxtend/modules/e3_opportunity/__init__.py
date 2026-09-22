@@ -15,12 +15,16 @@ from protacxtend.modules.e3_opportunity.e3_catalog import (
     candidate_universe,
     load_catalog,
 )
-from protacxtend.modules.e3_opportunity.predict import rank_e3_ligases
+from protacxtend.modules.e3_opportunity.predict import (
+    rank_e3_for_tissue,
+    rank_e3_ligases,
+)
 from protacxtend.modules.e3_opportunity.schemas import (
     MODEL_VERSION,
     CandidateResult,
     E3OpportunityInput,
 )
 
-__all__ = ["rank_e3_ligases", "candidate_universe", "load_catalog",
-           "E3OpportunityInput", "CandidateResult", "MODEL_VERSION"]
+__all__ = ["rank_e3_ligases", "rank_e3_for_tissue", "candidate_universe",
+           "load_catalog", "E3OpportunityInput", "CandidateResult",
+           "MODEL_VERSION"]

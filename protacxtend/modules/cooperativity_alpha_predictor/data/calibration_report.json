@@ -1,0 +1,187 @@
+{
+  "n_records": 46,
+  "overall_distribution": {
+    "n": 46,
+    "median_alpha": 5.8615,
+    "q1_alpha": 1.8801,
+    "q3_alpha": 14.9406,
+    "min_alpha": 0.0148,
+    "max_alpha": 525.0,
+    "mean_log_alpha": 1.5071,
+    "std_log_alpha": 1.8023,
+    "frac_positive": 0.7609,
+    "frac_neutral": 0.0652,
+    "frac_negative": 0.1739
+  },
+  "by_e3": {
+    "CRBN": {
+      "n": 3,
+      "median_alpha": 37.5956,
+      "q1_alpha": 22.7978,
+      "q3_alpha": 281.2978,
+      "min_alpha": 8.0,
+      "max_alpha": 525.0,
+      "mean_log_alpha": 3.9899,
+      "std_log_alpha": 2.1155,
+      "frac_positive": 1.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 0.0
+    },
+    "VHL": {
+      "n": 42,
+      "median_alpha": 5.6884,
+      "q1_alpha": 1.8801,
+      "q3_alpha": 14.0456,
+      "min_alpha": 0.2237,
+      "max_alpha": 38.75,
+      "mean_log_alpha": 1.466,
+      "std_log_alpha": 1.4475,
+      "frac_positive": 0.7619,
+      "frac_neutral": 0.0714,
+      "frac_negative": 0.1667
+    },
+    "cIAP1": {
+      "n": 1,
+      "median_alpha": 0.0148,
+      "q1_alpha": 0.0148,
+      "q3_alpha": 0.0148,
+      "min_alpha": 0.0148,
+      "max_alpha": 0.0148,
+      "mean_log_alpha": -4.2152,
+      "std_log_alpha": null,
+      "frac_positive": 0.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 1.0
+    }
+  },
+  "by_arm": {
+    "e3_assay_described": {
+      "n": 20,
+      "median_alpha": 5.3501,
+      "q1_alpha": 0.6187,
+      "q3_alpha": 14.5516,
+      "min_alpha": 0.2237,
+      "max_alpha": 38.75,
+      "mean_log_alpha": 1.2413,
+      "std_log_alpha": 1.7257,
+      "frac_positive": 0.65,
+      "frac_neutral": 0.05,
+      "frac_negative": 0.3
+    },
+    "ambiguous": {
+      "n": 26,
+      "median_alpha": 5.8615,
+      "q1_alpha": 2.7663,
+      "q3_alpha": 15.1548,
+      "min_alpha": 0.0148,
+      "max_alpha": 525.0,
+      "mean_log_alpha": 1.7115,
+      "std_log_alpha": 1.8664,
+      "frac_positive": 0.8462,
+      "frac_neutral": 0.0769,
+      "frac_negative": 0.0769
+    }
+  },
+  "by_basis": {
+    "Kd": {
+      "n": 36,
+      "median_alpha": 4.5167,
+      "q1_alpha": 1.0747,
+      "q3_alpha": 10.4605,
+      "min_alpha": 0.0148,
+      "max_alpha": 525.0,
+      "mean_log_alpha": 1.2494,
+      "std_log_alpha": 1.9146,
+      "frac_positive": 0.6944,
+      "frac_neutral": 0.0833,
+      "frac_negative": 0.2222
+    },
+    "Ki": {
+      "n": 10,
+      "median_alpha": 12.7955,
+      "q1_alpha": 6.4817,
+      "q3_alpha": 24.0536,
+      "min_alpha": 2.6582,
+      "max_alpha": 35.0,
+      "mean_log_alpha": 2.4346,
+      "std_log_alpha": 0.8741,
+      "frac_positive": 1.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 0.0
+    }
+  },
+  "coverage": {
+    "n_e3s": 3,
+    "n_pois": 12,
+    "n_poi_e3_pairs": 13,
+    "e3s_with_ge2": [
+      "CRBN",
+      "VHL"
+    ]
+  },
+  "headline_n": 20,
+  "model": {
+    "status": "FIT",
+    "kind": "ridge_log_alpha",
+    "features": [
+      "log10_kd_e3",
+      "is_crbn",
+      "is_ciap1",
+      "is_kd"
+    ],
+    "n_train": 20,
+    "coefficients": {
+      "log10_kd_e3": 0.18382,
+      "is_crbn": 0.0,
+      "is_ciap1": 0.0,
+      "is_kd": 0.0
+    },
+    "intercept": 0.84589,
+    "residual_std_log_alpha": 1.7233,
+    "train_r2": 0.0028,
+    "cv_unseen_poi": {
+      "n_test": 20,
+      "metrics": {
+        "n": 20,
+        "r2": -0.4324,
+        "mae": 1.8584,
+        "rmse": 2.0131,
+        "spearman": -0.394
+      },
+      "baseline_mean_metrics": {
+        "n": 20,
+        "r2": 0.0,
+        "mae": 1.5174,
+        "rmse": 1.682,
+        "spearman": NaN
+      },
+      "n_groups": 5
+    },
+    "cv_unseen_protac": {
+      "n_test": 20,
+      "metrics": {
+        "n": 20,
+        "r2": -1.1054,
+        "mae": 2.2651,
+        "rmse": 2.4405,
+        "spearman": -0.6107
+      },
+      "baseline_mean_metrics": {
+        "n": 20,
+        "r2": 0.0,
+        "mae": 1.5174,
+        "rmse": 1.682,
+        "spearman": NaN
+      },
+      "n_groups": 7
+    },
+    "baseline": {
+      "global_mean_log_alpha": 1.2413,
+      "global_std_log_alpha": 1.7257
+    },
+    "model_usable": false,
+    "claim_gate": "model is used ONLY for E3s present in the curated data; pairs without measured records are reported as prior/uncalibrated"
+  },
+  "status": "PRIOR_ONLY",
+  "conclusion": "The fitted model does NOT beat the mean baseline on grouped CV; cooperativity is therefore served as measured-pair / E3-prior / global-prior lookups, and no trained-model alpha is claimed."
+}

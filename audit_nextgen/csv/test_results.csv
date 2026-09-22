@@ -1,0 +1,6 @@
+scope,collected,passed,failed,skipped,wall_time_s,note
+tests/ (root),186,184,2,0,504.7,2 failures: CLI capabilities naming (TUI entry)
+protacxtend/modules,126,126,0,0,55.0,all pass
+protacxtend/tests (per-file),642,638,2,11,>1500 (incomplete),"2 failures: launcher path, p4ward human-review gate; several files >120s"
+tests/test_tpdeval.py,22,22,0,0,1.0,taxonomy/stats/temporal logic pass
+FULL SUITE,954,n/a,n/a,n/a,>1700 (killed at 54%),cannot complete within 30 min on 32-core host

@@ -1,0 +1,39 @@
+agent,action,type,status,evidence_or_weakness
+SupervisorAgent,parse_user_request,deterministic,IMPLEMENTED,BROKEN entity parser: 'degrade BRD4'->target=DEGRADE; 'Can BRD4...'->target=CAN
+DesignPlannerAgent,create_design_plan,deterministic,PARTIAL,emits a static 19-item tool list; no dynamic replanning
+ControlledSearchAgent,control_np_hard_search,deterministic,IMPLEMENTED,budget policy only
+SafetyAgent,safety_precheck,deterministic,PARTIAL,rule-based ADMET flags
+TargetResolverAgent,resolve_target,deterministic,PARTIAL,local table/ChEMBL; no omics/dependency
+TargetBinderRetrievalAgent,retrieve_target_binders,deterministic,PARTIAL,0 binders in live run without network
+WarheadSelectionAgent,select_warheads,deterministic,PARTIAL,falls back to DEMO warheads
+E3LigandSelectionAgent,select_e3_ligands,deterministic,IMPLEMENTED,curated CRBN/VHL/IAP/MDM2 handles
+ExitVectorDetectionAgent,detect_exit_vectors,deterministic,IMPLEMENTED,RDKit + curated markers
+LinkerGenerationAgent,generate_linkers,deterministic,IMPLEMENTED,curated + rules + optional generative
+MolecularConstructionAgent,construct_protacs,deterministic,IMPLEMENTED,RDKit assembly
+StereochemistryEnumerationAgent,expand_stereoisomers,deterministic,IMPLEMENTED,capped enumeration
+CandidateValidationAgent,validate_protacs,deterministic,IMPLEMENTED,RDKit sanitization
+CellContextAgent,score_cell_context,deterministic,PARTIAL,transcriptomic model; no proteotype
+ADMETAgent,predict_admet,deterministic,PARTIAL,ADMET-AI/RDKit; no PK
+NoveltyAgent,check_novelty,deterministic,PARTIAL,local known-PROTAC CSV similarity
+ApplicabilityDomainAgent,assess_applicability_domain,deterministic,IMPLEMENTED,descriptor-domain check
+CheapFilterAgent,cheap_filter_candidates,deterministic,IMPLEMENTED,rule filter
+DegradationPredictionAgent,predict_degradation,deterministic,PARTIAL,64/32-label model or heuristic fallback
+RankingAgent(initial),initial_ranking,deterministic,PARTIAL,heuristic weighted score
+ProximityDiversityAgent,diversity_clustering,deterministic,IMPLEMENTED,fingerprint clustering
+ReflectionReviewAgent,reflection_review,deterministic,PARTIAL,rule critique; no independent verifier
+EvolutionRefinementAgent,evolution_refinement,deterministic,IMPLEMENTED,mutation/grafting loop
+ExpensiveModelingSelectionAgent,select_expensive_modeling_finalists,deterministic,IMPLEMENTED,budget gate
+TernaryFeasibilityAgent,optional_ternary_feasibility,deterministic,PARTIAL,geometry surrogate; predicted DockQ unvalidated
+CooperativityPredictionAgent,predict_cooperativity,deterministic,PARTIAL,"surrogate, data-gated"
+HookEffectPredictionAgent,predict_hook_effect,deterministic,PARTIAL,"equilibrium proxy, not fitted"
+RankingAgent(final),final_ranking,deterministic,PARTIAL,heuristic composite
+ActiveLearningAgent,active_learning_update,deterministic,PARTIAL,synthetic benchmark only; no feedback loop
+ReportAgent,generate_report,deterministic,IMPLEMENTED,real markdown/csv/json artifact
+MemoryUpdateAgent,update_memory,deterministic,IMPLEMENTED,JSONL memory
+PerceptionAgent(agentic),perception,deterministic,IMPLEMENTED,collects tools/models/memory; inherits parser bug
+ReasoningAgent(agentic),reasoning,deterministic,PARTIAL,rule-based risk interpretation
+GoalSettingAgent(agentic),goal_setting,deterministic,IMPLEMENTED,typed DesignGoal
+DecisionMakingAgent(agentic),decision_making,deterministic,PARTIAL,always selects one workflow; no tool search
+ExecutionAgent(agentic),execution,deterministic,IMPLEMENTED,single registry tool with error capture
+ScientificCriticAgent(agentic),scientific_critic,deterministic,PARTIAL,rule checks; not adversarial verifier
+LearningAgent(agentic),learning,deterministic,PARTIAL,memory writes; no learning

@@ -2072,6 +2072,70 @@ Additional notes:</div>
         st.markdown(run["report"])
 
 
+def _render_capability_runner(st: Any, pd: Any) -> None:
+    """Generic Web surface: run any agent tool or scientific backend."""
+    from protacxtend.runtime.agent_tools import list_agent_tools, PROBE_FIXTURES
+    from protacxtend.scientific_backends import capability_matrix
+    from protacxtend.app.web_capability import run_web_capability
+
+    import json as _json
+
+    _html(
+        st,
+        """
+        <div class="pa-mode-shell">
+        <div class="pa-science-card">
+            <div class="pa-science-head">
+                <div>
+                    <div class="pa-kicker">Capability runner</div>
+                    <div class="pa-science-label">Every tool call goes through the shared executor and returns a typed ScientificResult.</div>
+                </div>
+                <span class="pa-status">same resolver as TUI/API</span>
+            </div>
+        </div>
+        """,
+    )
+    tools = list_agent_tools()
+    backends = [r for r in capability_matrix()]
+    kind = st.radio("Surface", ["Agent tool", "Scientific backend"], horizontal=True)
+    if kind == "Agent tool":
+        names = [t["name"] for t in tools]
+        name = st.selectbox("Agent tool", names)
+        default = PROBE_FIXTURES.get(name, {})
+    else:
+        names = [r["capability"] for r in backends]
+        name = st.selectbox("Scientific capability", names)
+        default = {"smiles": "CCO"} if name in ("chemistry", "admet") else {}
+    params_text = st.text_area("Parameters (JSON)", value=_json.dumps(default, indent=2), height=140)
+    if st.button("Run capability", type="primary", key="cap_runner_run"):
+        try:
+            params = _json.loads(params_text or "{}")
+        except Exception as exc:  # noqa: BLE001
+            st.error(f"Invalid JSON: {exc}")
+            return
+        with st.spinner(f"Executing {name}..."):
+            out = run_web_capability(name, params)
+        result = out.get("result") or {}
+        flags = result.get("agent_tool") or {}
+        cols = st.columns(5)
+        for col, key in zip(cols, ("RESOLVED", "EXECUTED", "VALID_OUTPUT",
+                                   "FALLBACK_TESTED", "AGENT_EXPOSED")):
+            col.metric(key, "yes" if flags.get(key) else ("n/a" if not flags else "no"))
+        st.caption(
+            f"state={out.get('resolution', {}).get('state')} · "
+            f"executed={out.get('executed')} · output_valid={out.get('output_valid')} · "
+            f"latency={out.get('latency_s')}s"
+        )
+        envelope = result.get("scientific_result")
+        if envelope:
+            st.json(envelope)
+        else:
+            st.json(result)
+        with st.expander("Provenance"):
+            st.json(out.get("provenance") or {})
+    _html(st, "</div>")
+
+
 def _render_workspace(st: Any, pd: Any) -> None:
     user = st.session_state["user"]
     if "chat_id" not in st.session_state:
@@ -2103,7 +2167,7 @@ def _render_workspace(st: Any, pd: Any) -> None:
     )
 
     run = _latest_run(chat_id)
-    m1, m2, _ = st.columns([0.16, 0.2, 0.64])
+    m1, m2, m3, _ = st.columns([0.16, 0.2, 0.2, 0.44])
     with m1:
         if st.button("Structured workspace", type="primary" if st.session_state["workspace_mode"] == "Structured workspace" else "secondary", width="stretch"):
             st.session_state["workspace_mode"] = "Structured workspace"
@@ -2111,6 +2175,10 @@ def _render_workspace(st: Any, pd: Any) -> None:
     with m2:
         if st.button("Chat research interface", type="primary" if st.session_state["workspace_mode"] == "Chat research interface" else "secondary", width="stretch"):
             st.session_state["workspace_mode"] = "Chat research interface"
+            st.rerun()
+    with m3:
+        if st.button("Capability runner", type="primary" if st.session_state["workspace_mode"] == "Capability runner" else "secondary", width="stretch"):
+            st.session_state["workspace_mode"] = "Capability runner"
             st.rerun()
 
     if st.session_state["workspace_mode"] == "Structured workspace":
@@ -2157,6 +2225,9 @@ def _render_workspace(st: Any, pd: Any) -> None:
         display_run = run if st.session_state.get("last_run_chat_id") == chat_id else None
         _render_results(st, pd, display_run)
         _html(st, "</div>")
+
+    elif st.session_state["workspace_mode"] == "Capability runner":
+        _render_capability_runner(st, pd)
 
     else:
         _html(st, "<div class='pa-mode-shell'>")

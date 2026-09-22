@@ -280,9 +280,16 @@ it can be embedded anywhere and tested in isolation.
 | `tests/test_decay_strength.py` | class-specific decay, use-dependent strengthening, no deletion |
 | `tests/test_pattern_completion.py` | cue-driven graph reconstruction |
 | `tests/test_prospective_audit.py` | tasks, prospective memory, auditor findings |
+| `tests/test_pattern_completion.py` | cue-driven graph reconstruction (chain, E3 cue, branches, disconnected, chronology) |
+| `tests/test_state_machine.py` | every legal/illegal lifecycle transition, self-transitions, rollback, concurrency guard, admin override |
+| `tests/test_benchmark_h.py` | four-way baseline harness structural + behavioural checks |
+| `tests/test_ablation.py` | ablation conditions, per-condition removal verification, deltas |
+| `tests/test_procedures.py` | procedural memory API + `cog_procedure_*` tools + versioning |
+| `tests/test_performance.py` | performance harness (small N) + percentile logic |
 | `tests/test_mcp_cli.py` | MCP `tools/list` + `tools/call`, CLI smoke, HTTP smoke |
 | `tests/test_benchmarks.py` | Benchmarks A–H (scaled fixtures) |
 | `protacxtend/tests/test_cognitive_bridge.py` (host) | pure host→context/evidence/prediction mapping, opt-in gating, end-to-end ingest + retrieve + outcome roundtrip |
+| `protacxtend/tests/test_cognitive_integration_safety.py` (host) | env toggles on a controlled workflow, run-id idempotency, project identity, failure non-fatality |
 
 Run: `python -m pytest protacpilot-memory/tests -q`
 
@@ -298,6 +305,7 @@ Run: `python -m pytest protacpilot-memory/tests -q`
 | 5 | Reconsolidation, conflict engine, versioning | implemented |
 | 6 | Decay, use-dependent strengthening, prospective memory, counterfactual, audit | implemented |
 | 7 | Host adapter `protacxtend.memory.cognitive_bridge` + opt-in runtime hook + host-delta harness | implemented |
+| V1–V7 | Verification & hardening: state machine, four-way benchmark, ablations, pattern-completion tests, procedural tools, performance harness, host integration safety | implemented |
 | UI | TUI/dashboard | **intentionally not built** (Master Prompt §60) |
 
 ### Host-delta evidence
@@ -312,21 +320,28 @@ reranking disabled (+0.10), mean search ≈ 3.7 ms, 240 predictions ingested.
 1. The host adapter is opt-in; `protacxtend/agents/runtime.py` ingests memory
    only when `PROTACPILOT_COGNITIVE_MEMORY=1` (default OFF) so frozen benchmark
    artifacts are unchanged. Back-filling `run_memory` and the literature store
-   remains open.
+   remains open. Re-ingestion of the same `run_id` is now idempotent.
 2. Embedding retrieval is an interface + deterministic hashing fallback only;
    no real model is bundled (by design — optional, §35).
 3. Sync/cloud explicitly out of scope.
-4. Benchmark suite uses scaled synthetic fixtures plus host BRD4/VHL scenario;
-   full 1,000-event pollution benchmark is parameterized but expensive.
-5. Confidence formula is a documented engineering heuristic, not a calibrated
+4. **Hybrid-retrieval scaling**: median hybrid latency grows to ~215 ms at
+   N=10,000 (FTS ~10 ms) because entity-overlap candidate generation is
+   unbounded and the reranker scores every candidate. Bounding entity
+   candidates is the recommended next optimisation.
+5. **Lexical ranking**: on Benchmark H, `cognitive_memory` ties the baselines on
+   most questions but ranks the design-decision episode above the experimental
+   outcome for the factual Q1 (RR 0.5). The additive reranker can also bury a
+   unique lexical match (prospective Q7) under accumulated weak signals. These
+   are honest, reproducible findings from the four-way harness, not tuned away.
+6. Confidence formula is a documented engineering heuristic, not a calibrated
    probabilistic model (§22 permits this for v1).
+7. The 50,000-event performance size is opt-in because encode-time candidate
+   profiling makes ingestion expensive (~4 min for 100/1k/10k combined).
 
 ## 12. Next development step
 
-The host adapter is wired (`protacxtend/memory/cognitive_bridge.py`, opt-in via
-`PROTACPILOT_COGNITIVE_MEMORY=1`) and measured by
-`protacpilot-memory/benchmarks/host_bridge_delta.py`. The remaining step is to
-promote the adapter from opt-in to default-on for interactive host sessions
-(keeping benchmark runs pinned to OFF), and to back-fill the legacy
-`run_memory` / literature stores through the same bridge (Master Prompt §46
-Benchmark H, §47 ablations).
+The host adapter is wired and now has an explicit integration-safety test suite.
+The four-way benchmark and ablation framework are in place. The next single
+milestone is to **bound entity-overlap candidate generation** (top-K by recency /
+BM25) and re-measure the performance sweep, addressing the N=10,000 hybrid
+latency while preserving the four-way and ablation baselines.

@@ -1,0 +1,8 @@
+level,name,retrieval,calculation,tool_execution,integration,mechanistic,therapeutic,adversarial,verdict
+L1,Retrieval,PARTIAL,-,-,-,-,-,-,"Live paper/UniProt/ChEMBL retrieval works; no source-date filtering, no per-claim citation binding"
+L2,Calculation,-,PARTIAL,-,-,-,-,-,RDKit descriptors/linker metrics real; unit handling not enforced across tools
+L3,Tool execution,-,-,PARTIAL,-,-,-,-,34 agent tools execute; 6 partial; many default to canned fixtures; no required-tool precision/recall
+L4,Integration,-,-,-,WEAK,-,-,-,Single deterministic pass; no conflict resolution/evidence ranking across sources
+L5,Mechanistic inference,-,-,-,-,WEAK,-,-,"Rule templates; no causal graph, no falsifiable hypothesis objects"
+L6,Therapeutic discovery,-,-,-,-,-,WEAK,-,No typed TherapeuticStrategy; report is narrative + table; no go/no-go gates
+L7,Adversarial/OOD,-,-,-,-,-,-,WEAK,100 adversarial tasks are one-line stubs; no safe-abstention policy engine

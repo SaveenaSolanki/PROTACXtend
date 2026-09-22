@@ -1,0 +1,20 @@
+agent,retain_or_new,role,own_state,own_tools,owns_decision
+OrchestratorAgent,MODIFY,"plan, route, aggregate, enforce gates",yes,"planner, registry",final go/no-go
+TargetBiologyAgent,NEW,target identity/biology/disease mechanism,yes,"uniprot,pubmed,europepmc,openalex",target dossier
+TargetValidationAgent,NEW,genetic/omics/dependency evidence,yes,"depmap,omics,literature",validation verdict
+TPDTractabilityAgent,MODIFY(e3_opportunity),"degradability, lysines, localization",yes,"lysine,structure,e3",tractability tier
+E3SelectionAgent,RETAIN,E3 choice + evidence tier,yes,"e3_opportunity,e3_context",E3 shortlist
+WarheadDiscoveryAgent,MODIFY,warhead mining/design,yes,"chembl,pubchem,bindingdb",warhead panel
+MedicinalChemistryAgent,NEW,linker/exit-vector/property optimisation,yes,"rdkit,linker generators",design hypotheses
+BinaryStructureAgent,NEW(split from structure),binary complex modelling/docking,yes,"vina,gnina,diffdock",pose selection
+TernaryComplexAgent,RETAIN,ternary modelling/cooperativity,yes,"p4ward,ternary_ensemble",ternary verdict
+DegradationPredictionAgent,RETAIN,DC50/Dmax/cell context,yes,"degradation_ml,cells",degradation estimate
+ADMEAgent,RETAIN,ADME/PK/developability,yes,"admet-ai,rdkit",liability list
+SafetyAgent,MODIFY,tox/polypharmacology/neosubstrate,yes,"admet,neosubstrate",safety flags
+ResistanceAgent,NEW,resistance/escape mechanisms,yes,"resistance module,literature",resistance hypotheses
+BiomarkerAgent,NEW,stratification/biomarker,yes,"omics,literature",biomarker panel
+CombinationAgent,NEW,combination/synergy,yes,"literature,pathway",combination strategy
+ExperimentalDesignAgent,NEW,assay/controls/go-no-go,yes,"dose sim,assay schemas",experimental plan
+EvidenceCriticAgent,NEW,verify citations/support,no,evidence graph,PASS/REVISE/ABSTAIN
+MechanismCriticAgent,NEW,verify causal chain,no,causal graph,PASS/REVISE/ABSTAIN
+ReproducibilityAgent,NEW,manifest/replay/leakage,no,"run manifest, temporal",PASS/REVISE/ABSTAIN

@@ -49,7 +49,10 @@ def test_catalog_lists_ready_tools_only(worker):
     resp, _ = worker({"type": "catalog"})
     names = {t["name"] for t in resp["data"]["tools"]}
     assert "deep_research" in names
-    assert "predict_degradation" not in names  # planned → hidden
+    # all 34 registered tools are executor-backed and exposure-tested, so the
+    # catalog advertises them (previously predict_degradation was 'planned').
+    assert "predict_degradation" in names
+    assert "inspect_smiles" in names
 
 
 def test_tool_validate_smiles(worker):

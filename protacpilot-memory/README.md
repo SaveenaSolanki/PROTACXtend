@@ -37,6 +37,49 @@ ppmemory init
 ppmemory doctor
 ```
 
+## Benchmarks
+
+```bash
+PYTHONPATH=src python -m benchmarks.benchmark           # A–H, single system
+PYTHONPATH=src python -m benchmarks.benchmark_h         # 5-way longitudinal comparison
+PYTHONPATH=src python -m benchmarks.benchmark_i         # failure-feedback chain
+PYTHONPATH=src python -m benchmarks.bounded_candidates  # before/after at N=10k
+PYTHONPATH=src python -m benchmarks.ablation            # component ablations
+PYTHONPATH=src python -m benchmarks.performance         # latency/storage sweep
+```
+
+Results are written under `benchmarks/results/` and include the generic metrics
+(Recall@k, MRR, nDCG@k) plus the scientific-memory metrics (Repeated Error Rate,
+Context Contamination Rate, Provenance Fidelity, Contradiction Resolution
+Accuracy, Longitudinal Decision Accuracy). Cognitive memory is **not** claimed
+to outperform the baselines: on Benchmark H the chunked `rag_memory` baseline
+retains the best ranking, and that is reported without adjustment. Bounded
+candidate generation cuts N=10,000 retrieval latency ~89% with no quality loss.
+See `docs/BENCHMARKS.md` for the measured outcomes and limitations.
+
+## Paper artifacts
+
+```bash
+PYTHONPATH=src python -m paper.build          # architecture/lifecycle/engram + tidy tables
+PYTHONPATH=src python -m paper.build --run    # run benchmarks first
+```
+
+Emits `paper/output/architecture.{json,svg}`, `lifecycle.{json,svg}`,
+`engram_example.{json,md}`, and tidy CSV/Parquet runs with summary and paired
+statistical comparisons. See `docs/PAPER_ARTIFACTS.md`.
+
+## Scientific evaluation
+
+```bash
+PYTHONPATH=src python -m evaluation.run       # paired tests, effect sizes, 13 figures
+```
+
+Runs the five memory systems over a population of longitudinal programmes and
+produces `evaluation/output/SCIENTIFIC_RESULTS.md`, tidy CSVs and 600-DPI square
+figures (Pareto, candidate reduction, contamination taxonomy, ablation, scaling,
+regime, failure heatmap). Claims are tested with exact McNemar / Wilcoxon tests,
+Holm correction and effect sizes. See `docs/SCIENTIFIC_EVALUATION.md`.
+
 ## Use as a library
 
 ```python
@@ -86,7 +129,9 @@ default OFF) so frozen benchmark artifacts stay unchanged. See
 `cog_predict`, `cog_record_outcome`, `cog_consolidate`, `cog_replay`,
 `cog_compare`, `cog_judge_conflict`, `cog_reconsolidate`, `cog_strengthen`,
 `cog_weaken`, `cog_archive`, `cog_future`, `cog_task_add`, `cog_task_resolve`,
-`cog_stats`, `cog_doctor`, `cog_audit`.
+`cog_procedure_save`, `cog_procedure_search`, `cog_procedure_get`,
+`cog_procedure_record_run`, `cog_pattern_complete`, `cog_counterfactual`,
+`cog_feedback`, `cog_end_session`, `cog_stats`, `cog_doctor`, `cog_audit`.
 
 Run the JSON-RPC (MCP-compatible) stdio server:
 
@@ -104,7 +149,8 @@ protacpilot-memory/
 │   │                 reconsolidation, decay, conflict, generalization,
 │   │                 pattern completion
 │   ├── domain/protac/PROTAC context, fingerprints, normalization, ontology
-│   ├── retrieval/    lexical, semantic (optional), graph, rerank, progressive
+│   ├── retrieval/    lexical, semantic (optional), graph, bounded candidates,
+│   │                 rerank, progressive
 │   ├── mcp/          cog_* tool registry + JSON-RPC stdio server
 │   ├── server/       stdlib HTTP JSON surface
 │   ├── cli/          ppmemory
@@ -114,17 +160,21 @@ protacpilot-memory/
 │   └── migrations/   versioned SQL
 ├── tests/
 ├── benchmarks/       Cognitive Memory Benchmark harness
+├── evaluation/       scientific evaluation (paired stats, figures, report)
+├── paper/            paper artifacts (architecture, lifecycle, engram, tables)
 └── docs/             architecture, memory model, neuroscience mapping, ...
 ```
 
 ## Documentation
 
+- `docs/COGNITIVE_MEMORY_SYSTEM_STATUS.md` — **start here**: system overview,
+  build status, verification evidence, and open work.
 - `docs/MASTER_DEVELOPMENT_PROMPT.md` — the governing specification.
 - `PROTACPILOT_COGNITIVE_MEMORY_AUDIT.md` — host + upstream audit.
 - `docs/ARCHITECTURE.md`, `docs/MEMORY_MODEL.md`, `docs/NEUROSCIENCE_MAPPING.md`,
   `docs/PROTAC_SCHEMA.md`, `docs/RETRIEVAL.md`, `docs/CONSOLIDATION.md`,
-  `docs/RECONSOLIDATION.md`, `docs/BENCHMARKS.md`, `docs/MCP.md`,
-  `docs/HOST_BRIDGE.md`.
+  `docs/RECONSOLIDATION.md`, `docs/BENCHMARKS.md`, `docs/PAPER_ARTIFACTS.md`,
+  `docs/SCIENTIFIC_EVALUATION.md`, `docs/MCP.md`, `docs/HOST_BRIDGE.md`.
 
 ## Scientific safety
 
@@ -132,3 +182,8 @@ Observations, interpretations, and generalized claims are separate records.
 Semantic memory is *inferred* and *scope-bounded* — never presented as
 experimentally established fact. Decay lowers retrieval priority; it never
 deletes provenance.
+
+This subsystem is a **computational engram** (an engram-like typed memory
+trace). Neuroscience is architectural inspiration; no biological equivalence to
+neural engrams is claimed. Benchmarks report the measured outcome, including
+where a curated or RAG baseline retains better ranking.

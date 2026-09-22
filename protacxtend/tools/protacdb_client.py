@@ -19,7 +19,18 @@ from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 
 _TOOLBOX = ProtacDesignToolbox()
 ROOT = Path(__file__).resolve().parents[2]
-PROTACDB_XLSX = ROOT / "data" / "benchmark" / "PROTAC-DB_3.0_protacs.xlsx"
+
+
+def _protacdb_xlsx() -> Path:
+    """Packaged PROTAC-DB 3.0 workbook with a legacy repo-layout fallback."""
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("benchmark", "PROTAC-DB_3.0_protacs.xlsx")
+    except Exception:  # pragma: no cover - legacy layout fallback
+        return ROOT / "data" / "benchmark" / "PROTAC-DB_3.0_protacs.xlsx"
+
+
+PROTACDB_XLSX = _protacdb_xlsx()
 
 
 EVIDENCE_FIELDS: dict[str, list[str]] = {

@@ -6,9 +6,9 @@
   "difficulty": "easy",
   "title": "Resolve target identity",
   "type": "exact",
-  "expected_answer": "UniProt Q60885; bromodomain-containing protein 4; two bromodomains (BD1, BD2) + extraterminal (ET) domain",
+  "expected_answer": "UniProt O60885; bromodomain-containing protein 4; two bromodomains (BD1, BD2) + extraterminal (ET) domain",
   "mandatory_answer_elements": [
-    "Q60885",
+    "O60885",
     "BD1/BD2 architecture"
   ],
   "acceptable_alternatives": [
@@ -18,7 +18,7 @@
     {
       "type": "public_db",
       "name": "UniProt",
-      "ref": "https://www.uniprot.org/uniprotkb/Q60885"
+      "ref": "https://www.uniprot.org/uniprotkb/O60885"
     }
   ],
   "numerical_context": null,

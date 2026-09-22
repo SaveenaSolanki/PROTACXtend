@@ -1,0 +1,91 @@
+{
+  "complexes": [
+    {
+      "e3_chain": "B",
+      "ligand": "8XW",
+      "note": "MZ1/VHL/BRD4 ternary",
+      "pdb": "5t35",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "VHL ternary",
+      "pdb": "6bn7",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "VHL ternary",
+      "pdb": "6bn8",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "VHL ternary",
+      "pdb": "6bn9",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "VHL ternary",
+      "pdb": "6bnb",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "CRBN ternary",
+      "pdb": "6boy",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "6hax",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "6hay",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "6hr2",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "5v7q",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "6zhc",
+      "target_chain": "A"
+    },
+    {
+      "e3_chain": "B",
+      "ligand": "",
+      "note": "ternary",
+      "pdb": "7khh",
+      "target_chain": "A"
+    }
+  ],
+  "description": "Experimentally resolved PROTAC/ternary complexes (target\u2013ligand\u2013E3).",
+  "name": "ternary_v1",
+  "source": "RCSB PDB"
+}

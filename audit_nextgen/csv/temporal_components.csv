@@ -1,0 +1,12 @@
+component,purpose,input,output,storage,failure_mode
+TemporalEvidenceStore,hold only pre-T0 evidence,"query,T0",evidence items,object store + vector index,post-T0 item admitted
+TemporalSourceValidator,check release/retrieval dates,"source records,T0",accept/reject + flags,metadata db,missing release date
+TemporalToolRegistry,pin tool versions at T0,T0,frozen tool manifest,manifest json,tool upgraded mid-run
+CutoffPolicy,resolve T0 per task,"task,policy",T0 date + rules,task manifest,ambiguous cutoff
+LeakageAuditor,scan evidence/model/tool dates,run + T0,leakage events,run manifest,silent leakage
+FrozenRetrievalIndex,immutable search index,corpus dump,read-only index,object store,reindex drift
+FrozenDatabaseManifest,record DB release hashes,DB snapshots,hash manifest,manifest json,snapshot missing
+ToolVersionManifest,record tool/image versions,env probe,version map,manifest json,container changed
+RunManifest,full reproducibility record,run,signed manifest,object store,field omitted
+GroundTruthVault,sealed post-T0 truth,future evidence,encrypted GT,encrypted storage,early unlock
+AdjudicationEngine,compare prediction vs future,pred + later evidence,SUPPORTED/MIXED/CONTRADICTED/UNRESOLVED,results db,free-text inference

@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..domain.protac.normalization import EntityRef, entity_key, make_entity_ref, normalize_entity_name
+from ..domain.protac.normalization import (
+    EntityRef,
+    entity_key,
+    make_entity_ref,
+    normalize_entity_name,
+)
 from ..util import dumps, loads, now_iso
 from .base import BaseStore
 

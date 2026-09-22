@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-
+from helpers import brd4_vhl, ev
 from protacpilot_memory.cognitive.prediction_error import (
     brier_score,
     classification_error,
@@ -12,8 +12,6 @@ from protacpilot_memory.cognitive.prediction_error import (
     numeric_error,
     surprise_from_error,
 )
-
-from helpers import brd4_vhl, ev
 
 
 def test_numeric_error_is_scale_normalised():

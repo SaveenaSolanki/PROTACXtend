@@ -41,7 +41,7 @@ class GraphRetriever:
                 score = weight * (0.5 + 0.5 * conf) * decay
                 mid = neighbor["memory_id"]
                 scores[mid] = max(scores.get(mid, 0.0), clamp01(score))
-        ordered = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+        ordered = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))
         return dict(ordered[:limit])
 
     def related_memories(self, memory_id: str, depth: int = 1) -> list[dict[str, Any]]:

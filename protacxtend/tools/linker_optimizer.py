@@ -28,8 +28,28 @@ from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 logger = logging.getLogger("protacpilot.linker_optimizer")
 
 ROOT = Path(__file__).resolve().parents[2]
-BASE = ROOT / "data" / "linkers" / "linker_generator.pt"
-OPT = ROOT / "data" / "linkers" / "linker_generator.optimized.pt"
+
+
+def _base_checkpoint() -> Path:
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("linkers", "linker_generator.pt")
+    except Exception:  # pragma: no cover - legacy layout fallback
+        return ROOT / "data" / "linkers" / "linker_generator.pt"
+
+
+BASE = _base_checkpoint()
+
+
+def _opt_checkpoint() -> Path:
+    try:
+        from protacxtend.resources import cache_dir
+        return cache_dir("linkers") / "linker_generator.optimized.pt"
+    except Exception:  # pragma: no cover - legacy layout fallback
+        return ROOT / "data" / "linkers" / "linker_generator.optimized.pt"
+
+
+OPT = _opt_checkpoint()
 
 
 class LinkerOptimizer:
@@ -41,7 +61,8 @@ class LinkerOptimizer:
         self._lr = lr
         if checkpoint.exists():
             try:
-                from scripts.train_linker_generator import CharGRU
+                from protacxtend.tools.linker_char_gru import load_char_gru
+                CharGRU = load_char_gru()
                 ckpt = torch.load(checkpoint, map_location="cpu", weights_only=False)
                 self._vocab = ckpt["vocab"]
                 self._ivocab = {i: c for c, i in self._vocab.items()}

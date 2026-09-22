@@ -1,0 +1,15 @@
+method,path,purpose,request,response
+POST,/investigations,create investigation,"{target,disease,question,cutoff}","{id,status}"
+POST,/investigations/{id}/run,execute,"{mode,tool_policy}","{run_id,status}"
+GET,/investigations/{id},fetch state,-,"{state,strategy,manifest}"
+POST,/agent/run,generic agent run,"{question,cutoff,policy}",{run_id}
+GET,/tools,tool registry,?domain=,"[{id,status,schema}]"
+POST,/tools/{tool_id}/execute,execute one tool,{params},"{status,data,provenance}"
+GET,/evidence/search,evidence retrieval,?q=&cutoff=,"[{claim,source,date}]"
+POST,/benchmark/run,run benchmark,"{benchmark,split,systems}",{benchmark_run_id}
+GET,/benchmark/{id}/results,benchmark results,-,"{scores,per_task}"
+POST,/temporal/run,blinded temporal run,"{T0,tasks}","{run_id,manifest}"
+POST,/temporal/unlock,unlock future truth,"{run_id,secret}",{adjudication}
+GET,/runs/{run_id},run record,-,{AgentRunRecord}
+GET,/runs/{run_id}/manifest,manifest,-,{RunManifest}
+GET,/capabilities,capabilities,-,"[{id,maturity}]"

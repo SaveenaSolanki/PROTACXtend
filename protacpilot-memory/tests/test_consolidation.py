@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from protacpilot_memory.domain.protac.evidence import EvidenceRef
-
 from helpers import add_degradation_episode, brd4_vhl, ev
+from protacpilot_memory.domain.protac.evidence import EvidenceRef
 
 
 def test_requires_minimum_episode_count(mem, project):

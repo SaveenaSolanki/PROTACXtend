@@ -1,0 +1,90 @@
+{
+  "source_file": "data/protac_repos/repos/Protac-invent/data/protac/protacDB/protac.csv",
+  "source_description": "PROTAC-DB-derived table with separate binary-POI, binary-E3 and ternary affinity columns and assay descriptions",
+  "retrieved_utc": "2026-09-15T14:24:53.389009+00:00",
+  "n_records": 46,
+  "n_unique_protacs": 19,
+  "n_pois": 12,
+  "n_e3s": 3,
+  "overall": {
+    "n": 46,
+    "median_alpha": 5.861465,
+    "mean_log_alpha": 1.5070660869565218,
+    "std_log_alpha": 1.8022874156797746,
+    "frac_positive": 0.7608695652173914,
+    "frac_neutral": 0.06521739130434782,
+    "frac_negative": 0.17391304347826086
+  },
+  "by_arm": {
+    "e3_assay_described": {
+      "n": 20,
+      "median_alpha": 5.350075,
+      "mean_log_alpha": 1.241259,
+      "std_log_alpha": 1.725670308918583,
+      "frac_positive": 0.65,
+      "frac_neutral": 0.05,
+      "frac_negative": 0.3
+    },
+    "poi_assay_described": {},
+    "ambiguous": {
+      "n": 26,
+      "median_alpha": 5.861465,
+      "mean_log_alpha": 1.7115330769230772,
+      "std_log_alpha": 1.8664397215721042,
+      "frac_positive": 0.8461538461538461,
+      "frac_neutral": 0.07692307692307693,
+      "frac_negative": 0.07692307692307693
+    }
+  },
+  "by_basis": {
+    "Kd": {
+      "n": 36,
+      "median_alpha": 4.5166699999999995,
+      "mean_log_alpha": 1.2494202777777776,
+      "std_log_alpha": 1.9146129877109237,
+      "frac_positive": 0.6944444444444444,
+      "frac_neutral": 0.08333333333333333,
+      "frac_negative": 0.2222222222222222
+    },
+    "Ki": {
+      "n": 10,
+      "median_alpha": 12.795535000000001,
+      "mean_log_alpha": 2.434591,
+      "std_log_alpha": 0.8741371514998216,
+      "frac_positive": 1.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 0.0
+    }
+  },
+  "by_e3": {
+    "CRBN": {
+      "n": 3,
+      "median_alpha": 37.59563,
+      "mean_log_alpha": 3.9899099999999996,
+      "std_log_alpha": 2.1154710966354515,
+      "frac_positive": 1.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 0.0
+    },
+    "VHL": {
+      "n": 42,
+      "median_alpha": 5.68839,
+      "mean_log_alpha": 1.4659669047619048,
+      "std_log_alpha": 1.447541242105904,
+      "frac_positive": 0.7619047619047619,
+      "frac_neutral": 0.07142857142857142,
+      "frac_negative": 0.16666666666666666
+    },
+    "cIAP1": {
+      "n": 1,
+      "median_alpha": 0.01477,
+      "mean_log_alpha": -4.2153,
+      "std_log_alpha": null,
+      "frac_positive": 0.0,
+      "frac_neutral": 0.0,
+      "frac_negative": 1.0
+    }
+  },
+  "headline_fit_set": "alpha_arm=e3_assay_described (unambiguous E3-arm Kd)",
+  "note": "Values are measured equilibrium constants copied from the source; paired values are geometric means (flagged). No IC50->Kd conversion and no imputation."
+}

@@ -112,5 +112,5 @@ ScrollBar {
 }
 
 ScrollBar > .thumb {
-    background: $text-muted;
+    background: $primary;
 }

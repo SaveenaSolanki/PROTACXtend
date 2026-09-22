@@ -76,16 +76,29 @@ class TraceStore(BaseStore):
 
     # ── lifecycle ────────────────────────────────────────────────────────────
     def archive(self, trace_id: str, session_id: str | None = None, reason: str | None = None) -> None:
-        self.update_trace(trace_id, status="archived")
-        self.log_event(trace_id, "ARCHIVED", {"reason": reason}, session_id)
+        from ..domain.protac.ontology import STATUS_ARCHIVED
+
+        self.set_status(
+            trace_id, STATUS_ARCHIVED, reason=reason, session_id=session_id,
+            event_type="ARCHIVED", event_detail={"reason": reason},
+        )
 
     def supersede(self, trace_id: str, superseded_by: str, reason: str | None = None) -> None:
-        self.update_trace(trace_id, status="superseded")
-        self.log_event(trace_id, "SUPERSEDED", {"superseded_by": superseded_by, "reason": reason})
+        from ..domain.protac.ontology import STATUS_SUPERSEDED
+
+        self.set_status(
+            trace_id, STATUS_SUPERSEDED, reason=reason,
+            event_type="SUPERSEDED",
+            event_detail={"superseded_by": superseded_by, "reason": reason},
+        )
 
     def mark_review(self, trace_id: str, reason: str | None = None) -> None:
-        self.update_trace(trace_id, status="needs_review")
-        self.log_event(trace_id, "REVIEW_MARKED", {"reason": reason})
+        from ..domain.protac.ontology import STATUS_NEEDS_REVIEW
+
+        self.set_status(
+            trace_id, STATUS_NEEDS_REVIEW, reason=reason,
+            event_type="REVIEW_MARKED",
+        )
 
     # ── traversal helpers ────────────────────────────────────────────────────
     def by_topic(self, topic_key: str, project_id: str | None = None) -> list[dict[str, Any]]:

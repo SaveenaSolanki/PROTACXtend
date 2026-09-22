@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import sys
-from typing import Any, IO
+from typing import IO, Any
 
 from ..api import CognitiveMemory
 from ..util import now_iso

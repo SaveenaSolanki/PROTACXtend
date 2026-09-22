@@ -134,14 +134,31 @@ class TestFeaturesAndSurrogate:
 # ── predict API ─────────────────────────────────────────────────────────────
 
 class TestPredictApi:
-    def test_no_evidence_is_explicit_failure(self):
+    def test_no_evidence_for_uncalibrated_e3_is_explicit_failure(self):
+        # HUWE1 has no curated cooperativity record -> honest refusal
         with pytest.raises(CooperativityEvidenceError, match="No evidence"):
-            predict_cooperativity(protac="x", poi="BRD4", e3="VHL")
+            predict_cooperativity(protac="x", poi="BRD4", e3="HUWE1")
+
+    def test_empirical_alpha_for_supported_pair(self):
+        # BRD4-VHL has measured records -> empirical alpha returned (not surrogate)
+        r = predict_cooperativity(protac="MZ1", poi="BRD4", e3="VHL")
+        assert r.model_kind == "empirical_cooperativity_v1"
+        assert r.predicted_alpha is not None and r.predicted_alpha > 0
+        assert r.uncertainty["kind"] == "empirical_distribution"
+        assert r.uncertainty["evidence_level"] in {"measured_pair", "e3_prior"}
+        assert any("EMPIRICAL" in lim for lim in r.limitations)
+
+    def test_uncalibrated_e3_never_gets_experimental_claim(self):
+        from protacxtend.modules.cooperativity_alpha_predictor import empirical_alpha
+        e = empirical_alpha("BRD4", "HUWE1")
+        assert e["available"] is False
+        assert "no measured cooperativity records" in e["reason"]
 
     def test_surrogate_path_never_claims_alpha(self, tmp_path):
         p = _pose(tmp_path / "c.pdb")
         r = predict_cooperativity(protac="MZ1", poi="BRD4", e3="VHL",
-                                  ternary_structure=str(p), poi_chain="A", e3_chain="B")
+                                  ternary_structure=str(p), poi_chain="A", e3_chain="B",
+                                  use_empirical_calibration=False)
         assert r.model_kind == "structural_surrogate"
         assert r.predicted_alpha is None
         assert r.predicted_log_alpha is None
@@ -179,10 +196,11 @@ class TestPredictApi:
 # ── data audit & leakage ────────────────────────────────────────────────────
 
 class TestDataAudit:
-    def test_empty_curated_template_stops_supervised_path(self):
+    def test_populated_curated_records_pass_policy_audit(self):
         audit = audit_records(load_records())
-        assert audit["records"] == 0
-        assert "NO MACHINE-READABLE" in audit["conclusion"]
+        assert audit["records"] > 0
+        assert audit["with_alpha"] > 0
+        assert audit["conclusion"] == "curation policy enforced; alpha only from measured values."
 
     def test_benchmark_on_empty_data_never_trains(self):
         out = run_benchmarks(pd.DataFrame(), feature_cols=["x"])

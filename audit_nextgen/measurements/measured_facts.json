@@ -1,0 +1,39 @@
+{
+  "audit_date": "2026-09-21",
+  "repo_head": "c4af830",
+  "host": {"python": "3.13.5", "rdkit": "2026.03.4", "cpu": "AMD EPYC 7313 16-Core x32", "gpus": ["RTX 5000 Ada", "RTX 3090"]},
+  "commands_actually_run": [
+    "python -m pytest tests/ -q  -> 184 passed, 2 failed, 1 warning in 504.71s",
+    "python -m pytest protacxtend/modules -q -m 'not slow and not network' -> 126 passed in 54.99s",
+    "python -m pytest protacxtend/tests -q -m 'not slow and not network' -> did not finish in 1500s (killed at ~48%)",
+    "python -m pytest tests/test_tpdeval.py -q -> 22 passed",
+    "python -m protacxtend.cli doctor -> Status NOT READY (no provider); backends READY; 19 capabilities ready",
+    "python -m protacxtend.cli capabilities --json -> total 371; scientifically-validated 1; registered_but_not_executable 115; registered_but_unavailable 49",
+    "python -m protacxtend.cli design 'Design PROTACs to degrade BRD4 using VHL in triple-negative breast cancer' --stem audit_brd4 -> exit 0; target parsed as DEGRADE; binders=0; 5 demo warheads; 180 assembled; 117 valid; report 17689 chars",
+    "parse_user_request probes -> 'degrade BRD4' target=DEGRADE; 'Can BRD4...' target=CAN; 'KRAS G12C with CRBN' target=KRAS; 'for EGFR' target=EGFR",
+    "run_agent_tool sweep of all 34 agent tools -> 28 ok, 6 partial, 0 hard-fail",
+    "ligand_docking(1buh.pdb, aspirin) -> success PROSPECTIVE_CONSENSUS_DOCKING, 9 poses, top score -6.20 kcal/mol",
+    "predict_admet(aspirin) -> success ADMET_AI",
+    "score_protac(BRD4 PROTAC) -> success, linker strain 56.869 kcal/mol"
+  ],
+  "measured_metrics_from_repo_audits": {
+    "results/audit/audit.json": {"execution_success_rate": 0.911, "replay_success_rate": 0.917, "failure_recovery_rate": 0.0, "output_validity_rate": 1.0, "silent_scientific_failures": 9, "capability_audit_pass": 507, "capability_audit_fail": 5},
+    "results/benchmarks/docking/docking_summary.json": {"n_curated": 40, "vina_median_rmsd": 2.356, "vina_success_lt2A": 0.375, "vina_success_lt5A": 0.85},
+    "validation/claims.py": {"n_claims": 12, "gnina_median_rmsd": 4.008, "diffdock_median_rmsd": 3.212, "ppi_dockq_top1_median": 0.0134, "ternary_predicted_dockq": "NOT_VALIDATED", "mmgbsa": "NOT_VALIDATED", "graceful_degradation_fallback_success": 0.5556}
+  },
+  "benchmark_facts": {
+    "benchmark/cases": {"files": 49, "expected_answer_null": 49, "missing_input_refs": ["DISCOVER-01", "KNOW-08"]},
+    "benchmark/ground_truth": {"files": 48},
+    "sota/eval/eval500": {"core": 500, "adversarial": 100, "generator_templates_per_category": 1, "graders_shipped": 0},
+    "tpdeval": {"domains": 16, "difficulties": 7, "partitions": {"controlled": 300, "end_to_end": 150, "temporal": 50}, "tasks": 500, "scorable_tasks": 0, "ground_truth_status": {"REQUIRES_AUTHORING": 500}},
+    "benchmark_results": {"scored_runs": 0, "acceptance_tasks_per_system": 4}
+  },
+  "security_findings": {
+    "shell_true": ["protacxtend/toolkit/provision.py:310", "protacxtend/tools/synglue_degradation.py:170", "protacxtend/tools/synglue_degradation.py:183", "protacxtend/escalation/installer.py:293"],
+    "os_system": ["protacxtend/tools/p4ward_wrapper.py:453"],
+    "pickle_load": ["protacxtend/models/degradation_model.py:93", "protacxtend/tools/magnetdb_lookup.py:131", "protacxtend/tools/magnetdb_lookup.py:133", "protacxtend/tools/admet_predictors.py:124", "protacxtend/tools/p4ward_wrapper.py:1097"],
+    "eval_exec": "none found (only torch model.eval())",
+    "yaml_load": "none found"
+  },
+  "disclaimer": "All values above were observed in this audit run or read from committed audit artifacts. No performance number was inferred or fabricated."
+}

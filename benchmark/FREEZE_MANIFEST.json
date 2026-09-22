@@ -1,6 +1,6 @@
 {
   "freeze_version": "2A.1",
-  "frozen_at": "2026-09-04T14:53:18.684630+00:00",
+  "frozen_at": "2026-09-07T13:08:34.934761+00:00",
   "counts": {
     "cases": 48,
     "ground_truth": 48,
@@ -370,7 +370,7 @@
     {
       "group": "ground_truth",
       "path": "ground_truth/KNOW-01.json",
-      "sha256": "1e0a9992b4ca9cceeabb6a8a76acf353c960cc438961a5581e46ae1ce90cb216"
+      "sha256": "adbdefa06270ef0d2f36d462887cd93d73b726042e9e01fcc01fc8d7c123ba8d"
     },
     {
       "group": "ground_truth",

@@ -16,15 +16,22 @@ from protacxtend.results.schema import SCHEMA_VERSION, from_dict, ScientificResu
 
 def write_result_json(path: Path | str, result: ScientificResult | dict[str, Any],
                       metadata: Optional[dict[str, Any]] = None) -> Path:
-    """Write a frozen result.json (pretty, schema-versioned)."""
+    """Write a frozen result.json (pretty, schema-versioned).
+
+    Adds the PROTACXtend version to metadata automatically. Provider/model
+    live on the ScientificResult itself (never a key).
+    """
+    import protacxtend
     out = result.to_dict() if isinstance(result, ScientificResult) else dict(result)
     if metadata:
         merged = dict(out.get("metadata") or {})
         merged.update(metadata)
         out["metadata"] = merged
     out["schema_version"] = SCHEMA_VERSION
-    out.setdefault("metadata", {}).setdefault("written_at",
-                                              datetime.now(timezone.utc).isoformat())
+    meta = dict(out.get("metadata") or {})
+    meta.setdefault("protacxtend_version", getattr(protacxtend, "__version__", "?"))
+    meta.setdefault("written_at", datetime.now(timezone.utc).isoformat())
+    out["metadata"] = meta
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, indent=2, default=str) + "\n")

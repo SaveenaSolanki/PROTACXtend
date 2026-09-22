@@ -10,6 +10,11 @@ mode="agentic"       → the unified v0.3/v0.4 LangGraph
                           └── human gates
 
 Everything else (backend, CLI, UI) calls THIS. No other entry points.
+
+The two engines are *leaves* of the canonical control plane
+(``protacxtend.canonical``): whichever mode runs, the run is parsed, evidence-
+recorded, critiqued and turned into a typed ``TherapeuticStrategy`` by the same
+stack. ``run_protacpilot`` returns that strategy under ``therapeutic_strategy``.
 """
 
 from __future__ import annotations
@@ -103,6 +108,36 @@ def run_protacpilot(
 
     runtime_s = round(time.time() - t0, 2)
 
+    # Canonical control plane (single execution stack):
+    #   Scientific Request Parser -> Evidence Store -> Critic -> Decision Engine
+    # Both engines below are leaves reached through the canonical Tool Executor,
+    # so provenance, routing and the final TherapeuticStrategy are identical
+    # regardless of which engine produced the scientific state. Never fatal.
+    try:
+        from protacxtend.canonical import CanonicalOrchestrator
+
+        config = {**config, "artifact_paths": result.get("artifacts") or {}}
+        canonical = CanonicalOrchestrator().review_engine_state(
+            user_request,
+            result.get("state"),
+            run_id=run_id,
+            engine=mode,
+            config=config,
+        )
+        result["canonical"] = {
+            "run_id": canonical.run_id,
+            "status": canonical.status,
+            "critic": canonical.critic.model_dump(),
+            "strategy": canonical.strategy.model_dump(),
+            "task_graph": canonical.task_graph.model_dump(),
+            "module_results": [item.model_dump() for item in canonical.module_results],
+            "warnings": canonical.warnings,
+            "errors": canonical.errors,
+        }
+        result["therapeutic_strategy"] = canonical.strategy.model_dump()
+    except Exception as exc:  # pragma: no cover - canonical review is advisory
+        logger.warning("canonical review skipped: %s", exc)
+
     # Coverage matrix (search instrumentation): record evaluated cells
     try:
         if mode == "agentic":
@@ -130,7 +165,21 @@ def run_protacpilot(
                 run_dir, record, state_dict,
                 report_text=state_dict.get("report", ""),
             )
-            result["run_record"] = {"run_id": run_id, "dir": str(run_dir), "file": str(run_json)}
+            # Typed scientific output is a first-class run artifact, so every
+            # discovery run ships a machine-readable TherapeuticStrategy.
+            strategy_path = None
+            strategy_payload = result.get("therapeutic_strategy")
+            if strategy_payload:
+                strategy_path = run_dir / "therapeutic_strategy.json"
+                strategy_path.write_text(
+                    json.dumps(strategy_payload, indent=2, default=str), encoding="utf-8"
+                )
+            result["run_record"] = {
+                "run_id": run_id,
+                "dir": str(run_dir),
+                "file": str(run_json),
+                **({"strategy_file": str(strategy_path)} if strategy_path else {}),
+            }
             # Optional cognitive-memory ingestion (opt-in via
             # PROTACPILOT_COGNITIVE_MEMORY=1; default OFF so frozen run
             # artifacts and benchmarks are unchanged).  Never fatal.
@@ -176,6 +225,8 @@ def run_protacpilot(
         "state": result.get("state"),
         "trace": trace_info,
         "run_record": result.get("run_record"),
+        "canonical": result.get("canonical"),
+        "therapeutic_strategy": result.get("therapeutic_strategy"),
     }
 
 

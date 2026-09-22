@@ -147,7 +147,7 @@ def test_E_tool_failure_is_visible(monkeypatch):
 def test_F_unsupported_tool_hallucination_rejected():
     agent = make_agent([
         {"action": "tool_call", "tool": "definitely_not_a_tool", "params": {}},
-        {"action": "tool_call", "tool": "predict_degradation", "params": {}},  # planned → rejected
+        {"action": "tool_call", "tool": "another_hallucinated_tool", "params": {}},
         {"action": "final_answer", "answer": "Only registered ready tools run.", "evidence": []},
     ])
     run = agent.turn("Do something impossible.")
@@ -179,10 +179,11 @@ def test_H_shared_config_file(monkeypatch, tmp_path):
 
 
 def test_strict_registry_only_ready_tools_advertised():
-    from protacxtend.agentic.registry import registry_specs, spec_for
+    from protacxtend.agentic.registry import TOOL_SPECS, registry_specs, spec_for
     specs = registry_specs(ready_only=True)
     names = {s["name"] for s in specs}
-    assert "predict_degradation" not in names          # planned → hidden from model
-    assert "deep_research" in names
+    # every advertised spec must be executable, and the full surface is ready
+    assert {"predict_degradation", "deep_research", "search_pubchem"} <= names
+    assert all(s["readiness"] == "ready" for s in TOOL_SPECS)
     with pytest.raises(Exception):
         spec_for("not_a_tool")

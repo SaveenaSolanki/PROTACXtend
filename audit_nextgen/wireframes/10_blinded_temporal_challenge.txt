@@ -1,0 +1,35 @@
+## 10. Blinded Temporal Challenge
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BLINDED TEMPORAL CHALLENGE                                                                   │
+├───────────────────┬──────────────────────────────────────────────────────────────────────────┤
+│ HISTORICAL DATE   │              WORLD FROZEN AT: 31 Dec 2021                                 │
+│ ( ) 2019          │  ┌────────────────────────────────────────────────────────────────────┐  │
+│ ( ) 2020          │  │ evidence available   12,531 papers · 3 DB snapshots · 2 struct repos│  │
+│ (•) 2021          │  │                      14 approved tools                              │  │
+│ ( ) 2022          │  │ evidence after cutoff: ███████ LOCKED ███████                       │  │
+│ ( ) 2023          │  └────────────────────────────────────────────────────────────────────┘  │
+│ ( ) 2024          │                                                                          │
+│                   │  ▸ RUN BLINDED CHALLENGE                                                 │
+│ SNAPSHOT MANIFEST │                                                                          │
+│ papers hash ✓     │  ── AGENT ANSWER (sealed until unlock) ────────────────────────────────  │
+│ db hash ✓         │  prediction · mechanism · recommended strategy · experiment · confidence │
+│ tool hash ✓       │                                                                          │
+│ model hash ✓      │  ▸ UNLOCK FUTURE EVIDENCE                                                │
+│                   │                                                                          │
+│ LEAKAGE AUDIT     │  FUTURE EVIDENCE TIMELINE                                                │
+│ leaks: 0 ✓        │  T+6mo  ● SUPPORTED      T+12mo ● MIXED       T+18mo ● CONTRADICTED       │
+│                   │  T+24mo ○ UNRESOLVED                                                      │
+│                   │  per-aspect verdict: target · E3 · warhead · mechanism · ternary · exp.  │
+└───────────────────┴──────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** freeze the world at T0, run blind, unlock future truth, adjudicate.
+- **Panels:** date selector, world snapshot, snapshot manifest, leakage audit, agent answer, unlock, timeline.
+- **Controls:** year, run, unlock.
+- **Hierarchy:** T0 → frozen resources → blind answer → leakage → future adjudication.
+- **Primary:** `RUN BLINDED CHALLENGE`; then `UNLOCK FUTURE EVIDENCE`.
+- **States:** sealed (answer hidden), unlocked (verdicts shown).
+- **Error:** leakage detected → run marked CONTAMINATED, excluded from scoring.
+
+---

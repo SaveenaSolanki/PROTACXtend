@@ -1,0 +1,33 @@
+## 6. Evidence Explorer
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ EVIDENCE EXPLORER     [graph ▾]  [table ▾]        cutoff 2024-12-31   □ cut-off enforced      │
+├───────────────────────────────────┬──────────────────────────────────────────────────────────┤
+│ EVIDENCE GRAPH                    │ CLAIM  « BRD4 degradation is feasible in TNBC »          │
+│                                   │ ┌──────────────────────────────────────────────────────┐ │
+│   TARGET ── disease ── pathway    │ │ direction SUPPORTS   strength MODERATE  tier MEASURED │ │
+│     │        │            │       │ │ evidence: genetic | dependency | expression | …      │ │
+│   WARHEAD ─ E3 ─ PROTAC ─ STR     │ │ source: PMID 12345678 · 2021-06 · excerpt "…"        │ │
+│     │         │         │         │ │ ── conflicts with ── PMID 87654321 (2023, CONTRADICTS)│ │
+│  TERNARY ─ DEGRADATION ─ PHENO    │ └──────────────────────────────────────────────────────┘ │
+│     │         │           │       │ CLAIM  « VHL is expressed in TNBC »                       │
+│    PK ──── SAFETY ──── BIOMARKER  │ ┌──────────────────────────────────────────────────────┐ │
+│                                   │ │ expression-only · strength WEAK · does NOT support    │ │
+│ ● supports  ● contradicts  ○ none │ │ E3 recommendation alone                              │ │
+│                                   │ └──────────────────────────────────────────────────────┘ │
+│ FILTERS: type▾ year▾ strength▾    │ ⚠ contradictions are PRESERVED, never averaged away      │
+│ [search evidence…]                │                                                          │
+├───────────────────────────────────┴──────────────────────────────────────────────────────────┤
+│ ▸ SEND TO DECISION ENGINE   · export evidence graph   · add manual evidence   · flag missing   │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** inspect typed evidence and contradictions per claim.
+- **Panels:** graph, filters, claim cards with conflicts, contradiction warning.
+- **Controls:** view toggle, cutoff, filters, search, send/export.
+- **Hierarchy:** claim → evidence items → conflicts → provenance.
+- **Primary:** `SEND TO DECISION ENGINE`. **Secondary:** export/flag.
+- **States:** graph node colour by evidence direction; cutoff-locked items greyed.
+- **Error:** source unreachable → "evidence incomplete" card, not silent omission.
+
+---

@@ -1,0 +1,33 @@
+## 8. Benchmark Dashboard
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BENCHMARK DASHBOARD                                                                          │
+├──────────────┬─────────────────────────────────────────────┬─────────────────────────────────┤
+│ BENCHMARKS   │ TPD-HEADTOHEAD/1.0.0                         │ SYSTEMS                         │
+│ • TPD-500    │ domains 16 · L1–L7 · 300/150/50 · stress 100 │ A PROTACXtend     EXECUTABLE    │
+│ • eval500    │ scorable tasks: 0 / 500  ⛔ AUTHORING NEEDED │ B Biomni          SMOKE ONLY     │
+│ • 48-case    │ ───────────────────────────────────────────  │ C TPD-agent       MISSING       │
+│ • temporal   │ COVERAGE                                     │ D General LLM     EXECUTABLE    │
+│              │ ┌──────────────┬──────┬──────┬──────┐        │ E Retrieval-only  MISSING       │
+│ RUNS         │ │ domain       │ ctrl │ e2e  │ temp │        │ F Tool-only       MISSING       │
+│ none scored  │ │ target_biol. │ 16   │ 6    │ 0    │        │ G LLM+tools       MISSING       │
+│              │ │ …            │ …    │ …    │ …    │        │ H planner+tools   MISSING       │
+│              │ └──────────────┴──────┴──────┴──────┘        │                                 │
+│              │ METRICS (separate, no composite by default) │ CONDITION                       │
+│              │ correctness · grounding · tool-sel · exec   │ (•) native  ( ) matched-tool    │
+│              │ mechanistic · quantitative · calibration    │                                 │
+│              │ failure-recovery · reproducibility · time   │ ▸ START BENCHMARK RUN           │
+├──────────────┴─────────────────────────────────────────────┴─────────────────────────────────┤
+│ FIGURES: coverage · accuracy by domain/difficulty · tool precision/recall · calibration        │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** manage benchmarks, systems, conditions, metrics.
+- **Panels:** benchmark list, coverage table, systems, condition, metrics, figures.
+- **Controls:** select benchmark/system/condition, start run.
+- **Hierarchy:** benchmark → coverage → systems → metrics.
+- **Primary:** `START BENCHMARK RUN`. **Secondary:** export/figures.
+- **States:** "0 scorable" gate blocks run with explicit authoring checklist.
+- **Error:** unwired system shown MISSING/BLOCKED, never silently skipped.
+
+---

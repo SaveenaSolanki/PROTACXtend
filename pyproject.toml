@@ -14,6 +14,7 @@ dependencies = [
   "requests>=2.31",
   "joblib>=1.3",
   "scikit-learn>=1.2",
+  "openpyxl>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -21,10 +22,87 @@ tui = ["textual>=0.40", "rich>=13.0"]
 ui = ["streamlit>=1.35"]
 api = ["fastapi>=0.110", "uvicorn>=0.27"]
 chemistry = ["rdkit"]
+# ── external scientific toolkit profiles (see TOOLKIT_TRUTH.md) ──────────
+toolkit-chem = [
+  "openbabel-wheel>=3.1",
+  "meeko>=0.7",
+  "mmpdb>=3.1",
+  "rdchiral>=1.1",
+  "rxnmapper>=0.4",
+  "crem>=0.3",
+  "guacamol>=0.5",
+  "PyTDC>=0.4",
+]
+toolkit-structure = [
+  "openmm>=8.0",
+  "pdbfixer>=1.9",
+  "propka>=3.5",
+  "pdb2pqr>=3.7",
+]
+toolkit-retro = ["aizynthfinder>=4.4", "OpenNMT-py>=3.0"]
+toolkit-ml = ["chemprop>=2.3", "deepchem>=2.8", "fair-esm>=2.0"]
+toolkit-nlp = ["scispacy>=0.6"]
+# union of the pip-provisionable toolkit (does NOT cover commercial/web/repo tools)
+toolkit = [
+  "openbabel-wheel>=3.1",
+  "meeko>=0.7",
+  "mmpdb>=3.1",
+  "rdchiral>=1.1",
+  "rxnmapper>=0.4",
+  "crem>=0.3",
+  "guacamol>=0.5",
+  "PyTDC>=0.4",
+  "openmm>=8.0",
+  "pdbfixer>=1.9",
+  "propka>=3.5",
+  "pdb2pqr>=3.7",
+  "aizynthfinder>=4.4",
+  "chemprop>=2.3",
+  "deepchem>=2.8",
+  "fair-esm>=2.0",
+  "scispacy>=0.6",
+]
+# everything (UI + API + toolkit) for a full workstation
+full = [
+  "textual>=0.40",
+  "rich>=13.0",
+  "streamlit>=1.35",
+  "fastapi>=0.110",
+  "uvicorn>=0.27",
+  "rdkit",
+  "openbabel-wheel>=3.1",
+  "meeko>=0.7",
+  "mmpdb>=3.1",
+  "rdchiral>=1.1",
+  "rxnmapper>=0.4",
+  "crem>=0.3",
+  "guacamol>=0.5",
+  "PyTDC>=0.4",
+  "openmm>=8.0",
+  "openmmforcefields>=0.15",
+  "pdbfixer>=1.9",
+  "propka>=3.5",
+  "pdb2pqr>=3.7",
+  "mdtraj>=1.9",
+  "freesasa>=2.2",
+  "MDAnalysis>=2.7",
+  "aizynthfinder>=4.4",
+  "chemprop>=2.3",
+  "deepchem>=2.8",
+  "fair-esm>=2.0",
+  "admet-ai>=2.0",
+  "scispacy>=0.6",
+]
 
 [project.scripts]
 PROTACXtend = "protacxtend.cli:main"
 protacxtend = "protacxtend.cli:main"
+
+[tool.setuptools]
+# Ship every non-code scientific asset inside the package (Agent_Toolkit.xlsx,
+# TACK/chemprop/linker data, module CSVs/configs) so `protacxtend run` works
+# from a clean one-command install without any repo-root assumption.
+include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["protacxtend*"]

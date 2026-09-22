@@ -1,0 +1,37 @@
+## 3. Target Analysis
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Investigation: BRD4·TNBC     TARGET ANALYSIS                    node: 2/16  ●●●●●○○○○○○○○○○○  │
+├──────────────┬───────────────────────────────────────────────┬───────────────────────────────┤
+│ EVIDENCE     │ TARGET DOSSIER — BRD4 (O60885)                │ VALIDATION AXES               │
+│ FILTERS      │ identity ✓ two bromodomains + ET domain       │ genetics      WEAK  (no hits) │
+│ type ▾ all   │ expression: DepMap TNBC lines (transcript)    │ omics         PARTIAL          │
+│ year ▾        │ dependency: ⚠ no CRISPR dataset connected     │ dependency    MISSING          │
+│ strength ▾    │ disease link: literature n=… (grounded)       │ biochemical   PARTIAL          │
+│ ──────────── │ localization: nucleus ✓                       │ animal        MISSING          │
+│ □ primary    │                                              │ clinical      MISSING          │
+│ □ genetic    │ ┌─ TPD TRACTABILITY ────────────────────────┐ │ ── overall: INSUFFICIENT ──   │
+│ □ omics      │ │ structured?  ✓ (BD1/BD2)                  │                               │
+│ □ dependency │ │ accessible lysines: not computed          │ CONTRADICTIONS                │
+│ □ clinical   │ │ known degraders: DB match (n=…)           │ none recorded                 │
+│              │ └───────────────────────────────────────────┘ │                               │
+│ ──────────── │                                               │ PROVENANCE                    │
+│ ☑ only pre-  │ EVIDENCE CARDS                                │ uniprot@… pubmed@… · dates ✓  │
+│   cutoff     │ ┌───────────────────────────────────────────┐ │                               │
+│              │ │ genetic | dependency | SUPPORTED/…        │ │                               │
+│              │ │ "…excerpt…" DOI/PMID · date · strength    │ │                               │
+│              │ └───────────────────────────────────────────┘ │                               │
+├──────────────┴───────────────────────────────────────────────┴───────────────────────────────┤
+│ ▸ ADVANCE TO VALIDATION    · add target   · export dossier   · flag missing dependency data    │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** establish target identity, biology, and validation evidence.
+- **Panels:** evidence filters, dossier, validation axes, evidence cards, provenance.
+- **Controls:** filters, cutoff lock, add target, export, advance.
+- **Hierarchy:** identity → validation axes → tractability → evidence → provenance.
+- **Primary:** `ADVANCE TO VALIDATION`. **Secondary:** export/flag.
+- **States:** axis colour by tier; node progress.
+- **Error:** "no dependency dataset connected" → WEAK, not fabricated.
+
+---

@@ -17,11 +17,22 @@ from protacxtend.toolkit.schema import SECTION_SHEETS, normalize_text, structure
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_EXCEL_PATH = PROJECT_ROOT / "data" / "toolkit" / "Agent_Toolkit.xlsx"
+DEFAULT_EXCEL_PATH = Path(__file__).resolve().parents[1] / "data" / "toolkit" / "Agent_Toolkit.xlsx"
 HEADER_ROW_INDEX = 3
 
 
-def _resolve_excel_path(excel_path: str | Path) -> Path:
+def _default_excel() -> Path:
+    """Agent_Toolkit.xlsx — packaged data first, legacy repo copy fallback."""
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("toolkit", "Agent_Toolkit.xlsx")
+    except Exception:  # pragma: no cover - import guard
+        return DEFAULT_EXCEL_PATH
+
+
+def _resolve_excel_path(excel_path: str | Path | None) -> Path:
+    if excel_path is None:
+        return _default_excel()
     path = Path(excel_path)
     if not path.is_absolute():
         path = PROJECT_ROOT / path
@@ -54,14 +65,19 @@ def _load_toolkit_registry_cached(path_text: str) -> dict[str, Any]:
     return registry
 
 
-def load_toolkit_registry(excel_path: str | Path = "data/toolkit/Agent_Toolkit.xlsx") -> dict[str, Any]:
-    """Load all key registry sections from ``Agent_Toolkit.xlsx``."""
+def load_toolkit_registry(excel_path: str | Path | None = None) -> dict[str, Any]:
+    """Load all key registry sections from ``Agent_Toolkit.xlsx``.
+
+    ``excel_path`` defaults to the packaged toolkit workbook
+    (protacxtend/data/toolkit/Agent_Toolkit.xlsx); a relative path is resolved
+    against the repository root for source-tree callers.
+    """
 
     path = _resolve_excel_path(excel_path)
     return _load_toolkit_registry_cached(str(path.resolve()))
 
 
-def _section(section: str, excel_path: str | Path = "data/toolkit/Agent_Toolkit.xlsx") -> list[dict[str, Any]]:
+def _section(section: str, excel_path: str | Path | None = None) -> list[dict[str, Any]]:
     if section not in SECTION_SHEETS:
         raise ValueError(f"Unknown registry section: {section}")
     return load_toolkit_registry(excel_path)[section]

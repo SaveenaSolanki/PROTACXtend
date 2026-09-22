@@ -66,7 +66,8 @@ def predict_log_dc50_batch(smiles_list: List[str], model=None) -> Dict[str, Any]
     if not model_path.exists():
         return {"ok": False, "reason": "chemprop_model_missing", "log_dc50": None}
 
-    valid_smi = [s for s in smiles_list if Chem.MolFromSmiles(s) is not None]
+    valid_smi = [s for s in smiles_list
+                 if isinstance(s, str) and s and Chem.MolFromSmiles(s) is not None]
     if not valid_smi:
         return {"ok": True, "log_dc50": [None] * len(smiles_list),
                 "dc50_nM": [None] * len(smiles_list), "n_valid": 0}
@@ -114,7 +115,7 @@ def predict_log_dc50_batch(smiles_list: List[str], model=None) -> Dict[str, Any]
     out_nm: List[Optional[float]] = [None] * len(smiles_list)
     vi = 0
     for i, s in enumerate(smiles_list):
-        if Chem.MolFromSmiles(s) is not None and vi < len(pred_log):
+        if isinstance(s, str) and s and Chem.MolFromSmiles(s) is not None and vi < len(pred_log):
             out_log[i] = float(pred_log[vi])
             out_nm[i] = float(10 ** float(pred_log[vi]))
             vi += 1

@@ -967,7 +967,18 @@ export class ProtacXtendApp {
   private showResults(event: Record<string, unknown>): void {
     printLine("");
     printLine(`  ${theme.grad("─".repeat(58), "#9B94F0", "#5AB9CD")}`);
-    printLine(`  ${theme.accent("WORKFLOW RESULT")}  ${theme.dim("· one-line summary · full reports in outputs/")}`);
+    printLine(`  ${theme.accent("WORKFLOW RESULT")}  ${theme.dim("· run summary · persisted artifacts below")}`);
+
+    // RUN / STATUS / SUMMARY / OUTPUT / WARNINGS — minimal result presentation.
+    const runId = String(event.run_id ?? "");
+    const statusRaw = String(event.status ?? "ok");
+    const warnings = (event.warnings as string[]) || [];
+    const status =
+      statusRaw !== "ok" ? statusRaw
+        : warnings.length > 0 ? "Complete with warnings"
+          : "Complete";
+    if (runId) printLine(`  ${theme.dim("RUN".padEnd(10))} ${theme.semantic("text", runId)}`);
+    printLine(`  ${theme.dim("STATUS".padEnd(10))} ${status === "Complete" ? theme.success(status) : status === "Complete with warnings" ? theme.muted(status) : theme.error(status)}`);
 
     const metric = (label: string, value: unknown) =>
       Number(value) > 0 ? `${theme.dim(label + " ")}${theme.fg("mint", String(value))}` : null;
@@ -981,8 +992,16 @@ export class ProtacXtendApp {
       metric("linkers", event.linkers_generated),
     ].filter(Boolean) as string[];
 
-    printLine(`  ${metrics.length ? metrics.join(theme.dim("  ·  ")) : theme.muted("pipeline produced no countable outputs for this objective")}`);
+    printLine(`  ${theme.dim("SUMMARY".padEnd(10))} ${metrics.length ? metrics.join(theme.dim("  ·  ")) : theme.muted("pipeline produced no countable outputs for this objective")}`);
     printLine(`  ${theme.grad("─".repeat(58), "#9B94F0", "#5AB9CD")}`);
+
+    if (warnings.length > 0) {
+      printLine("");
+      printSection("WARNINGS");
+      for (const w of warnings.slice(0, 5)) {
+        printLine(`  ${theme.fg("amber", "!")} ${theme.dim(truncateToWidth(String(w), 74))}`);
+      }
+    }
 
     const candidates = event.top_candidates as Array<Record<string, unknown>> | undefined;
     if (candidates && candidates.length > 0) {
@@ -1011,8 +1030,18 @@ export class ProtacXtendApp {
         if (line.trim()) printLine(`  ${theme.dim(truncateToWidth(line, 74))}`);
       }
     }
+    // “saved” is claimed ONLY when the backend confirmed the production run
+    // record on disk (persisted flag + exact outputs/runs/<run_id>/ path).
+    const savedDir = String(event.saved_dir ?? "").trim();
+    const persisted = event.persisted === true || savedDir.length > 0;
     printLine("");
-    printLine(`  ${theme.dim("→ results saved under")} ${theme.fg("mint", "outputs/")} ${theme.dim("— rerun anytime with /run or /design")}`);
+    printSection("OUTPUT");
+    if (persisted) {
+      printLine(`  ${theme.dim("Results saved:")}`);
+      printLine(`  ${theme.fg("mint", `${savedDir}/`)}`);
+    } else {
+      printLine(`  ${theme.fg("amber", "!")} run artifacts were NOT persisted — review the errors above; nothing was claimed as saved.`);
+    }
     printLine("");
   }
 

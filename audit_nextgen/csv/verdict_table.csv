@@ -1,0 +1,28 @@
+area,current_state,evidence,blocker,required_action
+Core architecture,IMPLEMENTED,protacxtend/ 465 py files/91k LOC; CLI+API+TUI+Streamlit,monolithic; two parallel agent stacks,unify on one orchestrator
+Agent orchestration,PARTIAL,agents/graph.py deterministic state machine; agentic/ 7 layers,static tool list; no dynamic planning,hierarchical planner + specialists
+Tools,PARTIAL,34 agent tools: 28 ok/6 partial measured; 115 toolkit registered_but_not_executable,fixtures as defaults; no required-tool scoring,typed tool contracts + fail-closed
+Scientific reasoning,WEAK,rule templates; no causal graph,no falsifiable hypothesis objects,mechanism critic + causal graph
+Target biology,PARTIAL,resolve_target works; parser bug,target misparse,fix G01
+TPD tractability,PARTIAL,lysine/cooperativity/e3 modules,surrogates data-gated,real-PDB benchmark
+E3 selection,PARTIAL-VALIDATED,"e3_opportunity RF AUROC .98/.93, 17 tests",no prospective validation,prospective E3 benchmark
+Warhead,WEAK,0 binders live; demo warheads,no licensed/online binding source,wire ChEMBL/BindingDB keys
+PROTAC design,IMPLEMENTED,linker/construct RDKit; 180 candidates,no synthesizability closure,retro integration
+Binary structure,VALIDATED-PARTIAL,Vina median RMSD 2.356A n=40,success<2A only 0.375,improve prep/consensus
+Ternary complex,WEAK,predicted DockQ NOT_VALIDATED,no predicted-structure validation,validate or restrict
+Degradation,PARTIAL,64/32 labels; TACK/SynGlue; hook equilibrium,small labels; OOD,expand curated labels
+ADMET,PARTIAL,ADMET-AI real; no PK,no PK/clearance,PK model or boundary
+Safety,WEAK,ADMET flags + neosubstrate heuristic,no tox validation,safety benchmark
+Biomarkers,MISSING,keyword only,no code,build module
+Resistance,WEAK,41-line hardcoded table,no tests/wiring,build + validate
+Experimental design,WEAK,dose sim + dossier template,not typed/validated,typed ExperimentPlan
+Evidence grounding,MISSING,no claim->citation binding,no schema,evidence engine
+Provenance,PARTIAL,run_records.py AgentRunRecord + hash; tool provenance,no container/model/db version freeze,RunManifest v2
+Reproducibility,PARTIAL,reproducibility_hash; replay 0.917 in audit,Vina deterministic=false,replay determinism tests
+Temporal benchmarking,MISSING,tpdeval logic only,no frozen store,TemporalBenchmarkEngine
+500-task benchmark,MISSING,0 scorable,no authored GT,author + verify
+Failure recovery,WEAK,failure_recovery_rate=0.0,no taxonomy/repair,failure engine
+Security,HIGH RISK,"shell=True x3, pickle.load x5",RCE/injection,harden
+UI,PARTIAL,Streamlit + TUI + website,no spec screens,rebuild UI
+Deployment,PARTIAL,"Dockerfile, docker-compose, deploy/",env reproducibility unverified,container lockfile
+Testing,PARTIAL,954 collected; 184/186 pass in tests/; 2 fail; suite >25min,flaky/slow/failures,fix + split

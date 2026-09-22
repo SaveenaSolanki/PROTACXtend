@@ -1,0 +1,46 @@
+{
+  "name": "protacxtend_ternary_benchmark_six",
+  "version": "1.0.0",
+  "status": "FROZEN",
+  "frozen_at": "2026-09-03",
+  "note": "Blind docking must NOT use crystal/ternary-native interface information (see BLINDNESS_RULES.md). Monomer-bound small-molecule ligands in receptor.pdb / target.pdb are the only permitted anchor sources.",
+  "systems": [
+    {
+      "id": "5T35", "poi": "BRD4", "e3": "VHL", "protac": "MZ1",
+      "dir": "5T35", "crystal": "5t35_AD.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["A", "D"], "resolution_A": null, "doi": null,
+      "known_issue": null
+    },
+    {
+      "id": "6BN7", "poi": "BRD4", "e3": "VHL", "protac": "MZ1",
+      "dir": "6BN7", "crystal": "6bn7_BC.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["B", "C"], "resolution_A": null, "doi": null, "known_issue": null
+    },
+    {
+      "id": "6BOY", "poi": "BRD4", "e3": "VHL", "protac": "MZ1",
+      "dir": "6BOY", "crystal": "6boy_BC.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["B", "C"], "resolution_A": null, "doi": null, "known_issue": null
+    },
+    {
+      "id": "6HAX", "poi": "BRD4", "e3": "VHL", "protac": "AT1",
+      "dir": "6HAX", "crystal": "6HAX_AB.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["A", "B"], "resolution_A": null, "doi": null, "known_issue": null
+    },
+    {
+      "id": "6HAY", "poi": "BRD4", "e3": "VHL", "protac": "AT1",
+      "dir": "6HAY", "crystal": "6hay_EF.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["E", "F"], "resolution_A": null, "doi": null, "known_issue": null
+    },
+    {
+      "id": "6SIS", "poi": "BRD4", "e3": "VHL", "protac": "MZ1",
+      "dir": "6SIS", "crystal": "6sis_EH.pdb", "receptor": "receptor.pdb",
+      "target": "target.pdb", "protac_smiles": "protac.smi",
+      "crystal_chains": ["E", "H"], "resolution_A": null, "doi": null, "known_issue": null
+    }
+  ]
+}

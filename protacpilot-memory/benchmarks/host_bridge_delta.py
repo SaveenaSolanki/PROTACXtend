@@ -57,7 +57,9 @@ def _load_run_paths(args: argparse.Namespace) -> list[Path]:
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
     from protacxtend.memory.cognitive_bridge import (
-        available, host_context_from_record, open_bridge,
+        available,
+        host_context_from_record,
+        open_bridge,
     )
 
     if not available():

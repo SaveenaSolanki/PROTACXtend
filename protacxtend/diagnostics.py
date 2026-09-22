@@ -149,8 +149,11 @@ def build_doctor_report() -> dict[str, Any]:
             "tool_calling": chk["tool_calling"],
             "verdict": chk["verdict"],
         }
-        checks.append(_probe("optional", "llm:provider", chk["provider"] in manager.PROVIDER_META,
-                             f"{chk['provider']} ({manager.meta(chk['provider']).label})"))
+        prov_ok = chk["provider"] in manager.PROVIDER_META
+        prov_label = (manager.meta(chk["provider"]).label
+                      if prov_ok else ("(none)" if chk["provider"] == "(none)" else chk["provider"]))
+        checks.append(_probe("optional", "llm:provider", prov_ok,
+                             f"{chk['provider']} ({prov_label})"))
         checks.append(_probe("optional", "llm:model", bool(chk["model"]), chk["model"] or "none set"))
         auth_ok = bool(auth.get("authenticated"))
         checks.append(_probe("optional", "llm:authentication",
@@ -172,6 +175,22 @@ def build_doctor_report() -> dict[str, Any]:
     checks.append(_probe("optional", "api clients",
                          len(present) == len(API_CLIENTS),
                          f"{len(present)}/{len(API_CLIENTS)} clients importable"))
+
+    # ── failure escalation subsystem (optional) ───────────────────────
+    try:
+        from protacxtend.escalation import capability_readiness, get_ledgers
+
+        readiness = capability_readiness()
+        ready = sum(1 for r in readiness if r["readiness"] == "ready")
+        counts = get_ledgers().counts()
+        checks.append(_probe(
+            "optional", "escalation registry", True,
+            f"{ready}/{len(readiness)} capabilities have an installed fallback · "
+            f"{counts['failures']} failure(s) recorded · {counts['registrations']} registration(s)",
+        ))
+    except Exception as exc:
+        checks.append(_probe("optional", "escalation registry", False,
+                             f"escalation unavailable ({type(exc).__name__}: {exc})"))
 
     required_fail = [c for c in checks if c["level"] == "required" and not c["ok"]]
     optional_warn = [c for c in checks if c["level"] == "optional" and not c["ok"]]

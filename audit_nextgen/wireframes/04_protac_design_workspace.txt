@@ -1,0 +1,33 @@
+## 4. PROTAC Design Workspace
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BRD4·TNBC   PROTAC DESIGN                                     node: 6/16  ●●●●●●○○○○○○○○○○○○  │
+├─────────────────────────────────────┬────────────────────────────────────────────────────────┤
+│ WARHEADS                            │ E3 LIGANDS                                             │
+│ ┌────────────┬──────┬──────┬──────┐ │ ┌────────────┬──────┬──────────┬──────┬────────────┐ │
+│ │ SMILES     │ MW   │ logP │ tier │ │ │ handle     │ E3   │ evidence │ MW   │ tier       │ │
+│ │ JQ1-like…  │ 457  │ 3.1  │  ★★  │ │ │ VHL-H032…  │ VHL  │ precedent│ 341  │ SUPPORTED  │ │
+│ └────────────┴──────┴──────┴──────┘ │ └────────────┴──────┴──────────┴──────┴────────────┘ │
+│ EXIT VECTORS  · detected (RDKit) ✓  │ LINKER PANEL                                           │
+├─────────────────────────────────────┤ ┌──────────────────────────┬───────┬────────┬────────┐ │
+│ CANDIDATES (ranked)                 │ │ linker SMILES            │ class │ n_rot  │ strain │ │
+│ ┌──┬───────────────┬─────┬───┬────┐ │ │ [*]CCc1cnnn1CC[*]        │ PEG2  │ 6      │ 12.4   │ │
+│ │# │ PROTAC        │ DC50│Dm │AD │ │ │ [*]CCn1nncc1CC[*]        │ triaz │ 5      │ 9.1    │ │
+│ │1 │ COc1ccc(…)    │14.4 │91 │0.26│ │ └──────────────────────────┴───────┴────────┴────────┘ │
+│ │2 │ COc1ccc(…)    │14.4 │83 │0.25│ │ MODEL / EVIDENCE TIER                                  │
+│ └──┴───────────────┴─────┴───┴────┘ │ degradation  model vX · LEARNED PREDICTION · AD ✓/⚠     │
+│                                     │ ternary      surrogate · STRUCTURAL SURROGATE            │
+├─────────────────────────────────────┴────────────────────────────────────────────────────────┤
+│ ▸ RUN TERNARY FEASIBILITY   · generate linkers   · 2D/3D view   · export SDF   · ★ shortlist   │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** component-aware design and candidate triage.
+- **Panels:** warheads, E3 ligands, exit vectors, linker panel, ranked candidates, model/evidence tier.
+- **Controls:** filter, regenerate, shortlist, export SDF, advance.
+- **Hierarchy:** components → assembled candidates → tiered predictions.
+- **Primary:** `RUN TERNARY FEASIBILITY`. **Secondary:** regenerate/export.
+- **States:** candidate validity, AD warning chips, evidence-tier badges.
+- **Error:** invalid SMILES → row flagged, excluded from ranking, never silently kept.
+
+---

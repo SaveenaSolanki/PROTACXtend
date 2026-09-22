@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from protacpilot_memory.db import Database, split_sql_statements
 from protacpilot_memory.errors import MigrationError
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Sequence
 
 from protacxtend.backend.schemas import LinkerRecord
+from protacxtend.tools.linker_scanner import score_synthesis
 from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 
 
@@ -132,9 +133,13 @@ def generate_fragment_combination_linkers(
                 tpsa_contribution=float(props.get("tpsa", 0.0)),
                 hbd=int(props.get("hbd", 0)),
                 hba=int(props.get("hba", 0)),
-                synthetic_feasibility_proxy=0.55,
+                # P0-B: was a hard-coded 0.55 (a fabricated score). Now a real
+                # deterministic estimate from the linker-scanner heuristic.
+                synthetic_feasibility_proxy=round(score_synthesis(full), 3),
                 validity_status=_TOOLBOX.validate_linker(full),
-                provenance={"generation_method": "fragment_combination", "vocabulary_size": len(_FRAG_CORES) * len(_FRAG_SPACERS)},
+                provenance={"generation_method": "fragment_combination",
+                            "vocabulary_size": len(_FRAG_CORES) * len(_FRAG_SPACERS),
+                            "synthetic_feasibility_source": "linker_scanner.score_synthesis"},
             )
         )
     return records

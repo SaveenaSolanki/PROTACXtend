@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import math
 import re
+import threading
 import unicodedata
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -21,7 +23,25 @@ def now_iso() -> str:
     return now_utc().replace(microsecond=0).isoformat()
 
 
+# ── identifier generation ────────────────────────────────────────────────────
+# IDs are random by default. Benchmarks and reproducibility tests may opt into a
+# deterministic monotonic counter so that rankings (which tie-break on IDs) and
+# result artifacts are byte-reproducible across processes.
+_DETERMINISTIC_IDS = False
+_ID_COUNTER = itertools.count(1)
+_ID_LOCK = threading.Lock()
+
+
+def set_deterministic_ids(enabled: bool = True) -> None:
+    """Enable/disable deterministic ID generation (benchmarks/tests only)."""
+    global _DETERMINISTIC_IDS
+    _DETERMINISTIC_IDS = bool(enabled)
+
+
 def new_id(prefix: str) -> str:
+    if _DETERMINISTIC_IDS:
+        with _ID_LOCK:
+            return f"{prefix}_{next(_ID_COUNTER):016x}"
     return f"{prefix}_{uuid.uuid4().hex[:16]}"
 
 
@@ -113,7 +133,7 @@ def jaccard(a: set[str], b: set[str]) -> float:
 def cosine(a: list[float] | None, b: list[float] | None) -> float:
     if not a or not b or len(a) != len(b):
         return 0.0
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = math.sqrt(sum(x * x for x in a))
     nb = math.sqrt(sum(y * y for y in b))
     if na == 0.0 or nb == 0.0:

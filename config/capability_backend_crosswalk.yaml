@@ -1,0 +1,987 @@
+schema_version: 1.0.0
+generated_by: sota/closure/generate_capability_crosswalk.py
+taxonomy:
+  capability: 27 TPD/escalation capabilities (protacxtend/escalation/capabilities.py)
+  backend: 19 capability-first scientific backends (protacxtend/scientific_backends/registry.py)
+  implementation: local tool / model / external engine
+fallback_classes:
+  EXACT: equivalent engine; may auto-substitute
+  APPROXIMATE: scientifically accepted approximation; may auto-substitute, must be labelled
+  SURROGATE: proxy only; must be explicitly labelled, never silent
+  INFORMATIONAL_ONLY: cannot satisfy a computational capability
+  INVALID: must not be used; recorded for audit
+summary:
+  total_capabilities: 27
+  by_readiness:
+    READY: 10
+    BLOCKED: 11
+    EXECUTABLE: 6
+  backend_map:
+    smiles_validation: chemistry
+    cheminformatics: chemistry
+    conformer_generation: conformer_generation
+    structure_preparation: protein_preparation
+    ligand_docking: ligand_docking
+    protein_protein_docking: ppi_docking
+    ternary_complex_modeling: ternary_docking
+    binding_energy: binding_energy
+    molecular_dynamics: molecular_dynamics
+    admet_toxicity: admet
+  blocked:
+    ligand_preparation: no validated local ligand-prep backend; Meeko/MGLTools are wrappers around primitives
+      that are not contract-tested here
+    linker_generation: generative linker engines are repo+weights tools (DeLinker/DiffLinker/LinkInvent);
+      none provisioned and no contract test exists
+    de_novo_generation: no provisioned generative model with validated 3D-aware chemistry
+    reaction_prediction: no provisioned atom-mapping / reaction model
+    protein_language_models: ESM-2/ProtT5 weights not provisioned in this environment
+    patent_mining: web-only (SureChEMBL/Lens); no local implementation and no licence
+    proteomics: FragPipe/MaxQuant not installed; no MS data pipeline
+    image_analysis: CellProfiler not installed; no imaging pipeline
+    molecular_visualization: visualisation is not a computational capability; INFORMATIONAL_ONLY only
+    quantum_chemistry: xTB/MOPAC/ORCA not installed; no QM engine
+    workflow_platforms: KNIME/Galaxy are external orchestrators, not scientific backends
+  suspicious_mappings_audited:
+    literature_mining: &id003
+      verdict: INFORMATIONAL_ONLY
+      finding: target_binder lookup and literature retrieval route here; text-mined binders are NOT a
+        structural binder retrieval
+      required_fix: route target_binder lookup through a binder database (ChEMBL/BindingDB) with identifier
+        validation, not free text mining
+    cheminformatics: &id001
+      verdict: INVALID_AS_CATCHALL
+      finding: detect_exit_vectors, predict_cooperativity and rank_candidates currently fall back to generic
+        cheminformatics
+      required_fix: detect_exit_vectors -> structure/geometry backend; predict_cooperativity -> ternary/mechanistic
+        backend; rank_candidates -> candidate_ranking backend
+    degradation_prediction: &id002
+      verdict: FIXED_P0
+      finding: Chemprop secondary path raised pybind11 TypeError on non-string SMILES; fallback provenance
+        was silently reset to False
+      required_fix: implemented in Phase A (sota/runtime_closure/P0_DEGRADATION_FIX.md); regression/provenance/replay
+        tests added
+capabilities:
+- capability_id: admet_toxicity
+  description: Predict ADME and toxicity endpoints.
+  input_schema:
+    smiles: string
+  output_schema:
+    descriptors: object
+    flags: object
+  primary_backend: rdkit
+  primary_tool: protacxtend.tools.admet_predictors
+  fallback_backends: []
+  fallback_tools:
+  - tool: DeepPurpose
+    class: APPROXIMATE
+  - tool: Therapeutics Data Commons
+    class: APPROXIMATE
+  - tool: OpenADMET
+    class: APPROXIMATE
+  - tool: ADMETlab 3.0
+    class: EXACT
+  - tool: SwissADME
+    class: EXACT
+  - tool: pkCSM
+    class: EXACT
+  - tool: ProTox-II
+    class: EXACT
+  remote_alternatives:
+  - SwissADME
+  - ADMETlab 3.0
+  - pkCSM
+  installation_recipe: config/tool_recipes.yaml:DeepPurpose
+  required_models:
+  - local ADMET ML models (optional)
+  required_databases: []
+  required_web_services:
+  - SwissADME (optional)
+  hardware: cpu
+  timeout_s: 300
+  validation: sota/runtime_closure/backend_contract_tests.csv:admet
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: binding_energy
+  description: Score/refine a protein–ligand or protein–protein interface.
+  input_schema:
+    complex_pdb: string
+  output_schema:
+    delta_g_kcal_mol: float
+    method: string
+  primary_backend: binding_energy_hierarchy
+  primary_tool: protacxtend.tools.structural_scoring
+  fallback_backends: []
+  fallback_tools:
+  - tool: gmx_MMPBSA
+    class: EXACT
+  - tool: MMPBSA.py
+    class: EXACT
+  - tool: Rosetta InterfaceAnalyzer
+    class: EXACT
+  - tool: FireDock
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:gmx_MMPBSA
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 3600
+  validation: sota/runtime_closure/backend_contract_tests.csv:binding_energy
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: cheminformatics
+  description: Descriptors, substructure search and molecular standardisation.
+  input_schema:
+    smiles: string
+    operation: string
+  output_schema:
+    descriptors: object
+  primary_backend: rdkit
+  primary_tool: protacxtend.tools.rdkit_chemistry
+  fallback_backends: []
+  fallback_tools:
+  - tool: RDKit ETKDG
+    class: EXACT
+  - tool: OpenBabel
+    class: APPROXIMATE
+  - tool: mmpdb
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:RDKit ETKDG
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 60
+  validation: sota/runtime_closure/backend_contract_tests.csv:chemistry
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: *id001
+- capability_id: conformer_generation
+  description: Generate 3D conformers/ensembles from a 2D molecule.
+  input_schema:
+    smiles: string
+    n_conformers: int
+  output_schema:
+    conformers: list[pose]
+    sdf: path
+  primary_backend: rdkit
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: RDKit ETKDG
+    class: EXACT
+  - tool: CREST
+    class: EXACT
+  - tool: OpenEye OMEGA
+    class: EXACT
+  remote_alternatives:
+  - OpenEye OMEGA (licensed)
+  installation_recipe: config/tool_recipes.yaml:RDKit ETKDG
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 300
+  validation: sota/runtime_closure/backend_contract_tests.csv:conformer_generation
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: de_novo_generation
+  description: Generate novel molecular structures.
+  input_schema:
+    seed_smiles: string
+  output_schema:
+    molecules: list[string]
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: REINVENT
+    class: APPROXIMATE
+  - tool: CReM
+    class: APPROXIMATE
+  - tool: MolDQN
+    class: SURROGATE
+  - tool: GuacaMol
+    class: APPROXIMATE
+  - tool: MOSES
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:REINVENT
+  required_models:
+  - REINVENT
+  - CReM
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 3600
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: no provisioned generative model with validated 3D-aware chemistry
+  mapping_audit: {}
+- capability_id: degradation_prediction
+  description: Predict DC50/Dmax or degradation probability.
+  input_schema:
+    smiles: string
+    cell_line: string
+    e3_ligase: string
+  output_schema:
+    dc50_nM: float
+    dmax_pct: float
+    status: string
+    result_source: string
+    degraded_fallback: bool
+  primary_backend: ''
+  primary_tool: protacxtend.tools.synglue_degradation
+  fallback_backends: []
+  fallback_tools:
+  - tool: Chemprop
+    class: EXACT
+  - tool: DeepPROTACs
+    class: APPROXIMATE
+  - tool: PROTAC-STAN
+    class: APPROXIMATE
+  - tool: DegradeMaster
+    class: APPROXIMATE
+  remote_alternatives:
+  - Chemprop (local)
+  - DeepPROTACs
+  installation_recipe: config/tool_recipes.yaml:Chemprop
+  required_models:
+  - TACK-style dc50/dmax
+  - Chemprop ensemble + multitarget
+  - conformal calibration
+  required_databases:
+  - PROTAC-DB 3.0
+  - TACK
+  required_web_services: []
+  hardware: cpu|gpu
+  timeout_s: 900
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: *id002
+- capability_id: fragmentation
+  description: Fragment molecules / matched molecular pairs.
+  input_schema:
+    smiles: string
+    method: string
+  output_schema:
+    fragments: list[string]
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: mmpdb
+    class: APPROXIMATE
+  - tool: BRICS
+    class: APPROXIMATE
+  - tool: RECAP
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:mmpdb
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 120
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: image_analysis
+  description: Quantify cell/tissue images.
+  input_schema:
+    image: path
+  output_schema:
+    objects: list[record]
+    counts: object
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: CellProfiler
+    class: EXACT
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:CellProfiler
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 3600
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: CellProfiler not installed; no imaging pipeline
+  mapping_audit: {}
+- capability_id: ligand_docking
+  description: Dock a small molecule into a protein binding site.
+  input_schema:
+    receptor_pdb: string
+    ligand_smiles: string
+  output_schema:
+    poses: list[pose]
+    scores: object
+    consensus: object
+  primary_backend: consensus_docking
+  primary_tool: protacxtend.tools.docking_pipeline
+  fallback_backends: []
+  fallback_tools:
+  - tool: AutoDock Vina
+    class: EXACT
+  - tool: Smina
+    class: EXACT
+  - tool: GNINA
+    class: EXACT
+  - tool: AutoDock-GPU
+    class: EXACT
+  - tool: AutoDock4
+    class: EXACT
+  - tool: rDock
+    class: APPROXIMATE
+  - tool: DOCK6
+    class: EXACT
+  - tool: LeDock
+    class: APPROXIMATE
+  - tool: PLANTS
+    class: APPROXIMATE
+  - tool: Glide
+    class: EXACT
+  - tool: GOLD
+    class: EXACT
+  remote_alternatives:
+  - SwissDock
+  - ClusPro (web)
+  installation_recipe: config/tool_recipes.yaml:AutoDock Vina
+  required_models:
+  - diffdock weights (optional)
+  required_databases: []
+  required_web_services: []
+  hardware: cpu|gpu
+  timeout_s: 3600
+  validation: sota/runtime_closure/backend_contract_tests.csv:ligand_docking
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: ligand_preparation
+  description: Prepare ligands for docking (protonation, PDBQT/SDF).
+  input_schema:
+    smiles: string
+  output_schema:
+    pdbqt: path
+    protonation_state: string
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: Meeko
+    class: APPROXIMATE
+  - tool: MGLTools
+    class: APPROXIMATE
+  - tool: OpenBabel
+    class: APPROXIMATE
+  - tool: Schrodinger LigPrep
+    class: EXACT
+  - tool: Epik
+    class: EXACT
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:Meeko
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 300
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: no validated local ligand-prep backend; Meeko/MGLTools are wrappers around primitives
+    that are not contract-tested here
+  mapping_audit: {}
+- capability_id: linker_generation
+  description: Generate or optimise PROTAC linkers.
+  input_schema:
+    warhead_smiles: string
+    e3_ligand_smiles: string
+  output_schema:
+    linkers: list[string]
+    constructed_protacs: list[string]
+  primary_backend: ''
+  primary_tool: protacxtend.tools.linker_generator
+  fallback_backends: []
+  fallback_tools:
+  - tool: DeLinker
+    class: APPROXIMATE
+  - tool: DiffLinker
+    class: APPROXIMATE
+  - tool: LinkInvent
+    class: APPROXIMATE
+  - tool: SyntaLinker
+    class: APPROXIMATE
+  - tool: CReM
+    class: APPROXIMATE
+  - tool: REINVENT
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:DeLinker
+  required_models:
+  - DeLinker
+  - DiffLinker
+  - LinkInvent
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 3600
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: generative linker engines are repo+weights tools (DeLinker/DiffLinker/LinkInvent); none
+    provisioned and no contract test exists
+  mapping_audit: {}
+- capability_id: literature_mining
+  description: Extract entities/relations from scientific text.
+  input_schema:
+    query: string
+  output_schema:
+    documents: list[record]
+    entities: list[string]
+  primary_backend: ''
+  primary_tool: protacxtend.tools.online_ligand_miner
+  fallback_backends: []
+  fallback_tools:
+  - tool: SciSpacy
+    class: INFORMATIONAL_ONLY
+  - tool: ChemDataExtractor
+    class: INFORMATIONAL_ONLY
+  - tool: PubTator
+    class: INFORMATIONAL_ONLY
+  - tool: OPSIN
+    class: INFORMATIONAL_ONLY
+  remote_alternatives:
+  - PubTator
+  - Europe PMC REST
+  installation_recipe: config/tool_recipes.yaml:SciSpacy
+  required_models:
+  - SciSpacy
+  required_databases: []
+  required_web_services:
+  - Europe PMC
+  - PubMed
+  - CrossRef
+  hardware: cpu
+  timeout_s: 300
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: *id003
+- capability_id: molecular_dynamics
+  description: Run molecular dynamics / enhanced sampling.
+  input_schema:
+    structure_pdb: string
+    steps: int
+  output_schema:
+    trajectory: path
+    checkpoint: path
+    forcefield: string
+  primary_backend: openmm
+  primary_tool: protacxtend.tools.kinetics
+  fallback_backends: []
+  fallback_tools:
+  - tool: OpenMM
+    class: EXACT
+  - tool: GROMACS
+    class: EXACT
+  - tool: NAMD
+    class: EXACT
+  - tool: AMBER / AmberTools
+    class: EXACT
+  - tool: PLUMED
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:OpenMM
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 14400
+  validation: sota/runtime_closure/backend_contract_tests.csv:molecular_dynamics
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: molecular_ml
+  description: General molecular property prediction models.
+  input_schema:
+    smiles: string
+    property: string
+  output_schema:
+    prediction: float
+    model: string
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: Chemprop
+    class: EXACT
+  - tool: DeepChem
+    class: APPROXIMATE
+  - tool: Uni-Mol
+    class: APPROXIMATE
+  - tool: GROVER
+    class: APPROXIMATE
+  - tool: ChemBERTa
+    class: APPROXIMATE
+  - tool: MolFormer
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:Chemprop
+  required_models:
+  - Chemprop
+  - DeepChem
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 900
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: molecular_visualization
+  description: Render / inspect molecular structures.
+  input_schema:
+    structure: path
+  output_schema:
+    render: path
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: PyMOL
+    class: INFORMATIONAL_ONLY
+  - tool: NGLView
+    class: INFORMATIONAL_ONLY
+  - tool: UCSF ChimeraX
+    class: INFORMATIONAL_ONLY
+  - tool: VMD
+    class: INFORMATIONAL_ONLY
+  - tool: Mol*
+    class: INFORMATIONAL_ONLY
+  remote_alternatives:
+  - Mol* (web)
+  installation_recipe: config/tool_recipes.yaml:PyMOL
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 120
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: visualisation is not a computational capability; INFORMATIONAL_ONLY only
+  mapping_audit: {}
+- capability_id: patent_mining
+  description: Search chemistry patents.
+  input_schema:
+    query: string
+  output_schema:
+    patents: list[record]
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: SureChEMBL
+    class: INFORMATIONAL_ONLY
+  - tool: Lens.org
+    class: INFORMATIONAL_ONLY
+  - tool: Google Patents
+    class: INFORMATIONAL_ONLY
+  remote_alternatives:
+  - SureChEMBL
+  - Google Patents
+  installation_recipe: config/tool_recipes.yaml:SureChEMBL
+  required_models: []
+  required_databases: []
+  required_web_services:
+  - SureChEMBL
+  - Lens.org
+  hardware: cpu
+  timeout_s: 300
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: web-only (SureChEMBL/Lens); no local implementation and no licence
+  mapping_audit: {}
+- capability_id: protein_language_models
+  description: Protein sequence embeddings / foundation models.
+  input_schema:
+    sequence: string
+  output_schema:
+    embedding: vector[float]
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: ESM-2
+    class: EXACT
+  - tool: ProtT5
+    class: APPROXIMATE
+  remote_alternatives:
+  - ESM Atlas
+  installation_recipe: config/tool_recipes.yaml:ESM-2
+  required_models:
+  - ESM-2
+  - ProtT5
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 900
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: ESM-2/ProtT5 weights not provisioned in this environment
+  mapping_audit: {}
+- capability_id: protein_protein_docking
+  description: Dock two protein partners.
+  input_schema:
+    receptor_pdb: string
+    ligand_pdb: string
+  output_schema:
+    poses: list[pose]
+    scores: object
+  primary_backend: lightdock
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: HADDOCK3
+    class: EXACT
+  - tool: LightDock
+    class: EXACT
+  - tool: MEGADOCK
+    class: APPROXIMATE
+  - tool: ZDOCK
+    class: EXACT
+  - tool: RosettaDock
+    class: EXACT
+  - tool: ClusPro
+    class: EXACT
+  - tool: HADDOCK
+    class: EXACT
+  - tool: PatchDock
+    class: APPROXIMATE
+  - tool: FireDock
+    class: APPROXIMATE
+  remote_alternatives:
+  - HADDOCK web
+  - ClusPro
+  installation_recipe: config/tool_recipes.yaml:HADDOCK3
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu|gpu
+  timeout_s: 7200
+  validation: sota/runtime_closure/backend_contract_tests.csv:ppi_docking
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: proteomics
+  description: Process / analyse mass-spectrometry proteomics data.
+  input_schema:
+    raw_files: list[path]
+  output_schema:
+    proteins: list[record]
+    quantification: object
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: FragPipe
+    class: EXACT
+  - tool: Perseus
+    class: APPROXIMATE
+  - tool: Proteome Discoverer / MaxQuant
+    class: EXACT
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:FragPipe
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 7200
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: FragPipe/MaxQuant not installed; no MS data pipeline
+  mapping_audit: {}
+- capability_id: quantum_chemistry
+  description: Semi-empirical or DFT calculations.
+  input_schema:
+    smiles: string
+    method: string
+  output_schema:
+    energy_hartree: float
+    method: string
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: xTB
+    class: EXACT
+  - tool: MOPAC
+    class: APPROXIMATE
+  - tool: ORCA
+    class: EXACT
+  - tool: CREST
+    class: EXACT
+  - tool: Gaussian
+    class: EXACT
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:xTB
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 7200
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: xTB/MOPAC/ORCA not installed; no QM engine
+  mapping_audit: {}
+- capability_id: reaction_prediction
+  description: Predict reaction products / atom mapping.
+  input_schema:
+    reactants: string
+    reagents: string
+  output_schema:
+    products: list[string]
+    atom_mapping: string
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: RXNMapper
+    class: APPROXIMATE
+  - tool: RDChiral
+    class: APPROXIMATE
+  - tool: IBM RXN
+    class: EXACT
+  remote_alternatives:
+  - IBM RXN (web)
+  installation_recipe: config/tool_recipes.yaml:RXNMapper
+  required_models:
+  - RXNMapper
+  - Molecular Transformer
+  required_databases: []
+  required_web_services: []
+  hardware: gpu
+  timeout_s: 600
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: no provisioned atom-mapping / reaction model
+  mapping_audit: {}
+- capability_id: retrosynthesis
+  description: Plan or predict synthetic routes.
+  input_schema:
+    smiles: string
+  output_schema:
+    routes: list[route]
+    score: float
+  primary_backend: ''
+  primary_tool: protacxtend.tools.retrosynthesis
+  fallback_backends: []
+  fallback_tools:
+  - tool: AiZynthFinder
+    class: EXACT
+  - tool: ASKCOS
+    class: EXACT
+  - tool: ASKCOS Tree Builder
+    class: EXACT
+  - tool: Molecular Transformer
+    class: APPROXIMATE
+  - tool: RDKit + OpenNMT workflow
+    class: SURROGATE
+  remote_alternatives:
+  - ASKCOS (web)
+  installation_recipe: config/tool_recipes.yaml:AiZynthFinder
+  required_models:
+  - AiZynthFinder expansion policy
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 1800
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: smiles_validation
+  description: Parse, sanitize and validate a SMILES string.
+  input_schema:
+    smiles: string
+  output_schema:
+    valid: bool
+    canonical_smiles: string
+  primary_backend: rdkit
+  primary_tool: protacxtend.tools.chemistry_core
+  fallback_backends: []
+  fallback_tools:
+  - tool: RDKit ETKDG
+    class: EXACT
+  - tool: OpenBabel
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:RDKit ETKDG
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 30
+  validation: sota/runtime_closure/backend_contract_tests.csv:chemistry
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: structure_preparation
+  description: Clean/repair protein structures for modelling.
+  input_schema:
+    pdb_path: string
+  output_schema:
+    prepared_pdb: path
+    repairs: list[string]
+  primary_backend: pdbfixer_openmm
+  primary_tool: retrieve_pdb
+  fallback_backends: []
+  fallback_tools:
+  - tool: PDBFixer
+    class: EXACT
+  - tool: PDB2PQR
+    class: EXACT
+  - tool: PropKa
+    class: APPROXIMATE
+  - tool: OpenBabel
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:PDBFixer
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 600
+  validation: sota/runtime_closure/backend_contract_tests.csv:protein_preparation
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: synthetic_accessibility
+  description: Score synthetic accessibility / complexity.
+  input_schema:
+    smiles: string
+  output_schema:
+    sa_score: float
+    complexity: float
+  primary_backend: ''
+  primary_tool: protacxtend.tools.retrosynthesis_filter
+  fallback_backends: []
+  fallback_tools:
+  - tool: RAscore
+    class: APPROXIMATE
+  - tool: SCScore
+    class: APPROXIMATE
+  remote_alternatives: []
+  installation_recipe: config/tool_recipes.yaml:RAscore
+  required_models:
+  - RAscore
+  - SCScore
+  required_databases: []
+  required_web_services: []
+  hardware: cpu
+  timeout_s: 120
+  validation: analysis/audit/escalation_report.json
+  current_readiness: EXECUTABLE
+  readiness_probe: escalation_internal_tool
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: ternary_complex_modeling
+  description: Model a target–PROTAC–E3 ternary complex.
+  input_schema:
+    target_pdb: string
+    partner_pdb: string
+    protac_smiles: string
+  output_schema:
+    ternary_pose: path
+    feasibility: object
+  primary_backend: local_ternary_pipeline
+  primary_tool: protacxtend.tools.ternary_feasibility
+  fallback_backends: []
+  fallback_tools:
+  - tool: PRosettaC
+    class: EXACT
+  - tool: HADDOCK3
+    class: EXACT
+  - tool: AlphaFold-Multimer
+    class: APPROXIMATE
+  - tool: ColabFold
+    class: APPROXIMATE
+  - tool: HADDOCK
+    class: EXACT
+  - tool: ClusPro
+    class: EXACT
+  remote_alternatives:
+  - PRosettaC (licensed)
+  - AlphaFold-Multimer
+  installation_recipe: config/tool_recipes.yaml:PRosettaC
+  required_models: []
+  required_databases: []
+  required_web_services: []
+  hardware: cpu|gpu
+  timeout_s: 7200
+  validation: sota/runtime_closure/backend_contract_tests.csv:ternary_docking
+  current_readiness: READY
+  readiness_probe: backend_registry_probe
+  blocked_reason: ''
+  mapping_audit: {}
+- capability_id: workflow_platforms
+  description: External workflow orchestration platforms.
+  input_schema:
+    workflow: path
+  output_schema:
+    status: string
+  primary_backend: ''
+  primary_tool: ''
+  fallback_backends: []
+  fallback_tools:
+  - tool: KNIME
+    class: INFORMATIONAL_ONLY
+  - tool: Galaxy
+    class: INFORMATIONAL_ONLY
+  - tool: Pipeline Pilot
+    class: INFORMATIONAL_ONLY
+  remote_alternatives:
+  - KNIME
+  - Galaxy
+  installation_recipe: config/tool_recipes.yaml:KNIME
+  required_models: []
+  required_databases: []
+  required_web_services:
+  - KNIME Server (licensed)
+  hardware: cpu
+  timeout_s: 3600
+  validation: analysis/audit/escalation_report.json
+  current_readiness: BLOCKED
+  readiness_probe: no_structural_backend
+  blocked_reason: KNIME/Galaxy are external orchestrators, not scientific backends
+  mapping_audit: {}

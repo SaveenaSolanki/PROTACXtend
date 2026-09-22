@@ -54,6 +54,30 @@ class RetrievalWeights:
 
 
 @dataclass(frozen=True)
+class CandidateConfig:
+    """Bounded candidate generation before reranking (brief §4/§5).
+
+    Entity-overlap expansion is the classic source of memory pollution: at
+    scale it floods the reranker with weakly-relevant candidates that can
+    displace the gold memory. When ``enabled`` the entity-expanded set is
+    project-scoped, ranked by PROTAC context compatibility and truncated to
+    ``max_entity_candidates`` before the reranker sees it. ``context_gate``
+    additionally drops entity-only candidates whose fingerprint shares no known
+    coordinate with the query context (they may still enter via lexical match).
+    """
+
+    enabled: bool = True
+    max_entity_candidates: int = 60
+    #: working pool = max_entity_candidates * this factor, ordered by recency
+    #: before context parsing (bounds the cost of the compatibility scan)
+    entity_pool_factor: int = 5
+    context_gate: bool = True
+    graph_depth: int = 1
+    graph_limit: int = 20
+    lexical_multiplier: int = 3
+
+
+@dataclass(frozen=True)
 class ConsolidationConfig:
     min_episodes: int = 3
     min_independent_sources: int = 2
@@ -62,6 +86,10 @@ class ConsolidationConfig:
     min_confidence: float = 0.40
     lookback_days: float = 3650.0
     require_experimental_or_literature: bool = True
+    #: When true, negative (failure) episodes participate in consolidation so a
+    #: repeated failure pattern can become a scoped semantic claim. Default off
+    #: preserves the original all-positive behaviour.
+    include_negative: bool = False
 
 
 @dataclass(frozen=True)
@@ -121,12 +149,13 @@ class MemoryConfig:
     encoding: EncodingWeights = field(default_factory=EncodingWeights)
     thresholds: EncodingThresholds = field(default_factory=EncodingThresholds)
     retrieval: RetrievalWeights = field(default_factory=RetrievalWeights)
+    candidates: CandidateConfig = field(default_factory=CandidateConfig)
     consolidation: ConsolidationConfig = field(default_factory=ConsolidationConfig)
     decay: DecayConfig = field(default_factory=DecayConfig)
     replay: ReplayConfig = field(default_factory=ReplayConfig)
     confidence: ConfidenceConfig = field(default_factory=ConfidenceConfig)
 
-    def with_overrides(self, **kwargs: Any) -> "MemoryConfig":
+    def with_overrides(self, **kwargs: Any) -> MemoryConfig:
         return replace(self, **kwargs)
 
 

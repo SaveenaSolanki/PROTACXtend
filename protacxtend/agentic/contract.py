@@ -42,6 +42,8 @@ class ToolResult:
     evidence_type: EvidenceType = EvidenceType.NOT_AVAILABLE
     limitations: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
+    input_origin: str = ""          # USER | RETRIEVED | GENERATED | COMPUTED | FIXTURE | SYNTHETIC
+    failure_code: str = ""          # typed FailureCode when the tool abstains
 
     def compact(self, max_data: int = 1200) -> str:
         """Compact representation for the LLM context (cost control)."""

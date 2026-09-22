@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+from helpers import brd4_vhl, ev
 from protacpilot_memory.cognitive.decay import DecayModel
 from protacpilot_memory.util import iso_in_days
-
-from helpers import brd4_vhl, ev
 
 
 def _episode(mem, project, index=0):

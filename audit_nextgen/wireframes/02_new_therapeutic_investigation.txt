@@ -1,0 +1,35 @@
+## 2. New Therapeutic Investigation
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ← Home      NEW INVESTIGATION                                        [draft]   ▸ CREATE+RUN   │
+├─────────────────────────────────────────────┬────────────────────────────────────────────────┤
+│ 1 QUESTION / HYPOTHESIS                      │  LIVE PARSED ENTITIES                          │
+│ ┌─────────────────────────────────────────┐ │  Target       BRD4            (O60885) ✓       │
+│ │ Can BRD4 be therapeutically degraded in │ │  Disease      triple-negative breast cancer ✓  │
+│ │ triple-negative breast cancer?          │ │  E3 context   VHL (explicit) ✓                 │
+│ └─────────────────────────────────────────┘ │  Warhead      JQ1-like (from question?) ⚠       │
+│ 2 CONTEXT                                    │  Missing      assay, cell line, potency target │
+│  Target [BRD4____] Disease [TNBC_______]     │  ── parser confidence 0.74 ──                  │
+│  Cell line [______] Species [human ▾]        │                                                │
+│  E3 [auto ▾]  Modality [PROTAC ▾]            │  EVIDENCE CUTOFF                               │
+│ 3 SCOPE                                      │  ( ) none  (•) 2024-12-31  ( ) custom [____]   │
+│  ☑ target biology  ☑ tractability            │  ⚠ temporal mode locks later evidence          │
+│  ☑ warhead  ☑ linker  ☑ ternary              │                                                │
+│  ☑ degradation  ☑ ADME  ☑ safety             │  TOOL POLICY                                   │
+│  ☐ resistance  ☐ biomarker  ☐ combination    │  (•) capability-first free/local               │
+│  ☑ experimental design  ☐ failure analysis   │  ( ) native    ( ) matched-tool                │
+│                                              │  Tool budget [1800 s]  Max candidates [50]     │
+├─────────────────────────────────────────────┴────────────────────────────────────────────────┤
+│ ▸ CREATE + RUN      · save draft   · validate question   · import prior run                    │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** turn a biological problem into a typed, gated investigation.
+- **Panels:** question, context, scope, parsed entities, cutoff, tool policy.
+- **Controls:** all inputs above; CTA.
+- **Hierarchy:** question → parsed entities (must be confirmed) → scope → policy.
+- **Primary:** `CREATE + RUN`. **Secondary:** draft/validate/import.
+- **States:** parser low-confidence → entity chips highlighted for confirmation.
+- **Error:** "target not resolved" blocks RUN and asks a specific question.
+
+---

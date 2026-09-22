@@ -22,6 +22,7 @@ import pandas as pd
 
 from protacxtend.modules.cell_context_selector import cellline, omics
 from protacxtend.modules.e3_opportunity.e3_catalog import CATALOG, load_catalog
+from protacxtend.modules.e3_opportunity.tissue_atlas import GENE_ALIASES
 
 logger = logging.getLogger("protacxtend.e3_context")
 
@@ -61,6 +62,7 @@ class ExpressionLookup:
 
     def percentile(self, gene: str, depmap_id: Any) -> float | None:
         m = self._ensure()
+        gene = GENE_ALIASES.get(gene, gene)
         if gene not in m.columns or depmap_id not in m.index:
             return None
         v = float(m.at[depmap_id, gene])
@@ -75,6 +77,7 @@ class ExpressionLookup:
 
 def _gene_set() -> list[str]:
     genes = set(CORE_GENES)
+    genes.update(GENE_ALIASES.values())
     cat = load_catalog()
     for _, r in cat.iterrows():
         genes.add(str(r["e3_gene"]))
@@ -271,6 +274,7 @@ def _model_meta() -> pd.DataFrame:
 def expression_breadth(e3_gene: str) -> dict[str, Any]:
     """Expression restriction across DepMap lineages (real specificity)."""
     m = lookup()._ensure()
+    e3_gene = GENE_ALIASES.get(e3_gene, e3_gene)
     if e3_gene not in m.columns:
         return {"score": None, "restricted_lineages": None,
                 "expressed_lineages": None}

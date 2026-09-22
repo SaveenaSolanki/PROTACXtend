@@ -1,0 +1,31 @@
+{
+  "primary_sources": [
+    "data/protac_repos/repos/protacSpace/data/raw/warhead.csv",
+    "data/protac_repos/repos/Protac-invent/data/protac/protacDB/protac.csv"
+  ],
+  "secondary_sources": [
+    "ChEMBL BRDT CHEMBL1795185 (optional, cached)"
+  ],
+  "retrieved_utc": "2026-09-15T14:24:22.665730+00:00",
+  "n_rows": 468,
+  "n_ligands": 216,
+  "targets": [
+    "BRD2",
+    "BRD3",
+    "BRD4",
+    "BRDT"
+  ],
+  "domains": [
+    "BD1",
+    "BD1_BD2",
+    "BD2",
+    "unspecified"
+  ],
+  "domain_assignment_counts": {
+    "explicit": 264,
+    "inferred_pair_order": 156,
+    "unspecified": 29,
+    "pan_unspecified": 19
+  },
+  "note": "Values are measured affinities copied from DOI-cited sources; the only inference is the BD1/BD2 ordering of two-value pairs in assays labelled 'BD1/2' (flagged inferred_pair_order). No affinity is imputed."
+}

@@ -1,0 +1,8 @@
+cell_line,CRBN,VHL,cIAP1,MDM2,source
+MM1.S,high,low,medium,medium,curated multiple-myeloma expression evidence
+HCT116,medium,medium,high,medium,curated colorectal cell-line expression prior
+HEK293T,high,medium,medium,medium,curated common-cell-line proteomics prior
+MCF7,medium,high,low,high,curated breast-cancer cell-line expression prior
+Jurkat,medium,low,medium,medium,curated hematologic cell-line expression prior
+RPMI8226,high,low,medium,medium,curated multiple-myeloma expression evidence
+default,medium,medium,medium,medium,default neutral expression prior

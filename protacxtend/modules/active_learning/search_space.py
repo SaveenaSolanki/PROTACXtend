@@ -14,9 +14,17 @@ from typing import Dict, List, Optional
 
 from protacxtend.modules.active_learning.schemas import ActiveLearningParams, Candidate
 
-_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-_DEFAULT_LINKER_FILE = os.path.join(_REPO_ROOT, "data", "linkers", "linker_smiles.txt")
-_GENERATIVE_MODEL = os.path.join(_REPO_ROOT, "data", "linkers", "linker_generator.pt")
+def _asset(name: str) -> str:
+    try:
+        from protacxtend.resources import asset_path
+        return str(asset_path("linkers", name))
+    except Exception:  # pragma: no cover - legacy repo layout fallback
+        _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        return os.path.join(_REPO_ROOT, "data", "linkers", name)
+
+
+_DEFAULT_LINKER_FILE = _asset("linker_smiles.txt")
+_GENERATIVE_MODEL = _asset("linker_generator.pt")
 
 
 def load_linker_library(path: Optional[str] = None,

@@ -55,7 +55,6 @@ def test_use_dependent_strengthening(mem, project):
     episode_id = _add(mem, project, brd4_vhl(), "fb")
     resp = mem.search("linker flexibility dmax fb", project_id=project, context=brd4_vhl())
     assert episode_id in resp.ids()
-    before = mem.store.require_trace(episode_id)["memory_strength"]
     result = mem.feedback(episode_id, useful=True, used_for="accepted recommendation")
     assert result["memory_strength"] > 0
     trace = mem.store.require_trace(episode_id)
@@ -66,7 +65,7 @@ def test_use_dependent_strengthening(mem, project):
 def test_irrelevant_retrieval_does_not_strengthen(mem, project):
     episode_id = _add(mem, project, brd4_vhl(), "irr")
     mem.search("unrelated query about synthesis routes", project_id=project)
-    result = mem.feedback(episode_id, useful=False)
+    mem.feedback(episode_id, useful=False)
     trace = mem.store.require_trace(episode_id)
     assert trace["successful_retrieval_count"] == 0
 

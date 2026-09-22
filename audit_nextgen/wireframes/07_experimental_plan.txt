@@ -1,0 +1,32 @@
+## 7. Experimental Plan
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BRD4·TNBC   EXPERIMENTAL PLAN                                  node: 15/16  ●●●●●●●●●●●●●●●○  │
+├───────────────────────────────────────────────┬──────────────────────────────────────────────┤
+│ HYPOTHESIS / GOAL                             │ GO / NO-GO CRITERIA                          │
+│ Degrade BRD4 in TNBC lines; measure DC50/Dmax │ GO   : Dmax ≥ 80% in ≥1 line, DC50 <100 nM   │
+│                                               │ NO-GO : Dmax <50% or no ternary evidence      │
+│ ASSAY MATRIX                                  │ COND : proteasome-dependence confirmed        │
+│ ┌──────────┬──────────┬─────────┬──────┬───┐  │                                              │
+│ │ cell line│ assay    │ readout │ dose │ t │  │ CONTROLS                                     │
+│ │ MDA-MB231│ Western  │ BRD4    │ 10×  │24h│  │ • CRBN/VHL ligase mutant rescue              │
+│ │ MDA-MB468│ HiBiT    │ Dmax    │ 12pt │6h │  │ • proteasome inhibitor (MG132)               │
+│ └──────────┴──────────┴─────────┴──────┴───┘  │ • inactive epimer (negative)                 │
+│                                               │ • parental (non-target) line                 │
+│ REAGENTS / OPEN QUESTIONS                     │                                              │
+│ warhead availability ⚠ · ternary tool ⚠       │ RISK & MITIGATION                            │
+│                                               │ hook effect → dose-range design              │
+├───────────────────────────────────────────────┴──────────────────────────────────────────────┤
+│ ▸ APPROVE PLAN + WRITE MANIFEST   · edit   · send to lab   · export protocol (PDF/CSV)         │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** convert strategy into a falsifiable, controlled experimental plan.
+- **Panels:** hypothesis, assay matrix, go/no-go, controls, risks.
+- **Controls:** edit, approve, export.
+- **Hierarchy:** hypothesis → assay → criteria → controls → risk.
+- **Primary:** `APPROVE PLAN + WRITE MANIFEST`. **Secondary:** edit/export.
+- **States:** unapproved/approved; criteria editable.
+- **Error:** missing reagent → plan flagged incomplete, not filled with invented availability.
+
+---

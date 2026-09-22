@@ -38,6 +38,11 @@ class AgentRunRecord(BaseModel):
     user_objective: str
     parsed_objective: dict[str, Any] = Field(default_factory=dict)
 
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description=("Resolved runtime envelope: provider, model, PROTACXtend version, "
+                     "run id, runtime_s, tools enabled/disabled. NEVER contains keys."),
+    )
     execution_plan: list[dict[str, Any]] = Field(default_factory=list)
     tools_requested: list[str] = Field(default_factory=list)
     tools_executed: list[str] = Field(default_factory=list)
@@ -91,6 +96,64 @@ def scientific_tool_versions() -> dict[str, str]:
         except Exception:
             versions[name] = "not_installed"
     return versions
+
+
+def runtime_metadata(run_id: str, runtime_s: float) -> dict[str, Any]:
+    """One resolved runtime envelope for result metadata (no secrets).
+
+    Records provider, model, PROTACXtend version, run id, runtime and the
+    tool registry's enabled/disabled split. Keys are NEVER included.
+    """
+    import protacxtend
+    env: dict[str, Any] = {}
+    try:
+        from protacxtend.llm.providers import get_config
+        cfg = get_config()
+        env = {"provider": cfg.provider or "(none)",
+               "model": cfg.model or "",
+               "base_url": cfg.base_url or ""}
+    except Exception:
+        env = {"provider": "(none)", "model": "", "base_url": ""}
+    enabled: list[str] = []
+    disabled: list[str] = []
+    try:
+        from protacxtend.agentic.registry import registry_specs
+        for s in registry_specs(ready_only=False):
+            (enabled if s.get("readiness") == "ready" else disabled).append(str(s.get("name")))
+    except Exception:
+        pass
+    try:
+        import platform
+        python = platform.python_version()
+    except Exception:
+        python = ""
+    return {
+        "provider": env["provider"],
+        "model": env["model"],
+        "protacxtend_version": getattr(protacxtend, "__version__", "?"),
+        "run_id": run_id,
+        "runtime_s": round(float(runtime_s), 2),
+        "python": python,
+        "tools_enabled": sorted(enabled),
+        "tools_disabled": sorted(disabled),
+    }
+
+
+def scrub_secrets(payload: dict[str, Any]) -> dict[str, Any]:
+    """Deep-clean a dict so no API key/value can ever land in result files."""
+    secret_keys = {"api_key", "apikey", "key", "secret", "token", "authorization",
+                   "password", "x-api-key", "api-key"}
+    out: dict[str, Any] = {}
+    for k, v in payload.items():
+        if isinstance(k, str) and k.strip().lower().replace(" ", "_") in secret_keys:
+            continue
+        if isinstance(v, dict):
+            out[k] = scrub_secrets(v)
+        elif isinstance(v, list):
+            out[k] = [scrub_secrets(i) if isinstance(i, dict) else i for i in v]
+        else:
+            out[k] = v
+    return out
 
 
 # ── extraction helpers (agentic graph state → record) ────────────────
@@ -190,10 +253,17 @@ def build_agent_run_record(
     parsed = state.get("parsed_objective")
     parsed_dict = parsed.model_dump() if hasattr(parsed, "model_dump") else (parsed or {})
 
+    meta = runtime_metadata(run_id, runtime_s)
+    if llm_model:
+        meta["llm_model"] = llm_model
+    meta["llm_calls"] = llm_calls
+    meta["llm_failures"] = llm_failures
+
     return AgentRunRecord(
         run_id=run_id,
         user_objective=user_request,
         parsed_objective=parsed_dict,
+        metadata=meta,
         execution_plan=_as_list(state.get("design_plan")) if isinstance(state.get("design_plan"), list) else [state.get("design_plan", {})],
         tools_requested=list(dict.fromkeys(tools_executed)),
         tools_executed=list(dict.fromkeys(tools_executed)),
@@ -227,6 +297,7 @@ def write_run_record(run_dir: Path, record: AgentRunRecord, state: dict[str, Any
     (run_dir / "structures").mkdir(exist_ok=True)
     (run_dir / "docking").mkdir(exist_ok=True)
 
+    record.metadata = scrub_secrets(record.metadata)   # keys never in artifacts
     record.reproducibility_hash = record.compute_hash()
 
     run_json = run_dir / "run.json"
@@ -249,7 +320,18 @@ def write_run_record(run_dir: Path, record: AgentRunRecord, state: dict[str, Any
     try:
         import pandas as pd
         if record.final_candidates:
-            pd.DataFrame(record.final_candidates).to_parquet(run_dir / "candidates.parquet", index=False)
+            # pyarrow cannot serialise nested dict/list/set cells; production
+            # bundles store flat candidate rows, so keep scalar columns only
+            # (nested model fields such as provenance are preserved in run.json).
+            rows = []
+            for c in record.final_candidates:
+                if isinstance(c, dict):
+                    rows.append({k: v for k, v in c.items()
+                                 if v is None or isinstance(v, (str, int, float, bool))})
+                else:
+                    rows.append(c)
+            if rows and any(rows):
+                pd.DataFrame(rows).to_parquet(run_dir / "candidates.parquet", index=False)
         if record.pareto_front:
             pd.DataFrame(record.pareto_front).to_csv(run_dir / "pareto_front.csv", index=False)
     except Exception:

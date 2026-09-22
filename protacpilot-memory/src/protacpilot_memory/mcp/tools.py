@@ -123,6 +123,21 @@ class CogToolRegistry:
             self._tool("cog_pattern_complete", "Cue-driven associative reconstruction.", _schema({
                 "cue": _STR, "project_id": _STR, "depth": _INT,
             }, ["cue"]), lambda a: self.memory.pattern_complete(a["cue"], project_id=a.get("project_id"), depth=int(a.get("depth", 2)))),
+            self._tool("cog_procedure_save", "Create or version a reusable scientific workflow (procedural memory).", _schema({
+                "name": _STR, "steps": {"type": "array"}, "objective": _STR,
+                "prerequisites": _STR, "inputs": {"type": "array"}, "outputs": {"type": "array"},
+                "tool_dependencies": {"type": "array"}, "version": _INT, "evidence": {"type": "array"},
+                "domain": _STR, "project_id": _STR, "session_id": _STR, "replace": _BOOL,
+            }, ["name", "steps"]), lambda a: self.memory.procedure_save(**a)),
+            self._tool("cog_procedure_search", "Search reusable workflows (hybrid retrieval).", _schema({
+                "query": _STR, "project_id": _STR, "domain": _STR, "limit": _INT,
+            }), lambda a: self.memory.procedure_search(a.get("query"), project_id=a.get("project_id"), domain=a.get("domain"), limit=int(a.get("limit", 5)))),
+            self._tool("cog_procedure_get", "Get a workflow definition by memory id.", _schema({
+                "memory_id": _STR,
+            }, ["memory_id"]), lambda a: self.memory.procedure_get(a["memory_id"])),
+            self._tool("cog_procedure_record_run", "Record a workflow run outcome (success/failure statistics).", _schema({
+                "memory_id": _STR, "success": _BOOL, "note": _STR, "session_id": _STR,
+            }, ["memory_id", "success"]), lambda a: self.memory.procedure_record_run(a["memory_id"], success=bool(a["success"]), note=a.get("note"), session_id=a.get("session_id"))),
             self._tool("cog_counterfactual", "Analyze an important failure (separate artifact).", _schema({
                 "prediction_id": _STR, "outcome_id": _STR, "episode_id": _STR,
                 "project_id": _STR, "session_id": _STR, "alternative_assumption": _STR,

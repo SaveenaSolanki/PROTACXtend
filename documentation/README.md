@@ -12,6 +12,7 @@ Developed at **Ahuja Lab** (Department of Computational Biology, IIIT Delhi) by 
 | :--- | :--- | :--- |
 | **🚀 Getting Started** | Installation, environment setup, dependencies, fast-track quickstart | [GETTING_STARTED.md](GETTING_STARTED.md) |
 | **🏗️ Architecture & Scientific Stack** | 23-node agentic workflow graph + 8 controlled-search/feedback extensions (= 31 nodes), supervisor engine, physics + ML stack | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| **🧭 Canonical Execution Stack (ADR-001)** | The single control plane: request parser → task graph → 9 scientific modules → tool executor → evidence → critic → decision → `TherapeuticStrategy` | [CANONICAL_STACK.md](CANONICAL_STACK.md) |
 | **⚡ Workflows & CLI** | CLI workflows (`design`, `structure`, `dose`, `context`, `validate`, `contract`, `ask`/`learn`, `api`/`ui`) | [WORKFLOWS.md](WORKFLOWS.md) |
 | **🔌 API & CLI Reference** | Complete Python API (`protacxtend`), REST endpoints, and CLI interface | [API_REFERENCE.md](API_REFERENCE.md) |
 | **🐙 GitHub & Collaboration** | Repository details (`the-ahuja-lab/PROTACXtend`), Saveena Solanki collaborator setup | [GITHUB_AND_COLLABORATION.md](GITHUB_AND_COLLABORATION.md) |

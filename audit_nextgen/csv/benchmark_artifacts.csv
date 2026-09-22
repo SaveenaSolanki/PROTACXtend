@@ -1,0 +1,6 @@
+artifact,tasks,domains,difficulty,ground_truth,grader,scored_runs,verdict
+benchmark/ (Sprint-2),48,4 (KNOW/REASON/DESIGN/DISCOVER),easy/medium/hard,all expected_answer=null; 29 rubric,deterministic + rubric (no experts run),0,"GOVERNED SPEC, NOT A VALID INSTRUMENT"
+sota/eval/ (legacy),624,4 stages,easy/medium/hard,template constraints,none shipped,0,"SUPERSEDED, UNSCORED"
+sota/eval/eval500,600 (500+100),14 categories,easy/medium/hard,template constraint strings,none shipped,0,MOCK/STUB
+tpdeval/ (design),500 (design),16 domains,L1-L7,all REQUIRES_AUTHORING; scorable=0,framework only,0,"DESIGN ONLY, 0 SCORABLE"
+benchmark_results/,4 tasks x 3 systems,n/a,n/a,n/a,acceptance only,0,SMOKE CAPTURE ONLY

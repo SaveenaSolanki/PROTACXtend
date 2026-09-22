@@ -30,6 +30,11 @@ from protacxtend.modules.cooperativity_alpha_predictor.data import (
     audit_records,
     load_records,
 )
+from protacxtend.modules.cooperativity_alpha_predictor.calibration import (
+    calibration_summary,
+    empirical_alpha,
+    fit_calibration,
+)
 from protacxtend.modules.cooperativity_alpha_predictor.models import run_benchmarks
 from protacxtend.modules.cooperativity_alpha_predictor.predict import (
     CooperativityEvidenceError,
@@ -52,4 +57,5 @@ __all__ = [
     "THERMODYNAMIC_NOTE", "cooperativity_feasibility_score",
     "load_records", "audit_records", "run_benchmarks",
     "DEFAULT_DATA_PATH", "MODEL_VERSION",
+    "empirical_alpha", "fit_calibration", "calibration_summary",
 ]

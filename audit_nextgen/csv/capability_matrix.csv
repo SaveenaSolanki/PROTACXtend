@@ -1,0 +1,17 @@
+domain,data_retrieval,reasoning,tool_support,quantitative_analysis,structure_support,mechanistic_inference,decision_support,validation_support,provenance,benchmark_readiness,evidence
+target_biology,PARTIAL,WEAK,PARTIAL,MISSING,MISSING,WEAK,WEAK,WEAK,PARTIAL,WEAK,resolve_target/search_uniprot/search_pubmed live; run.json target parser returns DEGRADE/CAN
+target_validation,WEAK,MISSING,MISSING,WEAK,MISSING,MISSING,MISSING,MISSING,PARTIAL,MISSING,no DepMap/CRISPR dependency tool; only cell_context transcriptomics + demo expression
+tpd_tractability,PARTIAL,PARTIAL,PARTIAL,WEAK,PARTIAL,PARTIAL,PARTIAL,WEAK,PARTIAL,WEAK,"modules/lysine_ubiquitination_feasibility, cooperativity surrogate, e3_opportunity"
+e3_selection,FULL,FULL,FULL,PARTIAL,WEAK,PARTIAL,PARTIAL,PARTIAL,FULL,PARTIAL,"modules/e3_opportunity (30-gene catalog, RF AUROC .98 easy/.93 unseen), 17 tests"
+warhead_discovery,PARTIAL,WEAK,PARTIAL,WEAK,PARTIAL,WEAK,PARTIAL,MISSING,PARTIAL,WEAK,retrieve_target_binders=0 in live BRD4 run; report says 'Included demo warheads'
+linker_protac_design,PARTIAL,PARTIAL,FULL,PARTIAL,PARTIAL,PARTIAL,PARTIAL,WEAK,FULL,PARTIAL,linker_generator + construct_protac + RDKit validation; 180 candidates assembled
+binary_structure,PARTIAL,PARTIAL,FULL,PARTIAL,FULL,PARTIAL,PARTIAL,PARTIAL,FULL,PARTIAL,scientific_backends ligand_docking validated: Vina median RMSD 2.356A on 40 complexes
+ternary_complex,PARTIAL,PARTIAL,PARTIAL,WEAK,PARTIAL,PARTIAL,WEAK,WEAK,PARTIAL,WEAK,validation/claims.py: ternary predicted DockQ NOT_VALIDATED; native geometry only n=12
+degradation,PARTIAL,PARTIAL,FULL,PARTIAL,WEAK,PARTIAL,PARTIAL,WEAK,FULL,PARTIAL,modules/degradation_ml 64/32 labels; TACK/SynGlue models; hook model equilibrium-only
+adme_pk,WEAK,WEAK,PARTIAL,PARTIAL,MISSING,WEAK,WEAK,MISSING,PARTIAL,WEAK,predict_admet real (ADMET-AI); no clearance/Cmax/PK model anywhere
+safety,WEAK,WEAK,PARTIAL,WEAK,MISSING,WEAK,WEAK,MISSING,PARTIAL,MISSING,ADMET flags + neosubstrate_risk 28-line heuristic; no tox/toxicology benchmark
+resistance,MISSING,WEAK,WEAK,MISSING,MISSING,WEAK,WEAK,MISSING,WEAK,MISSING,"modules/resistance_mechanisms 41-line hardcoded mutation table, no tests, evaluator-only"
+biomarker,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,only a regex keyword in research/sources.py; no stratification code
+combination,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,MISSING,no synergy/combination code path; string 'combination' only in linker docs
+experimental_design,WEAK,PARTIAL,PARTIAL,WEAK,MISSING,PARTIAL,PARTIAL,WEAK,PARTIAL,WEAK,dose_response_simulator + scientific_contract.build_experiment_dossier (template)
+failure_analysis,PARTIAL,PARTIAL,PARTIAL,WEAK,MISSING,PARTIAL,PARTIAL,PARTIAL,FULL,WEAK,"escalation/*, diagnose_capability, RepairController; fallback benchmark success 0.556"

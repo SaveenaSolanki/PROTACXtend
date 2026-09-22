@@ -1,0 +1,18 @@
+requirement,current_state,evidence,severity
+500 authored tasks (300 controlled/150 E2E/50 temporal),MISSING,"tpdeval/config/allocation_500.json: 500 tasks, 0 scorable",P0
+16-domain x L1-L7 taxonomy,DESIGN ONLY,tpdeval/taxonomy.py validates; no tasks populated,P0
+Objectively scorable ground truth (>=80%),MISSING,48 cases expected_answer=null; eval500 rubric strings,P0
+Independent TPD comparator,MISSING,tpdeval/adapters.py: system C wired=False,P0
+Tool-only baseline,MISSING,adapters.py system F not implemented,P0
+Retrieval-only baseline,MISSING,adapters.py system E not implemented,P0
+Matched-tool condition,MISSING,no matched environment runner,P0
+Per-claim evidence grounding scorer,MISSING,tpdeval/evidence.py exists; no per-claim schema wired,P0
+Causal-graph ground truth + matcher,PARTIAL,tpdeval/mechanism.py exists; no authored graphs,P0
+Decision-trajectory ground truth + scorer,PARTIAL,tpdeval/trajectory.py exists; no authored trajectories,P0
+Fault injection + recovery metrics,PARTIAL,tpdeval/failure.py 10 faults defined; not run vs systems,P1
+Reproducibility repeat protocol,PARTIAL,run_records hash exists; replay determinism unverified,P1
+Temporal T0/T1 challenge + leakage scanner,PARTIAL,tpdeval/temporal.py logic only; no frozen store,P0
+Human adjudication + IRR,PARTIAL,benchmark_runner/rubric.py kappa; no experts run,P1
+Paired statistics,PARTIAL,tpdeval/stats.py tested; no data to run on,P1
+Ablation harness,PARTIAL,tpdeval/ablation.py defines arms; not executable without systems,P1
+Result figures/tables,PARTIAL,tpdeval/reporting.py refuses non-measured data,P1

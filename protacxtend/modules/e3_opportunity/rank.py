@@ -27,6 +27,7 @@ from protacxtend.modules.e3_opportunity import (
     recruiters,
     selectivity,
     structure,
+    tissue_atlas,
     uncertainty,
 )
 from protacxtend.modules.e3_opportunity.e3_catalog import load_catalog
@@ -34,6 +35,9 @@ from protacxtend.modules.e3_opportunity.e3_catalog import load_catalog
 AXIS_WEIGHTS = {"cell_context": 0.25, "precedent": 0.20, "recruiter": 0.20,
                 "localization": 0.15, "selectivity": 0.05, "structure": 0.10,
                 "lysine": 0.05}
+# tissue-level HPA axis is only added to the normalisation when a tissue query
+# is made, so cell-line-only rankings are unchanged.
+TISSUE_AXIS_WEIGHT = 0.15
 VERDICTS = ("SUPPORTED", "PROMISING", "EXPLORATORY", "INSUFFICIENT EVIDENCE")
 LOW_EXPRESSION_CAP = 0.2
 
@@ -77,6 +81,10 @@ def evaluate_candidate(poi_gene: str, e3_gene: str,
     lys = None
     if poi_structure and Path(poi_structure).exists():
         lys = lysines.surface_lysines(poi_structure)
+    # --- HPA tissue-level expression component (separately inspectable) ---
+    adaptors = ([a for a in str(row.iloc[0]["adaptor_genes"]).split("|") if a]
+                if len(row) else [])
+    hpa = tissue_atlas.tissue_score(e3_gene, tissue, adaptors) if tissue else None
     axes = {
         "cell_context": {"score": ctx.get("score"),
                          "confidence": ctx.get("confidence"),
@@ -121,19 +129,28 @@ def evaluate_candidate(poi_gene: str, e3_gene: str,
                    "confidence": (0.8 if (lys or {}).get("status")
                                   == "SUPPORTED" else 0.0),
                    "detail": (lys or {"note": "no POI structure provided"})},
+        "tissue_expression": {
+            "score": (hpa or {}).get("score"),
+            "confidence": (hpa or {}).get("confidence", 0.0),
+            "detail": (hpa or {"note": "no tissue query supplied"})},
     }
-    ev = _aggregate(axes, rec, prec)
+    ev = _aggregate(axes, rec, prec, include_tissue=bool(tissue))
     ev.update({"e3_gene": e3_gene, "e3_family": family})
     return ev
 
 
-def _aggregate(axes: dict, rec: dict, prec: dict) -> dict[str, Any]:
-    present = {k: v for k, v in axes.items() if v["score"] is not None}
-    total_w = sum(AXIS_WEIGHTS.values())
-    w_present = sum(AXIS_WEIGHTS[k] for k in present)
+def _aggregate(axes: dict, rec: dict, prec: dict,
+               include_tissue: bool = False) -> dict[str, Any]:
+    weights = dict(AXIS_WEIGHTS)
+    if include_tissue:
+        weights["tissue_expression"] = TISSUE_AXIS_WEIGHT
+    present = {k: v for k, v in axes.items()
+               if v["score"] is not None and k in weights}
+    total_w = sum(weights.values())
+    w_present = sum(weights[k] for k in present)
     coverage = w_present / total_w
     if present:
-        raw = sum(AXIS_WEIGHTS[k] * v["score"] for k, v in present.items()) \
+        raw = sum(weights[k] * v["score"] for k, v in present.items()) \
             / w_present
         confs = [v["confidence"] for v in present.values()
                  if v.get("confidence") is not None]

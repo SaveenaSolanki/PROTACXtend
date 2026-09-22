@@ -10,11 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from ..cognitive.decay import DecayModel
 from ..config import MemoryConfig
 from ..domain.protac.context import ProtacContext, context_from_any
 from ..store.store import MemoryStore
-from ..util import clamp01, days_between, jaccard
-from ..cognitive.decay import DecayModel
+from ..util import clamp01, days_between, jaccard, loads
 
 _TEMPORAL_HALF_LIFE_DAYS = 180.0
 _WHY_THRESHOLD = 0.15
@@ -75,6 +75,7 @@ class Reranker:
         semantic = semantic or {}
         graph = graph or {}
         entity_map = self._entity_map([c["id"] for c in candidates])
+        context_map = self._context_map([c["id"] for c in candidates])
         weights = self.weights
         weight_sum = (
             weights.lexical + weights.semantic + weights.entity + weights.graph
@@ -99,7 +100,7 @@ class Reranker:
                 "temporal": self._temporal(cand),
             }
             matched_context: dict[str, str] = {}
-            cand_ctx = self._context_of(cand)
+            cand_ctx = self._context_of(cand, context_map.get(mid))
             if cand_ctx is not None and qctx is not None:
                 components["context"] = clamp01(qctx.match_score(cand_ctx))
                 matched_context = {
@@ -126,7 +127,7 @@ class Reranker:
                 matched_entities=matched_entities,
                 matched_context=matched_context,
             ))
-        ranked.sort(key=lambda r: r.score, reverse=True)
+        ranked.sort(key=lambda r: (-r.score, r.id))
         return ranked[:limit]
 
     # ── helpers ──────────────────────────────────────────────────────────────
@@ -138,13 +139,34 @@ class Reranker:
         return clamp01(math.exp(-age / _TEMPORAL_HALF_LIFE_DAYS))
 
     @staticmethod
-    def _context_of(cand: dict[str, Any]) -> ProtacContext | None:
-        raw = cand.get("context_json")
+    def _context_of(cand: dict[str, Any], context_data: dict[str, Any] | None = None) -> ProtacContext | None:
+        raw = cand.get("context_json") or context_data
         if raw:
             return context_from_any(raw if isinstance(raw, dict) else {})
         if cand.get("scope_json"):
             return ProtacContext.from_dict(cand["scope_json"] if isinstance(cand["scope_json"], dict) else {})
         return None
+
+    def _context_map(self, memory_ids: list[str]) -> dict[str, dict[str, Any]]:
+        """Load episode context from the ``episodic_memories`` satellite table.
+
+        The PROTAC context is stored on the satellite, not on ``memory_traces``;
+        without this lookup the context-match reranking component is silently 0.
+        """
+        if not memory_ids:
+            return {}
+        out: dict[str, dict[str, Any]] = {}
+        placeholders = ", ".join("?" for _ in memory_ids)
+        rows = self.store.db.query(
+            f"SELECT trace_id, context_json FROM episodic_memories "
+            f"WHERE trace_id IN ({placeholders}) AND context_json IS NOT NULL",
+            memory_ids,
+        )
+        for row in rows:
+            parsed = loads(row["context_json"], {})
+            if parsed:
+                out[row["trace_id"]] = parsed
+        return out
 
     def _entity_map(self, memory_ids: list[str]) -> dict[str, set[str]]:
         if not memory_ids:

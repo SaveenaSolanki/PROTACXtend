@@ -37,6 +37,17 @@ ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_CSV = ROOT / "data" / "benchmark" / "e3_expression_evidence.csv"
 PACKAGE_EVIDENCE_CSV = ROOT / "protacxtend" / "data" / "e3_expression_evidence.csv"
 
+
+def _evidence_csv() -> Path:
+    """Packaged E3-expression evidence table with legacy fallbacks."""
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("benchmark", "e3_expression_evidence.csv")
+    except Exception:  # pragma: no cover - legacy layout fallback
+        if EVIDENCE_CSV.exists():
+            return EVIDENCE_CSV
+        return PACKAGE_EVIDENCE_CSV
+
 # Weights (deterministic, documented)
 WEIGHTS = {
     "expression_score": 0.30,
@@ -162,7 +173,7 @@ def _expression_score(row: dict[str, str]) -> float:
 
 
 def _load_expression_table() -> Dict[str, Any]:
-    evidence_path = EVIDENCE_CSV if EVIDENCE_CSV.exists() else PACKAGE_EVIDENCE_CSV
+    evidence_path = _evidence_csv()
     if not evidence_path.exists():
         return _DEFAULT_EXPRESSION
     table: Dict[str, Dict[str, Dict[str, str]]] = {}

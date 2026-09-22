@@ -1,0 +1,28 @@
+## 11. Tool Registry
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ TOOL REGISTRY         search [________]   domain [all ▾]   status [executable ▾]   ▸ verify   │
+├──────┬──────────────────────┬──────────────┬──────────┬───────┬──────┬───────┬───────────────┤
+│ id   │ name                 │ domain       │ backend  │ ver   │ net  │ exec  │ validation    │
+│ 001  │ ligand_docking       │ structure    │ consensus│ vina… │ no   │ ✓     │ externally_b. │
+│ 002  │ predict_degradation  │ degradation  │ joblib   │ vX    │ no   │ ✓     │ internally_b. │
+│ 003  │ search_bindingdb     │ warhead      │ local    │ —     │ key  │ ~     │ unvalidated   │
+│ 004  │ model_ternary_complex│ ternary      │ surrogate│ v0.1  │ no   │ ✓     │ NOT_VALIDATED │
+│ …    │ …                    │ …            │ …        │ …     │ …    │ …     │ …             │
+├──────┴──────────────────────┴──────────────┴──────────┴───────┴──────┴───────┴───────────────┤
+│ SELECTED: model_ternary_complex                                                              │
+│ purpose · input schema · output schema · dependency · install recipe · timeout · license      │
+│ healthcheck · smoke test · error behaviour · QC gate · provenance fields                      │
+│ ▸ EXECUTE (with validated inputs)   · install recipe   · open latest run   · view evidence     │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** single source of truth for tools and their true maturity.
+- **Panels:** table, filters, search, detail pane, execute.
+- **Controls:** filters, verify, execute, install.
+- **Hierarchy:** status → schema → dependency → validation.
+- **Primary:** `EXECUTE`. **Secondary:** verify/install.
+- **States:** executable / registered-not-executable / unavailable; validation badge.
+- **Error:** execute with empty/invalid input → REJECTED_INPUT, never fixture substitution.
+
+---

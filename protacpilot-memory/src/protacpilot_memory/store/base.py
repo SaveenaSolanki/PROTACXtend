@@ -153,9 +153,101 @@ class BaseStore:
             tuple(updates.values()) + (trace_id,),
         )
 
-    def set_status(self, trace_id: str, status: str, reason: str | None = None, session_id: str | None = None) -> None:
-        self.update_trace(trace_id, status=status)
-        self.log_event(trace_id, "STATE_CHANGED", {"status": status, "reason": reason}, session_id)
+    def set_status(
+        self,
+        trace_id: str,
+        status: str,
+        reason: str | None = None,
+        session_id: str | None = None,
+        *,
+        event_type: str = "STATE_CHANGED",
+        event_detail: dict[str, Any] | None = None,
+        force: bool = False,
+    ) -> bool:
+        """Validate and apply a lifecycle transition atomically.
+
+        Returns ``True`` if the status changed, ``False`` for an idempotent
+        self-transition. Raises ``InvalidMemoryTransition`` for an illegal or
+        unknown target. The ``STATE_CHANGED`` (or caller-supplied) event is
+        appended *only* after a successful mutation, inside the same
+        transaction, so a rejected transition leaves no trace.
+        """
+        from ..cognitive.state_machine import is_known_status, validate_transition
+        from ..domain.protac.ontology import MEMORY_STATUSES
+
+        trace = self.require_trace(trace_id)
+        current = trace.get("status") or "active"
+        if status == current:
+            return False
+        if force:
+            if not is_known_status(status):
+                from ..errors import InvalidMemoryTransition
+
+                raise InvalidMemoryTransition(trace_id, current, status, MEMORY_STATUSES)
+        else:
+            validate_transition(trace_id, current, status)
+        return self._apply_status(
+            trace_id, current, status, reason, session_id, event_type, event_detail
+        )
+
+    def _apply_status(
+        self,
+        trace_id: str,
+        expected_current: str,
+        status: str,
+        reason: str | None,
+        session_id: str | None,
+        event_type: str,
+        event_detail: dict[str, Any] | None,
+    ) -> bool:
+        """Atomically apply an already-validated transition.
+
+        The conditional ``UPDATE ... WHERE status = expected_current`` is the
+        optimistic-concurrency guard: if another writer changed the status
+        between validation and mutation, the row is not updated and a
+        ``ConflictError`` is raised *before* any event is logged.
+        """
+        from ..errors import ConflictError
+        from ..util import now_iso
+
+        detail: dict[str, Any] = {"from": expected_current, "to": status, "reason": reason}
+        if event_detail:
+            detail.update(event_detail)
+        with self.db.transaction():
+            cursor = self.db.execute(
+                "UPDATE memory_traces SET status = ?, updated_at = ? WHERE id = ? AND status = ?",
+                (status, now_iso(), trace_id, expected_current),
+            )
+            if cursor.rowcount != 1:
+                raise ConflictError(
+                    f"concurrent status change for {trace_id}: expected "
+                    f"{expected_current!r} but row no longer matches"
+                )
+            self.log_event(trace_id, event_type, detail, session_id)
+        return True
+
+    def force_status(
+        self,
+        trace_id: str,
+        status: str,
+        reason: str | None = None,
+        session_id: str | None = None,
+    ) -> bool:
+        """Administrative override that bypasses the transition graph.
+
+        Must never be used by normal cognitive logic. It still rejects unknown
+        statuses and records the override (with ``forced: True``) in the event
+        ledger for auditability.
+        """
+        return self.set_status(
+            trace_id,
+            status,
+            reason=reason,
+            session_id=session_id,
+            event_type="STATE_CHANGED",
+            event_detail={"forced": True},
+            force=True,
+        )
 
     def soft_delete(self, trace_id: str, session_id: str | None = None) -> None:
         self.db.execute(

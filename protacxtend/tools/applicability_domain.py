@@ -26,12 +26,22 @@ import numpy as np
 
 logger = logging.getLogger("protacpilot.appdomain")
 
-# Paths
+# Paths — packaged training set; writable cache under per-user state.
 ROOT = Path(__file__).resolve().parents[2]
-TRAIN_CSV = ROOT / "data" / "benchmark" / "chemprop_train.csv"
-CACHE_DIR = ROOT / "data" / "benchmark" / "_ad_cache"
-FPS_PATH = CACHE_DIR / "train_fps.npy"
-SMILES_PATH = CACHE_DIR / "train_smiles.txt"
+
+
+def _ad_paths() -> tuple[Path, Path, Path, Path]:
+    try:
+        from protacxtend.resources import asset_path, cache_dir
+        train = asset_path("benchmark", "chemprop_train.csv")
+        cache = cache_dir("ad")
+    except Exception:  # pragma: no cover - legacy repo layout fallback
+        train = ROOT / "data" / "benchmark" / "chemprop_train.csv"
+        cache = ROOT / "data" / "benchmark" / "_ad_cache"
+    return train, cache, cache / "train_fps.npy", cache / "train_smiles.txt"
+
+
+TRAIN_CSV, CACHE_DIR, FPS_PATH, SMILES_PATH = _ad_paths()
 
 AD_THRESHOLD = 0.30          # below this → out-of-domain
 AD_BORDERLINE = 0.40         # below this → borderline
@@ -72,10 +82,13 @@ def _load_or_build_train_fps() -> tuple[np.ndarray, List[str]]:
             fps.append(fp)
             kept_smiles.append(s)
     fps = np.array(fps, dtype=np.uint8)
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    np.save(FPS_PATH, fps)
-    SMILES_PATH.write_text("\n".join(kept_smiles))
-    logger.info("Built AD training fingerprints: %d molecules", len(fps))
+    try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        np.save(FPS_PATH, fps)
+        SMILES_PATH.write_text("\n".join(kept_smiles))
+        logger.info("Built AD training fingerprints: %d molecules", len(fps))
+    except OSError:  # pragma: no cover - cache unwritable; compute per call
+        logger.warning("AD fingerprint cache not writable at %s — computing in memory.", CACHE_DIR)
     return fps, kept_smiles
 
 

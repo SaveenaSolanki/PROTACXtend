@@ -1,0 +1,29 @@
+## 1. Home Dashboard
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ⚗ PROTACXtend   [Project: TNBC-BRD4 ▾]      cutoff: 2024-12-31 ▾   mode: AGENTIC ▾   ▶ RUN   │
+├───────────────┬──────────────────────────────────────────────────────────────┬───────────────┤
+│ NEW INVEST.   │  RECENT INVESTIGATIONS                                       │  SYSTEM       │
+│ Projects      │  ┌────────────────────────────────────────────────────────┐  │  Tools 34 ok  │
+│ Terapeutic D. │  │ BRD4 · TNBC        target_biology→…→experiment 29% ●   │  │  DBs 7 live   │
+│ Target Anal.  │  │ KRAS G12C · PDAC   …                           42% ●   │  │  Models 7     │
+│ PROTAC Design │  │ SMARCA2 · AML      …                           71% ●   │  │  SciValid 1   │
+│ Structure     │  └────────────────────────────────────────────────────────┘  │  Backends 19  │
+│ Benchmark     │                                                              │  READY        │
+│ Temporal Ch.  ├──────────────────────────────────────────────────────────────┤               │
+│ Tool Registry │  QUICK ASK (grounded)                                        │  ───────────  │
+│ Run History   │  ┌────────────────────────────────────────────────────────┐  │  DIAGNOSTICS  │
+│ Settings      │  │ "Can BRD4 be therapeutically degraded in TNBC?"    [↵] │  │  doctor ⚠     │
+│               │  └────────────────────────────────────────────────────────┘  │  provenance ✓ │
+└───────────────┴──────────────────────────────────────────────────────────────┴───────────────┘
+```
+- **Purpose:** entry point; live system truth; recent work.
+- **Panels:** project selector, recent investigations, grounded quick-ask, system readiness, diagnostics.
+- **Controls:** project dropdown, cutoff dropdown, agent-mode dropdown, RUN, quick-ask box.
+- **Hierarchy:** question → investigation → evidence → system truth.
+- **Primary CTA:** `▶ RUN` / quick-ask. **Secondary:** open history, doctor.
+- **States:** empty (no projects → "New Investigation"), loading, offline banner.
+- **Error:** red banner "no LLM provider / provider error · retry" with offline mode.
+
+---

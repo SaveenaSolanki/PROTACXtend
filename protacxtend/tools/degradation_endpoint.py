@@ -36,6 +36,63 @@ ROOT = Path(__file__).resolve().parents[2]
 MULTITARGET_MODEL = ROOT / "outputs" / "benchmark" / "chemprop_multitarget" / "model_0" / "best.pt"
 CONTEXT_CSV = ROOT / "data" / "benchmark" / "expression_context.csv"
 
+
+def _context_csv() -> Path:
+    """Packaged expression-context table with a legacy repo-layout fallback."""
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("benchmark", "expression_context.csv")
+    except Exception:  # pragma: no cover - legacy fallback
+        return CONTEXT_CSV
+
+
+def _coerce_smiles(value: Any) -> str:
+    """Return a string SMILES safe to hand to RDKit.
+
+    RDKit's ``MolFromSmiles`` is a pybind11 binding: passing a float/None/int
+    raises ``TypeError: No registered converter was able to produce a C++
+    rvalue ...`` instead of returning ``None``. Candidate tables produced by
+    pandas frequently carry ``NaN`` (a float) in the SMILES column. Coercing
+    non-strings to an empty sentinel keeps the degradation chain alive and
+    lets the downstream parser classify the input as invalid rather than
+    crashing the whole batch.
+    """
+    if isinstance(value, str):
+        return value
+    if value is None:
+        return ""
+    try:
+        import math
+        if isinstance(value, float) and math.isnan(value):
+            return ""
+    except Exception:  # pragma: no cover - defensive
+        pass
+    # bytes -> decode; everything else stringifies to an (almost certainly)
+    # invalid SMILES which RDKit will reject without raising.
+    if isinstance(value, (bytes, bytearray)):
+        try:
+            return value.decode("utf-8", "ignore")
+        except Exception:  # pragma: no cover - defensive
+            return ""
+    return str(value)
+
+
+def _is_valid_smiles(value: Any) -> bool:
+    """True only when RDKit can parse the (already coerced) SMILES.
+
+    Guarding here prevents a degenerate all-zero feature vector from being
+    scored by a trained model when the input is missing or malformed — that
+    would be fabrication, not prediction.
+    """
+    smi = _coerce_smiles(value)
+    if not smi:
+        return False
+    try:
+        from rdkit import Chem
+        return Chem.MolFromSmiles(smi) is not None
+    except Exception:  # noqa: BLE001 - pybind11 TypeError etc.
+        return False
+
 # Classification thresholds (deterministic, aligned with classify_degradation_potency)
 ACTIVE_DC50_NM = 100.0
 ACTIVE_DMAX_PCT = 50.0
@@ -77,6 +134,19 @@ class DegradationEndpointResult(BaseModel):
     degraded_fallback: bool = False
     note: str = ""
 
+    # ── Explicit fallback / provenance state machine (P0 fix) ──
+    # status           : "OK" | "NOT_AVAILABLE"
+    # result_source    : backend that produced the returned numbers
+    # degraded_fallback: True whenever a non-preferred / cross-check path ran
+    # primary_error    : why the primary backend did not produce the result
+    # fallback_reason  : why a fallback was invoked
+    # fallback_backend : which backend supplied the result on fallback
+    status: str = "OK"
+    result_source: str = ""
+    primary_error: str = ""
+    fallback_reason: str = ""
+    fallback_backend: str = ""
+
 
 # ── Expression context (curated, provenance per row) ──────────────────
 
@@ -99,11 +169,11 @@ _NUCLEAR_TARGET_OK = {"CRBN", "DCAF15", "DCAF11", "KLHL20"}
 
 def _load_context_csv() -> Dict[str, Dict[str, str]]:
     """Load curated expression table if present (provenance per row)."""
-    if not CONTEXT_CSV.exists():
+    if not _context_csv().exists():
         return _DEFAULT_CONTEXT
     ctx: Dict[str, Dict[str, str]] = {}
     try:
-        with open(CONTEXT_CSV, newline="") as f:
+        with open(_context_csv(), newline="") as f:
             for row in csv.DictReader(f):
                 cell = row.get("cell_line", "").strip()
                 if cell:
@@ -196,7 +266,8 @@ def _run_multitarget(smiles_list: List[str]) -> Dict[str, Any]:
     if not Path(chemprop_bin).exists():
         chemprop_bin = shutil.which("chemprop") or "chemprop"
 
-    valid = [s for s in smiles_list if Chem.MolFromSmiles(s) is not None]
+    valid = [s for s in (_coerce_smiles(x) for x in smiles_list)
+             if s and Chem.MolFromSmiles(s) is not None]
     if not valid:
         return {"ok": True, "rows": [None] * len(smiles_list), "n_valid": 0}
 
@@ -214,10 +285,13 @@ def _run_multitarget(smiles_list: List[str]) -> Dict[str, Any]:
             return {"ok": False, "reason": f"predict_error:{proc.stderr[-150:]}"}
         preds = pd.read_csv(out_csv)
         cols = preds.columns.tolist()
-        # cols: smiles, logDC50, dmax
+        # cols: smiles, logDC50, dmax — carry the SMILES through so callers can
+        # join batch predictions back to inputs (previously omitted, which made
+        # every batch lookup miss and silently dropped the Dmax head).
         rows = []
-        for _, r in preds.iterrows():
+        for smi, (_, r) in zip(valid, preds.iterrows()):
             rows.append({
+                "smiles": str(r[cols[0]]) if cols else smi,
                 "log_dc50": float(r[cols[1]]),
                 "dmax": float(r[cols[2]]) if len(cols) > 2 else None,
             })
@@ -256,72 +330,141 @@ def predict_degradation_endpoint(
     target_localization: str = "nuclear",
     use_conformal: bool = True,
 ) -> DegradationEndpointResult:
-    """Full endpoint prediction: DC50 + Dmax + class + context + uncertainty."""
-    from protacxtend.tools.applicability_domain import assess_applicability_domain
+    """Full endpoint prediction: DC50 + Dmax + class + context + uncertainty.
 
+    Resolution order and provenance contract (P0 fix):
+
+      PRIMARY (TACK-style) available and cross-check (Chemprop) OK:
+          result_source = 'tack-style-v1', degraded_fallback = False
+      PRIMARY unavailable/failed, validated fallback produced the result:
+          result_source = <fallback>, degraded_fallback = True,
+          primary_error / fallback_reason / fallback_backend recorded
+      PRIMARY + fallback both failed:
+          status = 'NOT_AVAILABLE', all numeric fields None (never fabricated)
+    """
+    from protacxtend.tools.applicability_domain import assess_applicability_domain  # noqa: F401
+
+    smi = _coerce_smiles(smiles)
     ctx = build_cell_context(cell_line, target, e3_ligase, target_localization)
     gate = apply_context_gate(ctx)
 
-    # Uncertainty + AD from the validated single-target ensemble
+    # Invalid/missing SMILES must never be scored (an empty feature vector would
+    # let a trained model fabricate a number). Honest NOT_AVAILABLE instead.
+    if not _is_valid_smiles(smi):
+        return DegradationEndpointResult(
+            candidate_id=candidate_id,
+            context=ctx,
+            context_gated=gate["gated"],
+            context_note="; ".join(gate["notes"]),
+            status="NOT_AVAILABLE",
+            result_source="none",
+            degraded_fallback=True,
+            primary_error="invalid_smiles",
+            fallback_reason="invalid_input",
+            fallback_backend="",
+            verdict="low_confidence",
+            confidence=0.0,
+            model="not_available",
+            note="invalid or unparseable SMILES — no prediction fabricated",
+        )
+
+    # ── Chemprop cross-check / secondary path (validated ensemble + Dmax head)
+    primary_error = ""
+    chemprop_error = ""
+    dc50 = None
+    log_dc50 = None
+    dmax = None
+    unc = None
+    ad_status = "unavailable"
+    nn_t = None
+
     try:
         from protacxtend.tools.uncertainty_aware_prediction import predict_with_uncertainty
-        unc_rows = predict_with_uncertainty([smiles], use_conformal=use_conformal)
+        unc_rows = predict_with_uncertainty([smi], use_conformal=use_conformal)
         u = unc_rows[0]
         dc50 = u.get("dc50_nM")
         unc = u.get("unc_log10")
         ad_status = u.get("ad_status", "unavailable")
         nn_t = u.get("nn_tanimoto")
-    except Exception:
-        dc50, unc, ad_status, nn_t = None, None, "unavailable", None
+    except Exception as exc:  # noqa: BLE001
+        chemprop_error = f"chemprop_ensemble:{type(exc).__name__}:{exc}"
+        logger.warning("chemprop ensemble path failed: %s", exc)
 
-    # Multi-target prediction (Dmax head)
-    mt = _run_multitarget([smiles])
-    dmax = None
-    log_dc50 = None
-    model = "chemprop_multitarget"
-    degraded_fallback = False
+    mt = _run_multitarget([smi])
     if mt.get("ok") and mt.get("rows") and mt["rows"][0]:
         row = mt["rows"][0]
-        log_dc50 = row["log_dc50"]
-        dmax = row["dmax"]
-        if dc50 is None:
+        log_dc50 = row.get("log_dc50")
+        dmax = row.get("dmax")
+        if dc50 is None and log_dc50 is not None:
             dc50 = float(10 ** log_dc50)
     else:
-        degraded_fallback = True
-        model = "chemprop_single_or_missing"
-        if dc50 is None:
-            dc50 = 500.0
-            dmax = 50.0
-            degraded_fallback = True
+        chemprop_error = chemprop_error or f"chemprop_multitarget:{mt.get('reason', 'failed')}"
 
-    # TACK-style model as the degradation primary vote when available.
-    # Chemprop values are kept as cross-check provenance (never discarded).
     chemprop_dc50 = dc50
     chemprop_dmax = dmax
-    tack = _tack_primary(smiles, e3_ligase, cell_line, target)
+    chemprop_ok = dc50 is not None and dmax is not None
+
+    # ── PRIMARY: TACK-style degradation model (preferred local model).
+    tack = _tack_primary(smi, e3_ligase, cell_line, target)
     tack_metrics = ""
+    result_source = ""
+    degraded_fallback = False
+    fallback_reason = ""
+    fallback_backend = ""
+    status = "OK"
+
     if tack:
         dc50 = tack["dc50_nM"]
         log_dc50 = tack.get("log_dc50")
         dmax = tack["dmax_pct"]
         model = "tack-style-v1"
-        degraded_fallback = False
+        result_source = "tack-style-v1"
         tack_metrics = ",".join(
             f"{k}={v}"
             for k, v in (tack.get("provenance", {}).get("val_metrics") or {}).items()
         )
+        if not chemprop_ok:
+            # The primary result stands but the Chemprop cross-check degraded:
+            # make that visible instead of silently dropping it.
+            degraded_fallback = True
+            primary_error = chemprop_error or "chemprop_unavailable"
+            fallback_reason = "chemprop_cross_check_failed"
+            fallback_backend = "tack-style-v1"
+    elif chemprop_ok:
+        # PRIMARY failed; validated Chemprop backend supplies the result.
+        model = "chemprop_multitarget"
+        result_source = "chemprop"
+        degraded_fallback = True
+        primary_error = "tack-style-v1:unavailable"
+        fallback_reason = "primary_unavailable"
+        fallback_backend = "chemprop"
+    else:
+        # PRIMARY and fallback both failed → honest NOT_AVAILABLE, no fabrication.
+        status = "NOT_AVAILABLE"
+        model = "not_available"
+        result_source = "none"
+        degraded_fallback = True
+        primary_error = ";".join(
+            p for p in ("tack-style-v1:unavailable", chemprop_error or "chemprop_unavailable") if p
+        )
+        fallback_reason = "all_backends_failed"
+        fallback_backend = ""
+        dc50 = log_dc50 = dmax = None
 
-    # Classification (deterministic)
+    # Classification (deterministic) — unknown when no real prediction exists.
     activity_class: Literal["active", "inactive", "unknown"] = "unknown"
-    if dc50 is not None and dmax is not None:
+    if status == "OK" and dc50 is not None and dmax is not None:
         activity_class = (
             "active" if dc50 <= ACTIVE_DC50_NM and dmax >= ACTIVE_DMAX_PCT
             else "inactive"
         )
 
     # Verdict composition: AD + uncertainty + context gate
-    if gate["gated"]:
+    if status != "OK":
         verdict: Literal["high_confidence", "medium_confidence", "low_confidence"] = "low_confidence"
+        confidence = 0.0
+    elif gate["gated"]:
+        verdict = "low_confidence"
         confidence = 0.15
     elif ad_status == "in_domain" and (unc or 1.4) < 1.75:
         verdict = "high_confidence"
@@ -357,7 +500,15 @@ def predict_degradation_endpoint(
             "tack_metrics": tack_metrics,
         },
         degraded_fallback=degraded_fallback,
-        note="context gate vetoed chemistry score" if gate["gated"] else "",
+        note=(
+            "context gate vetoed chemistry score" if (gate["gated"] and status == "OK")
+            else ("all degradation backends unavailable" if status == "NOT_AVAILABLE" else "")
+        ),
+        status=status,
+        result_source=result_source,
+        primary_error=primary_error,
+        fallback_reason=fallback_reason,
+        fallback_backend=fallback_backend,
     )
 
 
@@ -375,20 +526,60 @@ def predict_degradation_batch(
     subprocess reload that made the deterministic pipeline take ~20 min."""
     from protacxtend.tools.uncertainty_aware_prediction import predict_with_uncertainty
 
+    smiles_list = [_coerce_smiles(s) for s in smiles_list]
     ctx = build_cell_context(cell_line, target, e3_ligase, "nuclear")
     gate = apply_context_gate(ctx)
 
-    unc_rows = predict_with_uncertainty(smiles_list, use_conformal=use_conformal)
+    chemprop_error = ""
+    try:
+        unc_rows = predict_with_uncertainty(smiles_list, use_conformal=use_conformal)
+    except Exception as exc:  # noqa: BLE001
+        unc_rows = []
+        chemprop_error = f"chemprop_ensemble:{type(exc).__name__}:{exc}"
+        logger.warning("chemprop ensemble path failed: %s", exc)
     by_smiles = {r.get("smiles"): r for r in unc_rows}
 
     mt = _run_multitarget(smiles_list)
     mt_by_smiles = {}
     if mt.get("ok") and mt.get("rows"):
         for row in mt["rows"]:
-            mt_by_smiles[row.get("smiles", "")] = row
+            if row:
+                mt_by_smiles[row.get("smiles", "")] = row
+    else:
+        chemprop_error = chemprop_error or f"chemprop_multitarget:{mt.get('reason', 'failed')}"
 
     out = []
     for i, smi in enumerate(smiles_list):
+        if not _is_valid_smiles(smi):
+            out.append({
+                "candidate_id": (candidate_ids[i] if candidate_ids else ""),
+                "dc50_nM": None,
+                "log_dc50": None,
+                "dmax_pct": None,
+                "activity_class": "unknown",
+                "verdict": "low_confidence",
+                "confidence": 0.0,
+                "ad_status": "unavailable",
+                "nn_tanimoto": None,
+                "context_gated": gate["gated"],
+                "context_note": "; ".join(gate.get("notes", [])),
+                "status": "NOT_AVAILABLE",
+                "result_source": "none",
+                "degraded_fallback": True,
+                "primary_error": "invalid_smiles",
+                "fallback_reason": "invalid_input",
+                "fallback_backend": "",
+                "model": "not_available",
+                "tack_dc50_nM": None,
+                "tack_log_dc50": None,
+                "tack_dmax_pct": None,
+                "tack_active": None,
+                "tack_active_prob": None,
+                "tack_metrics": "",
+                "chemprop_dc50_nM": None,
+                "chemprop_dmax_pct": None,
+            })
+            continue
         u = by_smiles.get(smi, {})
         dc50 = u.get("dc50_nM")
         unc = u.get("unc_log10")
@@ -402,29 +593,60 @@ def predict_degradation_batch(
             dmax = row.get("dmax")
             if dc50 is None and log_dc50 is not None:
                 dc50 = float(10 ** log_dc50)
-        if dc50 is None:
-            dc50, dmax = 500.0, 50.0
+
+        chemprop_dc50, chemprop_dmax = dc50, dmax
+        chemprop_ok = dc50 is not None and dmax is not None
 
         # TACK-style degradation primary vote (graceful when unavailable).
-        chemprop_dc50, chemprop_dmax = dc50, dmax
         tack = _tack_primary(smi, e3_ligase, cell_line, target)
         tack_metrics = ""
+        result_source = ""
+        degraded_fallback = False
+        fallback_reason = ""
+        fallback_backend = ""
+        status = "OK"
         if tack:
             dc50 = tack["dc50_nM"]
             log_dc50 = tack.get("log_dc50")
             dmax = tack["dmax_pct"]
             model = "tack-style-v1"
+            result_source = "tack-style-v1"
             tack_metrics = ",".join(
                 f"{k}={v}"
                 for k, v in (tack.get("provenance", {}).get("val_metrics") or {}).items()
             )
-        else:
+            if not chemprop_ok:
+                degraded_fallback = True
+                primary_error = chemprop_error or "chemprop_unavailable"
+                fallback_reason = "chemprop_cross_check_failed"
+                fallback_backend = "tack-style-v1"
+            else:
+                primary_error = ""
+        elif chemprop_ok:
             model = "chemprop_multitarget"
+            result_source = "chemprop"
+            degraded_fallback = True
+            primary_error = "tack-style-v1:unavailable"
+            fallback_reason = "primary_unavailable"
+            fallback_backend = "chemprop"
+        else:
+            status = "NOT_AVAILABLE"
+            model = "not_available"
+            result_source = "none"
+            degraded_fallback = True
+            primary_error = ";".join(
+                p for p in ("tack-style-v1:unavailable", chemprop_error or "chemprop_unavailable") if p
+            )
+            fallback_reason = "all_backends_failed"
+            fallback_backend = ""
+            dc50 = log_dc50 = dmax = None
 
         activity_class: Literal["active", "inactive", "unknown"] = "unknown"
-        if dc50 is not None and dmax is not None:
+        if status == "OK" and dc50 is not None and dmax is not None:
             activity_class = "active" if dc50 <= ACTIVE_DC50_NM and dmax >= ACTIVE_DMAX_PCT else "inactive"
-        if gate["gated"]:
+        if status != "OK":
+            verdict = "low_confidence"; confidence = 0.0
+        elif gate["gated"]:
             verdict = "low_confidence"; confidence = 0.15
         elif ad_status == "in_domain" and (unc or 1.4) < 1.75:
             verdict = "high_confidence"; confidence = 0.85
@@ -444,6 +666,13 @@ def predict_degradation_batch(
             "nn_tanimoto": nn_t,
             "context_gated": gate["gated"],
             "context_note": "; ".join(gate.get("notes", [])),
+            # ── Explicit fallback / provenance state machine (P0 fix) ──
+            "status": status,
+            "result_source": result_source,
+            "degraded_fallback": degraded_fallback,
+            "primary_error": primary_error,
+            "fallback_reason": fallback_reason,
+            "fallback_backend": fallback_backend,
             # Degradation-backend provenance for downstream mapping
             "model": model,
             "tack_dc50_nM": round(tack["dc50_nM"], 2) if tack else None,

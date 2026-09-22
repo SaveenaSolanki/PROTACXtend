@@ -44,21 +44,21 @@ class CognitiveMemory:
 
     # ── construction / lifecycle ─────────────────────────────────────────────
     @classmethod
-    def open(cls, path: str | Path | None = None, config: MemoryConfig | None = None) -> "CognitiveMemory":
+    def open(cls, path: str | Path | None = None, config: MemoryConfig | None = None) -> CognitiveMemory:
         cfg = config or load_config()
         if path is not None:
             cfg = cfg.with_overrides(db_path=Path(path))
         return cls(cfg)
 
     @classmethod
-    def in_memory(cls, config: MemoryConfig | None = None) -> "CognitiveMemory":
+    def in_memory(cls, config: MemoryConfig | None = None) -> CognitiveMemory:
         cfg = (config or MemoryConfig()).with_overrides(db_path=Path(":memory:"))
         return cls(cfg, db=Database(":memory:"))
 
     def close(self) -> None:
         self.db.close()
 
-    def __enter__(self) -> "CognitiveMemory":
+    def __enter__(self) -> CognitiveMemory:
         return self
 
     def __exit__(self, *exc: object) -> None:
@@ -215,6 +215,7 @@ class CognitiveMemory:
         title: str | None = None,
         interpretation: str | None = None,
         is_negative: bool | None = None,
+        goal_relevance: float | None = None,
     ) -> dict[str, Any]:
         prediction = self.store.require_prediction(prediction_id)
         evidence_id = None
@@ -241,6 +242,7 @@ class CognitiveMemory:
                 outcome, project_id=project_id or prediction.get("project_id"),
                 session_id=session_id or prediction.get("session_id"), context=ctx,
                 title=title, interpretation=interpretation, is_negative=is_negative,
+                goal_relevance=goal_relevance,
             )
             outcome["episode"] = result.to_dict()
         return outcome
@@ -336,6 +338,154 @@ class CognitiveMemory:
 
     def pattern_complete(self, cue: str, *, project_id: str | None = None, depth: int = 2) -> dict[str, Any]:
         return self.pattern.complete(cue, project_id=project_id, depth=depth)
+
+    # ── procedural memory (reusable workflows, not scientific claims) ────────
+    def procedure_save(
+        self,
+        *,
+        name: str,
+        steps: list[str] | list[dict[str, Any]],
+        objective: str | None = None,
+        prerequisites: str | None = None,
+        inputs: list[str] | None = None,
+        outputs: list[str] | None = None,
+        tool_dependencies: list[str] | None = None,
+        version: int = 1,
+        evidence: list[dict[str, Any]] | None = None,
+        domain: str | None = None,
+        project_id: str | None = None,
+        session_id: str | None = None,
+        replace: bool = False,
+    ) -> dict[str, Any]:
+        """Create or version a reusable workflow (procedural memory)."""
+        if not steps:
+            from .errors import ValidationError
+
+            raise ValidationError("a procedure requires at least one step")
+        ordered_steps = [
+            {"order": i + 1, "step": s if isinstance(s, str) else s.get("step", str(s))}
+            for i, s in enumerate(steps)
+        ]
+        superseded_id: str | None = None
+        replace_target: dict[str, Any] | None = None
+        if replace:
+            replace_target = self.store.find_by_workflow(name, project_id)
+            if replace_target is not None:
+                previous_version = int((replace_target.get("metadata_json") or {}).get("version") or 1)
+                version = max(version, previous_version + 1)
+        search_context = " ".join(filter(None, [
+            name, objective or "", prerequisites or "",
+            " ".join(s["step"] for s in ordered_steps),
+            " ".join(tool_dependencies or []),
+        ]))
+        metadata = {
+            "objective": objective,
+            "inputs": inputs or [],
+            "outputs": outputs or [],
+            "tool_dependencies": tool_dependencies or [],
+            "version": version,
+            "last_success_at": None,
+            "last_run_at": None,
+            "last_run_success": None,
+        }
+        trace_id = self.store.add_procedure(
+            workflow_name=name, steps=ordered_steps, title=name,
+            content=objective or name, project_id=project_id, session_id=session_id,
+            domain=domain, preconditions=prerequisites, search_context=search_context,
+            search_entities=" ".join(tool_dependencies or []), metadata=metadata,
+        )
+        self.store.update_trace(trace_id, version=version)
+        if replace_target is not None:
+            self.store.supersede(
+                replace_target["id"], superseded_by=trace_id, reason="procedure replaced"
+            )
+            superseded_id = replace_target["id"]
+        for ref in _coerce_evidence(evidence):
+            ev_id = self.store.add_evidence(ref, project_id=project_id)
+            self.store.link(trace_id, ev_id, stance="supports", weight=ref.effective_quality)
+        self.store.log_event(trace_id, "ENCODED", {"memory_type": "procedural", "version": version}, session_id)
+        record = self.procedure_get(trace_id)
+        record["superseded_id"] = superseded_id
+        return record
+
+    def procedure_search(
+        self, query: str | None = None, *, project_id: str | None = None,
+        domain: str | None = None, limit: int = 5,
+    ) -> dict[str, Any]:
+        if not query:
+            rows = self.store.procedures(project_id=project_id, domain=domain, limit=limit)
+            return {"query": query, "results": [self._procedure_compact(r) for r in rows]}
+        response = self.retriever.search(
+            query, project_id=project_id, memory_types=["procedural"], limit=limit
+        )
+        results = []
+        for hit in response.hits:
+            record = self.store.get_procedure(hit.id)
+            if record is None:
+                continue
+            if domain and record.get("domain") != domain:
+                continue
+            compact = self._procedure_compact(record)
+            compact["score"] = hit.score
+            compact["why_retrieved"] = hit.why_retrieved
+            results.append(compact)
+        return {"query": query, "results": results}
+
+    def procedure_get(self, memory_id: str) -> dict[str, Any]:
+        record = self.store.get_procedure(memory_id)
+        if record is None:
+            from .errors import NotFoundError
+
+            raise NotFoundError("procedure", memory_id)
+        record["trace_id"] = record.get("id", memory_id)
+        record["evidence"] = self.store.links_for_memory(memory_id)
+        return record
+
+    def procedure_record_run(
+        self, memory_id: str, *, success: bool, note: str | None = None,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
+        self.store.record_run(memory_id, success)
+        trace = self.store.require_trace(memory_id)
+        metadata = dict(trace.get("metadata_json") or {})
+        metadata["last_run_at"] = now_iso()
+        metadata["last_run_success"] = bool(success)
+        if success:
+            metadata["last_success_at"] = now_iso()
+        self.store.update_trace(memory_id, metadata_json=metadata)
+        self.store.log_event(
+            memory_id, "RETRIEVED",
+            {"procedure_run": True, "success": bool(success), "note": note}, session_id,
+        )
+        record = self.store.get_procedure(memory_id) or {}
+        return {
+            "memory_id": memory_id,
+            "success": bool(success),
+            "success_count": record.get("success_count", 0),
+            "failure_count": record.get("failure_count", 0),
+            "last_success_at": metadata.get("last_success_at"),
+        }
+
+    @staticmethod
+    def _procedure_compact(record: dict[str, Any]) -> dict[str, Any]:
+        from .util import loads
+
+        metadata = record.get("metadata_json") or {}
+        if isinstance(metadata, str):
+            metadata = loads(metadata, {})
+        return {
+            "memory_id": record.get("id") or record.get("trace_id"),
+            "name": record.get("workflow_name") or record.get("title"),
+            "objective": metadata.get("objective"),
+            "domain": record.get("domain"),
+            "version": metadata.get("version"),
+            "n_steps": len(record.get("steps_json") or []),
+            "tool_dependencies": metadata.get("tool_dependencies", []),
+            "success_count": record.get("success_count", 0),
+            "failure_count": record.get("failure_count", 0),
+            "last_success_at": metadata.get("last_success_at"),
+            "status": record.get("status"),
+        }
 
     def counterfactual(self, prediction_id: str, **kwargs: Any) -> dict[str, Any]:
         return self.counterfactual_analyzer.analyze(prediction_id, **kwargs)

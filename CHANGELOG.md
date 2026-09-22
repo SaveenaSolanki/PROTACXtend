@@ -1,5 +1,60 @@
 # PROTACXtend Changelog
 
+## 2026-09-22 — Collapse parallel agent stacks into one canonical execution stack (ADR-001)
+
+- **New `protacxtend/canonical/` control plane** implementing the requested
+  pipeline: Scientific Request Parser → Orchestrator → Task Graph → 9
+  Specialized Scientific Modules → Tool Executor → Evidence Store → Critic /
+  Verifier → Decision Engine → typed `TherapeuticStrategy`.
+  - `modules.py`: Target & Disease, TPD Tractability, E3 Selection,
+    Chemistry/Warhead, Structure/Ternary, Degradation, ADME/Safety,
+    Resistance/Biomarker, Experimental Design.
+  - `tool_executor.py`: single gateway; the historical deterministic
+    (`agents/graph.py`) and adaptive (`agents/agentic_core.py`) graphs are now
+    pluggable *engines*, not parallel stacks. Legacy `protacxtend/agentic/`
+    remains deprecated.
+  - `critic.py`, `decision.py`, `evidence.py`: one verdict, one typed decision,
+    one evidence ledger per run (benchmark attribution via stable `module_id`).
+- **Runtime integration**: `agents/runtime.run_protacpilot` now attaches
+  `canonical.{critic,module_results,task_graph}` and a top-level
+  `therapeutic_strategy` to every run; `CanonicalOrchestrator.review_engine_state`
+  reuses the already-computed engine state so science still runs once.
+- **Parser hardening**: fail-closed guard drops low-confidence gene-shaped
+  English words (e.g. `suggest`) unless they are known gene symbols or contain
+  a digit; explicit config overrides now win over NLP constraints.
+- **Tests**: `tests/test_canonical_stack.py` (27 fast, offline tests).
+- **Docs**: `documentation/CANONICAL_STACK.md` (ADR-001); architecture/
+  closeout/state docs updated.
+
+## 2026-09-22 — Typed scientific output `TherapeuticStrategy.v1`
+
+- **Every discovery run now emits a fully typed `TherapeuticStrategy`** (not
+  prose) with: `target`, `disease_context`, `target_validation`,
+  `tpd_tractability`, `recommended_e3`, `alternative_e3s`, `rejected_e3s`,
+  `warheads`, `attachment_vectors`, `linker_hypotheses`, `candidate_protacs`,
+  `binary_structure_assessment`, `ternary_complex_assessment`,
+  `degradation_prediction`, `adme_risks`, `safety_risks`,
+  `resistance_mechanisms`, `biomarkers`, `combination_strategy`,
+  `experimental_plan`, `go_no_go_criteria`, `evidence`, `contradictions`,
+  `uncertainty`, `run_manifest`.
+- **Typed sub-models** added to `canonical/schemas.py` (`TargetValidation`,
+  `TPDTractabilityAssessment`, `E3Recommendation`, `TernaryComplexAssessment`,
+  `DegradationPredictionSummary`, `ADMERisk`, `SafetyRisk`,
+  `ResistanceMechanism`, `Biomarker`, `CombinationStrategy`,
+  `ExperimentalPlan`, `GoNoGoCriterion`, `EvidenceBundle`, `Contradiction`,
+  `UncertaintyDecomposition`, `RunManifest`); `STRATEGY_SCHEMA_VERSION =
+  "TherapeuticStrategy.v1"`.
+- **`decision.py`** populates every field from module results + shared engine
+  state: measured/predicted separation (`claim_allowed`), explicit
+  `go_no_go_criteria`, contradictions, uncertainty decomposition, and a
+  `run_manifest` linking strategy → modules → evidence → versions.
+- **Artifact**: `agents/runtime.run_protacpilot` writes
+  `outputs/runs/<run_id>/therapeutic_strategy.json`; run record exposes
+  `strategy_file`.
+- **Tests**: typed-output coverage added (27 canonical tests total).
+- Backward-compatible aliases (`recommended_candidates`, `e3_ligase`,
+  `indication`, `recommended_experiments`, …) remain populated.
+
 ## 2026-09-02 (module 6) — Novel E3 Ligase Opportunity Engine
 
 rank_e3_ligases(poi, cell_line, tissue, disease, warhead, poi_structure,

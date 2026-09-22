@@ -1,0 +1,33 @@
+## 9. 500-task Benchmark Runner
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BENCHMARK: TPD-HEADTOHEAD 500   Mode: [Standard ▾]   Agent: PROTACXtend vX   Baseline: [D ▾]  │
+├───────────────────────────────────────────────┬──────────────────────────────────────────────┤
+│ TASK 173 / 500                                │ ALLOWED TOOLS                                │
+│ Domain     ternary_complex                    │ required: ternary_model, pdb                 │
+│ Difficulty L5 mechanistic inference           │ optional: rdkit, literature                  │
+│ Partition  controlled                         │ forbidden: (native leakage / web)            │
+│ Cutoff     2022-12-31                         │                                              │
+│ Target     BRD4      E3 VHL                   │ ALLOWED EVIDENCE                             │
+│ ┌───────────────────────────────────────────┐ │ frozen snapshot 2022-12-31 · sealed future   │
+│ │ QUESTION                                  │ │ CUTOFF POLICY                                │
+│ │ Assess ternary-complex feasibility …      │ │ release_date ≤ T0, retrieved ≤ T0            │
+│ └───────────────────────────────────────────┘ │                                              │
+│ ▸ START RUN    · repeat ×5   · seed 0         │ EST. 180 s · tokens — · cost —               │
+├───────────────────────────────────────────────┴──────────────────────────────────────────────┤
+│ AFTER COMPLETION — twelve separate scores (no single opaque number)                          │
+│ scientific_correctness ▓▓▓░ · temporal_compliance ▓▓▓▓ · tool_selection ▓▓░░ · tool_exec ▓▓▓▓  │
+│ evidence_grounding ▓▓░░ · mechanistic ▓░░░ · quantitative ▓▓░░ · calibration ▓▓▓░ · repro ▓▓▓▓ │
+│ decision_quality ▓▓░░ · future_outcome_match n/a · failure_recovery ▓▓░░                     │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** run one task under frozen, blinded conditions.
+- **Panels:** task card, allowed tools/evidence, cutoff policy, post-run scores.
+- **Controls:** mode, systems, repeat, seed, start.
+- **Hierarchy:** task → constraints → run → separate scores.
+- **Primary:** `START RUN`. **Secondary:** repeat/seed.
+- **States:** pending/running/scored/abstained; leakage flag badge.
+- **Error:** tool unavailable → task recorded with recovery, not skipped.
+
+---

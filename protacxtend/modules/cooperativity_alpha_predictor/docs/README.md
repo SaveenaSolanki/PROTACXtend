@@ -15,14 +15,18 @@ SAME assay system — never inferred from qualitative statements, and incompatib
 assay conventions are never silently mixed.
 
 ## Current state (honest)
-The shipped curation template (`data/cooperativity_records.csv`) holds **zero
-records**: no reliable machine-readable experimental-alpha dataset is
-programmatically available (measured values live in article SI tables). Per
-spec step 6, supervised training is therefore **not claimed**; the benchmark
-harness (constant → ridge → RF → XGBoost → GP) is implemented and gated on
-curated data with grouped (unseen-series) folds. Until data exist, the module
-operates in **structural-surrogate mode** and returns `predicted_alpha=None`
-rather than a fabricated number.
+The shipped curation (`data/cooperativity_records.csv`) now holds **46 real
+measured records** (12 POIs, 3 E3s) curated from the DOI-cited PROTAC-DB-derived
+`protac.csv` (binary POI, binary E3 and ternary affinity columns + assay text).
+Twenty records have an unambiguous E3-arm assay description. A small ridge model
+on that subset was evaluated with grouped (unseen-POI / unseen-PROTAC) folds and
+**does not beat the mean baseline**; the calibration report therefore records
+`status = PRIOR_ONLY` and `model_usable = false`. `predicted_alpha` is returned
+only through the evidence-ordered lookup
+`measured_pair → e3_prior → global_prior`, with sample-size-scaled confidence and
+an explicit `uncertainty.evidence_level`. Unsupported E3s still raise
+`CooperativityEvidenceError` (nothing is fabricated). The structural surrogate
+remains available and is clearly labelled *not* alpha.
 
 ## Structural surrogate ("cooperativity feasibility score" — clearly NOT alpha)
 Interface features from ternary pose(s) (reuses the Module 2 structural toolkit:
@@ -35,7 +39,16 @@ Deterministic score in [0,1]:
 `surrogate.SCALES`). Label: **"Cooperativity feasibility score"** — never
 reported as experimental alpha.
 
-## Return
+## Experimental calibration (`calibration.py`)
+* `fit_calibration()` reports alpha distribution/coverage (overall, per E3, per
+  arm, per affinity basis) and fits/evaluates the ridge model; writes
+  `data/calibration_report.json`.
+* `empirical_alpha(poi, e3)` returns the highest available evidence tier:
+  measured pair, E3 prior, global prior (model only if it beat the gate).
+* `predict_cooperativity(..., use_empirical_calibration=True)` consumes this and
+  returns `model_kind = empirical_cooperativity_v1` with the evidence tier and
+  n in the uncertainty block. Coverage is limited to the curated systems; see
+  `RESULTS_INTERPRETATION.md` at the repository `outputs/gap_completion/`.
 `CooperativityPrediction`: `predicted_alpha` (None in surrogate mode),
 `predicted_log_alpha`, `cooperativity_class`, `confidence`/`uncertainty`,
 `feature_evidence` (interface + molecular + components + formula),

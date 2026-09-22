@@ -13,8 +13,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..config import ConsolidationConfig, MemoryConfig
 from ..confidence import ConfidenceFeatures, compute_confidence
+from ..config import ConsolidationConfig, MemoryConfig
 from ..domain.protac.evidence import EvidenceBundle, EvidenceRef
 from ..store.store import MemoryStore
 from ..util import new_id, now_iso
@@ -70,7 +70,8 @@ class ConsolidationEngine:
     # ── discovery ────────────────────────────────────────────────────────────
     def find_candidates(self, project_id: str | None = None) -> list[EpisodeGroup]:
         episodes = self.store.episodes(
-            project_id=project_id, include_negative=False, statuses=_EPISODE_STATUSES, limit=5000
+            project_id=project_id, include_negative=self.cfg.include_negative,
+            statuses=_EPISODE_STATUSES, limit=5000
         )
         groups: dict[tuple[str | None, str | None], list[dict[str, Any]]] = {}
         for ep in episodes:

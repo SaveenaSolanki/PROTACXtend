@@ -245,7 +245,7 @@ def _build_about_panel_text() -> str:
         "[bold]║[/bold]  [dim]schemas[/dim]   19 Pydantic models · 6 controlled-vocab reason codes",
         "[bold]║[/bold]  [dim]modes[/dim]     deterministic · agentic · LLM-gated",
         "[bold]║[/bold]  [dim]contract[/dim]  KNOW → REASON → DESIGN → DISCOVER",
-        "[bold]║[/bold]  [dim]homepage[/dim]  [link=file://{PROJECT_ROOT}]file://{PROJECT_ROOT}[/link]",
+        f"[bold]║[/bold]  [dim]homepage[/dim]  [link='file://{PROJECT_ROOT}']file://{PROJECT_ROOT}[/link]",
         "[bold]╚══════════════════════════════════════════════════════════════╝[/bold]",
     ]
     return "\n".join(lines)

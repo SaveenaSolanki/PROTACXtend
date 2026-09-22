@@ -10,7 +10,10 @@ from protacpilot_memory.domain.protac import (
     entity_key,
     normalize_entity_name,
 )
-from protacpilot_memory.domain.protac.entities import detect_entities, entity_search_text
+from protacpilot_memory.domain.protac.entities import (
+    detect_entities,
+    entity_search_text,
+)
 
 
 def test_fingerprint_identity_and_separation():

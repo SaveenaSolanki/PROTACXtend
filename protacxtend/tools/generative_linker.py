@@ -31,7 +31,17 @@ from protacxtend.tools.protac_toolbox import ProtacDesignToolbox
 logger = logging.getLogger("protacpilot.generative_linker")
 
 ROOT = Path(__file__).resolve().parents[2]
-CHECKPOINT = ROOT / "data" / "linkers" / "linker_generator.pt"
+
+
+def _checkpoint() -> Path:
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("linkers", "linker_generator.pt")
+    except Exception:  # pragma: no cover - legacy layout fallback
+        return ROOT / "data" / "linkers" / "linker_generator.pt"
+
+
+CHECKPOINT = _checkpoint()
 _TARGET_LENGTH = (4, 12)      # preferred linker heavy-atom range (lit. rules)
 _MAX_ROTATABLE = 8
 
@@ -45,12 +55,13 @@ class LinkerGenerator:
         self._chars: List[str] = []
         if checkpoint.exists():
             try:
+                from protacxtend.tools.linker_char_gru import load_char_gru
+                CharGRU = load_char_gru()
                 ckpt = torch.load(checkpoint, map_location="cpu", weights_only=False)
                 vocab = ckpt["vocab"]
                 self._vocab = vocab
                 self._ivocab = {i: c for c, i in self._vocab.items()}
                 self._chars = ckpt["chars"]
-                from scripts.train_linker_generator import CharGRU  # noqa: E402
                 cfg = ckpt["config"]
                 self._model = CharGRU(len(vocab), cfg["emb"], cfg["hidden"], cfg["layers"])
                 self._model.load_state_dict(ckpt["state"])

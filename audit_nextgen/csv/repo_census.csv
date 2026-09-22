@@ -1,0 +1,37 @@
+path,py_files,classes,functions,lines,implementation_status,major_concern
+protacxtend/tools,95,66,822,23465,IMPLEMENTED (mixed maturity),many thin wrappers; some demo/heuristic; no per-tool scientific validation
+protacxtend/modules,82,70,439,10427,IMPLEMENTED (mixed),resistance_mechanisms is a 41-line heuristic with no tests; cooperativity data-gated
+protacxtend/tests,63,178,737,9239,UNTESTED-IN-FULL,suite does not complete <25 min; 2 failing tests
+protacxtend/agents,39,52,241,6567,IMPLEMENTED (deterministic),planner is a static tool list; entity parser is BROKEN (target=DEGRADE)
+protacxtend/scientific_backends,22,13,230,5843,IMPLEMENTED + VALIDATED (partial),ternary predicted DockQ NOT_VALIDATED; MM/GBSA NOT_VALIDATED
+protacxtend/validation,18,5,133,3897,IMPLEMENTED,claim table real; coverage limited to 12 capabilities
+protacxtend/research,10,19,124,3020,IMPLEMENTED,"retrieval only; no evidence graph, no contradiction handling"
+protacxtend/llm,15,21,102,2858,IMPLEMENTED (optional),no provider configured by default; deterministic fallback used
+protacxtend/toolkit,9,1,112,2809,IMPLEMENTED,115 registered tools not executable; provisioning exists
+protacxtend/runtime,8,4,86,2496,IMPLEMENTED,34 agent tools run on canned fixtures when no real input
+protacxtend/agentic,15,22,79,2379,PARTIAL,7-layer wrapper; decision layer always runs one workflow; no iterative planning
+protacxtend/app,3,0,47,2315,IMPLEMENTED,Streamlit only; no investigation graph/decision UI as specified
+protacxtend/escalation,11,10,77,2116,IMPLEMENTED,auto-installer uses shell=True; injection surface
+protacxtend/workflows,6,1,56,1984,IMPLEMENTED,pilot/validation runners; not wired to benchmark
+protacxtend/backend,12,38,64,1601,IMPLEMENTED,13 API routes; no benchmark/temporal endpoints
+protacxtend/memory,6,6,74,1377,IMPLEMENTED,BM25 fallback; no temporal index; no citation-DOI graph
+protacxtend/tui_bridge,3,1,29,798,IMPLEMENTED,event bridge; 23 skills registered
+protacxtend/audit,2,1,30,539,IMPLEMENTED,self-audit harness
+protacxtend/tui,2,2,21,536,IMPLEMENTED,TypeScript/Node TUI
+protacxtend/structural,3,7,28,498,IMPLEMENTED,
+protacxtend/databases,4,1,10,400,IMPLEMENTED,registry/router; 49 DBs mostly registered_but_unavailable
+protacxtend/models,2,0,11,372,IMPLEMENTED,legacy pickle loader (unsafe deserialization)
+protacxtend/state,3,0,27,329,IMPLEMENTED,"filesystem-JSON store, no DB"
+protacxtend/schemas,7,11,2,327,PARTIAL,backend pydantic schemas; no typed TherapeuticStrategy schema
+protacxtend/results,3,3,11,259,IMPLEMENTED,
+protacxtend/case_study,2,0,7,218,IMPLEMENTED,
+protacxtend/queue,1,1,12,210,IMPLEMENTED,
+protacxtend/integrations,2,0,6,205,IMPLEMENTED,
+protacxtend/observability,1,1,12,147,IMPLEMENTED,
+protacxtend/benchmark,3,1,9,147,PARTIAL,task_schema + manifest only; no runner/scoring in-package
+protacxtend/learning,2,2,4,90,PARTIAL,
+protacxtend/root(*.py),11,0,0,0,IMPLEMENTED,"cli.py 1721 lines, scientific_contract.py 710 lines"
+benchmark/ (repo root),0,0,0,0,PARTIAL,48 cases with expected_answer=null; tasks/ and scoring/ empty
+benchmark_runner/,3,0,0,0,IMPLEMENTED,runner+scoring; adapters fail-closed; no full scored run
+sota/eval/eval500,0,0,0,0,MOCK,500 template tasks + 100 adversarial stubs; no graders
+tpdeval/,21,0,0,2072,DESIGN ONLY,16-domain/L1-L7 taxonomy; 500 tasks all REQUIRES_AUTHORING; 0 scorable

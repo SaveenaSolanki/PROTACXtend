@@ -4,7 +4,8 @@ LLM provider registry — any API in backend or frontend (provider-agnostic).
 
 Replace Ollama/gpt-oss:20b with ANY API without touching the decision layer:
 
-  - ollama            (local default; gpt-oss:20b)
+  - ollama            (local)
+  - deepseek          (DeepSeek API)
   - openai            (OpenAI API)
   - openrouter        (aggregator — many models)
   - anthropic         (Claude)
@@ -15,6 +16,14 @@ Every provider implements the same Protocol: return RAW text; the gateway
 handles JSON extraction/repair + Pydantic validation + deterministic
 fallback. Structured-output format hints are provider-specific best-effort;
 validation is always ours.
+
+Config resolution is deliberately provider-NEUTRAL:
+
+    runtime override  →  environment (per-field)  →  ~/.protacxtend/llm.json  →  none
+
+There is NO hard-coded default provider. A resolved config with
+provider == "" simply means "not configured" — components must route to
+`protacxtend setup` instead of assuming DeepSeek or Ollama.
 """
 
 from __future__ import annotations
@@ -22,7 +31,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
@@ -33,9 +42,9 @@ logger = logging.getLogger("protacpilot.llm.providers")
 
 @dataclass
 class ProviderConfig:
-    provider: str = "ollama"
-    model: str = "gpt-oss:20b"
-    base_url: str = "http://127.0.0.1:11434"     # ollama server
+    provider: str = ""       # NO hard-coded default provider
+    model: str = ""
+    base_url: str = ""
     api_key: str = ""
     num_ctx: int = 16384
     temperature: float = 0.0
@@ -43,10 +52,11 @@ class ProviderConfig:
 
     @staticmethod
     def from_env() -> "ProviderConfig":
+        """Read ONLY the PROTACPILOT_LLM_* env vars (unset → neutral "")."""
         return ProviderConfig(
-            provider=os.environ.get("PROTACPILOT_LLM_PROVIDER", "ollama"),
-            model=os.environ.get("PROTACPILOT_LLM_MODEL", "gpt-oss:20b"),
-            base_url=os.environ.get("PROTACPILOT_LLM_BASE_URL", "http://127.0.0.1:11435"),
+            provider=os.environ.get("PROTACPILOT_LLM_PROVIDER", "").strip(),
+            model=os.environ.get("PROTACPILOT_LLM_MODEL", "").strip(),
+            base_url=os.environ.get("PROTACPILOT_LLM_BASE_URL", "").strip(),
             api_key=os.environ.get("PROTACPILOT_LLM_API_KEY", ""),
             num_ctx=int(os.environ.get("PROTACPILOT_LLM_NUM_CTX", "16384")),
             temperature=float(os.environ.get("PROTACPILOT_LLM_TEMPERATURE", "0")),
@@ -54,12 +64,20 @@ class ProviderConfig:
         )
 
 
+def configured() -> bool:
+    """True when a provider choice exists (env or saved config)."""
+    if os.environ.get("PROTACPILOT_LLM_PROVIDER", "").strip():
+        return True
+    saved = load_user_config()
+    return bool(saved and saved.provider)
+
+
 # ── Persistent user config (~/.protacxtend/llm.json) ──────────────────
 USER_CONFIG_PATH = Path(os.environ.get("PROTACXTEND_HOME", "~/.protacxtend")).expanduser() / "llm.json"
 
 
 def load_user_config() -> Optional["ProviderConfig"]:
-    """Saved provider choice (written by `protacxtend llm setup`). None if absent."""
+    """Saved provider choice (written by `protacxtend setup`). None if absent."""
     try:
         if USER_CONFIG_PATH.exists():
             data = json.loads(USER_CONFIG_PATH.read_text())
@@ -70,19 +88,37 @@ def load_user_config() -> Optional["ProviderConfig"]:
     return None
 
 
-# Runtime override (set via backend API); None = use env config
+# Runtime override (set via backend API / runtime switch); None = resolve
 _runtime_config: Optional[ProviderConfig] = None
 
 
 def get_config() -> ProviderConfig:
+    """Resolve ONE runtime config for every consumer.
+
+    Priority (highest first):
+      1. runtime override (backend API switch)
+      2. PROTACPILOT_LLM_* environment variables — per-field, env wins over saved
+      3. saved ~/.protacxtend/llm.json
+      4. neutral empty config (provider == "" = not configured)
+    """
     if _runtime_config is not None:
         return _runtime_config
-    if os.environ.get("PROTACPILOT_LLM_PROVIDER"):      # explicit env wins
-        return ProviderConfig.from_env()
-    saved = load_user_config()                            # `protacxtend llm setup`
+    saved = load_user_config()
+    env = ProviderConfig.from_env()
+    if env.provider:
+        # environment overrides saved config, per field
+        return ProviderConfig(
+            provider=env.provider,
+            model=env.model or (saved.model if saved else ""),
+            base_url=env.base_url or (saved.base_url if saved else ""),
+            api_key=env.api_key or (saved.api_key if saved else ""),
+            num_ctx=int(env.num_ctx or (saved.num_ctx if saved else 16384)),
+            temperature=float(env.temperature if env.temperature else (saved.temperature if saved else 0.0)),
+            timeout_s=int(env.timeout_s or (saved.timeout_s if saved else 300)),
+        )
     if saved is not None:
         return saved
-    return ProviderConfig.from_env()
+    return ProviderConfig()   # provider "" → not configured
 
 
 def set_runtime_config(config: ProviderConfig) -> None:
@@ -152,12 +188,9 @@ class OllamaProvider:
 
     def list_models(self, config):
         import requests
-        try:
-            resp = requests.get(self._host(config) + "/api/tags", timeout=5)
-            resp.raise_for_status()
-            return [m.get("name") or m.get("model") for m in resp.json().get("models", [])]
-        except Exception:
-            return []
+        resp = requests.get(self._host(config) + "/api/tags", timeout=5)
+        resp.raise_for_status()
+        return [m.get("name") or m.get("model") for m in resp.json().get("models", [])]
 
 
 # ── OpenAI + OpenAI-compatible (OpenRouter, vLLM, Groq, DeepSeek, ...) ─
@@ -204,23 +237,17 @@ class OpenAICompatibleProvider:
 
     def list_models(self, config):
         import requests
-        try:
-            base = config.base_url or "https://api.openai.com/v1"
-            base = base.rstrip("/")
-            if base.endswith("/chat/completions"):
-                base = base[: -len("/chat/completions")]
-            resp = requests.get(base + "/models", headers=self._headers(config), timeout=10)
-            resp.raise_for_status()
-            return [m["id"] for m in resp.json().get("data", [])]
-        except Exception:
-            return []
+        base = config.base_url or "https://api.openai.com/v1"
+        base = base.rstrip("/")
+        if base.endswith("/chat/completions"):
+            base = base[: -len("/chat/completions")]
+        resp = requests.get(base + "/models", headers=self._headers(config), timeout=10)
+        resp.raise_for_status()
+        return [m["id"] for m in resp.json().get("data", [])]
 
 
 class OpenRouterProvider(OpenAICompatibleProvider):
     name = "openrouter"
-
-    def __init__(self):
-        self._default_base = "https://openrouter.ai/api/v1"
 
 
 class OpenAIProvider(OpenAICompatibleProvider):
@@ -230,10 +257,6 @@ class OpenAIProvider(OpenAICompatibleProvider):
 class DeepSeekProvider(OpenAICompatibleProvider):
     """DeepSeek API — OpenAI-compatible chat completions endpoint."""
     name = "deepseek"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._default_base = "https://api.deepseek.com"
 
 
 # ── Anthropic ─────────────────────────────────────────────────────────
@@ -289,8 +312,8 @@ class GoogleProvider:
 
 PROVIDER_REGISTRY: Dict[str, LLMProvider] = {
     "ollama": OllamaProvider(),
-    "openai": OpenAIProvider(),
     "deepseek": DeepSeekProvider(),
+    "openai": OpenAIProvider(),
     "openrouter": OpenRouterProvider(),
     "anthropic": AnthropicProvider(),
     "google": GoogleProvider(),
@@ -300,7 +323,9 @@ PROVIDER_REGISTRY: Dict[str, LLMProvider] = {
 
 
 def get_provider(name: Optional[str] = None) -> LLMProvider:
-    name = name or get_config().provider
+    name = (name or get_config().provider).strip()
+    if not name:
+        raise ValueError("No LLM provider configured. Run: protacxtend setup")
     if name not in PROVIDER_REGISTRY:
         raise ValueError(f"Unknown provider '{name}'. Available: {sorted(PROVIDER_REGISTRY)}")
     return PROVIDER_REGISTRY[name]
@@ -313,6 +338,12 @@ def list_available_providers() -> List[str]:
 def provider_health(config: Optional[ProviderConfig] = None) -> Dict[str, Any]:
     """Lightweight connectivity check (model list, no inference)."""
     cfg = config or get_config()
+    if not cfg.provider:
+        return {"provider": "", "model": cfg.model, "base_url": cfg.base_url,
+                "ok": False, "error": "no provider configured — run: protacxtend setup"}
+    if cfg.provider not in PROVIDER_REGISTRY:
+        return {"provider": cfg.provider, "model": cfg.model, "base_url": cfg.base_url,
+                "ok": False, "error": f"unknown provider {cfg.provider!r}"}
     provider = get_provider(cfg.provider)
     try:
         models = provider.list_models(cfg)
@@ -325,4 +356,5 @@ def provider_health(config: Optional[ProviderConfig] = None) -> Dict[str, Any]:
             "n_models": len(models),
         }
     except Exception as exc:
-        return {"provider": cfg.provider, "model": cfg.model, "ok": False, "error": str(exc)[:200]}
+        return {"provider": cfg.provider, "model": cfg.model, "base_url": cfg.base_url,
+                "ok": False, "error": str(exc)[:200]}

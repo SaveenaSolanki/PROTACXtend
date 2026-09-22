@@ -114,3 +114,15 @@ benchmark/manifests/*.json
 /outputs/gap_completion/
 *.npy
 protac_tui.png
+
+# generated evaluation / audit outputs (never commit)
+/protacpilot-memory/evaluation/
+/protacpilot-memory/paper/
+/protacpilot-memory/benchmarks/results/
+/outputs/audits/
+/outputs/escalation/
+/outputs/reports/
+/outputs/ternary_5T35_haddock_blind/
+/outputs/case_study_brd4_vhl_result.json
+/outputs/parser_eval.json
+/analysis/

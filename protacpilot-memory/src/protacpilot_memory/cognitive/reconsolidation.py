@@ -11,8 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..config import MemoryConfig
 from ..confidence import ConfidenceFeatures, compute_confidence
+from ..config import MemoryConfig
 from ..domain.protac.evidence import EvidenceBundle, EvidenceRef
 from ..store.store import MemoryStore
 from ..util import new_id, now_iso
@@ -212,7 +212,6 @@ class ReconsolidationEngine:
                                  {"old_claim": old_claim, "new_claim": new_claim}, session_id)
 
         elif outcome == "RETRACT":
-            state = self.store.get_semantic(semantic_id)
             self.store.set_status(semantic_id, "retracted", reason=rationale, session_id=session_id)
             confidence_after = 0.0
             self.store.update_metrics(semantic_id, confidence=0.0, provisional=True)

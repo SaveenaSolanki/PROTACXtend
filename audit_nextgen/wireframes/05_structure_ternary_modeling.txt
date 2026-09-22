@@ -1,0 +1,30 @@
+## 5. Structure / Ternary Modeling
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ BRD4·TNBC   STRUCTURE / TERNARY                               node: 7-8/16  ●●●●●●●●○○○○○○○○  │
+├──────────────────────┬───────────────────────────────┬───────────────────────────────────────┤
+│ TARGET STRUCTURE     │ BINARY POSES                  │ TERNARY MODEL                          │
+│ source: PDB 6BOY ✓   │ ┌──────┬───────┬───────────┐ │ ┌───────────────────────────────────┐ │
+│ resolution 1.9 Å     │ │ rank │ score │ RMSD ref  │ │ │ assembly: P4ward / SE(3) surrogate │ │
+│ [load] [fetch]       │ │ 1    │ -6.20 │ 2.35 Å    │ │ │ contacts 257 · bridging 0.0 ⚠      │ │
+│ [prep: pdbfixer]     │ │ 2    │ -6.10 │ 2.88 Å    │ │ │ predicted DockQ: NOT_VALIDATED     │ │
+│ pocket: detected ✓   │ └──────┴───────┴───────────┘ │ └───────────────────────────────────┘ │
+│ (Vina+GNINA+DiffDock)│ engine consensus · evidence  │ INTERFACE METRICS                     │
+│                      │ tier MEASURED-on-benchmark    │ buried SASA · polar contacts · clash  │
+│                      │                               │ nearest lysine d=… Å · E2 geometry     │
+│                      │ LYSINE FEASIBILITY            │ COOPERATIVITY α 42.2 (surrogate) ⚠    │
+│                      │ reachable / productive        │                                       │
+├──────────────────────┴───────────────────────────────┴───────────────────────────────────────┤
+│ ▸ ADVANCE TO DEGRADATION   · refine pose   · run MD   · download complex   · compare models    │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** binary + ternary structure evidence with honest validation tier.
+- **Panels:** target structure, binary poses, ternary model, interface metrics, lysine feasibility, cooperativity.
+- **Controls:** load/fetch/prep, refine, MD, download, advance.
+- **Hierarchy:** target → binary → ternary → interface → uncertainty.
+- **Primary:** `ADVANCE TO DEGRADATION`. **Secondary:** refine/MD/compare.
+- **States:** engine availability chips; NOT_VALIDATED badge colour.
+- **Error:** docking backend missing → shows capability resolver + fallback, never a fake pose.
+
+---

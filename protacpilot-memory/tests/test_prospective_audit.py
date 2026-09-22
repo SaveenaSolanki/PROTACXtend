@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from protacpilot_memory.domain.protac.evidence import EvidenceRef
-
 from helpers import brd4_vhl, ev
+from protacpilot_memory.domain.protac.evidence import EvidenceRef
 
 
 def test_prospective_memory_creates_task(mem, project):
@@ -99,7 +98,7 @@ def test_auditor_severity_is_critical_for_broken_provenance(mem, project):
 
 
 def test_pattern_completion_reconstructs_network(mem, project):
-    parent = mem.save_episode(
+    _parent = mem.save_episode(
         title="BRD4 VHL design failure", content="short linker failed degradation",
         event_type="failure", project_id=project, context=brd4_vhl(),
         observed={"dmax": 0.18}, is_negative=True, evidence=[ev("PC-1")], decision_impact=0.9,

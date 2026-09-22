@@ -1,0 +1,35 @@
+tool_id,name,domain,executable_now,measured_status,inputs,external_dependency,network_required,notes
+deep_research,Multi-source literature search,Literature/evidence,yes,ok(3.2s),query,EuropePMC+PubMed+CrossRef,yes,real retrieval; no evidence typing
+search_europe_pmc,Europe PMC search,Literature/evidence,yes,ok,query,Europe PMC REST,yes,
+search_pubmed,PubMed search,Literature/evidence,yes,ok,query,NCBI E-utilities,yes,
+verify_crossref,DOI verification,Literature/evidence,yes,ok,doi,Crossref,yes,
+retrieve_fulltext,Open full text fetch,Literature/evidence,yes,ok,pmcid,Europe PMC OA,yes,
+search_web,SearXNG web search,Literature/evidence,yes,partial,query,self-hosted SearXNG,yes,disabled/degraded without SEARXNG_URL
+resolve_target,Target resolution,Protein sequence,yes,ok,gene,UniProt/local CSV,yes,
+search_uniprot,UniProt free-text search,Protein sequence,yes,ok,query,UniProt REST,yes,
+retrieve_target_binders,Known binder retrieval,Warhead discovery,yes,ok,target,ChEMBL online REST,yes,returned 0 binders in live BRD4 run
+select_e3_ligase,E3 ligase selection,E3 ligase biology,yes,ok,"target,e3",local E3 catalog,no,validated retrospectively
+retrieve_e3_evidence,E3 evidence rows,E3 ligase biology,yes,ok,e3,local catalog,no,
+inspect_smiles,SMILES validation/descriptors,Cheminformatics,yes,ok,smiles,RDKit,no,
+search_pubchem,PubChem search,Cheminformatics,yes,ok,name/smiles,PubChem REST,yes,
+search_chembl,ChEMBL molecule search,Cheminformatics,yes,ok,name,ChEMBL REST,yes,
+search_bindingdb,BindingDB lookup,Cheminformatics,yes,partial,target,local BindingDB,no,needs BINDINGDB_API_KEY for REST
+detect_exit_vectors,Exit-vector detection,Warhead discovery,yes,ok,smiles,RDKit,no,
+generate_linkers,Linker generation,Linker/PROTAC design,yes,ok(19s),"warhead,e3",curated+rules+generative,no,generative models optional/guarded
+construct_protac,PROTAC assembly,Linker/PROTAC design,yes,partial,3 components,RDKit,no,default fixture; invalid combos rejected
+check_synthetic_feasibility,Retrosynthesis feasibility,Cheminformatics,yes,partial,smiles,AiZynthFinder optional,no,route often not_available
+diagnose_capability,Capability diagnosis,Failure analysis,yes,ok(5s),capability,installation audit,no,
+list_capability_readiness,Tool readiness matrix,Failure analysis,yes,ok(68s),none,toolkit registry,no,slow
+list_scientific_capabilities,Capability list,Metadata,yes,ok,none,backend registry,no,
+run_scientific_capability,Generic backend runner,Scientific compute,yes,ok,"capability,params",RDKit/OpenMM/Vina/...,no,dispatches to real backends
+retrieve_pdb,PDB retrieval,Protein structure,yes,ok(8s),pdb id,RCSB PDB,yes,
+model_ternary_complex,Ternary feasibility,Ternary modeling,yes,ok(0.3s),"target,e3,linker",P4ward/SE(3) surrogate,no,predicted DockQ NOT_VALIDATED
+score_lysine_ubiquitination,Lysine ubiquitination feasibility,Ternary modeling,yes,partial,"target,e3,pose",structure geometry,no,runs on synthetic pose fixture
+predict_cooperativity,Cooperativity alpha,Ternary modeling,yes,ok(0.07s),"3 components,pose",surrogate model,no,data-gated; not experimental alpha
+simulate_hook_effect,Hook-effect simulator,Degradation,yes,ok,"Kds,conc",mass-action model,no,equilibrium only; not kinetics
+predict_degradation,DC50/Dmax prediction,Degradation,yes,ok(20s),"smiles,e3,cell",ML models/joblib,no,trained on 64/32 labels; OOD risk
+predict_cell_context,Cell-context pDC50,Degradation,yes,ok,"smiles,cell,poi,e3",cell-context model,no,transcriptomic only; no proteotype
+predict_admet,ADMET flags,ADMET,yes,ok,smiles,ADMET-AI+RDKit,no,no PK/clearance
+run_protacpilot_structural,Structural pipeline,Structure/Ternary,yes,partial(204s),"target,e3,protac",docking/MD stack,no,very slow; partial output
+rank_candidates,Pareto ranking,Statistics,yes,ok,candidates,local NSGA-II,no,heuristic composite
+build_candidate_dossier,Candidate dossier,Reporting,yes,ok,candidate,local,no,provenance labels

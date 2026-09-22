@@ -61,6 +61,30 @@ def rank_e3_ligases(poi: str, cell_line: str | None = None,
     return out
 
 
+def rank_e3_for_tissue(poi: str, tissue: str, cell_line: str | None = None,
+                       disease: str | None = None, warhead: str | None = None,
+                       poi_structure: str | None = None,
+                       top_k: int = 10) -> dict[str, Any]:
+    """Tissue-focused E3 suitability: DepMap context + HPA tissue atlas.
+
+    Convenience wrapper over :func:`rank_e3_ligases` that also returns the HPA
+    atlas summary. Each candidate keeps the DepMap ``cell_context_score`` and
+    the separately inspectable ``tissue_expression_score`` (HPA RNA + IHC +
+    MS); the combined ``overall_rank_score`` weights the tissue axis only when
+    a tissue is supplied.
+    """
+    out = rank_e3_ligases(poi, cell_line=cell_line, tissue=tissue,
+                          disease=disease, warhead=warhead,
+                          poi_structure=poi_structure, top_k=top_k)
+    try:
+        from protacxtend.modules.e3_opportunity import tissue_atlas
+        out["hpa_atlas"] = tissue_atlas.atlas_summary()
+    except Exception:
+        out["hpa_atlas"] = {"available": False}
+    out["tissue_query"] = tissue
+    return out
+
+
 def _empty_response(poi, cell_line, tissue, disease, note) -> dict[str, Any]:
     return {
         "model": MODEL_VERSION, "poi": poi, "poi_gene": None,
@@ -94,6 +118,9 @@ def _to_response(poi, poi_gene, cell_line, tissue, disease, df,
             "structural_confidence": d("structure").get("confidence"),
             "lysine_opportunity": s("lysine"),
             "selectivity_opportunity": s("selectivity"),
+            "tissue_expression_score": s("tissue_expression"),
+            "tissue_expression_confidence": d("tissue_expression").get(
+                "confidence"),
             "known_precedent": (None if r.get("known_precedent_n", 0) == 0
                                 else round(min(1.0, r["known_precedent_n"]
                                                / 3.0), 3)),
@@ -118,6 +145,19 @@ def _to_response(poi, poi_gene, cell_line, tissue, disease, df,
                     "e3_complex_pdb_ids"),
                 "restricted_lineages": d("selectivity").get(
                     "detail", {}).get("restricted_lineages"),
+                "hpa_tissue_score": s("tissue_expression"),
+                "hpa_tissue_components": d("tissue_expression").get(
+                    "detail", {}).get("components"),
+                "hpa_rna_ntpm": d("tissue_expression").get(
+                    "detail", {}).get("expression", {}).get("rna_ntpm"),
+                "hpa_protein_ihc": d("tissue_expression").get(
+                    "detail", {}).get("expression", {}).get("protein_ihc"),
+                "hpa_protein_ms": d("tissue_expression").get(
+                    "detail", {}).get("expression", {}).get("protein_ms"),
+                "hpa_tissue_resolved": d("tissue_expression").get(
+                    "detail", {}).get("expression", {}).get("tissue_resolved"),
+                "hpa_flags": d("tissue_expression").get(
+                    "detail", {}).get("flags"),
             },
             "limitations": r.get("limitations", []),
             "recommended_next_test": str(r.get("recommended_next_test", "")),
@@ -133,6 +173,10 @@ def _to_response(poi, poi_gene, cell_line, tissue, disease, df,
             "without resolved/docked ternary data",
             "degradation-probability style claims are never made from "
             "expression alone",
+            "tissue_expression_score is a separate HPA tissue axis (RNA + "
+            "protein IHC + protein MS); it is only weighted when a tissue is "
+            "supplied and is inspectable independently of the DepMap cell-line "
+            "cell_context axis",
         ],
         "status": "SUPPORTED",
     }

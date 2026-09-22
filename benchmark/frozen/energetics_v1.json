@@ -1,0 +1,12 @@
+{
+  "complexes": [
+    "3ptb",
+    "1stp",
+    "1cbx",
+    "1bcu",
+    "1cbr"
+  ],
+  "description": "Small-ligand protein\u2013ligand set for MM/GBSA parameterisation validation.",
+  "name": "energetics_v1",
+  "source": "RCSB PDB"
+}

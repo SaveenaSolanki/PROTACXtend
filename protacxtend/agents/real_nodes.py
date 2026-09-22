@@ -163,9 +163,20 @@ def _e3(state: dict[str, Any]) -> dict[str, Any]:
     except Exception:
         ligs = []
     if not ligs:
+        from protacxtend.runtime import modes
+        if modes.is_scientific():
+            # P0-B: no silent CRBN substitution. Missing E3 ligand is a typed
+            # scientific failure, not a fallback.
+            return {"selected_e3_ligands": [],
+                    "evidence": {"e3": {"status": "no_ligands", "requested": e3_requested}},
+                    "errors": [f"E3_LIGAND_UNAVAILABLE: no E3 ligand in library for "
+                               f"{e3_requested!r}; refusing to default to CRBN in SCIENTIFIC mode"],
+                    "failure_code": modes.FailureCode.E3_LIGAND_UNAVAILABLE.value}
         return {"selected_e3_ligands": [],
                 "evidence": {"e3": {"status": "no_ligands", "requested": e3_requested}},
-                "warnings": [f"no E3 ligand in library for {e3_requested}; defaulting to CRBN"],
+                "warnings": [f"no E3 ligand in library for {e3_requested}; defaulting to CRBN "
+                             "(DEMO/TEST only)"],
+                "input_origin": modes.InputOrigin.FIXTURE.value,
                 "parsed_objective": {**(parsed or {}), "e3": "CRBN"}}
     return {"selected_e3_ligands": [l.model_dump() if hasattr(l, "model_dump") else l for l in ligs],
             "evidence": {"e3": {"status": "ok", "requested": e3_requested, "count": len(ligs)},

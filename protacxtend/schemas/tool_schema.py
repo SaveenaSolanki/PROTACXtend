@@ -27,5 +27,7 @@ class ToolResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     runtime_seconds: float = 0.0
     provenance: dict[str, Any] = Field(default_factory=dict)
+    input_origin: str = ""          # USER | RETRIEVED | GENERATED | COMPUTED | FIXTURE | SYNTHETIC
+    failure_code: str = ""          # typed FailureCode when the tool abstains
     output_schema_version: str = "ToolResult.v1"
 

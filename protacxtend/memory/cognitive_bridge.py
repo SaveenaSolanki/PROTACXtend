@@ -42,7 +42,6 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-
 # ── discovery ────────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SIBLING_SRC = REPO_ROOT / "protacpilot-memory" / "src"
@@ -435,13 +434,26 @@ class CognitiveMemoryBridge:
         if self.owns_memory:
             self.memory.close()
 
-    def __enter__(self) -> "CognitiveMemoryBridge":
+    def __enter__(self) -> CognitiveMemoryBridge:
         return self
 
     def __exit__(self, *exc: object) -> None:
         self.close()
 
     # ── ingestion ────────────────────────────────────────────────────────────
+    def _existing_run_episode(self, run_id: str) -> str | None:
+        """Return the episodic trace id already recorded for ``run_id``, if any.
+
+        The runtime can be re-run or a run artifact re-imported; predictions and
+        failure episodes must not be duplicated in that case.
+        """
+        row = self.memory.db.query_one(
+            "SELECT id FROM memory_traces WHERE source_id = ? AND project_id = ? "
+            "AND memory_type IN ('episodic', 'negative') ORDER BY created_at ASC LIMIT 1",
+            (run_id, self.project_id),
+        )
+        return row["id"] if row else None
+
     def ingest_run_record(
         self,
         record: Any,
@@ -451,10 +463,30 @@ class CognitiveMemoryBridge:
         failures: bool = True,
         metrics: Iterable[str] | None = None,
         session_id: str | None = None,
+        idempotent: bool = True,
     ) -> dict[str, Any]:
-        """Encode one host run plus its failures and candidate predictions."""
+        """Encode one host run plus its failures and candidate predictions.
+
+        Ingestion is idempotent per ``run_id`` by default: re-importing the same
+        run returns the existing episode and creates no duplicate predictions or
+        failure episodes.
+        """
         rec = _as_mapping(record)
         run_id = rec.get("run_id") or (state or {}).get("run_id") or "unknown-run"
+
+        if idempotent:
+            existing = self._existing_run_episode(run_id)
+            if existing is not None:
+                return {
+                    "enabled": True,
+                    "run_id": run_id,
+                    "deduplicated": True,
+                    "episode": {"episode_id": existing},
+                    "failure_episodes": [],
+                    "predictions": [],
+                    "n_failure_episodes": 0,
+                    "n_predictions": 0,
+                }
 
         episode = self.memory.save_episode(
             project_id=self.project_id, session_id=session_id, **run_episode_payload(rec, state)
@@ -485,6 +517,7 @@ class CognitiveMemoryBridge:
         return {
             "enabled": True,
             "run_id": run_id,
+            "deduplicated": False,
             "episode": episode,
             "failure_episodes": failure_episodes,
             "predictions": prediction_ids,

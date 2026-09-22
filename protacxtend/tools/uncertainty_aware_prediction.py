@@ -30,6 +30,7 @@ logger = logging.getLogger("protacpilot.uncertainty")
 
 ROOT = Path(__file__).resolve().parents[2]
 
+
 # Ensemble members (trained on PROTAC-DB, benchmark + cal-set excluded)
 ENSEMBLE_PATHS = [
     ROOT / "outputs" / "benchmark" / "chemprop_cal_ensemble_seed0" / "model_0" / "best.pt",
@@ -37,7 +38,13 @@ ENSEMBLE_PATHS = [
     ROOT / "outputs" / "benchmark" / "chemprop_cal_ensemble_seed2" / "model_0" / "best.pt",
 ]
 # Calibration set (held out from training) — for conformal intervals
-CAL_CSV = ROOT / "data" / "benchmark" / "chemprop_cal.csv"
+CAL_CSV = (Path(__file__).resolve().parents[1] / "data" / "benchmark" / "chemprop_cal.csv")
+try:
+    from protacxtend.resources import asset_path as _asset_path
+    CAL_CSV = _asset_path("benchmark", "chemprop_cal.csv")
+except Exception:  # pragma: no cover - fallback to legacy repo layout
+    _legacy_cal = ROOT / "data" / "benchmark" / "chemprop_cal.csv"
+    CAL_CSV = _legacy_cal if _legacy_cal.exists() else CAL_CSV
 
 # Verdict thresholds
 AD_FAR = 0.40          # nn_tanimoto below this → far from training (AD "far" bin)
@@ -65,7 +72,8 @@ def _run_chemprop_predict(smiles_list: List[str], model_paths: List[Path],
     if not Path(chemprop_bin).exists():
         chemprop_bin = shutil.which("chemprop") or "chemprop"
 
-    valid_smi = [s for s in smiles_list if Chem.MolFromSmiles(s) is not None]
+    valid_smi = [s for s in smiles_list
+                 if isinstance(s, str) and s and Chem.MolFromSmiles(s) is not None]
     if not valid_smi:
         return {"ok": True, "log_dc50": [None] * len(smiles_list),
                 "unc": [None] * len(smiles_list), "n_valid": 0}
@@ -113,7 +121,7 @@ def _run_chemprop_predict(smiles_list: List[str], model_paths: List[Path],
     out_unc: List[Optional[float]] = [None] * len(smiles_list)
     vi = 0
     for i, s in enumerate(smiles_list):
-        if Chem.MolFromSmiles(s) is not None and vi < len(log_vals):
+        if isinstance(s, str) and s and Chem.MolFromSmiles(s) is not None and vi < len(log_vals):
             out_log[i] = float(log_vals[vi])
             out_unc[i] = float(unc_vals[vi]) if unc_vals[vi] is not None else None
             vi += 1

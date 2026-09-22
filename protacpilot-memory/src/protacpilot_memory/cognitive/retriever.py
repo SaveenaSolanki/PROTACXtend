@@ -8,6 +8,7 @@ from typing import Any
 from ..config import MemoryConfig
 from ..domain.protac.context import ProtacContext, context_from_any
 from ..domain.protac.normalization import entities_in_text
+from ..retrieval.candidates import CandidateGenerator
 from ..retrieval.graph import GraphRetriever
 from ..retrieval.lexical import LexicalRetriever
 from ..retrieval.progressive import ProgressiveDisclosure
@@ -34,6 +35,7 @@ class CognitiveRetriever:
         self.lexical = LexicalRetriever(store)
         self.semantic = SemanticRetriever(self.config)
         self.graph = GraphRetriever(store)
+        self.candidate_generator = CandidateGenerator(store, self.config)
         self.reranker = Reranker(store, self.config)
         self.progressive = ProgressiveDisclosure(store, self.config)
 
@@ -61,23 +63,38 @@ class CognitiveRetriever:
         if qctx.cell_line:
             query_entities.add(qctx.cell_line)
 
+        lexical_limit = max(30, limit * max(1, self.config.candidates.lexical_multiplier))
         lexical = self.lexical.candidates(
-            query, project_id=project_id, memory_types=memory_types, limit=max(30, limit * 3)
+            query, project_id=project_id, memory_types=memory_types, limit=lexical_limit
         )
-        candidate_ids: set[str] = set(lexical.keys())
 
-        # entity-overlap candidate generation
-        if query_entities:
-            for mid in self.store.memories_for_entity_names(sorted(query_entities)):
-                candidate_ids.add(mid)
+        # ── bounded, context-compatible candidate generation (brief §4/§5) ──
+        settings = self.config.candidates
+        if settings.enabled:
+            cset = self.candidate_generator.build(
+                lexical=lexical,
+                entity_names=query_entities,
+                query_context=qctx,
+                project_id=project_id,
+                limit=limit,
+            )
+        else:
+            cset = self.candidate_generator.build_unbounded(
+                lexical=lexical, entity_names=query_entities, project_id=project_id
+            )
 
-        # graph expansion from the strongest lexical/entity seeds
-        seeds = list(candidate_ids)[:5]
-        graph = self.graph.expand(seeds, depth=1, limit=max(20, limit * 2)) if seeds else {}
-        candidate_ids |= set(graph.keys())
+        # graph expansion from the strongest bounded seeds only
+        seeds = self._seed_ids(cset, n=5)
+        graph = (
+            self.graph.expand(seeds, depth=settings.graph_depth, limit=settings.graph_limit)
+            if seeds
+            else {}
+        )
+        cset.graph = graph
+        candidate_ids = cset.ids()
 
         candidates: list[dict[str, Any]] = []
-        for mid in candidate_ids:
+        for mid in sorted(candidate_ids):
             trace = self.store.get_trace(mid)
             if trace is None:
                 continue
@@ -117,13 +134,24 @@ class CognitiveRetriever:
             query=query,
             hits=hits,
             generator_counts={
-                "lexical": len(lexical),
-                "entity": len(candidate_ids),
-                "graph": len(graph),
+                **cset.counts(),
                 "semantic": len(semantic_scores),
             },
             semantic_backend=self.semantic.label(),
         )
+
+    @staticmethod
+    def _seed_ids(cset: Any, n: int = 5) -> list[str]:
+        """Deterministically pick the strongest candidate ids as graph seeds."""
+
+        def strength(mid: str) -> tuple[float, float, str]:
+            return (
+                -max(float(cset.lexical.get(mid, 0.0)), float(cset.entity.get(mid, 0.0))),
+                -float(cset.entity.get(mid, 0.0)),
+                mid,
+            )
+
+        return sorted(cset.ids(), key=strength)[:n]
 
     # ── progressive layers ───────────────────────────────────────────────────
     def recall(self, query: str, *, project_id: str | None = None, **kwargs: Any) -> dict[str, Any]:

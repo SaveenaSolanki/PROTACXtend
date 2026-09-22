@@ -80,7 +80,7 @@ class PatternCompleter:
         lines = [f"Cue: {cue}"]
         for node in chain:
             relation = ""
-            for (src, tgt), rel in rel_by_pair.items():
+            for (_src, tgt), rel in rel_by_pair.items():
                 if tgt == node["id"]:
                     relation = f" ({rel})"
                     break

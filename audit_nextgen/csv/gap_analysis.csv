@@ -1,0 +1,17 @@
+id,priority,problem,evidence,impact,fix,difficulty,dependencies
+G01,P0,Entity parser mis-identifies target,"SupervisorAgent: 'degrade BRD4'->DEGRADE, 'Can BRD4'->CAN",every natural-language task resolves wrong target,NER/gene-symbol resolver + question-intent parser + tests,S,none
+G02,P0,No authored 500-task benchmark,tpdeval allocation: 0/500 scorable,no benchmark can be run or published,author tasks with citation-backed ground truth + expert review,XL,"G03,G04"
+G03,P0,Ground truth absent/unaudited,48 cases expected_answer=null; 1 wrong UniProt caught by erratum,scoring is not scientifically defensible,GT authoring + independent verification protocol,L,G01
+G04,P0,No independent comparator/baselines,tpdeval/adapters.py C/E/F/G/H not wired,no claim of superiority possible,wire Biomni + TPD agent + retrieval/tool-only + hybrids,L,G02
+G05,P0,No temporal freeze/leakage control,tpdeval/temporal.py is unwired logic,temporal benchmark invalid,TemporalEvidenceStore/FrozenIndex/LeakageAuditor (S8),L,G02
+G06,P0,Per-claim evidence grounding absent,no claim->citation binding in run.json,cannot measure hallucination/grounding,claim schema + evidence graph + grounding scorer,M,G02
+G07,P1,No typed TherapeuticStrategy output,reports are markdown; schemas lack decision schema,decision quality unscorable,TherapeuticStrategy schema + decision engine,M,G01
+G08,P1,Multi-agent reasoning is single-pass,DecisionMakingAgent always picks one workflow,no decomposition/iteration/self-correction,hierarchical planner + specialists + critics,L,G07
+G09,P1,Tools execute on canned fixtures,"run_agent_tool defaults smiles='CCO', synthetic pose",execution success != science,require explicit validated inputs; fail closed,M,none
+G10,P1,Failure recovery rate 0.0,results/audit/audit.json failure_recovery_rate=0.0,L7 adversarial fails,unified failure taxonomy + repair controller,M,G09
+G11,P1,Test suite does not complete <25 min; 3 failures,tests/ 2 fail; protacxtend/tests timeouts + 2 fail,CI cannot gate releases,"split fast/slow, mark heavy, fix failures",M,none
+G12,P1,Security: shell=True + pickle,toolkit/provision.py:310; escalation/installer.py:293; models/degradation_model.py:93,command injection / RCE via tool packages,arg lists only; safe loaders; sandbox installs,M,none
+G13,P2,No biomarker/combination capability,no code paths,2 of 16 domains missing,omics/biomarker + synergy modules,L,G07
+G14,P2,ADME/PK lacks PK,predict_admet only,developability claims weak,PK/clearance model or explicit boundary,M,none
+G15,P2,Ternary predicted structure unvalidated,claims.py ternary DockQ NOT_VALIDATED,ternary claims overreach,validate predicted-pose DockQ or restrict claim,M,G09
+G16,P3,UI lacks investigation graph/decision/benchmark screens,Streamlit single app; 13 API routes,product not matching spec,new UI screens + API,L,"G07,G02"

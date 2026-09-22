@@ -15,14 +15,24 @@ from typing import Any
 
 from ...util import normalize_text
 
-# Fingerprint coordinates, in canonical order (Master Prompt §12).
+# Fingerprint coordinates, in canonical order (Master Prompt §12, brief §4).
+# Every coordinate the system can populate participates in pattern separation;
+# coordinates that are empty on both sides are ignored at match time.
 FINGERPRINT_FIELDS = (
+    "project",
     "target",
     "target_domain",
     "e3",
+    "warhead",
+    "linker",
     "compound",
     "cell",
+    "organism",
     "assay",
+    "experiment_type",
+    "endpoint",
+    "construct",
+    "structural_context",
     "time",
     "source_type",
 )
@@ -30,6 +40,8 @@ FINGERPRINT_FIELDS = (
 
 @dataclass
 class ProtacContext:
+    # project / ownership coordinate (optional; memories are already project-scoped)
+    project: str | None = None
     # target
     target_uniprot: str | None = None
     target_gene: str | None = None
@@ -71,17 +83,48 @@ class ProtacContext:
     cooperativity: float | None = None
     model_name: str | None = None
     model_version: str | None = None
+    # experiment design coordinates (brief §4)
+    experiment_type: str | None = None
+    endpoint: str | None = None
+    construct: str | None = None
+    structural_context: str | None = None
     # free-form
     extra: dict[str, Any] = field(default_factory=dict)
 
     # ── the fingerprint coordinates ──────────────────────────────────────────
     def _coordinate(self, name: str, source_type: str | None = None) -> str:
+        if name == "project":
+            return normalize_text(self.project or "")
         if name == "target":
             return normalize_text(self.target_gene or self.target_uniprot or "")
         if name == "target_domain":
             return normalize_text(self.target_domain or "")
         if name == "e3":
             return normalize_text(self.e3_ligase or self.e3_complex or "")
+        if name == "warhead":
+            return normalize_text(self.warhead_name or self.warhead_smiles or "")
+        if name == "linker":
+            if self.linker_type:
+                return normalize_text(self.linker_type)
+            if self.linker_smiles:
+                return normalize_text(self.linker_smiles)
+            if self.linker_length is not None:
+                return f"len:{self.linker_length:g}"
+            return ""
+        if name == "organism":
+            return normalize_text(self.organism or "")
+        if name == "experiment_type":
+            return normalize_text(self.experiment_type or "")
+        if name == "endpoint":
+            return normalize_text(self.endpoint or "")
+        if name == "construct":
+            return normalize_text(self.construct or "")
+        if name == "structural_context":
+            if self.structural_context:
+                return normalize_text(self.structural_context)
+            if self.pdb_ids:
+                return normalize_text(",".join(sorted(self.pdb_ids)))
+            return ""
         if name == "compound":
             ident = (
                 self.compound_id
@@ -112,18 +155,24 @@ class ProtacContext:
     # ── machine-readable scope (Master Prompt §18) ───────────────────────────
     def scope(self, evidence_scope: str | None = None) -> dict[str, Any]:
         return {
+            "project_scope": self.project,
             "target_scope": self.target_gene or self.target_uniprot,
             "target_domain_scope": self.target_domain,
             "e3_scope": self.e3_ligase,
             "warhead_scope": self.warhead_name,
+            "linker_scope": self.linker_type,
             "cell_scope": self.cell_line,
             "assay_scope": self.assay_type,
             "organism_scope": self.organism,
+            "experiment_type_scope": self.experiment_type,
+            "endpoint_scope": self.endpoint,
+            "construct_scope": self.construct,
+            "structural_context_scope": self.structural_context,
             "evidence_scope": evidence_scope,
         }
 
     # ── comparison ───────────────────────────────────────────────────────────
-    def match_score(self, other: "ProtacContext") -> float:
+    def match_score(self, other: ProtacContext) -> float:
         """Fraction of shared *known* coordinates. 0.0 when nothing overlaps."""
         a = self.fingerprint_coordinates()
         b = other.fingerprint_coordinates()
@@ -142,7 +191,7 @@ class ProtacContext:
             return 0.0
         return matched / known
 
-    def diff(self, other: "ProtacContext") -> dict[str, tuple[str, str]]:
+    def diff(self, other: ProtacContext) -> dict[str, tuple[str, str]]:
         a = self.fingerprint_coordinates()
         b = other.fingerprint_coordinates()
         out: dict[str, tuple[str, str]] = {}
@@ -157,7 +206,7 @@ class ProtacContext:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any] | None) -> "ProtacContext":
+    def from_dict(cls, data: dict[str, Any] | None) -> ProtacContext:
         if not data:
             return cls()
         allowed = {f for f in cls.__dataclass_fields__}  # type: ignore[attr-defined]
@@ -168,18 +217,24 @@ class ProtacContext:
         return cls(**clean)
 
     @classmethod
-    def from_scope(cls, scope: dict[str, Any] | None) -> "ProtacContext":
+    def from_scope(cls, scope: dict[str, Any] | None) -> ProtacContext:
         """Reconstruct a context from a machine-readable scope dict (Master Prompt §18)."""
         if not scope:
             return cls()
         mapping = {
+            "project_scope": "project",
             "target_scope": "target_gene",
             "target_domain_scope": "target_domain",
             "e3_scope": "e3_ligase",
             "warhead_scope": "warhead_name",
+            "linker_scope": "linker_type",
             "cell_scope": "cell_line",
             "assay_scope": "assay_type",
             "organism_scope": "organism",
+            "experiment_type_scope": "experiment_type",
+            "endpoint_scope": "endpoint",
+            "construct_scope": "construct",
+            "structural_context_scope": "structural_context",
         }
         data: dict[str, Any] = {}
         for scope_key, field_name in mapping.items():

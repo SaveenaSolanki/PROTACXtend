@@ -1,0 +1,15 @@
+category,detected_today,mechanism,retry_policy,abstention_rule,measured_behaviour
+INVALID_INPUT,yes,backend validation.validate_smiles/PDB,none,reject,REJECTED_INPUT observed in docking set (2/40)
+MISSING_DATA,partial,perception.missing_information,none,ask_user_for_clarification,works (target missing)
+TOOL_NOT_INSTALLED,yes,escalation.diagnosis + toolkit status,auto pip install attempt (shell=True),not_available,installer present; injection surface
+TOOL_EXECUTION_ERROR,yes,ExecutionAgent try/except,1 retry in graph for 5 steps,structured failure,6/34 agent tools partial
+NETWORK_ERROR,partial,raised by clients,none deterministic,degrade to local,BindingDB/SEARXNG degrade
+DATABASE_UNAVAILABLE,partial,db registry status,none,not_available,49 DBs registered_but_unavailable
+STRUCTURE_UNAVAILABLE,partial,retrieve_structure status,none,not_available,protein_structure returned capability_unavailable in e2e audit
+MOLECULE_INVALID,yes,RDKit sanitization,none,reject,invalid SMILES rejected
+CONFLICTING_EVIDENCE,no,-,-,-,not modelled; sources merged silently
+LOW_CONFIDENCE,partial,applicability domain/AD,none,downgrade label,AD wall added to reports
+TEMPORAL_LEAKAGE,no,tpdeval.temporal.leakage_flags only (unwired),none,none,no leakage scanner in runtime
+OUT_OF_DOMAIN,partial,applicability_domain,none,flag,small model OOD risk
+UNSUPPORTED_CLAIM,partial,agentic.audit unsupported_claims,none,revise_report,only checks phrase 'experimentally validated'
+NON_REPRODUCIBLE_RESULT,no,run_records hash only,none,none,Vina deterministic=false

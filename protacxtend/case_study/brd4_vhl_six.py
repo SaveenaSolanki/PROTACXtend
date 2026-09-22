@@ -28,6 +28,15 @@ DEFAULT_DATASETS = [
     "tui/outputs/BRD4_VHL_PROTAC_ranking.md",
 ]
 
+
+def _packaged_dataset() -> Path | None:
+    """Bundled blinded six-PROTAC CSV shipped as package data."""
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("case_study", "brd4_vhl_6.csv")
+    except Exception:  # pragma: no cover - fallback handled by caller
+        return None
+
 # Structural penalty rules (evidence-driven, read from the CSV fields —
 # never keyed on molecule id/name).
 _LINKER_PENALTY = {
@@ -68,6 +77,10 @@ def resolve_dataset(path: Optional[str] = None) -> Path:
             if c.is_file():
                 return c
         raise FileNotFoundError(f"dataset not found: {path}")
+
+    packaged = _packaged_dataset()
+    if packaged is not None:
+        return packaged
 
     for rel in DEFAULT_DATASETS:
         cand = PROJECT_ROOT / rel

@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "datasets": [
+    {
+      "name": "docking_v1",
+      "path": "benchmark/frozen/docking_v1.json",
+      "sha256": "f9d973be725bd9d9d0369c2a1082de9765ba42f49d704bf504e1fb2a7e79c12d",
+      "n": 42
+    },
+    {
+      "name": "pocket_v1",
+      "path": "benchmark/frozen/pocket_v1.json",
+      "sha256": "a1470b378d9a91a8926aa311e5f69a98bec6fe54121283ec56f88c50d5e3b1da",
+      "n": 42
+    },
+    {
+      "name": "ppi_v1",
+      "path": "benchmark/frozen/ppi_v1.json",
+      "sha256": "313f82ca193a6da6b245359e471a16a7331873f933bb02fc6524c9b592bfc102",
+      "n": 52
+    },
+    {
+      "name": "ternary_v1",
+      "path": "benchmark/frozen/ternary_v1.json",
+      "sha256": "e937e7acb2eac31f0585b78f173a8da73b9f2517e16f80c219e40c7af17649b8",
+      "n": 12
+    },
+    {
+      "name": "energetics_v1",
+      "path": "benchmark/frozen/energetics_v1.json",
+      "sha256": "03a678e2363207f13597ca4095aac920e63bed2b7bbf0c1d29c4b8a40d45b7af",
+      "n": 5
+    }
+  ],
+  "structure_checksums": {
+    "path": "benchmark/frozen/STRUCTURE_CHECKSUMS.json",
+    "n_files": 264
+  }
+}

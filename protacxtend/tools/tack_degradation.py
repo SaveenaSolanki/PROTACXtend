@@ -42,12 +42,19 @@ from protacxtend.tools.linker_scoring import _clean
 
 logger = logging.getLogger("protacpilot.tack")
 
-ROOT = Path(__file__).resolve().parents[2]
-TACK_DIR = ROOT / "data" / "tack"
+
+def _tack_dir() -> Path:
+    try:
+        from protacxtend.resources import asset_path
+        return asset_path("tack")
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        logger.warning("TACK model dir unavailable: %s", exc)
+        return Path(__file__).resolve().parents[2] / "data" / "tack"
 
 
 class TackModel:
-    def __init__(self, model_dir: Path = TACK_DIR):
+    def __init__(self, model_dir: Path | None = None):
+        model_dir = model_dir or _tack_dir()
         self._dc50 = self._dmax = self._bin = None
         self._meta: Dict[str, Any] = {}
         self.compatibility_warnings: list[str] = []

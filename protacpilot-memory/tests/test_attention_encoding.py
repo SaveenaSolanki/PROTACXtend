@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from helpers import brd4_vhl, ev
 from protacpilot_memory import CognitiveMemory, MemoryConfig
 from protacpilot_memory.cognitive.attention import (
     DECISION_ENCODE,
@@ -12,8 +13,6 @@ from protacpilot_memory.cognitive.attention import (
     AttentionInput,
 )
 from protacpilot_memory.config import EncodingThresholds
-
-from helpers import brd4_vhl, ev
 
 
 def test_exact_duplicate_is_not_re_encoded(mem, project):

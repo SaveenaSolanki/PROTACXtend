@@ -16,11 +16,18 @@ for c in out["candidates"]:
 
 ## What is evaluated per candidate
 cell-context expression (E3 + adaptor + POI, DepMap 24Q4 percentiles) ·
-subcellular compatibility (UniProt) · recruiter tractability (DOI-cited
-library; demo ligands excluded) · biological precedent (curated measured
-rows) · structural availability (ternary feasibility stays **UNKNOWN** without
-ternary data) · lysine opportunity (only when a POI structure is supplied) ·
+tissue-level expression (HPA consensus tissue RNA nTPM + protein IHC + protein
+MS; a separate `tissue_expression` axis, only weighted when a tissue is given)
+· subcellular compatibility (UniProt) · recruiter tractability (DOI-cited
+library; demo ligands excluded) · biological precedent (curated measured rows)
+· structural availability (ternary feasibility stays **UNKNOWN** without ternary
+data) · lysine opportunity (only when a POI structure is supplied) ·
 selectivity opportunity · per-axis OOD/uncertainty flags.
+
+For tissue queries, `rank_e3_for_tissue(poi, tissue, ...)` additionally returns
+the HPA atlas summary; `cell_context_score` (DepMap) and
+`tissue_expression_score` (HPA) remain separately inspectable in every
+candidate.
 
 ## Verdict semantics (hard rules)
 - **SUPPORTED** — direct measured precedent for this POI in the curated
@@ -37,11 +44,14 @@ complex is supplied — no mechanistic claim is fabricated.
 
 ## Files
 `e3_catalog.py` (30-E3 catalog, families/adaptors/curated facts) ·
-`dataset.py` (recruiters + retrospective pairs) · `context.py` (expression) ·
-`localization.py` (UniProt) · `recruiters.py` · `structure.py` · `lysines.py`
+`dataset.py` (recruiters + retrospective pairs) · `context.py` (DepMap
+expression) · `tissue_atlas.py` (HPA tissue RNA/IHC/MS; `data/hpa_tissue_*.csv`,
+`data/hpa_tissue_provenance.json`) · `localization.py` (UniProt) ·
+`recruiters.py` · `structure.py` · `lysines.py`
 · `selectivity.py` · `features.py` · `models.py` (grouped benchmark,
 baselines, ablations) · `rank.py` (scoring/verdicts) · `uncertainty.py` ·
-`predict.py` (`rank_e3_ligases`) · `schemas.py` · tests/ · docs/ ·
+`predict.py` (`rank_e3_ligases`, `rank_e3_for_tissue`) · `schemas.py` · tests/ ·
+docs/ ·
 artifacts/benchmark_results.json. Agent tool: `run_e3_opportunity`.
 
 ## Run

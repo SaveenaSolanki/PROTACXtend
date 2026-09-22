@@ -1,0 +1,29 @@
+## 12. Run / Provenance Inspector
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ RUN INSPECTOR    run_id run_0b45…   [timeline ▾]   [manifest ▾]          ▸ replay   ⤓ manifest │
+├───────────────────────────────┬──────────────────────────────────────────────────────────────┤
+│ TIMELINE                      │ RUN MANIFEST                                                 │
+│ 10:02:03 supervisor parse  ⚠ │ run_id · task_id · agent_version · git_commit                │
+│ 10:02:04 planner        ✓     │ tool{id,version,container_hash} ×N                           │
+│ 10:02:05 target resolve ✓     │ model{name,version} · database{release,hash}                 │
+│ 10:02:31 binder retr.   ⚠ 0   │ seed · temperature · timeout · policy · cutoff               │
+│ …                             │ inputs_sha256 · params · raw_output · parsed_output          │
+│ 10:06:12 degradation    ✓     │ qc_result · error · retry_count · source_provenance          │
+│ 10:06:20 critic         REVISE│ reproducibility_hash · replay_verdict                        │
+│                               │                                                              │
+│ TOOL CALLS (34)               │ EVIDENCE / CITATIONS                                         │
+│ ✓28 ~6 ✗0                     │ DOI/PMID · pub_date · db_release · retrieved_at · claim      │
+│ avg latency … · retries …     │ ── temporal leakage: 0 ──                                    │
+├───────────────────────────────┴──────────────────────────────────────────────────────────────┤
+│ ▸ REPLAY RUN   · export manifest JSON   · diff vs another run   · open in benchmark scorer      │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+- **Purpose:** audit exactly what ran, with what versions, and whether it replays.
+- **Panels:** timeline, manifest, tool-call stats, evidence/citations, leakage.
+- **Controls:** replay, export, diff, open scorer.
+- **Hierarchy:** timeline → manifest → citations → replay verdict.
+- **Primary:** `REPLAY RUN`. **Secondary:** export/diff.
+- **States:** replay PASS/FAIL; leakage count.
+- **Error:** version missing → manifest flagged INCOMPLETE, run marked non-reproducible.

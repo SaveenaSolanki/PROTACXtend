@@ -11,8 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..config import MemoryConfig
 from ..confidence import ConfidenceFeatures, compute_confidence
+from ..config import MemoryConfig
 from ..domain.protac.context import ProtacContext, context_from_any
 from ..domain.protac.entities import detect_entities, entity_search_text
 from ..domain.protac.evidence import EvidenceRef
@@ -295,6 +295,7 @@ class EpisodeEncoder:
         title: str | None = None,
         interpretation: str | None = None,
         is_negative: bool | None = None,
+        goal_relevance: float | None = None,
     ) -> EncodeResult:
         prediction = self.store.get_prediction(outcome["prediction_id"]) or {}
         metric = prediction.get("metric") or "value"
@@ -353,6 +354,7 @@ class EpisodeEncoder:
             prediction_error=outcome.get("prediction_error"),
             prediction_confidence=prediction.get("confidence"),
             decision_impact=0.85,
+            goal_relevance=goal_relevance,
             metadata={"error_method": outcome.get("error_method")},
         ))
 

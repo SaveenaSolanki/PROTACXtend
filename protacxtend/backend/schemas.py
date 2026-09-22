@@ -78,8 +78,34 @@ except Exception:  # pragma: no cover - fallback is covered by local tests.
             return self.__class__(**payload)
 
 
+class ExtractedEntities(BaseModel):
+    """Structured entities extracted from a natural-language request.
+
+    This is the canonical output schema of the entity-extraction front door.
+    It intentionally separates *what the user wants* (``intent``,
+    ``task_type``), *what it is about* (``target_gene``, ``disease_context``),
+    and *how it should be done* (``requested_modality``, ``e3_preference``,
+    ``molecule_constraints``).
+    """
+
+    intent: str = "general_query"
+    target_gene: str = ""
+    disease_context: Optional[str] = None
+    requested_modality: str = "unspecified"
+    e3_preference: Optional[str] = None
+    molecule_constraints: Dict[str, Any] = Field(default_factory=dict)
+    task_type: str = "general_query"
+    confidence: float = 0.0
+
+
 class ParsedObjective(BaseModel):
     target_name: str = ""
+    intent: str = "general_query"
+    requested_modality: str = "unspecified"
+    task_type: str = "general_query"
+    molecule_constraints: Dict[str, Any] = Field(default_factory=dict)
+    extraction_confidence: float = 0.0
+    entities: Optional[ExtractedEntities] = None
     target_uniprot_id: Optional[str] = None
     disease_context: Optional[str] = None
     warhead_smiles: Optional[str] = None
@@ -248,6 +274,14 @@ class DegradationPrediction(BaseModel):
     applicability_domain_score: float = 0.0
     model_version: str = "SynGlue-demo-heuristic-v0.1"
     warning: Optional[str] = None
+    # Explicit fallback / provenance state (P0 fix): a non-preferred backend that
+    # produced the result must be visible, never silently substituted.
+    status: str = "OK"
+    result_source: str = ""
+    degraded_fallback: bool = False
+    primary_error: Optional[str] = None
+    fallback_reason: Optional[str] = None
+    fallback_backend: Optional[str] = None
     # Degradation backend (TACK-style primary when available, else Chemprop)
     tack_dc50_nM: Optional[float] = None
     tack_dmax_pct: Optional[float] = None

@@ -7,6 +7,7 @@ who want a toolbox-style API without running the full workflow.
 
 from __future__ import annotations
 
+import contextvars
 import csv
 import hashlib
 import json
@@ -17,6 +18,32 @@ import time
 from collections import defaultdict
 
 logger = logging.getLogger("protacpilot.toolbox")
+
+# ── canonical run-id threading ────────────────────────────────────────
+# The production runtime (protacxtend/agents/runtime.py) sets the active run
+# id for the duration of a run so that in-graph workflow-memory writes reuse
+# the SAME canonical id that appears in the TUI, trace and the
+# outputs/runs/<run_id>/ bundle. When no runtime is present (direct
+# run_syn_glue_workflow callers) the legacy stable-hash fallback is kept, so
+# no second id namespace is introduced.
+_ACTIVE_RUN_ID: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "protacxtend_active_run_id", default=""
+)
+
+
+def set_active_run_id(run_id: str):
+    """Set the canonical run id for the current execution context."""
+    return _ACTIVE_RUN_ID.set(run_id or "")
+
+
+def reset_active_run_id(token) -> None:
+    """Restore the previous canonical run id."""
+    _ACTIVE_RUN_ID.reset(token)
+
+
+def get_active_run_id() -> str:
+    """Canonical run id set by the runtime ('' when absent)."""
+    return _ACTIVE_RUN_ID.get()
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -30,19 +57,7 @@ from protacxtend.backend.config import (
     ensure_directories,
 )
 
-E3_ALIASES = {
-    "crbn": "CRBN", "cereblon": "CRBN",
-    "vhl": "VHL", "pvh1": "VHL", "vonhippellindau": "VHL",
-    "ciap1": "cIAP1", "birc2": "cIAP1", "iap1": "cIAP1",
-    "ciap2": "cIAP2", "birc3": "cIAP2",
-    "xiap": "XIAP", "birc4": "XIAP", "iap": "IAP",
-    "mdm2": "MDM2", "hdm2": "MDM2",
-    "dcaf15": "DCAF15", "dcaf16": "DCAF16", "dcaf11": "DCAF11", "dcaf1": "DCAF1",
-    "keap1": "KEAP1",
-    "rnf114": "RNF114", "znf313": "RNF114", "rnf4": "RNF4", "rnf126": "RNF126",
-    "klhl20": "KLHL20", "klhdc2": "KLHDC2",
-    "fem1b": "FEM1B", "fbxo22": "FBXO22", "ahr": "AhR", "skp1": "SKP1",
-}
+from protacxtend.nlp.entity_extraction import E3_ALIASES, extract_entities
 
 from protacxtend.backend.schemas import (
     ADMETPrediction,
@@ -246,123 +261,47 @@ class ProtacDesignToolbox:
     # Request parsing and guardrails
     # ------------------------------------------------------------------
     def parse_user_request(self, user_request: str) -> ParsedObjective:
-        text = user_request.strip()
-        upper = text.upper()
+        """Parse free text into a typed :class:`ParsedObjective`.
 
-        cell_line = None
-        cell_patterns = [
-            r"\bcell\s*line\s+([A-Za-z0-9_.-]+)",
-            r"\bin\s+([A-Za-z0-9_.-]+)\s+cells\b",
-            r"\b([A-Za-z0-9_.-]+)\s+cell\s+line\b",
-        ]
-        for pattern in cell_patterns:
-            match = re.search(pattern, text, flags=re.IGNORECASE)
-            if match:
-                cell_line = match.group(1)
-                break
-        target_parse_text = text
-        if cell_line:
-            target_parse_text = re.sub(re.escape(cell_line), " ", target_parse_text, flags=re.IGNORECASE)
-
-        e3 = None
-        for ligase in ["CRBN", "VHL", "IAP", "MDM2", "DCAF", "DDB1"]:
-            if ligase in upper:
-                e3 = ligase
-                break
-
-        target_name = ""
-        target_patterns = [
-            r"\bfor\s+([A-Za-z0-9\-]+)",
-            r"\bof\s+([A-Za-z0-9\-]+)",
-            r"\btarget\s+([A-Za-z0-9\-]+)",
-        ]
-        for pattern in target_patterns:
-            match = re.search(pattern, target_parse_text, flags=re.IGNORECASE)
-            if match:
-                candidate = match.group(1).strip(" .,:;")
-                if candidate.upper() not in {"A", "THE", "LOW", "HIGH", "CRBN", "VHL"}:
-                    target_name = candidate
-                    break
-        if not target_name:
-            genes = re.findall(r"\b[A-Z0-9]{3,8}\b", target_parse_text.upper())
-            stop_tokens = {"CRBN", "VHL", "PROTAC", "PROTACS", "SMILES", "DESIGN", "CANDIDATES", "CELLS"}
-            genes = [gene for gene in genes if gene not in stop_tokens and not gene.startswith("MM")]
-            target_name = genes[0] if genes else ""
-
-        smiles_candidates = re.findall(r"(?:(?:SMILES|smiles)\s*[:=]?\s*)([A-Za-z0-9@+\-\[\]\(\)=#$\\/%.:]+)", text)
-        warhead_smiles = smiles_candidates[0] if smiles_candidates else None
-
-        linker_types = []
-        for linker_type in ["PEG", "alkyl", "piperazine", "triazole", "amide", "rigid aromatic", "mixed polar"]:
-            if linker_type.upper() in upper:
-                linker_types.append(linker_type if linker_type.isupper() else linker_type)
-        if not linker_types:
-            linker_types = list(DEFAULT_LINKER_TYPES)
-
-        candidate_count = 50
-        count_match = re.search(r"(\d+)(?:\s+[A-Za-z0-9\-]+){0,3}\s+(?:candidates|PROTACs|designs|molecules)", text, flags=re.IGNORECASE)
-        if count_match:
-            candidate_count = max(1, min(500, int(count_match.group(1))))
-
-        admet_constraints: dict[str, Any] = {}
-        if "HERG" in upper:
-            admet_constraints["avoid_hERG"] = True
-        if "DILI" in upper:
-            admet_constraints["avoid_DILI"] = True
-        if "AMES" in upper:
-            admet_constraints["avoid_AMES"] = True
-        tpsa_match = re.search(r"TPSA\s*(?:<|LESS THAN|UNDER|BELOW)\s*(\d+)", upper)
-        if tpsa_match:
-            admet_constraints["max_tpsa"] = float(tpsa_match.group(1))
-        if "LOW TPSA" in upper or "AVOID HIGH TPSA" in upper:
-            admet_constraints.setdefault("max_tpsa", 190.0)
-
-        expression_overrides: dict[str, float] = {}
-        for e3_name, value in re.findall(r"\b(CRBN|VHL|MDM2|IAP|cIAP1)\s+expression\s*(?:=|:)\s*(0?\.\d+|1(?:\.0)?|high|medium|low)\b", text, flags=re.IGNORECASE):
-            token = value.lower()
-            expression_overrides[E3_ALIASES.get(e3_name.lower(), e3_name.upper())] = {
-                "high": 1.0,
-                "medium": 0.6,
-                "low": 0.2,
-            }.get(token, float(token) if token.replace(".", "", 1).isdigit() else 0.6)
-
-        use_structure = any(term in upper for term in ["STRUCTURE", "TERNARY", "DOCK", "POSE"])
-        use_retro = any(term in upper for term in ["RETROSYNTHESIS", "SYNTHETICALLY FEASIBLE", "SYNTHESIS"])
-        output_format = "json" if "JSON" in upper else "csv" if "CSV" in upper else "table" if "TABLE" in upper else "markdown"
-
-        objective_terms = []
-        if "LOW DC50" in upper:
-            objective_terms.append("low DC50")
-        if "HIGH DMAX" in upper or "HIGH DMAX" in upper.replace("D_MAX", "DMAX"):
-            objective_terms.append("high Dmax")
-        if "NOVEL" in upper:
-            objective_terms.append("novelty")
-        if "HERG" in upper:
-            objective_terms.append("low hERG risk")
-        optimization = ", ".join(objective_terms) if objective_terms else "balanced degradation, ADME/Tox, novelty, and synthesis feasibility"
-
+        Entity recognition (target gene, E3 preference, disease context,
+        intent, modality, task type and molecule constraints) is delegated to
+        the deterministic entity-extraction layer in
+        :mod:`protacxtend.nlp.entity_extraction`.  This replaces the previous
+        positional regex heuristic that read ``"degrade BRD4"`` as target
+        ``DEGRADE`` and ``"Can BRD4 ..."`` as target ``CAN``.
+        """
+        entities = extract_entities(user_request)
+        constraints = entities.molecule_constraints or {}
         return ParsedObjective(
-            target_name=target_name,
-            warhead_smiles=warhead_smiles,
-            e3_ligase=e3,
-            preferred_linker_types=linker_types,
-            candidate_count=candidate_count,
-            optimization_objective=optimization,
-            admet_constraints=admet_constraints,
-            novelty_requirement="high" if "NOVEL" in upper else "medium",
-            use_structure_aware_ranking=use_structure,
-            use_retrosynthesis_filtering=use_retro,
-            desired_output_format=output_format,
-            ranking_weights=dict(DEFAULT_RANKING_WEIGHTS),
-            cell_line=cell_line,
-            expression_overrides=expression_overrides,
+            target_name=entities.target_gene,
+            disease_context=entities.disease_context,
+            warhead_smiles=constraints.get("warhead_smiles"),
+            e3_ligase=entities.e3_preference,
+            preferred_linker_types=constraints.get("preferred_linker_types") or list(DEFAULT_LINKER_TYPES),
+            candidate_count=constraints.get("candidate_count", 50),
+            optimization_objective=constraints.get("optimization_objective")
+            or "balanced degradation, ADME/Tox, novelty, and synthesis feasibility",
+            admet_constraints=constraints.get("admet_constraints") or {},
+            novelty_requirement=constraints.get("novelty_requirement", "medium"),
+            use_structure_aware_ranking=constraints.get("use_structure_aware_ranking", False),
+            use_retrosynthesis_filtering=constraints.get("use_retrosynthesis_filtering", False),
+            desired_output_format=constraints.get("desired_output_format", "markdown"),
+            ranking_weights=constraints.get("ranking_weights") or dict(DEFAULT_RANKING_WEIGHTS),
+            cell_line=constraints.get("cell_line"),
+            expression_overrides=constraints.get("expression_overrides") or {},
+            intent=entities.intent,
+            requested_modality=entities.requested_modality,
+            task_type=entities.task_type,
+            molecule_constraints=constraints,
+            extraction_confidence=entities.confidence,
+            entities=entities,
         )
 
     def safety_precheck(self, state: WorkflowState) -> WorkflowState:
         unsafe_terms = ["scale-up", "human dosing", "in vivo dosing", "administer to humans"]
         if any(term in state.user_request.lower() for term in unsafe_terms):
             state.warnings.append(
-                "Request includes experimental or dosing language. SynGlue-Agent will only provide computational prioritization and requires expert review."
+                "Request includes experimental or dosing language. PROTACXtend will only provide computational prioritization and requires expert review."
             )
         return state
 
@@ -1245,6 +1184,8 @@ class ProtacDesignToolbox:
                 warnings.append(f"context gate: {ep['context_note']}")
             if ep.get("model", "").startswith("tack"):
                 model_version = "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check"
+            elif ep.get("status") == "NOT_AVAILABLE":
+                model_version = "not_available"
             else:
                 model_version = "chemprop-ensemble-v0.3 (conformal, single+multi target)"
             predictions.append(
@@ -1264,6 +1205,12 @@ class ProtacDesignToolbox:
                     chemprop_dc50_nM=ep.get("chemprop_dc50_nM"),
                     chemprop_dmax_pct=ep.get("chemprop_dmax_pct"),
                     warning=("; ".join(warnings) if warnings else None),
+                    status=ep.get("status", "OK"),
+                    result_source=ep.get("result_source", ""),
+                    degraded_fallback=bool(ep.get("degraded_fallback", False)),
+                    primary_error=(ep.get("primary_error") or None),
+                    fallback_reason=(ep.get("fallback_reason") or None),
+                    fallback_backend=(ep.get("fallback_backend") or None),
                 )
             )
         if not predictions and candidates:
@@ -1333,6 +1280,12 @@ class ProtacDesignToolbox:
             applicability_domain_score=domain,
             model_version="heuristic_proxy-v0.1 (fallback)",
             warning="Exploratory prediction: candidate outside demo model applicability domain." if domain < 0.35 else None,
+            status="OK",
+            result_source="heuristic",
+            degraded_fallback=True,
+            primary_error="trained_degradation_backends_unavailable",
+            fallback_reason="all_trained_backends_failed",
+            fallback_backend="heuristic_proxy",
         )
 
     def predict_admet(self, candidates: Sequence[CandidateRecord]) -> list[ADMETPrediction]:
@@ -3233,9 +3186,9 @@ class ProtacDesignToolbox:
             state.e3_context_predictions,
         )
         lines = [
-            "# SynGlue-Agent PROTAC Design Report",
+            "# PROTACXtend PROTAC Design Report",
             "",
-            "SynGlue-Agent is a tool-augmented, memory-enabled, workflow-orchestrated agentic AI framework for component-aware PROTAC design.",
+            "PROTACXtend is a tool-augmented, memory-enabled, workflow-orchestrated agentic AI framework for component-aware PROTAC design.",
             "",
             "## Objective",
             f"- User request: {state.user_request}",
@@ -3360,7 +3313,8 @@ class ProtacDesignToolbox:
 
     def write_workflow_memory(self, state: WorkflowState) -> dict[str, Any]:
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        run_id = _stable_id("run", state.user_request, timestamp)
+        # Canonical runtime run id wins; legacy stable hash is the fallback.
+        run_id = get_active_run_id() or _stable_id("run", state.user_request, timestamp)
         path = WORKFLOW_LOG_DIR / f"{run_id}.json"
         payload = {
             "run_id": run_id,

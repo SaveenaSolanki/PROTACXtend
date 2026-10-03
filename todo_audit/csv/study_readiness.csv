@@ -1,0 +1,9 @@
+study,infra,data,gold,splits,run,overall
+E1,partial,registry 296,n/a,False,agent probes,partial
+E2,yes,48 of 500,29 pending,False,n=4 acceptance,absent
+E3,partial,48 authored,n/a,False,none,absent
+E4,partial,none,none,False,none,absent
+E5,partial,none,none,False,none,absent
+E6,partial,n/a,n/a,False,none,absent
+E7,none,none,none,False,none,absent
+E8,none,none,none,False,none,absent

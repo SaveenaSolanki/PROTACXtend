@@ -1,0 +1,7 @@
+# Bare 'python -m pytest' collection (2026-09-23, head 0abbe83)
+# pytest.ini has no testpaths/norecursedirs -> vendored data/ repos are collected
+ERROR protacxtend/tests/test_llm_roles_harness.py
+!!!!!!!!!!!!!!!!!! Interrupted: 156 errors during collection !!!!!!!!!!!!!!!!!!!
+1357 tests collected, 156 errors in 6.97s
+# summary line:
+1357 tests collected, 156 errors in 6.97s

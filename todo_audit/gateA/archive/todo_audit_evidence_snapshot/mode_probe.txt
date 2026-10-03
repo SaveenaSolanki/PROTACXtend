@@ -1,0 +1,5 @@
+mode: ExecutionMode.SCIENTIFIC
+[missing-input predict_degradation] RAISED MissingScientificInput: agent tool 'predict_degradation': missing required scientific input(s): smiles, e3, cell_line
+[explicit fixture request] RAISED FixtureUsageError: fixtures are forbidden in SCIENTIFIC mode; pass an explicit use_fixture=True only under DEMO/TEST
+[placeholder smiles CCO] RAISED SyntheticInputNotAllowed: agent tool 'inspect_smiles': placeholder SMILES 'CCO' supplied for 'smiles' in SCIENTIFIC mode
+[no params inspect_smiles] RAISED MissingScientificInput: agent tool 'inspect_smiles': missing required scientific input(s): smiles

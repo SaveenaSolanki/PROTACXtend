@@ -1,0 +1,23 @@
+scientific: {
+  "uniprot": "M0QZD9",
+  "warhead_sources": [
+    "local_demo_brd4_binder",
+    "local_demo_bromodomain_warhead",
+    "local_demo_jq1_like_warhead"
+  ],
+  "n_candidates": 25,
+  "stopping_state": "REVISE",
+  "top_smiles": "COc1ccc(Nc2ncnc3cc(CCc4cnnn4CCc4cc(C(=O)N[C@@H](C(=O)N5CCC[C@H]5O)C(C)C)ccc4C(C)C)ccc23)cc1"
+}
+demo      : {
+  "uniprot": "M0QZD9",
+  "warhead_sources": [
+    "local_demo_brd4_binder",
+    "local_demo_bromodomain_warhead",
+    "local_demo_jq1_like_warhead"
+  ],
+  "n_candidates": 25,
+  "stopping_state": "REVISE",
+  "top_smiles": "COc1ccc(Nc2ncnc3cc(CCc4cnnn4CCc4cc(C(=O)N[C@@H](C(=O)N5CCC[C@H]5O)C(C)C)ccc4C(C)C)ccc23)cc1"
+}
+IDENTICAL: True

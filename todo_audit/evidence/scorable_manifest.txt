@@ -1,0 +1,2 @@
+cases=48 gt=48 auto_scorable=48 rubric=29 not_scorable=0
+wrote /storage/saveena/protacxtend/benchmark/SCORABLE_MANIFEST.json and /storage/saveena/protacxtend/benchmark/SCORABLE_REPORT.md

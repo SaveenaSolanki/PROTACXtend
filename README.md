@@ -349,7 +349,7 @@ available under `/skills` (`/skill <id>` runs one).
 
 ```bash
 # global command (npm link during development; works from any directory)
-npm link && protacxtend
+cd tui && npm install && npm run build && npm link && protacxtend
 
 # local launch (after npm run build once)
 cd tui && node dist/index.js
@@ -360,6 +360,13 @@ curl -fsSL https://raw.githubusercontent.com/the-ahuja-lab/PROTACXtend/main/tui/
 
 The Python backend is resolved from the compiled TUI's own location, so
 `protacxtend` works no matter which directory it is launched from.
+
+One global command serves both interfaces: `protacxtend` (and `protacxtend
+tui`, or any free-text objective) opens the Node TUI, `protacxtend py-tui`
+opens the Python (Textual) TUI, and any Python CLI subcommand (`protacxtend
+toolkit …`, `protacxtend validate …`, `protacxtend -p "…"`) is dispatched to
+the Python runtime. The full Python CLI is also available verbatim as
+`PROTACXtend`.
 
 - Source: `tui/src/` (TypeScript, compiled with `tsc`)
 - Workflows & execution log: `tui/RESEARCH_WORKFLOWS.md`

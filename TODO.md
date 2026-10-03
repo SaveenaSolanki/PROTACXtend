@@ -1,5 +1,12 @@
 # PROTACXtend — Remediation & Benchmark TODO
 
+> **Audit (2026-09-23):** a repository-level verification of the `todo/` folder
+> is in [`todo_audit/`](todo_audit/README.md). Headline: the 48-task pilot was
+> not executed (only KNOW-01, score 0.0), SCIENTIFIC mode is not enforced on the
+> canonical `strategy` path (demo == scientific output), BRD4 mis-resolves to
+> `M0QZD9`, the working tree is not clean, and the installed `protacxtend`
+> console script is stale. See `todo_audit/FINDINGS.md`.
+
 Status legend: `[x]` done · `[~]` partial · `[ ]` not started · `[!]` blocked
 
 Last updated: 2026-09-22 (session 3)
@@ -38,23 +45,25 @@ Last updated: 2026-09-22 (session 3)
 
 ## P1 — benchmark readiness
 
-- [ ] Add failure taxonomy
-- [ ] Add retry/fallback/abstention policy
-- [ ] Build EvidenceCritic
-- [ ] Build MechanismCritic
-- [ ] Build ReproducibilityCritic
-- [ ] Make all tool versions/provenance explicit
-- [~] Replace fixture defaults in all 34 agent tools
+- [x] Add failure taxonomy — `protacxtend/canonical/failures.py` (`FailureClass`, typed `Failure`, 26 classes, `classify_failure`)
+- [x] Add retry/fallback/abstention policy — `protacxtend/canonical/policy.py` + wired into `canonical/task_graph.py` (`TaskStatus.ABSTAINED`)
+- [x] Build EvidenceCritic — `protacxtend/canonical/critics.py`
+- [x] Build MechanismCritic — `protacxtend/canonical/critics.py`
+- [x] Build ReproducibilityCritic — `protacxtend/canonical/critics.py`
+- [x] Make all tool versions/provenance explicit — `protacxtend/canonical/provenance.py`; every module result pins tool/tool_version/backend/citation
+- [x] Replace fixture defaults in all 34 agent tools
   - [x] `run_agent_tool` + executor + registry fail closed in SCIENTIFIC mode
-  - [ ] Audit each of the 34 adapters for residual internal defaults
-- [ ] Decide what to do with the 115 non-executable tools
-- [ ] Add matched-tool registry
-- [ ] Implement Biomni adapter
-- [ ] Implement TPD comparator adapter
-- [ ] Implement LLM baseline
-- [ ] Implement retrieval-only baseline
-- [ ] Implement tool-only baseline
-- [ ] Run 50-task baseline comparison
+  - [x] Audited all 34 adapters — `protacxtend/runtime/adapter_audit.py`; 34/34 clean, 0 residual defaults (`outputs/adapter_audit.json`)
+- [x] Decide what to do with the non-executable tools — `protacxtend/toolkit/disposition.py`; 123 tools classified (22 adapted, 80 integration candidates, 21 commercial excluded) in `outputs/tool_disposition.json`
+- [x] Add matched-tool registry — `benchmark_runner/matched_tools.py`; 27/27 distinct permitted ids matched, 0 unmatched
+- [x] Implement Biomni adapter — `benchmark_runner/external.py` (fail-closed JSON stdin/stdout contract)
+- [x] Implement TPD comparator adapter — `benchmark_runner/external.py`
+- [x] Implement LLM baseline — `benchmark_runner/baselines.py` (`Base-LLM-control`, ran live)
+- [x] Implement retrieval-only baseline — `benchmark_runner/baselines.py`
+- [x] Implement tool-only baseline — `benchmark_runner/baselines.py`
+- [x] Run 50-task baseline comparison — `scripts/run_baseline_comparison.py`; all 48 tasks scored for 3 systems (`benchmark_results/baselines/`)
+  - retrieval-only mean 0.0625 · tool-only 0.0781 · Base-LLM 0.1684 (per-capability breakdown in the report)
+  - confirms the deterministic engine is still not matched to KNOW/REASON (P0 partial)
 
 ## P2 — publication experiments
 
@@ -87,6 +96,14 @@ Last updated: 2026-09-22 (session 3)
 
 ## Progress log
 
+- **Session 4 (P1):** failure taxonomy + typed `Failure`/`CriticResult`; deterministic
+  retry/fallback/abstention policy wired into the task graph (`TaskStatus.ABSTAINED`);
+  three named critics (Evidence/Mechanism/Reproducibility) aggregated by `CriticVerifier`
+  with typed `failures` and `critic_results`; explicit tool provenance for every module
+  result; audited all 34 agent adapters (0 residual fixture defaults); classified every
+  toolkit tool for disposition; built the matched-tool registry; added Biomni and TPD
+  comparator adapters; added retrieval-only/tool-only/LLM baselines; ran the 48-task
+  baseline comparison. New tests: `tests/test_p1_governance.py`, `tests/test_p1_baselines.py`.
 - **Session 3 (this one):** created tracker; fixed residue, Dockerfile, TUI packaging,
   typed `EvidenceItem`/`ToolRun`; added `strategy` CLI; built the benchmark scoring
   engine, derived scoring overlays, scorable manifest, and the pilot runner
@@ -103,5 +120,7 @@ python scripts/build_scorable_manifest.py         # refresh benchmark scorable m
 python scripts/derive_scoring_criteria.py         # regenerate scoring overlays
 python scripts/run_benchmark_pilot.py --offline-smoke
 python scripts/run_benchmark_pilot.py --limit 3 --capability DESIGN
+python scripts/run_baseline_comparison.py --limit 8
+python scripts/run_baseline_comparison.py --include-protacxtend --tasks DESIGN-01,KNOW-01
 protacxtend --execution-mode scientific strategy "Design a VHL PROTAC against BRD4"
 ```

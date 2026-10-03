@@ -1,0 +1,20 @@
+# Gate A3 — cross-route integration matrix
+
+Generated with `PROTACXTEND_EXECUTION_MODE=scientific`.
+
+| route | case | inputs | outcome | executed | valid | failure_code | detail |
+|---|---|---|---|---|---|---|---|
+| canonical-parser | missing target | no target/E3/cell/dose | abstain_reported |  |  |  | missing_required=['target'] |
+| canonical-parser | target only | target=BRD4, no cell/dose | parsed |  |  |  | target=BRD4 e3=VHL missing=[] |
+| canonical-orchestrator | demo warhead injected | engine state with local_demo warhead | demo_warheads_dropped | True | True |  | mode=scientific warheads=0 |
+| agent-tool | missing input | {} | typed_failure |  |  | MISSING_SCIENTIFIC_INPUT | agent tool 'inspect_smiles': missing required scientific input(s): smiles |
+| agent-tool | placeholder SMILES | {"smiles": "CCO"} | typed_failure |  |  | SYNTHETIC_INPUT_FORBIDDEN | agent tool 'inspect_smiles': placeholder SMILES 'CCO' supplied for 'smiles' in SCIENTIFIC mode |
+| agent-tool | real SMILES | {"smiles": "CC(=O)Oc1ccccc1C(=O)O"} | returned:ok | True | True |  | backend=agentic.registry origins={'smiles': 'USER'} |
+| agent-tool | unknown tool | {} | returned:failed | False | False |  | backend=agentic.registry origins={} |
+| capability-runner | missing SMILES | {} | typed_failure |  |  | MISSING_SCIENTIFIC_INPUT | capability 'chemistry': missing required scientific input(s): smiles |
+| capability-runner | invalid SMILES | {"smiles": "not_a_smiles"} | returned:warning | True | False |  | backend=openbabel origins={'smiles': 'USER'} |
+| capability-runner | invalid PDB id | {"identifier": "ZZZZ"} | returned:capability_unavailable | True | False |  | backend=local_or_rcsb origins={'identifier': 'USER'} |
+| cli | missing target | <empty> | exit2 |  |  |  | error: MISSING_SCIENTIFIC_INPUT: a scientific request is required; empty input is not silently replaced by a default target in SCIENTIFIC mode |
+| cli | target+E3 | Design a VHL PROTAC against BRD4 | exit0 |  |  |  | manifest: /storage/saveena/protacxtend/outputs/strategies/strategy_61c99204c9.manifest.json |
+| api | missing input | {} | http:422 |  |  |  | {"status":"failed","failure_code":"MISSING_SCIENTIFIC_INPUT","context":"http://testserver/tools/inspect_smiles/run","message":"agent tool 'inspect_smiles': missing required scienti |
+| api | real SMILES | {"smiles": "CC(=O)Oc1ccccc1C(=O)O"} | http:200 |  |  |  | {"capability":"agent_tool:inspect_smiles","resolved_capability":"chemistry","execution_mode":"scientific","resolution":{"query":"agent_tool:inspect_smiles","capability":"chemistry" |

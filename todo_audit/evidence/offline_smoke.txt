@@ -1,0 +1,2 @@
+tasks=48 scored=48 mean_score=0.8854
+report: /storage/saveena/protacxtend/benchmark_results/pilots/pilot_offline-smoke_20260923T063102Z.json

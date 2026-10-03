@@ -1,0 +1,12 @@
+# Pilot artifacts
+benchmark_results/pilots/pilot_offline-smoke_*.json      engine=offline-smoke  n_tasks=48 mean_score=0.8854  (x3 identical)
+benchmark_results/pilots/pilot_deterministic_*.json      engine=deterministic  n_tasks=1  task=KNOW-01 latency=238.86 score=0.0
+    -> grader missing ["O60885","BD1/BD2 architecture"]
+
+# Acceptance run (real LLM): benchmark_results/acceptance/execution_log.csv
+4 tasks x 3 systems = 12 runs
+  KNOW-01    : PROTACXtend ok(5.9s)   Base-LLM ok(3.5s)   Biomni ok(436.9s)
+  REASON-03  : PROTACXtend ok(8.1s)   Base-LLM ok(15.1s)  Biomni ok(441.9s)
+  DESIGN-01  : PROTACXtend ok(285.2s) Base-LLM ok(117.9s) Biomni ok(505.7s)
+  DISCOVER-01: PROTACXtend FAILED (clarification_required)  Base-LLM ok  Biomni ok
+benchmark_results/scored/ : EMPTY (no scores written)

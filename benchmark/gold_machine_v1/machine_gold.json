@@ -1,0 +1,1080 @@
+{
+  "schema": "protacxtend.machine_gold.v1",
+  "generated_at": "2026-10-03T03:02:49.596308+00:00",
+  "note": "Machine-verified / rule-based gold. NOT human adjudication. PENDING_HUMAN cases are excluded from both endpoints.",
+  "counts": {
+    "total": 48,
+    "MACHINE_VERIFIED_EXTERNAL": 7,
+    "RULE_BASED_RUBRIC": 32,
+    "PENDING_HUMAN": 9
+  },
+  "gold": {
+    "DESIGN-01": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "5",
+        "SMILES",
+        "warhead",
+        "VHL"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "5",
+        "SMILES",
+        "warhead",
+        "VHL"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-01.json"
+    },
+    "DESIGN-02": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "SMILES",
+        "MW",
+        "logP",
+        "TPSA"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "SMILES",
+        "MW",
+        "logP",
+        "TPSA"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-02.json"
+    },
+    "DESIGN-03": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "scaffold",
+        "dimethylisoxazole"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "scaffold",
+        "dimethylisoxazole"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-03.json"
+    },
+    "DESIGN-04": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "CRBN",
+        "VHL"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "CRBN",
+        "VHL"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-04.json"
+    },
+    "DESIGN-05": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "3",
+        "RDKit"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "3",
+        "RDKit"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-05.json"
+    },
+    "DESIGN-06": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "pharmacophore"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "pharmacophore"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-06.json"
+    },
+    "DESIGN-07": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "vehicle",
+        "control",
+        "replicate"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "vehicle",
+        "control",
+        "replicate"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-07.json"
+    },
+    "DESIGN-08": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "linker",
+        "5T35"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "linker",
+        "5T35"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-08.json"
+    },
+    "DESIGN-09": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "Tanimoto"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "Tanimoto"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-09.json"
+    },
+    "DESIGN-10": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "BRD4",
+        "BRD2",
+        "selectivity"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "BRD4",
+        "BRD2",
+        "selectivity"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-10.json"
+    },
+    "DESIGN-11": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "Dmax",
+        "predicted"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "Dmax",
+        "predicted"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-11.json"
+    },
+    "DESIGN-12": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "control",
+        "ablat"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "control",
+        "ablat"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DESIGN-12.json"
+    },
+    "DISCOVER-01": {
+      "type": "ranked",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "rule",
+        "outcome"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "rule",
+        "outcome"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-01.json"
+    },
+    "DISCOVER-02": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "uncertainty",
+        "confirm"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "uncertainty",
+        "confirm"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-02.json"
+    },
+    "DISCOVER-03": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "vehicle",
+        "control",
+        "cost"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "vehicle",
+        "control",
+        "cost"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-03.json"
+    },
+    "DISCOVER-04": {
+      "type": "ranked",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "Pareto",
+        "admet"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "Pareto",
+        "admet"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-04.json"
+    },
+    "DISCOVER-05": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "hill",
+        "hook",
+        "replicate"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "hill",
+        "hook",
+        "replicate"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-05.json"
+    },
+    "DISCOVER-06": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "expression",
+        "tractability"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "expression",
+        "tractability"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-06.json"
+    },
+    "DISCOVER-07": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "CRBN",
+        "knockout",
+        "pomalidomide"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "CRBN",
+        "knockout",
+        "pomalidomide"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-07.json"
+    },
+    "DISCOVER-08": {
+      "type": "ranked",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "budget",
+        "value"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "budget",
+        "value"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-08.json"
+    },
+    "DISCOVER-09": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "replicate",
+        "orthogonal"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "replicate",
+        "orthogonal"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-09.json"
+    },
+    "DISCOVER-10": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "degradation",
+        "ternary",
+        "permeability",
+        "viability"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "degradation",
+        "ternary",
+        "permeability",
+        "viability"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-10.json"
+    },
+    "DISCOVER-11": {
+      "type": "ranked",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "rule",
+        "seed"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "rule",
+        "seed"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-11.json"
+    },
+    "DISCOVER-12": {
+      "type": "design_rubric",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "applicability",
+        "tie-break"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "applicability",
+        "tie-break"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/DISCOVER-12.json"
+    },
+    "KNOW-01": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "O60885"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "O60885"
+      ],
+      "acceptable_alternatives": [
+        "aliases: BRD4, HUNK1"
+      ],
+      "threshold": 1.0,
+      "verification": {
+        "verified": true,
+        "method": "uniprot_rest",
+        "source": "https://rest.uniprot.org/uniprotkb/O60885",
+        "observed": "O60885 reviewed=UniProtKB reviewed (Swiss-Prot) name=Bromodomain-containing protein 4"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-01.json"
+    },
+    "KNOW-02": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "JQ1",
+        "I-BET762",
+        "OTX015"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "JQ1",
+        "I-BET762",
+        "OTX015"
+      ],
+      "acceptable_alternatives": [
+        "other canonical BET inhibitors (IBET151) accepted with citation"
+      ],
+      "threshold": 0.66,
+      "verification": {
+        "verified": true,
+        "method": "packaged_curated_tables",
+        "source": "protacxtend/data/curated_*.csv",
+        "observed": "found 1/4 names: ['JQ1']"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-02.json"
+    },
+    "KNOW-03": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "contradicted",
+        "JQ1"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "contradicted",
+        "JQ1"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-03.json"
+    },
+    "KNOW-04": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "dBET1",
+        "dBET6",
+        "ARV-825",
+        "MZ1",
+        "AT1"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "dBET1",
+        "dBET6",
+        "ARV-825",
+        "MZ1",
+        "AT1"
+      ],
+      "acceptable_alternatives": [
+        "other documented BRD4 degraders accepted with citation"
+      ],
+      "threshold": 0.6,
+      "verification": {
+        "verified": false,
+        "method": "packaged_curated_tables",
+        "source": "protacxtend/data/curated_*.csv",
+        "observed": "found 0/4 names: []"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-04.json"
+    },
+    "KNOW-05": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "CRBN",
+        "VHL"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "CRBN",
+        "VHL"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": true,
+        "method": "packaged_curated_tables",
+        "source": "protacxtend/data/curated_*.csv",
+        "observed": "found 3/3 names: ['Pomalidomide', 'Lenalidomide', 'VH032']"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-05.json"
+    },
+    "KNOW-06": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "JQ1",
+        "I-BET762",
+        "OTX015",
+        "I-BET151"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "JQ1",
+        "I-BET762",
+        "OTX015",
+        "I-BET151"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.66,
+      "verification": {
+        "verified": true,
+        "method": "packaged_curated_tables",
+        "source": "protacxtend/data/curated_*.csv",
+        "observed": "found 1/4 names: ['JQ1']"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-06.json"
+    },
+    "KNOW-07": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "5T35"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "5T35"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 1.0,
+      "verification": {
+        "verified": true,
+        "method": "rcsb_rest",
+        "source": "https://data.rcsb.org/rest/v1/core/entry/5T35",
+        "observed": "The PROTAC MZ1 in complex with the second bromodomain of Brd4 and pVHL:ElonginC:ElonginB"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-07.json"
+    },
+    "KNOW-08": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "verified",
+        "unverified"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "verified",
+        "unverified"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 1.0,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-08.json"
+    },
+    "KNOW-09": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "RZVAJINKPMORJF"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "RZVAJINKPMORJF"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 1.0,
+      "verification": {
+        "verified": true,
+        "method": "pubchem_pug_rest",
+        "source": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RZVAJINKPMORJF-UHFFFAOYSA-N",
+        "observed": "InChIKey=RZVAJINKPMORJF-UHFFFAOYSA-N SMILES="
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-09.json"
+    },
+    "KNOW-10": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "BRD4",
+        "CRBN"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "BRD4",
+        "CRBN"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-10.json"
+    },
+    "KNOW-11": {
+      "type": "categorical",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "expected_value": null,
+      "expected_set": [
+        "10.1126/science.aab1433"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "10.1126/science.aab1433"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 1.0,
+      "verification": {
+        "verified": true,
+        "method": "crossref_rest",
+        "source": "https://api.crossref.org/works/10.1126/science.aab1433",
+        "observed": "Phthalimide conjugation as a strategy for in vivo target protein degradation"
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-11.json"
+    },
+    "KNOW-12": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "I-BET762"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "I-BET762"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/KNOW-12.json"
+    },
+    "REASON-01": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-02": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-03": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "hydroxyproline",
+        "tert-leucine"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "hydroxyproline",
+        "tert-leucine"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/REASON-03.json"
+    },
+    "REASON-04": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-05": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "amide",
+        "permeability"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "amide",
+        "permeability"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/REASON-05.json"
+    },
+    "REASON-06": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-07": {
+      "type": "categorical",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "expected_value": null,
+      "expected_set": [
+        "VHL",
+        "BRD4"
+      ],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [
+        "VHL",
+        "BRD4"
+      ],
+      "acceptable_alternatives": [],
+      "threshold": 0.5,
+      "verification": {
+        "verified": false,
+        "method": "rule_only",
+        "source": "",
+        "observed": ""
+      },
+      "source_ground_truth": "benchmark/ground_truth/REASON-07.json"
+    },
+    "REASON-08": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-09": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-10": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-11": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    },
+    "REASON-12": {
+      "type": "mechanistic_rubric",
+      "gold_class": "PENDING_HUMAN",
+      "expected_value": null,
+      "expected_set": [],
+      "expected_ranking": null,
+      "mandatory_answer_elements": [],
+      "acceptable_alternatives": [],
+      "threshold": null,
+      "verification": {
+        "verified": false,
+        "method": "requires_human",
+        "source": "",
+        "observed": ""
+      }
+    }
+  }
+}

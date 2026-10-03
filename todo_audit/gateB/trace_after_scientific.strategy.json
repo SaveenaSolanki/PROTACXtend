@@ -1,0 +1,1054 @@
+{
+  "strategy_id": "strategy_e94dc7888c",
+  "run_id": "canonical_7755352e73",
+  "schema_version": "TherapeuticStrategy.v1",
+  "execution_mode": "scientific",
+  "target": "BRD4",
+  "disease_context": "",
+  "indication": "",
+  "e3_ligase": "VHL",
+  "objective": "balanced_degradation_and_developability",
+  "design_hypothesis": "BRD4 degradation can be achieved by recruiting VHL with a bifunctional degrader; 0 candidate(s) are proposed for experimental discrimination.",
+  "stopping_state": "INSUFFICIENT EVIDENCE",
+  "target_validation": {
+    "gene_symbol": "BRD4",
+    "uniprot_id": "O60885",
+    "protein_name": "BRD4",
+    "organism": "human",
+    "structures": [
+      "2OSS",
+      "3MXF",
+      "5T35"
+    ],
+    "alphafold_id": "AF-O60885-F1",
+    "known_binder_count": 120,
+    "validation_status": "resolved",
+    "evidence_refs": [
+      "target_disease:target",
+      "target_disease:uniprot_id",
+      "target_disease:structures",
+      "target_disease:disease_context",
+      "target_disease:cell_line",
+      "target_disease:tractability_score"
+    ],
+    "limitations": []
+  },
+  "tpd_tractability": {
+    "known_binder_count": 90,
+    "known_e3_ligand_count": 3,
+    "has_experimental_structure": true,
+    "tractability_score": 0.86,
+    "tractable": true,
+    "rationale": "90 binder(s) and 3 E3 ligand(s) available.",
+    "limitations": []
+  },
+  "recommended_e3": "VHL",
+  "alternative_e3s": [],
+  "rejected_e3s": [],
+  "warheads": [],
+  "attachment_vectors": [],
+  "linker_hypotheses": [
+    {
+      "name": "gen_6",
+      "smiles": "[*:1]Cc1ccc(C)cc1[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_8",
+      "smiles": "[*:1]CCN1CCN(CC)CC1[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "ALKYL6",
+      "smiles": "[*:1]CCCCCC[*:2]",
+      "linker_class": "alkyl",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "TRIAZOLE_ETHYL",
+      "smiles": "[*:1]CCn1nncc1CC[*:2]",
+      "linker_class": "triazole",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_9",
+      "smiles": "[*:1]CCc1cnnn1CC[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "PEG2",
+      "smiles": "[*:1]CCOCC[*:2]",
+      "linker_class": "PEG",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "ALKYL4",
+      "smiles": "[*:1]CCCC[*:2]",
+      "linker_class": "alkyl",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "PEG3",
+      "smiles": "[*:1]CCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_11",
+      "smiles": "[*:1]CCNC(=O)N1CCN(CC)CC1[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "PIPERAZINE_ETHYL",
+      "smiles": "[*:1]CCN1CCN(CC1)CC[*:2]",
+      "linker_class": "piperazine",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "ALKYL3",
+      "smiles": "[*:1]CCC[*:2]",
+      "linker_class": "alkyl",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_2",
+      "smiles": "[*:1]CCOCCNC(O)CC[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_4",
+      "smiles": "[*:1]CCNC(=O)CCOCC[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "gen_7",
+      "smiles": "[*:1]CCOCCNC(=O)CC[*:2]",
+      "linker_class": "generative",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "PEG4",
+      "smiles": "[*:1]CCOCCOCCOCC[*:2]",
+      "linker_class": "PEG",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "PIPERAZINE_AMIDE",
+      "smiles": "[*:1]CCNC(=O)N1CCN(CC1)CC[*:2]",
+      "linker_class": "piperazine",
+      "length": null,
+      "rationale": ""
+    },
+    {
+      "name": "rule_alkyl_3",
+      "smiles": "[*:1]CCCCC[*:2]",
+      "linker_class": "alkyl",
+      "length": null,
+      "rationale": ""
+    }
+  ],
+  "candidate_protacs": [],
+  "binary_structure_assessment": {
+    "available": true,
+    "structures": [
+      "2OSS",
+      "3MXF",
+      "5T35"
+    ],
+    "method": "experimental_or_alphafold",
+    "notes": "Binary target structure available for pocket/tractability reasoning.",
+    "evidence_refs": [
+      "target_disease:target",
+      "target_disease:uniprot_id",
+      "target_disease:structures",
+      "target_disease:disease_context",
+      "target_disease:cell_line",
+      "target_disease:tractability_score"
+    ]
+  },
+  "ternary_complex_assessment": {
+    "available": false,
+    "method": "none",
+    "n_records": 0,
+    "scores": [],
+    "cooperativity": [],
+    "claim_allowed": false,
+    "limitations": [
+      "No ternary/structure evidence; structural claims are blocked."
+    ]
+  },
+  "degradation_prediction": {
+    "n_predictions": 0,
+    "model_versions": [],
+    "heuristic_fallback": false,
+    "top_dc50": [],
+    "hook_effect_records": 0,
+    "ternary_revised": 0,
+    "claim_allowed": false,
+    "limitations": [
+      "No degradation predictions were produced."
+    ]
+  },
+  "adme_risks": [],
+  "safety_risks": [],
+  "resistance_mechanisms": [
+    {
+      "e3_ligase": "",
+      "mechanism": "E3 mutation Y112H (ligandability)",
+      "risk": "high",
+      "evidence": "curated_known_resistance_mechanisms"
+    },
+    {
+      "e3_ligase": "",
+      "mechanism": "pathway bypass: hypoxia_response",
+      "risk": "low",
+      "evidence": "curated_known_resistance_mechanisms"
+    }
+  ],
+  "biomarkers": [
+    {
+      "name": "BRD4",
+      "role": "target expression / dependency",
+      "evidence": "from request",
+      "status": "unavailable"
+    }
+  ],
+  "combination_strategy": {
+    "recommended": true,
+    "rationale": "Elevated resistance risk suggests a combination or rescue strategy should be considered.",
+    "partners": [],
+    "limitations": [
+      "Partner selection is not implemented; this is a flag, not a recommendation."
+    ]
+  },
+  "experimental_plan": {
+    "objective": "Discriminate degradation, ternary geometry, permeability/context, and assay-artifact hypotheses.",
+    "candidate_ids": [],
+    "steps": [
+      {
+        "step": 1,
+        "assay": "compound identity and purity",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 2,
+        "assay": "binary target engagement",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 3,
+        "assay": "E3 engagement where feasible",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 4,
+        "assay": "ternary complex or proximity evidence",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 5,
+        "assay": "cellular target degradation dose response",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 6,
+        "assay": "Dmax/DC50 with replicates and confidence intervals",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 7,
+        "assay": "time course and recovery",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 8,
+        "assay": "hook-effect concentration range",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 9,
+        "assay": "proteasome dependence",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 10,
+        "assay": "E3 dependence",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 11,
+        "assay": "inactive stereoisomer or nonbinding analog",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 12,
+        "assay": "viability/cytotoxicity separation",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 13,
+        "assay": "orthogonal degradation or target-engagement assay",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 14,
+        "assay": "proteome-level selectivity for lead",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      },
+      {
+        "step": 15,
+        "assay": "permeability or intracellular exposure assay",
+        "purpose": "",
+        "controls": [
+          "vehicle control",
+          "proteasome inhibitor rescue",
+          "E3 loss or competition control",
+          "inactive stereoisomer or nonbinding analog",
+          "cell viability counter-assay"
+        ]
+      }
+    ],
+    "controls": [
+      "vehicle control",
+      "proteasome inhibitor rescue",
+      "E3 loss or competition control",
+      "inactive stereoisomer or nonbinding analog",
+      "cell viability counter-assay"
+    ],
+    "success_criteria": [
+      "reproducible degradation with confidence intervals",
+      "mechanistic dependence consistent with hypothesis",
+      "prediction rank or uncertainty changes after outcome ingestion"
+    ],
+    "failure_criteria": [
+      "material identity failure",
+      "target engagement absent",
+      "E3/proteasome independence",
+      "unacceptable cytotoxicity confounds degradation"
+    ],
+    "evidence_refs": [
+      "experimental_design:candidate_ids",
+      "experimental_design:assay_ladder",
+      "experimental_design:controls",
+      "experimental_design:n_design_candidates"
+    ]
+  },
+  "go_no_go_criteria": [
+    {
+      "criterion": "Target resolved",
+      "threshold": "A known gene symbol and curated target record",
+      "current_status": "BRD4",
+      "met": true,
+      "rationale": "A run without a resolved target must not produce a strategy."
+    },
+    {
+      "criterion": "Chemically valid candidates",
+      "threshold": ">= 1 RDKit-valid PROTAC",
+      "current_status": "0",
+      "met": false,
+      "rationale": "Assembly must yield at least one valid candidate."
+    },
+    {
+      "criterion": "Degradation evidence",
+      "threshold": "Non-heuristic degradation prediction",
+      "current_status": "none",
+      "met": false,
+      "rationale": "Heuristic degradation cannot support a go decision."
+    },
+    {
+      "criterion": "Ternary structural support",
+      "threshold": "At least one ternary/complex record",
+      "current_status": "0",
+      "met": false,
+      "rationale": "Structural claims require structure evidence."
+    },
+    {
+      "criterion": "Applicability domain",
+      "threshold": "No candidate outside domain",
+      "current_status": "0",
+      "met": true,
+      "rationale": "Out-of-domain candidates are confidence-downgraded."
+    },
+    {
+      "criterion": "Critic verdict",
+      "threshold": "SUPPORTED or REVISE",
+      "current_status": "INSUFFICIENT EVIDENCE",
+      "met": false,
+      "rationale": "retrieve missing target, E3, and chemistry evidence"
+    }
+  ],
+  "evidence": {
+    "n_records": 48,
+    "by_module": {
+      "target_disease": 6,
+      "tpd_tractability": 5,
+      "e3_selection": 5,
+      "chemistry_warhead": 7,
+      "resistance_biomarker": 7,
+      "structure_ternary": 4,
+      "adme_safety": 4,
+      "degradation": 6,
+      "experimental_design": 4
+    },
+    "by_type": {
+      "module_output": 48
+    },
+    "refs": [
+      "target_disease:target",
+      "target_disease:uniprot_id",
+      "target_disease:structures",
+      "target_disease:disease_context",
+      "target_disease:cell_line",
+      "target_disease:tractability_score",
+      "tpd_tractability:known_binder_count",
+      "tpd_tractability:known_e3_ligand_count",
+      "tpd_tractability:has_experimental_structure",
+      "tpd_tractability:tractability_score",
+      "tpd_tractability:tractable",
+      "e3_selection:e3_ligases",
+      "e3_selection:n_ligands",
+      "e3_selection:cell_context_predictions",
+      "e3_selection:requested_e3",
+      "e3_selection:assumption",
+      "chemistry_warhead:n_warheads",
+      "chemistry_warhead:n_linkers",
+      "chemistry_warhead:n_exit_vectors",
+      "chemistry_warhead:n_assembled",
+      "chemistry_warhead:n_valid",
+      "chemistry_warhead:n_novel",
+      "chemistry_warhead:top_candidate_smiles",
+      "structure_ternary:n_ternary_records",
+      "structure_ternary:ternary_scores",
+      "structure_ternary:n_cooperativity_records",
+      "structure_ternary:structure_backed",
+      "degradation:n_predictions",
+      "degradation:model_versions",
+      "degradation:heuristic_fallback",
+      "degradation:top_dc50",
+      "degradation:hook_effect_records",
+      "degradation:ternary_revised",
+      "adme_safety:n_admet_predictions",
+      "adme_safety:max_admet_penalty",
+      "adme_safety:applicability_domain_records",
+      "adme_safety:outside_domain",
+      "resistance_biomarker:e3_mutation_risk",
+      "resistance_biomarker:e3_mutations",
+      "resistance_biomarker:pathway_bypass_risk",
+      "resistance_biomarker:pathway_bypass_mechanisms",
+      "resistance_biomarker:permeability_efflux_risk",
+      "resistance_biomarker:overall_resistance_risk",
+      "resistance_biomarker:source",
+      "experimental_design:candidate_ids",
+      "experimental_design:assay_ladder",
+      "experimental_design:controls",
+      "experimental_design:n_design_candidates"
+    ]
+  },
+  "contradictions": [
+    {
+      "topic": "structural feasibility",
+      "left": "candidate ranking implies ternary formation",
+      "right": "no ternary structure evidence",
+      "resolution": "block structural claims pending docking/structural evidence",
+      "severity": "warning"
+    },
+    {
+      "topic": "critic:no_valid_candidates",
+      "left": "run output",
+      "right": "critic failure category no_valid_candidates",
+      "resolution": "retrieve missing target, E3, and chemistry evidence",
+      "severity": "warning"
+    }
+  ],
+  "uncertainty": {
+    "model": "typed degradation backend",
+    "structural": "no ternary evidence",
+    "evidence": "public PROTAC evidence is incomplete",
+    "assay_context": "cell-line transferability requires measured context",
+    "biology": "E3 expression and productive lysine geometry are context-dependent",
+    "data": "0 candidate(s) evaluated"
+  },
+  "run_manifest": {
+    "run_id": "canonical_7755352e73",
+    "strategy_id": "strategy_e94dc7888c",
+    "schema_version": "TherapeuticStrategy.v1",
+    "engine": "deterministic",
+    "execution_mode": "scientific",
+    "request": "Design a VHL PROTAC against BRD4",
+    "started_at": "2026-09-23T12:31:41.376043+00:00",
+    "finished_at": "2026-09-23T12:31:41.378906+00:00",
+    "runtime_s": 195.018,
+    "protacxtend_version": "0.3.0",
+    "module_status": {
+      "target_disease": "succeeded",
+      "tpd_tractability": "succeeded",
+      "e3_selection": "succeeded",
+      "chemistry_warhead": "degraded",
+      "structure_ternary": "degraded",
+      "degradation": "degraded",
+      "adme_safety": "degraded",
+      "resistance_biomarker": "succeeded",
+      "experimental_design": "degraded"
+    },
+    "module_runtimes": {
+      "target_disease": 0.0,
+      "tpd_tractability": 0.0,
+      "e3_selection": 0.0,
+      "chemistry_warhead": 0.0,
+      "structure_ternary": 0.0,
+      "degradation": 0.0,
+      "adme_safety": 0.0,
+      "resistance_biomarker": 0.0,
+      "experimental_design": 0.0
+    },
+    "evidence_summary": {
+      "n_records": 48,
+      "by_module": {
+        "target_disease": 6,
+        "tpd_tractability": 5,
+        "e3_selection": 5,
+        "chemistry_warhead": 7,
+        "resistance_biomarker": 7,
+        "structure_ternary": 4,
+        "adme_safety": 4,
+        "degradation": 6,
+        "experimental_design": 4
+      },
+      "by_type": {
+        "module_output": 48
+      },
+      "refs": [
+        "target_disease:target",
+        "target_disease:uniprot_id",
+        "target_disease:structures",
+        "target_disease:disease_context",
+        "target_disease:cell_line",
+        "target_disease:tractability_score",
+        "tpd_tractability:known_binder_count",
+        "tpd_tractability:known_e3_ligand_count",
+        "tpd_tractability:has_experimental_structure",
+        "tpd_tractability:tractability_score",
+        "tpd_tractability:tractable",
+        "e3_selection:e3_ligases",
+        "e3_selection:n_ligands",
+        "e3_selection:cell_context_predictions",
+        "e3_selection:requested_e3",
+        "e3_selection:assumption",
+        "chemistry_warhead:n_warheads",
+        "chemistry_warhead:n_linkers",
+        "chemistry_warhead:n_exit_vectors",
+        "chemistry_warhead:n_assembled",
+        "chemistry_warhead:n_valid",
+        "chemistry_warhead:n_novel",
+        "chemistry_warhead:top_candidate_smiles",
+        "structure_ternary:n_ternary_records",
+        "structure_ternary:ternary_scores",
+        "structure_ternary:n_cooperativity_records",
+        "structure_ternary:structure_backed",
+        "degradation:n_predictions",
+        "degradation:model_versions",
+        "degradation:heuristic_fallback",
+        "degradation:top_dc50",
+        "degradation:hook_effect_records",
+        "degradation:ternary_revised",
+        "adme_safety:n_admet_predictions",
+        "adme_safety:max_admet_penalty",
+        "adme_safety:applicability_domain_records",
+        "adme_safety:outside_domain",
+        "resistance_biomarker:e3_mutation_risk",
+        "resistance_biomarker:e3_mutations",
+        "resistance_biomarker:pathway_bypass_risk",
+        "resistance_biomarker:pathway_bypass_mechanisms",
+        "resistance_biomarker:permeability_efflux_risk",
+        "resistance_biomarker:overall_resistance_risk",
+        "resistance_biomarker:source",
+        "experimental_design:candidate_ids",
+        "experimental_design:assay_ladder",
+        "experimental_design:controls",
+        "experimental_design:n_design_candidates"
+      ]
+    },
+    "config": {
+      "engine": "deterministic"
+    },
+    "artifact_paths": {},
+    "provenance": {
+      "parser": "protacxtend.nlp.entity_extraction",
+      "request_confidence": 0.95
+    }
+  },
+  "recommended_candidates": [],
+  "evidence_refs": [
+    "target_disease:target",
+    "target_disease:uniprot_id",
+    "target_disease:structures",
+    "target_disease:disease_context",
+    "target_disease:cell_line",
+    "target_disease:tractability_score",
+    "tpd_tractability:known_binder_count",
+    "tpd_tractability:known_e3_ligand_count",
+    "tpd_tractability:has_experimental_structure",
+    "tpd_tractability:tractability_score",
+    "tpd_tractability:tractable",
+    "e3_selection:e3_ligases",
+    "e3_selection:n_ligands",
+    "e3_selection:cell_context_predictions",
+    "e3_selection:requested_e3",
+    "e3_selection:assumption",
+    "chemistry_warhead:n_warheads",
+    "chemistry_warhead:n_linkers",
+    "chemistry_warhead:n_exit_vectors",
+    "chemistry_warhead:n_assembled",
+    "chemistry_warhead:n_valid",
+    "chemistry_warhead:n_novel",
+    "chemistry_warhead:top_candidate_smiles",
+    "structure_ternary:n_ternary_records",
+    "structure_ternary:ternary_scores",
+    "structure_ternary:n_cooperativity_records",
+    "structure_ternary:structure_backed",
+    "degradation:n_predictions",
+    "degradation:model_versions",
+    "degradation:heuristic_fallback",
+    "degradation:top_dc50",
+    "degradation:hook_effect_records",
+    "degradation:ternary_revised",
+    "adme_safety:n_admet_predictions",
+    "adme_safety:max_admet_penalty",
+    "adme_safety:applicability_domain_records",
+    "adme_safety:outside_domain",
+    "resistance_biomarker:e3_mutation_risk",
+    "resistance_biomarker:e3_mutations",
+    "resistance_biomarker:pathway_bypass_risk",
+    "resistance_biomarker:pathway_bypass_mechanisms",
+    "resistance_biomarker:permeability_efflux_risk",
+    "resistance_biomarker:overall_resistance_risk",
+    "resistance_biomarker:source",
+    "experimental_design:candidate_ids",
+    "experimental_design:assay_ladder",
+    "experimental_design:controls",
+    "experimental_design:n_design_candidates"
+  ],
+  "claims_allowed": [
+    "target identity and curated structure availability (computational)"
+  ],
+  "limitations": [
+    "All outputs are computational hypotheses; none are experimentally validated.",
+    "No ternary structural evidence was produced; structural claims are blocked.",
+    "Predictions are conditional on the recorded applicability domain."
+  ],
+  "recommended_experiments": [
+    {
+      "objective": "Discriminate degradation, ternary geometry, permeability/context, and assay-artifact hypotheses.",
+      "candidate_ids": [],
+      "steps": [
+        {
+          "step": 1,
+          "assay": "compound identity and purity",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 2,
+          "assay": "binary target engagement",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 3,
+          "assay": "E3 engagement where feasible",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 4,
+          "assay": "ternary complex or proximity evidence",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 5,
+          "assay": "cellular target degradation dose response",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 6,
+          "assay": "Dmax/DC50 with replicates and confidence intervals",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 7,
+          "assay": "time course and recovery",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 8,
+          "assay": "hook-effect concentration range",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 9,
+          "assay": "proteasome dependence",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 10,
+          "assay": "E3 dependence",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 11,
+          "assay": "inactive stereoisomer or nonbinding analog",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 12,
+          "assay": "viability/cytotoxicity separation",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 13,
+          "assay": "orthogonal degradation or target-engagement assay",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 14,
+          "assay": "proteome-level selectivity for lead",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        },
+        {
+          "step": 15,
+          "assay": "permeability or intracellular exposure assay",
+          "purpose": "",
+          "controls": [
+            "vehicle control",
+            "proteasome inhibitor rescue",
+            "E3 loss or competition control",
+            "inactive stereoisomer or nonbinding analog",
+            "cell viability counter-assay"
+          ]
+        }
+      ],
+      "controls": [
+        "vehicle control",
+        "proteasome inhibitor rescue",
+        "E3 loss or competition control",
+        "inactive stereoisomer or nonbinding analog",
+        "cell viability counter-assay"
+      ],
+      "success_criteria": [
+        "reproducible degradation with confidence intervals",
+        "mechanistic dependence consistent with hypothesis",
+        "prediction rank or uncertainty changes after outcome ingestion"
+      ],
+      "failure_criteria": [
+        "material identity failure",
+        "target engagement absent",
+        "E3/proteasome independence",
+        "unacceptable cytotoxicity confounds degradation"
+      ],
+      "evidence_refs": [
+        "experimental_design:candidate_ids",
+        "experimental_design:assay_ladder",
+        "experimental_design:controls",
+        "experimental_design:n_design_candidates"
+      ]
+    }
+  ],
+  "module_status": {
+    "target_disease": "succeeded",
+    "tpd_tractability": "succeeded",
+    "e3_selection": "succeeded",
+    "chemistry_warhead": "degraded",
+    "structure_ternary": "degraded",
+    "degradation": "degraded",
+    "adme_safety": "degraded",
+    "resistance_biomarker": "succeeded",
+    "experimental_design": "degraded"
+  },
+  "decision_rationale": "No candidates advanced; retrieve missing target, E3 or chemistry evidence.",
+  "next_action": "retrieve missing target, E3, and chemistry evidence",
+  "critic": {
+    "status": "INSUFFICIENT EVIDENCE",
+    "failure_categories": [
+      "no_valid_candidates"
+    ],
+    "unsupported_claims": [],
+    "warnings": [
+      "Applicability-domain assessment is missing or unavailable.",
+      "BindingDB REST needs an API key (BINDINGDB_API_KEY); ChEMBL covers binding data.",
+      "Evolution stopped: no_valid_offspring",
+      "ExitVectorDetectionAgent: No exit vectors detected for any molecule.",
+      "No ternary/structure evidence; structural claims are blocked.",
+      "TargetBinderRetrievalAgent: Retrieved 90 binders from ChEMBL, PubChem.",
+      "Ternary feasibility fallback: no results. Geometry proxy could not assess candidates."
+    ],
+    "uncertainty": {
+      "structural": "proxy or missing structural results cannot prove productive degradation",
+      "evidence": "public PROTAC evidence is incomplete",
+      "model": "predictions require calibration and applicability-domain checks",
+      "assay_context": "cell-line transferability requires measured context"
+    },
+    "recommended_action": "retrieve missing target, E3, and chemistry evidence",
+    "checks_run": [
+      "module_present:chemistry_warhead",
+      "module_present:degradation",
+      "measured_vs_predicted",
+      "structural_claim_gate",
+      "applicability_domain",
+      "provenance_complete",
+      "scientific_contract_critique",
+      "legacy_scientific_critic"
+    ]
+  },
+  "provenance": {
+    "run_id": "canonical_7755352e73",
+    "evidence_summary": {
+      "n_records": 48,
+      "by_module": {
+        "target_disease": 6,
+        "tpd_tractability": 5,
+        "e3_selection": 5,
+        "chemistry_warhead": 7,
+        "resistance_biomarker": 7,
+        "structure_ternary": 4,
+        "adme_safety": 4,
+        "degradation": 6,
+        "experimental_design": 4
+      },
+      "by_type": {
+        "module_output": 48
+      }
+    },
+    "engine": "deterministic",
+    "request_confidence": 0.95,
+    "parser": "protacxtend.nlp.entity_extraction"
+  },
+  "warnings": [
+    "ADME/safety predictions unavailable.",
+    "Applicability-domain assessment is missing or unavailable.",
+    "BindingDB REST needs an API key (BINDINGDB_API_KEY); ChEMBL covers binding data.",
+    "Elevated resistance risk for the selected E3 ligase.",
+    "Evolution stopped: no_valid_offspring",
+    "ExitVectorDetectionAgent: No exit vectors detected for any molecule.",
+    "No candidates available to design experiments around.",
+    "No chemically valid PROTAC candidate was assembled.",
+    "No degradation predictions were produced.",
+    "No ternary/structure evidence produced; structural claims must not be made.",
+    "No ternary/structure evidence; structural claims are blocked.",
+    "TargetBinderRetrievalAgent: Retrieved 90 binders from ChEMBL, PubChem.",
+    "Ternary feasibility fallback: no results. Geometry proxy could not assess candidates."
+  ]
+}

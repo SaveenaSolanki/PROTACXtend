@@ -129,3 +129,9 @@ protac_tui.png
 /outputs/case_study_brd4_vhl_result.json
 /outputs/parser_eval.json
 /analysis/
+
+# ── generated validation / benchmark artifacts (reproducible from scripts) ──
+/results/
+/benchmark_results/
+/audit_nextgen/plots/
+/validation_runs/

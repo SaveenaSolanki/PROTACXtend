@@ -1,0 +1,582 @@
+[
+  {
+    "task_id": "DESIGN-01",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "5",
+      "SMILES",
+      "warhead",
+      "VHL"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-02",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "SMILES",
+      "MW",
+      "logP",
+      "TPSA"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-03",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "scaffold",
+      "dimethylisoxazole"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-04",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "CRBN",
+      "VHL"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-05",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "3",
+      "RDKit"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-06",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "pharmacophore"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-07",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "vehicle",
+      "control",
+      "replicate"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-08",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "linker",
+      "5T35"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-09",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "Tanimoto"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-10",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "BRD4",
+      "BRD2",
+      "selectivity"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-11",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "Dmax",
+      "predicted"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DESIGN-12",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "control",
+      "ablat"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-01",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "rule",
+      "outcome"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-02",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "uncertainty",
+      "confirm"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-03",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "vehicle",
+      "control",
+      "cost"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-04",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "Pareto",
+      "admet"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-05",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "hill",
+      "hook",
+      "replicate"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-06",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "expression",
+      "tractability"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-07",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "CRBN",
+      "knockout",
+      "pomalidomide"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-08",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "budget",
+      "value"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-09",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "replicate",
+      "orthogonal"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-10",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "degradation",
+      "ternary",
+      "permeability",
+      "viability"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-11",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "rule",
+      "seed"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "DISCOVER-12",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "applicability",
+      "tie-break"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "KNOW-01",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "uniprot_rest",
+    "source": "https://rest.uniprot.org/uniprotkb/O60885",
+    "observed": "O60885 reviewed=UniProtKB reviewed (Swiss-Prot) name=Bromodomain-containing protein 4",
+    "mandatory": [
+      "O60885"
+    ],
+    "threshold": 1.0
+  },
+  {
+    "task_id": "KNOW-02",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "packaged_curated_tables",
+    "source": "protacxtend/data/curated_*.csv",
+    "observed": "found 1/4 names: ['JQ1']",
+    "mandatory": [
+      "JQ1",
+      "I-BET762",
+      "OTX015"
+    ],
+    "threshold": 0.66
+  },
+  {
+    "task_id": "KNOW-03",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "contradicted",
+      "JQ1"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "KNOW-04",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "packaged_curated_tables",
+    "source": "protacxtend/data/curated_*.csv",
+    "observed": "found 0/4 names: []",
+    "mandatory": [
+      "dBET1",
+      "dBET6",
+      "ARV-825",
+      "MZ1",
+      "AT1"
+    ],
+    "threshold": 0.6
+  },
+  {
+    "task_id": "KNOW-05",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "packaged_curated_tables",
+    "source": "protacxtend/data/curated_*.csv",
+    "observed": "found 3/3 names: ['Pomalidomide', 'Lenalidomide', 'VH032']",
+    "mandatory": [
+      "CRBN",
+      "VHL"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "KNOW-06",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "packaged_curated_tables",
+    "source": "protacxtend/data/curated_*.csv",
+    "observed": "found 1/4 names: ['JQ1']",
+    "mandatory": [
+      "JQ1",
+      "I-BET762",
+      "OTX015",
+      "I-BET151"
+    ],
+    "threshold": 0.66
+  },
+  {
+    "task_id": "KNOW-07",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "rcsb_rest",
+    "source": "https://data.rcsb.org/rest/v1/core/entry/5T35",
+    "observed": "The PROTAC MZ1 in complex with the second bromodomain of Brd4 and pVHL:ElonginC:ElonginB",
+    "mandatory": [
+      "5T35"
+    ],
+    "threshold": 1.0
+  },
+  {
+    "task_id": "KNOW-08",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "verified",
+      "unverified"
+    ],
+    "threshold": 1.0
+  },
+  {
+    "task_id": "KNOW-09",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "pubchem_pug_rest",
+    "source": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RZVAJINKPMORJF-UHFFFAOYSA-N",
+    "observed": "InChIKey=RZVAJINKPMORJF-UHFFFAOYSA-N SMILES=",
+    "mandatory": [
+      "RZVAJINKPMORJF"
+    ],
+    "threshold": 1.0
+  },
+  {
+    "task_id": "KNOW-10",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "BRD4",
+      "CRBN"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "KNOW-11",
+    "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+    "verified": true,
+    "method": "crossref_rest",
+    "source": "https://api.crossref.org/works/10.1126/science.aab1433",
+    "observed": "Phthalimide conjugation as a strategy for in vivo target protein degradation",
+    "mandatory": [
+      "10.1126/science.aab1433"
+    ],
+    "threshold": 1.0
+  },
+  {
+    "task_id": "KNOW-12",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "I-BET762"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "REASON-01",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-02",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-03",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "hydroxyproline",
+      "tert-leucine"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "REASON-04",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-05",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "amide",
+      "permeability"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "REASON-06",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-07",
+    "gold_class": "RULE_BASED_RUBRIC",
+    "verified": false,
+    "method": "rule_only",
+    "source": "",
+    "observed": "",
+    "mandatory": [
+      "VHL",
+      "BRD4"
+    ],
+    "threshold": 0.5
+  },
+  {
+    "task_id": "REASON-08",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-09",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-10",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-11",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  },
+  {
+    "task_id": "REASON-12",
+    "gold_class": "PENDING_HUMAN",
+    "verified": false,
+    "method": "requires_human",
+    "observed": ""
+  }
+]

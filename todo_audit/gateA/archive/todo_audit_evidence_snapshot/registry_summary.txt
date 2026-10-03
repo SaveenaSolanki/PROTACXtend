@@ -1,0 +1,9 @@
+modalities: 18
+tools: 123
+databases: 49
+packages: 43
+skills: 26
+agent_modules: 37
+TOTAL registered rows: 296
+summarize_toolkit_status totals: {'registered': 296, 'available': 0, 'executable': 0}
+agent tools: 34

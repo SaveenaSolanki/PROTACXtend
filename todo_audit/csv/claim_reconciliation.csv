@@ -1,0 +1,24 @@
+claim_id,source,claim,code_path,artifact,status,finding,evidence_command
+C01,todo/_00 + TODO.md,Canonical TherapeuticStrategy.v1 emits all named fields,protacxtend/canonical/schemas.py,outputs/strategies/strategy_17aa7ab30f.strategy.json,verified,-,python -m protacxtend.cli strategy "Design a VHL PROTAC against BRD4"
+C02,todo/_00,Typed RunManifest emitted,protacxtend/canonical/schemas.py:310,outputs/strategies/*.manifest.json,verified,-,same
+C03,todo/_00,Field presence is not decision validity,protacxtend/canonical/decision.py,strategy_*.json,confirmed,F-03/F-04,see FINDINGS
+C04,TODO.md P0,Scientific mode fixtures removed across all paths,protacxtend/runtime/modes.py,strategy_1ef85a525b vs strategy_167cc2f93b,failed,F-03,compare demo vs scientific signatures
+C05,TODO.md P0,Agent tools fail closed in SCIENTIFIC,protacxtend/runtime/agent_tools.py,evidence/mode_probe.txt,verified,F-08,SyntheticInputNotAllowed/MissingScientificInput raised
+C06,TODO.md P0,Target/entity parser 125 prompts >=98%,protacxtend/nlp/entity_extraction.py,outputs/parser_eval.json,verified,-,python scripts/evaluate_parser.py
+C07,TODO.md P0,50 tasks genuinely scorable,benchmark/SCORABLE_MANIFEST.json,benchmark/SCORABLE_REPORT.md,verified,-,python scripts/build_scorable_manifest.py
+C08,TODO.md P0,48/48 offline smoke mean 0.885,scripts/run_benchmark_pilot.py,benchmark_results/pilots/pilot_offline-smoke_*.json,failed,F-05,python scripts/run_benchmark_pilot.py --offline-smoke
+C09,TODO.md P1,One real deterministic task executed,benchmark_runner/runner.py,benchmark_results/pilots/pilot_deterministic_*.json,verified (score 0.0),F-01/F-02,cat pilot_deterministic_*.json
+C10,TODO.md P1,29 flagged gold for expert review,benchmark/SCORABLE_MANIFEST.json,SCORABLE_MANIFEST.json,verified,F-06,json n_requires_expert_review
+C11,todo/_00,BRD4 resolves to O60885,protacxtend/data/curated_targets.csv,strategy target_validation.uniprot_id,failed,F-04,strategy reports M0QZD9
+C12,todo/_02,Registry tools have executable status,protacxtend/toolkit/registry.py,evidence/registry_summary.txt,failed,F-07,summarize_toolkit_status -> available 0 executable 0
+C13,todo/_02,ToolSpec typed contract,protacxtend/agentic/registry.py TOOL_SPECS,list of dicts,partial,-,grep ToolSpec
+C14,todo/_02,Three critics (evidence/mechanism/reproducibility),protacxtend/canonical/critic.py,one CriticVerifier,partial,F-12,inspect critic.py
+C15,todo/_02,Minimum artifact tree,docs/ + benchmark/,none,absent,F-10,ls docs benchmarks
+C16,todo/_01,E7 temporal as-of validation,protacxtend/memory/ na,none,absent,F-11,grep cutoff/as_of/temporal/leakage
+C17,todo/_01,E2 baselines under equal budget,benchmark/BASELINES.md,benchmark_results/acceptance/execution_log.csv (n=4),partial,F-09,cat execution_log.csv
+C18,todo/_01,baseline results scored,benchmark_results/scored/,empty dir,failed,F-09,ls benchmark_results/scored
+C19,TODO.md P0,Working tree clean,git,git status,104 deletions + untracked,failed,F-14,git status --short
+C20,TODO.md P0,synglue_agent residue fixed,pyproject.toml vs installed,evidence/console_script.txt,failed (installed),F-15,protacxtend --help
+C21,todo/_00,92 tests reported,protacxtend/tests/,107 selected pass + 48 selected pass,partial,F-16,selective pytest
+C22,todo/_00,E1-E8 figure is proposal,na,na,verified as proposal,-,no data
+C23,todo/_00,breadth x depth (8.5,9.5),na,na,absent,-,no rubric/source

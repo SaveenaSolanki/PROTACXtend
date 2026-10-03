@@ -1,6 +1,6 @@
 # PROTACXtend Toolkit — Source of Truth
 
-_Generated 2026-09-16T08:32:39.910107+00:00_
+_Generated 2026-09-30T18:17:03.359727+00:00_
 
 This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_Truth.xlsx` are the single source of truth for **what the toolkit contains and at exactly which version**.
 
@@ -9,53 +9,67 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | metric | value |
 |---|---|
 | toolkit_tools | 115 |
-| tools_installed | 30 |
-| tools_callable | 30 |
+| tools_installed | 44 |
+| tools_callable | 44 |
 | tools_installable | 47 |
 | tools_commercial | 13 |
 | tools_web_only | 13 |
 | tools_repo_required | 21 |
-| agent_tools | 34 |
-| agent_tools_ready | 34 |
-| datasets | 59 |
-| datasets_present | 53 |
+| agent_tools | 44 |
+| agent_tools_ready | 44 |
+| datasets | 73 |
+| datasets_present | 67 |
 | capabilities | 27 |
-| capabilities_ready | 20 |
+| capabilities_ready | 23 |
 
 ## 2. Installed & callable tools (with exact version)
 
 | tool | category | version | provider env | method |
 |---|---|---|---|---|
-| PyMOL | molecular_visualization | File "<string>", line 1, in <module> | PATH:/usr/bin/pymol | binary |
+| PyMOL | molecular_visualization | File "<string>", line 1, in <module> | protac-mega-protac:/home/saveenas/miniconda3/envs/pp/envs/protac-mega-protac/bin/pymol | binary |
 | NGLView | molecular_visualization | 4.0.1 | protacpilot | pip |
 | AutoDock Vina | ligand_docking | AutoDock Vina v1.2.3 | PATH:/usr/bin/vina | conda |
 | AutoDock4 | ligand_docking | AutoDock 4.2.6 | PATH:/usr/bin/autodock4 | binary |
+| Smina | ligand_docking | bin:smina | docking:/home/saveenas/.protacxtend/envs/docking/bin/smina | conda |
 | GNINA | ligand_docking | bin:gnina | docking:/home/saveenas/.protacxtend/envs/docking/bin/gnina | conda |
+| rDock | ligand_docking | bin:rbdock | docking:/home/saveenas/.protacxtend/envs/docking/bin/rbdock | conda |
+| HADDOCK3 | protein_protein_docking | bin:haddock3 | toolkit:/home/saveenas/.protacxtend/envs/toolkit/bin/haddock3 | conda |
 | LightDock | protein_protein_docking | bin:lightdock3.py | ppi:/home/saveenas/.protacxtend/envs/ppi/bin/lightdock3.py | conda |
+| ColabFold | ternary_complex_modeling | bin:colabfold_batch | toolkit:/home/saveenas/.protacxtend/envs/toolkit/bin/colabfold_batch | binary |
 | GROMACS | molecular_dynamics | bin:gmx | gromacs:/home/saveenas/.protacxtend/envs/gromacs/bin/gmx | conda |
 | OpenMM | molecular_dynamics | 8.6.1 | protacpilot | pip |
 | AMBER / AmberTools | molecular_dynamics | bin:sander | gromacs:/home/saveenas/.protacxtend/envs/gromacs/bin/sander | binary |
+| PLUMED | molecular_dynamics | bin:plumed | qc:/home/saveenas/.protacxtend/envs/qc/bin/plumed | binary |
 | gmx_MMPBSA | binding_energy | bin:gmx_MMPBSA | gromacs:/home/saveenas/.protacxtend/envs/gromacs/bin/gmx_MMPBSA | binary |
 | MMPBSA.py | binding_energy | bin:MMPBSA.py | gromacs:/home/saveenas/.protacxtend/envs/gromacs/bin/MMPBSA.py | binary |
 | Meeko | ligand_preparation | 0.7.1 | current | pip |
 | PDBFixer | structure_preparation | 1.12.0 | protacpilot | pip |
 | PropKa | structure_preparation | propka3 3.5.1 | protacpilot:/home/saveenas/miniconda3/envs/protacpilot/bin/propka3 | conda |
 | PDB2PQR | structure_preparation | pdb2pqr 3.7.1 | protacpilot:/home/saveenas/miniconda3/envs/protacpilot/bin/pdb2pqr | conda |
-| OpenBabel | ligand_preparation | 3.1.0 | protacpilot | pip |
+| OpenBabel | ligand_preparation | 3.1.0 | PATH:/usr/local/bin/babel | pip |
 | RDKit ETKDG | conformer_generation | 2026.03.4 | current | pip |
+| CREST | conformer_generation | bin:crest | qc:/home/saveenas/.protacxtend/envs/qc/bin/crest | conda |
+| xTB | quantum_chemistry | bin:xtb | qc:/home/saveenas/.protacxtend/envs/qc/bin/xtb | conda |
+| MOPAC | quantum_chemistry | bin:mopac | qc:/home/saveenas/.protacxtend/envs/qc/bin/mopac | conda |
 | CReM | de_novo_generation | 0.3.1 | protacpilot | pip |
 | mmpdb | fragmentation | mmpdb, version 3.1.4 | protacpilot:/home/saveenas/miniconda3/envs/protacpilot/bin/mmpdb | conda |
 | BRICS | fragmentation | 2026.03.4 | current | pip |
 | RECAP | fragmentation | 2026.03.4 | current | pip |
 | GuacaMol | de_novo_generation | 0.5.5 | protacpilot | pip |
+| MOSES | de_novo_generation | py:moses 0.10.0 | toolkit | pip |
 | AiZynthFinder | retrosynthesis | 4.4.1 | protacpilot | pip |
+| Molecular Transformer | retrosynthesis | py:onmt installed | toolkit | pip |
+| RDKit + OpenNMT workflow | retrosynthesis | py:rdkit 2026.3.4 | toolkit | pip |
 | RXNMapper | reaction_prediction | 0.4.3 | protacpilot | pip |
 | RDChiral | reaction_prediction | 1.1.0 | protacpilot | pip |
+| DeepPurpose | admet_toxicity | py:DeepPurpose 0.1.5 | toolkit | repo |
 | Therapeutics Data Commons | admet_toxicity | installed | protacpilot | pip |
 | Chemprop | molecular_ml | 2.3.1 | current | pip |
 | DeepChem | molecular_ml | 2.8.0 | protacpilot | pip |
 | ESM-2 | protein_language_models | 2.0.0 | current | pip |
 | SciSpacy | literature_mining | 0.6.2 | toolkit-venv | pip |
+| Perseus | proteomics | bin:Perseus | md:/home/saveenas/.protacxtend/envs/md/bin/perseus | conda |
+| FragPipe | proteomics | bin:fragpipe | md:/home/saveenas/.protacxtend/envs/md/bin/fragpipe | conda |
 
 ## 3. Full toolkit provisioning matrix
 
@@ -72,9 +86,9 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | AutoDock Vina | ligand_docking | conda | yes | yes | conda-forge / bioconda package |
 | AutoDock-GPU | ligand_docking | conda | no | no | conda-forge / bioconda package |
 | AutoDock4 | ligand_docking | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
-| Smina | ligand_docking | conda | no | no | conda-forge / bioconda package |
+| Smina | ligand_docking | conda | yes | yes | conda-forge / bioconda package |
 | GNINA | ligand_docking | conda | yes | yes | conda-forge / bioconda package |
-| rDock | ligand_docking | conda | no | no | conda-forge / bioconda package |
+| rDock | ligand_docking | conda | yes | yes | conda-forge / bioconda package |
 | DOCK6 | ligand_docking | conda | no | no | conda-forge / bioconda package |
 | LeDock | ligand_docking | conda | no | no | conda-forge / bioconda package |
 | PLANTS | ligand_docking | conda | no | no | conda-forge / bioconda package |
@@ -88,7 +102,7 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | Rosetta InterfaceAnalyzer | binding_energy | binary | no | no | source/apt binary — provide on PATH or install into a conda env |
 | PyRosetta | protein_protein_docking | pip | no | no | pip-installable Python package |
 | HADDOCK | protein_protein_docking | web | no | no | web-only service — https://wenmr.science.uu.nl/haddock2.4 |
-| HADDOCK3 | protein_protein_docking | conda | no | no | conda-forge / bioconda package |
+| HADDOCK3 | protein_protein_docking | conda | yes | yes | conda-forge / bioconda package |
 | ClusPro | protein_protein_docking | web | no | no | web-only service — https://cluspro.bu.edu |
 | MEGADOCK | protein_protein_docking | conda | no | no | conda-forge / bioconda package |
 | ZDOCK | protein_protein_docking | conda | no | no | conda-forge / bioconda package |
@@ -97,14 +111,14 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | LightDock | protein_protein_docking | conda | yes | yes | conda-forge / bioconda package |
 | EquiDock | protein_protein_docking | repo | no | no | github.com/octavian-ganea/equidock_public (+weights) |
 | AlphaFold-Multimer | ternary_complex_modeling | repo | no | no | DeepMind AlphaFold params (~2.3 TB DB / weights on request) |
-| ColabFold | ternary_complex_modeling | binary | no | no | source/apt binary — provide on PATH or install into a conda env |
+| ColabFold | ternary_complex_modeling | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
 | GROMACS | molecular_dynamics | conda | yes | yes | conda-forge / bioconda package |
 | OpenMM | molecular_dynamics | pip | yes | yes | pip-installable Python package |
 | AMBER / AmberTools | molecular_dynamics | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
 | NAMD | molecular_dynamics | conda | no | no | conda-forge / bioconda package |
 | CHARMM | molecular_dynamics | commercial | no | no | commercial/licensed — manual provisioning and licence required |
 | Desmond | molecular_dynamics | commercial | no | no | commercial/licensed — manual provisioning and licence required |
-| PLUMED | molecular_dynamics | binary | no | no | source/apt binary — provide on PATH or install into a conda env |
+| PLUMED | molecular_dynamics | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
 | gmx_MMPBSA | binding_energy | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
 | MMPBSA.py | binding_energy | binary | yes | yes | source/apt binary — provide on PATH or install into a conda env |
 | Meeko | ligand_preparation | pip | yes | yes | pip-installable Python package |
@@ -114,9 +128,9 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | PDB2PQR | structure_preparation | conda | yes | yes | conda-forge / bioconda package |
 | OpenBabel | ligand_preparation | pip | yes | yes | pip-installable Python package |
 | RDKit ETKDG | conformer_generation | pip | yes | yes | pip-installable Python package |
-| CREST | conformer_generation | conda | no | no | conda-forge / bioconda package |
-| xTB | quantum_chemistry | conda | no | no | conda-forge / bioconda package |
-| MOPAC | quantum_chemistry | conda | no | no | conda-forge / bioconda package |
+| CREST | conformer_generation | conda | yes | yes | conda-forge / bioconda package |
+| xTB | quantum_chemistry | conda | yes | yes | conda-forge / bioconda package |
+| MOPAC | quantum_chemistry | conda | yes | yes | conda-forge / bioconda package |
 | ORCA | quantum_chemistry | binary | no | no | source/apt binary — provide on PATH or install into a conda env |
 | Gaussian | quantum_chemistry | commercial | no | no | commercial/licensed — manual provisioning and licence required |
 | OpenEye OMEGA | conformer_generation | commercial | no | no | commercial/licensed — manual provisioning and licence required |
@@ -133,11 +147,11 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | RECAP | fragmentation | pip | yes | yes | pip-installable Python package |
 | MolDQN | de_novo_generation | repo | no | no | github.com/google-research/google-research/mol_dqn |
 | GuacaMol | de_novo_generation | pip | yes | yes | pip-installable Python package |
-| MOSES | de_novo_generation | pip | no | no | pip-installable Python package |
+| MOSES | de_novo_generation | pip | yes | yes | pip-installable Python package |
 | AiZynthFinder | retrosynthesis | pip | yes | yes | pip-installable Python package |
 | ASKCOS | retrosynthesis | web | no | no | web-only service — https://askcos.mit.edu |
-| Molecular Transformer | retrosynthesis | pip | no | no | pip-installable Python package |
-| RDKit + OpenNMT workflow | retrosynthesis | pip | no | no | pip-installable Python package |
+| Molecular Transformer | retrosynthesis | pip | yes | yes | pip-installable Python package |
+| RDKit + OpenNMT workflow | retrosynthesis | pip | yes | yes | pip-installable Python package |
 | IBM RXN | reaction_prediction | api | no | no | remote API — credentials required, no local install |
 | RXNMapper | reaction_prediction | pip | yes | yes | pip-installable Python package |
 | RDChiral | reaction_prediction | pip | yes | yes | pip-installable Python package |
@@ -148,7 +162,7 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | ADMETlab 3.0 | admet_toxicity | web | no | no | web-only service — https://admetlab3.scbdd.com |
 | pkCSM | admet_toxicity | web | no | no | web-only service — https://biosig.lab.uq.edu.au/pkcsm |
 | ProTox-II | admet_toxicity | web | no | no | web-only service — https://tox-new.charite.de/protox_II |
-| DeepPurpose | admet_toxicity | repo | no | no | PyPI 0.1.5 pins numpy<2 — install in an isolated env (github.com/kexinhuang12345 |
+| DeepPurpose | admet_toxicity | repo | yes | yes | PyPI 0.1.5 pins numpy<2 — install in an isolated env (github.com/kexinhuang12345 |
 | Therapeutics Data Commons | admet_toxicity | pip | yes | yes | pip-installable Python package |
 | OpenADMET | admet_toxicity | api | no | no | remote API — credentials required, no local install |
 | DeepPROTACs | protac_degradation_prediction | repo | no | no | github.com/FengleiShen/DeepPROTACs (checkpoint required) |
@@ -172,8 +186,8 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | Google Patents | patent_mining | web | no | no | web-only service — https://patents.google.com |
 | AlphaLISA/TR-FRET assay planner | assay_planning | metadata | no | no | metadata/planning entry — nothing to install |
 | Proteome Discoverer / MaxQuant | proteomics | commercial | no | no | commercial/licensed — manual provisioning and licence required |
-| Perseus | proteomics | conda | no | no | conda-forge / bioconda package |
-| FragPipe | proteomics | conda | no | no | conda-forge / bioconda package |
+| Perseus | proteomics | conda | yes | yes | conda-forge / bioconda package |
+| FragPipe | proteomics | conda | yes | yes | conda-forge / bioconda package |
 | CellProfiler | image_analysis | pip | no | no | pip-installable Python package |
 | KNIME | workflow_platforms | conda | no | no | conda-forge / bioconda package |
 | Pipeline Pilot | workflow_platforms | commercial | no | no | commercial/licensed — manual provisioning and licence required |
@@ -214,6 +228,16 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | predict_degradation | prediction | ready | ML PREDICTION | False | True | False |
 | predict_cell_context | prediction | ready | ML PREDICTION | False | True | False |
 | predict_admet | prediction | ready | ML PREDICTION | True | False | False |
+| predict_protac_activity | prediction | ready | ML PREDICTION | False | True | False |
+| predict_deepprotacs | prediction | ready | ML PREDICTION | False | True | False |
+| predict_protac_stan | prediction | ready | ML PREDICTION | False | True | False |
+| split_protac_bellerophon | chemistry | ready | CALCULATED | True | False | False |
+| sample_ternary_ternify | structure | ready | STRUCTURAL SURROGATE | True | False | False |
+| predict_se3_protacs | prediction | ready | ML PREDICTION | False | True | False |
+| run_degradomap_experiment | decision | ready | CALCULATED | True | False | False |
+| assign_e3_mechanism | target | ready | CALCULATED | True | False | False |
+| inspect_repo_assets | decision | ready | CALCULATED | True | False | False |
+| list_repo_tools | decision | ready | CALCULATED | True | False | False |
 | run_protacpilot_structural | workflow | ready | STRUCTURAL SURROGATE | False | False | False |
 | rank_candidates | decision | ready | CALCULATED | True | False | False |
 | build_candidate_dossier | decision | ready | CALCULATED | True | False | False |
@@ -224,42 +248,42 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 
 | asset | domain | exists | size | rows | hash (short) | kind | version label |
 |---|---|---|---|---|---|---|---|
-| protacxtend/data/curated_targets.csv | targets | True | 394B | 3 | ace6f0cfc77f | sha256:full | curated |
-| protacxtend/data/curated_warheads.csv | warheads | True | 910B | 6 | c05a35d53174 | sha256:full | curated |
-| protacxtend/data/curated_e3_ligands.csv | E3 ligands | True | 51.5KB | 221 | 387a0063d821 | sha256:full | curated |
-| protacxtend/data/curated_linkers.csv | linkers | True | 1.3KB | 12 | ffef7b2b7eea | sha256:full | curated |
-| protacxtend/data/known_protac_smiles.csv | PROTACs | True | 309B | 3 | a3edf55b9a1a | sha256:full | curated |
-| protacxtend/data/curated_exit_vector_map.csv | warheads | True | 924B | 5 | f735d65cc185 | sha256:full | curated |
-| protacxtend/data/protacdb_local.csv | PROTACs | True | 461B | 3 | 065f0665f42f | sha256:full | PROTAC-DB 3.0 |
-| protacxtend/data/protacpedia_local.csv | PROTACs | True | 331B | 2 | c837b4da2aad | sha256:full | PROTACpedia |
-| protacxtend/data/drugbank_local.csv | drugs | True | 109B | 0 | bcded3e595d7 | sha256:full | DrugBank |
-| protacxtend/data/cell_context_atlas.csv | cell context | True | 263B | 3 | cd2462854c15 | sha256:full | curated |
-| protacxtend/data/cooperativity_calibration.csv | cooperativity | True | 151B | 0 | b8bc577070f8 | sha256:full | curated |
-| protacxtend/data/hook_effect_calibration.csv | hook effect | True | 137B | 0 | e77a03f3516c | sha256:full | curated |
-| protacxtend/data/benchmark/PROTAC-DB_3.0_protacs.xlsx | PROTACs | True | 6.0MB | 15502 | 4e3a7ecc74a2 | sha256:full | PROTAC-DB 3.0 |
-| protacxtend/data/benchmark/chemprop_train.csv | degradation ML | True | 234.3KB | 1698 | d4fcece7de58 | sha256:full | derived |
-| protacxtend/data/benchmark/chemprop_benchmark.csv | degradation ML | True | 8.2KB | 64 | b218d329da25 | sha256:full | derived |
-| protacxtend/data/benchmark/chemprop_train_multitarget.csv | degradation ML | True | 158.8KB | 1126 | be81618819e5 | sha256:full | derived |
-| protacxtend/data/benchmark/chemprop_cal.csv | degradation ML | True | 27.5KB | 200 | 3b40d1194689 | sha256:full | derived |
-| protacxtend/data/benchmark/expression_context.csv | cell context | True | 566B | 7 | d221b5150df9 | sha256:full | derived |
-| protacxtend/data/benchmark/e3_expression_evidence.csv | E3 expression | True | 2.1KB | 24 | 74bae7045f28 | sha256:full | curated |
-| protacxtend/data/benchmark/protacdb_evidence_schema.csv | schema | True | 1.6KB | 10 | c3c9c8464ee7 | sha256:full | derived |
-| data/tack/tack_dc50.parquet | degradation ML | True | 603.8KB | 4184 | 2893ce64fe1d | sha256:full | TACK |
-| data/tack/tack_bin.parquet | degradation ML | True | 779.5KB | 6561 | 93a0b170de22 | sha256:full | TACK |
-| protacxtend/data/tack/tack_dc50_model.joblib | model artifacts | True | 700.8KB |  | 30bdfcca0368 | sha256:full | TACK |
-| protacxtend/data/tack/tack_dmax_model.joblib | model artifacts | True | 593.7KB |  | 985446971be5 | sha256:full | TACK |
-| protacxtend/data/tack/tack_bin_model.joblib | model artifacts | True | 688.7KB |  | 898e59a0c387 | sha256:full | TACK |
-| protacxtend/data/linkers/linker_smiles.txt | linkers | True | 5.1KB |  | 8ee51d27d81a | sha256:full | derived |
-| protacxtend/data/linkers/linker_generator.pt | model artifacts | True | 691.3KB |  | 155819963596 | sha256:full | derived |
-| protacxtend/data/case_study/brd4_vhl_6.csv | case study | True | 1.6KB | 6 | 220cc3d743f3 | sha256:full | curated |
-| protacxtend/data/toolkit/Agent_Toolkit.xlsx | capability registry | True | 86.5KB | 21 | 1f9ab30c0e55 | sha256:full | curated |
-| data/benchmark/PROTAC-DB_3.0_protacs.xlsx | PROTACs | True | 6.0MB | 15502 | 4e3a7ecc74a2 | sha256:full | PROTAC-DB 3.0 |
-| data/ternary_benchmark_six.json | ternary benchmark | True | 2.1KB |  | da899635ebdc | sha256:full | curated |
-| data/warheads/hmgb2_warhead_library.csv | warheads | True | 1.9KB | 15 | ce3b372b9b03 | sha256:full | curated |
-| data/checkpoints/protacpilot.sqlite | memory / runs | True | 21.1MB |  | 5d543cbba093 | sha256:full | runtime |
+| protacxtend/data/curated_targets.csv | targets | True | 791B | 8 |  |  | curated |
+| protacxtend/data/curated_warheads.csv | warheads | True | 910B | 6 |  |  | curated |
+| protacxtend/data/curated_e3_ligands.csv | E3 ligands | True | 21.8KB | 95 |  |  | curated |
+| protacxtend/data/curated_linkers.csv | linkers | True | 1.3KB | 12 |  |  | curated |
+| protacxtend/data/known_protac_smiles.csv | PROTACs | True | 309B | 3 |  |  | curated |
+| protacxtend/data/curated_exit_vector_map.csv | warheads | True | 924B | 5 |  |  | curated |
+| protacxtend/data/protacdb_local.csv | PROTACs | True | 461B | 3 |  |  | PROTAC-DB 3.0 |
+| protacxtend/data/protacpedia_local.csv | PROTACs | True | 331B | 2 |  |  | PROTACpedia |
+| protacxtend/data/drugbank_local.csv | drugs | True | 109B | 0 |  |  | DrugBank |
+| protacxtend/data/cell_context_atlas.csv | cell context | True | 263B | 3 |  |  | curated |
+| protacxtend/data/cooperativity_calibration.csv | cooperativity | True | 151B | 0 |  |  | curated |
+| protacxtend/data/hook_effect_calibration.csv | hook effect | True | 137B | 0 |  |  | curated |
+| protacxtend/data/benchmark/PROTAC-DB_3.0_protacs.xlsx | PROTACs | True | 6.0MB | 15502 |  |  | PROTAC-DB 3.0 |
+| protacxtend/data/benchmark/chemprop_train.csv | degradation ML | True | 234.3KB | 1698 |  |  | derived |
+| protacxtend/data/benchmark/chemprop_benchmark.csv | degradation ML | True | 8.2KB | 64 |  |  | derived |
+| protacxtend/data/benchmark/chemprop_train_multitarget.csv | degradation ML | True | 158.8KB | 1126 |  |  | derived |
+| protacxtend/data/benchmark/chemprop_cal.csv | degradation ML | True | 27.5KB | 200 |  |  | derived |
+| protacxtend/data/benchmark/expression_context.csv | cell context | True | 566B | 7 |  |  | derived |
+| protacxtend/data/benchmark/e3_expression_evidence.csv | E3 expression | True | 2.1KB | 24 |  |  | curated |
+| protacxtend/data/benchmark/protacdb_evidence_schema.csv | schema | True | 1.6KB | 10 |  |  | derived |
+| data/tack/tack_dc50.parquet | degradation ML | True | 603.8KB | 4184 |  |  | TACK |
+| data/tack/tack_bin.parquet | degradation ML | True | 779.5KB | 6561 |  |  | TACK |
+| protacxtend/data/tack/tack_dc50_model.joblib | model artifacts | True | 700.8KB |  |  |  | TACK |
+| protacxtend/data/tack/tack_dmax_model.joblib | model artifacts | True | 593.7KB |  |  |  | TACK |
+| protacxtend/data/tack/tack_bin_model.joblib | model artifacts | True | 688.7KB |  |  |  | TACK |
+| protacxtend/data/linkers/linker_smiles.txt | linkers | True | 5.1KB |  |  |  | derived |
+| protacxtend/data/linkers/linker_generator.pt | model artifacts | True | 691.3KB |  |  |  | derived |
+| protacxtend/data/case_study/brd4_vhl_6.csv | case study | True | 1.6KB | 6 |  |  | curated |
+| protacxtend/data/toolkit/Agent_Toolkit.xlsx | capability registry | True | 86.5KB | 21 |  |  | curated |
+| data/benchmark/PROTAC-DB_3.0_protacs.xlsx | PROTACs | True | 6.0MB | 15502 |  |  | PROTAC-DB 3.0 |
+| data/ternary_benchmark_six.json | ternary benchmark | True | 2.1KB |  |  |  | curated |
+| data/warheads/hmgb2_warhead_library.csv | warheads | True | 1.9KB | 15 |  |  | curated |
+| data/checkpoints/protacpilot.sqlite | memory / runs | True | 21.1MB |  |  |  | runtime |
 | data/synglue | model artifacts | True | 98.1MB (dir) | 5 files | d5654556990c | sha256:tree | SynGlue |
 | data/retrosynthesis/models | model artifacts | True | 965.9MB (dir) | 5 files | bbbda7688640 | sha256:tree | retrosynthesis |
-| data/protac_repos/repos | external code | True | 6.1GB (dir) | 19161 files | 90a44eb82ca7 | sha256:tree | GitHub |
+| data/protac_repos/repos | external code | True | 6.3GB (dir) | 19202 files | a4244cee3e32 | sha256:tree | GitHub |
 | data/synthesis_prediction/repos | external code | True | 64.6MB (dir) | 834 files | b6b896d570db | sha256:tree | GitHub |
 | PROTAC-DB 3.0 | PROTACs | n/a |  |  |  |  | http://cadd.zju.edu.cn/protacdb/ |
 | PROTACpedia | PROTACs | n/a |  |  |  |  | https://protacpedia.com/ |
@@ -271,54 +295,68 @@ This document and the sibling workbook `analysis/inventory/PROTACXtend_Toolkit_T
 | protacxtend/data/benchmark | unclassified | True |  |  |  |  |  |
 | protacxtend/data/case_study | unclassified | True |  |  |  |  |  |
 | protacxtend/data/linkers | unclassified | True |  |  |  |  |  |
+| protacxtend/data/parser_validation_set.json | unclassified | True | 12.1KB |  |  |  |  |
+| protacxtend/data/planning_notes.json | unclassified | True | 1.3KB |  |  |  |  |
 | protacxtend/data/tack | unclassified | True |  |  |  |  |  |
+| protacxtend/data/therapeutics | unclassified | True |  |  |  |  |  |
 | protacxtend/data/toolkit | unclassified | True |  |  |  |  |  |
+| protacxtend/data/verified_components.json | unclassified | True | 12.2KB |  |  |  |  |
 | data/benchmark | unclassified | True |  |  |  |  |  |
 | data/checkpoints | unclassified | True |  |  |  |  |  |
+| data/definite_ligase_list_medvar2016.csv | unclassified | True | 98.6KB | 377 |  |  |  |
+| data/e3_catalog_sources.json | unclassified | True | 1.4KB |  |  |  |  |
+| data/e3_catalog_v2.csv | unclassified | True | 146.4KB | 800 |  |  |  |
+| data/e3_catalog_v2_enriched.csv | unclassified | True | 152.4KB | 800 |  |  |  |
+| data/e3_cell_context_stats.csv | unclassified | True | 226.2KB | 601 |  |  |  |
+| data/e3_ligome_202508_systems.csv | unclassified | True | 389.3KB | 728 |  |  |  |
+| data/evidence_snapshots | unclassified | True |  |  |  |  |  |
 | data/linkers | unclassified | True |  |  |  |  |  |
+| data/live_cache | unclassified | True |  |  |  |  |  |
 | data/protac_repos | unclassified | True |  |  |  |  |  |
+| data/request_cache | unclassified | True |  |  |  |  |  |
 | data/research | unclassified | True |  |  |  |  |  |
 | data/retrosynthesis | unclassified | True |  |  |  |  |  |
 | data/synthesis_prediction | unclassified | True |  |  |  |  |  |
 | data/tack | unclassified | True |  |  |  |  |  |
 | data/toolkit | unclassified | True |  |  |  |  |  |
+| data/uniprot | unclassified | True |  |  |  |  |  |
 | data/warheads | unclassified | True |  |  |  |  |  |
 
 ## 6. Capability readiness
 
 | capability | installed | installable | web | readiness | best candidate | version |
 |---|---|---|---|---|---|---|
-| admet_toxicity | 1 | 1 | 5 | ready | Therapeutics Data Commons | py:tdc installed |
+| admet_toxicity | 2 | 0 | 5 | ready | DeepPurpose | py:DeepPurpose 0.1.5 |
 | binding_energy | 2 | 0 | 0 | ready | gmx_MMPBSA | bin:gmx_MMPBSA |
 | cheminformatics | 3 | 0 | 0 | ready | RDKit ETKDG | py:rdkit 2026.03.4 |
-| conformer_generation | 1 | 1 | 0 | ready | RDKit ETKDG | py:rdkit 2026.03.4 |
-| de_novo_generation | 2 | 3 | 0 | ready | CReM | py:crem 0.3.1 |
+| conformer_generation | 2 | 0 | 0 | ready | RDKit ETKDG | py:rdkit 2026.03.4 |
+| de_novo_generation | 3 | 2 | 0 | ready | CReM | py:crem 0.3.1 |
 | degradation_prediction | 1 | 3 | 0 | ready | Chemprop | py:chemprop 2.3.1 |
-| fragmentation | 3 | 0 | 0 | ready | BRICS | py:rdkit 2026.03.4 |
+| fragmentation | 3 | 0 | 0 | ready | BRICS | py:rdkit 2026.3.4 |
 | image_analysis | 0 | 1 | 0 | installable | CellProfiler |  |
-| ligand_docking | 3 | 5 | 0 | ready | AutoDock Vina | bin:vina AutoDock Vina v1.2.3 |
+| ligand_docking | 5 | 3 | 0 | ready | AutoDock Vina | bin:vina AutoDock Vina v1.2.3 |
 | ligand_preparation | 2 | 0 | 0 | ready | Meeko | py:meeko 0.7.1 |
 | linker_generation | 1 | 5 | 0 | ready | CReM | py:crem 0.3.1 |
 | literature_mining | 1 | 1 | 2 | ready | SciSpacy | py:scispacy 0.6.2 |
-| molecular_dynamics | 3 | 1 | 0 | ready | OpenMM | py:openmm 8.6.1 |
+| molecular_dynamics | 4 | 1 | 0 | ready | OpenMM | py:openmm 8.6.1 |
 | molecular_ml | 2 | 4 | 0 | ready | Chemprop | py:chemprop 2.3.1 |
 | molecular_visualization | 2 | 0 | 1 | ready | NGLView | py:nglview 4.0.1 |
 | patent_mining | 0 | 0 | 3 | web_only | SureChEMBL |  |
-| protein_language_models | 1 | 1 | 0 | ready | ESM-2 | py:esm 2.0.0 |
-| protein_protein_docking | 1 | 5 | 3 | ready | LightDock | bin:lightdock3.py |
-| proteomics | 0 | 1 | 0 | installable | FragPipe |  |
-| quantum_chemistry | 0 | 4 | 0 | installable | xTB |  |
+| protein_language_models | 1 | 1 | 0 | ready | ESM-2 | py:esm installed |
+| protein_protein_docking | 2 | 4 | 3 | ready | HADDOCK3 | bin:haddock3 |
+| proteomics | 2 | 0 | 0 | ready | FragPipe | bin:fragpipe |
+| quantum_chemistry | 3 | 1 | 0 | ready | xTB | bin:xtb |
 | reaction_prediction | 2 | 0 | 1 | ready | RXNMapper | py:rxnmapper 0.4.3 |
-| retrosynthesis | 1 | 2 | 2 | ready | AiZynthFinder | py:aizynthfinder 4.4.1 |
+| retrosynthesis | 3 | 0 | 2 | ready | AiZynthFinder | py:aizynthfinder 4.4.1 |
 | smiles_validation | 2 | 0 | 0 | ready | RDKit ETKDG | py:rdkit 2026.03.4 |
 | structure_preparation | 4 | 0 | 0 | ready | PDBFixer | py:pdbfixer 1.12.0 |
 | synthetic_accessibility | 0 | 2 | 0 | installable | RAscore |  |
-| ternary_complex_modeling | 0 | 3 | 2 | installable | PRosettaC |  |
+| ternary_complex_modeling | 2 | 2 | 2 | ready | HADDOCK3 | bin:haddock3 |
 | workflow_platforms | 0 | 0 | 1 | web_only | KNIME |  |
 
 ## 6b. Scientific backends (capability-first)
 
-Free/local execution path per capability; restricted engines return LICENSE_REQUIRED. 20/27 capabilities ready.
+Free/local execution path per capability; restricted engines return LICENSE_REQUIRED. 23/27 capabilities ready.
 
 | backend | licence | available | priority | best for |
 |---|---|---|---|---|
@@ -371,7 +409,7 @@ Free/local execution path per capability; restricted engines return LICENSE_REQU
 
 ## 7. Dependencies
 
-The workbook `Dependencies` sheet contains **678** rows across groups: `runtime_requirements`, `pyproject_dependencies`, `optional:*`, `toolkit_installed`, and `environment_all` (every installed distribution).
+The workbook `Dependencies` sheet contains **703** rows across groups: `runtime_requirements`, `pyproject_dependencies`, `optional:*`, `toolkit_installed`, and `environment_all` (every installed distribution).
 
 | group | package | installed | declared |
 |---|---|---|---|

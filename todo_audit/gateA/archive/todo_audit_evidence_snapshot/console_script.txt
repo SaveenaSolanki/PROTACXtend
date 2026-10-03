@@ -1,0 +1,10 @@
+Name: protacxtend
+Version: 0.1.0
+Summary: PROTACXtend command-line, API, and UI workspace for agentic PROTAC design.
+--- bin/protacxtend ---
+#!/home/saveenas/miniconda3/bin/python3
+import sys
+from synglue_agent.cli import main
+if __name__ == '__main__':
+--- 'protacxtend --help' exit ---
+NONZERO: Traceback (most recent call last):

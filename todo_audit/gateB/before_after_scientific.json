@@ -1,0 +1,43 @@
+{
+  "before": {
+    "execution_mode": null,
+    "stopping_state": "REVISE",
+    "uniprot_id": "M0QZD9",
+    "organism": "Homo sapiens",
+    "structures": [],
+    "known_binder_count": 3,
+    "tractability_score": 0.0,
+    "warhead_sources": [
+      "local_demo_brd4_binder",
+      "local_demo_bromodomain_warhead",
+      "local_demo_jq1_like_warhead"
+    ],
+    "n_warheads": 3,
+    "e3_ligands": [
+      "VHL_demo_hydroxyproline_like",
+      "VHL_demo_vh032_like"
+    ],
+    "n_candidates": 25,
+    "top_smiles": "COc1ccc(Nc2ncnc3cc(CCc4cnnn4CCc4cc(C(=O)N[C@@H](C(=O)N5CCC[C@H]5O)C(C)C)ccc4C(C)C)ccc23)cc1",
+    "chemistry_status": "succeeded"
+  },
+  "after": {
+    "execution_mode": "scientific",
+    "stopping_state": "INSUFFICIENT EVIDENCE",
+    "uniprot_id": "O60885",
+    "organism": "human",
+    "structures": [
+      "2OSS",
+      "3MXF",
+      "5T35"
+    ],
+    "known_binder_count": 120,
+    "tractability_score": 0.86,
+    "warhead_sources": [],
+    "n_warheads": 0,
+    "e3_ligands": [],
+    "n_candidates": 0,
+    "top_smiles": null,
+    "chemistry_status": "degraded"
+  }
+}

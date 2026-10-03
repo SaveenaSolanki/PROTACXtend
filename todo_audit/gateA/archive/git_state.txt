@@ -1,0 +1,125 @@
+# Gate A1 archive @ 2026-09-23T12:25:50Z
+
+## git HEAD
+0abbe833c6d92f1f33092414865acddec2ed42b2
+
+## branch
+sprint-2
+
+## git status --porcelain
+ M TODO.md
+ D protacpilot-memory/.gitignore
+ D protacpilot-memory/PROTACPILOT_COGNITIVE_MEMORY_AUDIT.md
+ D protacpilot-memory/README.md
+ D protacpilot-memory/benchmarks/__init__.py
+ D protacpilot-memory/benchmarks/ablation.py
+ D protacpilot-memory/benchmarks/baselines.py
+ D protacpilot-memory/benchmarks/benchmark.py
+ D protacpilot-memory/benchmarks/benchmark_h.py
+ D protacpilot-memory/benchmarks/benchmark_i.py
+ D protacpilot-memory/benchmarks/bounded_candidates.py
+ D protacpilot-memory/benchmarks/host_bridge_delta.py
+ D protacpilot-memory/benchmarks/metrics.py
+ D protacpilot-memory/benchmarks/performance.py
+ D protacpilot-memory/conftest.py
+ D protacpilot-memory/examples/quickstart.py
+ D protacpilot-memory/ppmemory.example.toml
+ D protacpilot-memory/pyproject.toml
+ D protacpilot-memory/src/protacpilot_memory/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/api.py
+ D protacpilot-memory/src/protacpilot_memory/audit/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/audit/auditor.py
+ D protacpilot-memory/src/protacpilot_memory/cli/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/cli/main.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/attention.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/conflict.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/consolidation.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/counterfactual.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/decay.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/encoder.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/generalization.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/pattern_completion.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/prediction_error.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/reconsolidation.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/replay.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/retriever.py
+ D protacpilot-memory/src/protacpilot_memory/cognitive/state_machine.py
+ D protacpilot-memory/src/protacpilot_memory/confidence.py
+ D protacpilot-memory/src/protacpilot_memory/config.py
+ D protacpilot-memory/src/protacpilot_memory/db.py
+ D protacpilot-memory/src/protacpilot_memory/domain/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/context.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/entities.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/evidence.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/normalization.py
+ D protacpilot-memory/src/protacpilot_memory/domain/protac/ontology.py
+ D protacpilot-memory/src/protacpilot_memory/errors.py
+ D protacpilot-memory/src/protacpilot_memory/mcp/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/mcp/server.py
+ D protacpilot-memory/src/protacpilot_memory/mcp/tools.py
+ D protacpilot-memory/src/protacpilot_memory/migrations/0001_init.sql
+ D protacpilot-memory/src/protacpilot_memory/migrations/0002_confidence.sql
+ D protacpilot-memory/src/protacpilot_memory/migrations/0003_dedupe.sql
+ D protacpilot-memory/src/protacpilot_memory/migrations/0004_counterfactual.sql
+ D protacpilot-memory/src/protacpilot_memory/retrieval/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/candidates.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/graph.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/lexical.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/progressive.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/rerank.py
+ D protacpilot-memory/src/protacpilot_memory/retrieval/semantic.py
+ D protacpilot-memory/src/protacpilot_memory/server/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/server/api.py
+ D protacpilot-memory/src/protacpilot_memory/store/__init__.py
+ D protacpilot-memory/src/protacpilot_memory/store/base.py
+ D protacpilot-memory/src/protacpilot_memory/store/entities.py
+ D protacpilot-memory/src/protacpilot_memory/store/episodes.py
+ D protacpilot-memory/src/protacpilot_memory/store/evidence.py
+ D protacpilot-memory/src/protacpilot_memory/store/predictions.py
+ D protacpilot-memory/src/protacpilot_memory/store/procedures.py
+ D protacpilot-memory/src/protacpilot_memory/store/prospective.py
+ D protacpilot-memory/src/protacpilot_memory/store/relations.py
+ D protacpilot-memory/src/protacpilot_memory/store/semantics.py
+ D protacpilot-memory/src/protacpilot_memory/store/sessions.py
+ D protacpilot-memory/src/protacpilot_memory/store/store.py
+ D protacpilot-memory/src/protacpilot_memory/store/traces.py
+ D protacpilot-memory/src/protacpilot_memory/util.py
+ D protacpilot-memory/tests/conftest.py
+ D protacpilot-memory/tests/helpers.py
+ D protacpilot-memory/tests/test_ablation.py
+ D protacpilot-memory/tests/test_attention_encoding.py
+ D protacpilot-memory/tests/test_benchmark_h.py
+ D protacpilot-memory/tests/test_benchmark_i.py
+ D protacpilot-memory/tests/test_benchmarks.py
+ D protacpilot-memory/tests/test_bounded_candidates.py
+ D protacpilot-memory/tests/test_consolidation.py
+ D protacpilot-memory/tests/test_context_fields.py
+ D protacpilot-memory/tests/test_decay_strength.py
+ D protacpilot-memory/tests/test_domain_protac.py
+ D protacpilot-memory/tests/test_evaluation.py
+ D protacpilot-memory/tests/test_mcp_cli.py
+ D protacpilot-memory/tests/test_migrations.py
+ D protacpilot-memory/tests/test_paper_artifacts.py
+ D protacpilot-memory/tests/test_pattern_completion.py
+ D protacpilot-memory/tests/test_performance.py
+ D protacpilot-memory/tests/test_predictions.py
+ D protacpilot-memory/tests/test_procedures.py
+ D protacpilot-memory/tests/test_prospective_audit.py
+ D protacpilot-memory/tests/test_reconsolidation.py
+ D protacpilot-memory/tests/test_retrieval.py
+ D protacpilot-memory/tests/test_scientific_metrics.py
+ D protacpilot-memory/tests/test_state_machine.py
+ D protacpilot-memory/tests/test_store_core.py
+?? outputs/strategies/
+?? protacxtend-memory/
+?? todo/
+?? todo_audit/
+
+## git log -5
+0abbe83 docs(todo): mark P0 parser/modes/fixtures/schemas/benchmark items done; clean tree
+7eb70d4 chore: WIP checkpoint — canonical stack, memory, modules, data, docs
+8be8572 feat(benchmark): deterministic scoring engine, scorable manifest, pilot runner
+0d3faac chore(repo): fix residue, Dockerfile, TUI packaging, typed schemas, strategy CLI
+b0481b4 feat(runtime): DEMO/TEST/SCIENTIFIC execution modes; remove fixture defaults

@@ -1,0 +1,493 @@
+{
+  "head": "0abbe833c6d92f1f33092414865acddec2ed42b2",
+  "generated": "2026-09-23",
+  "claims": [
+    {
+      "claim_id": "C01",
+      "source": "todo/_00 + TODO.md",
+      "claim": "Canonical TherapeuticStrategy.v1 emits all named fields",
+      "code_path": "protacxtend/canonical/schemas.py",
+      "artifact": "outputs/strategies/strategy_17aa7ab30f.strategy.json",
+      "status": "verified",
+      "finding": "-",
+      "evidence_command": "python -m protacxtend.cli strategy \"Design a VHL PROTAC against BRD4\""
+    },
+    {
+      "claim_id": "C02",
+      "source": "todo/_00",
+      "claim": "Typed RunManifest emitted",
+      "code_path": "protacxtend/canonical/schemas.py:310",
+      "artifact": "outputs/strategies/*.manifest.json",
+      "status": "verified",
+      "finding": "-",
+      "evidence_command": "same"
+    },
+    {
+      "claim_id": "C03",
+      "source": "todo/_00",
+      "claim": "Field presence is not decision validity",
+      "code_path": "protacxtend/canonical/decision.py",
+      "artifact": "strategy_*.json",
+      "status": "confirmed",
+      "finding": "F-03/F-04",
+      "evidence_command": "see FINDINGS"
+    },
+    {
+      "claim_id": "C04",
+      "source": "TODO.md P0",
+      "claim": "Scientific mode fixtures removed across all paths",
+      "code_path": "protacxtend/runtime/modes.py",
+      "artifact": "strategy_1ef85a525b vs strategy_167cc2f93b",
+      "status": "failed",
+      "finding": "F-03",
+      "evidence_command": "compare demo vs scientific signatures"
+    },
+    {
+      "claim_id": "C05",
+      "source": "TODO.md P0",
+      "claim": "Agent tools fail closed in SCIENTIFIC",
+      "code_path": "protacxtend/runtime/agent_tools.py",
+      "artifact": "evidence/mode_probe.txt",
+      "status": "verified",
+      "finding": "F-08",
+      "evidence_command": "SyntheticInputNotAllowed/MissingScientificInput raised"
+    },
+    {
+      "claim_id": "C06",
+      "source": "TODO.md P0",
+      "claim": "Target/entity parser 125 prompts >=98%",
+      "code_path": "protacxtend/nlp/entity_extraction.py",
+      "artifact": "outputs/parser_eval.json",
+      "status": "verified",
+      "finding": "-",
+      "evidence_command": "python scripts/evaluate_parser.py"
+    },
+    {
+      "claim_id": "C07",
+      "source": "TODO.md P0",
+      "claim": "50 tasks genuinely scorable",
+      "code_path": "benchmark/SCORABLE_MANIFEST.json",
+      "artifact": "benchmark/SCORABLE_REPORT.md",
+      "status": "verified",
+      "finding": "-",
+      "evidence_command": "python scripts/build_scorable_manifest.py"
+    },
+    {
+      "claim_id": "C08",
+      "source": "TODO.md P0",
+      "claim": "48/48 offline smoke mean 0.885",
+      "code_path": "scripts/run_benchmark_pilot.py",
+      "artifact": "benchmark_results/pilots/pilot_offline-smoke_*.json",
+      "status": "failed",
+      "finding": "F-05",
+      "evidence_command": "python scripts/run_benchmark_pilot.py --offline-smoke"
+    },
+    {
+      "claim_id": "C09",
+      "source": "TODO.md P1",
+      "claim": "One real deterministic task executed",
+      "code_path": "benchmark_runner/runner.py",
+      "artifact": "benchmark_results/pilots/pilot_deterministic_*.json",
+      "status": "verified (score 0.0)",
+      "finding": "F-01/F-02",
+      "evidence_command": "cat pilot_deterministic_*.json"
+    },
+    {
+      "claim_id": "C10",
+      "source": "TODO.md P1",
+      "claim": "29 flagged gold for expert review",
+      "code_path": "benchmark/SCORABLE_MANIFEST.json",
+      "artifact": "SCORABLE_MANIFEST.json",
+      "status": "verified",
+      "finding": "F-06",
+      "evidence_command": "json n_requires_expert_review"
+    },
+    {
+      "claim_id": "C11",
+      "source": "todo/_00",
+      "claim": "BRD4 resolves to O60885",
+      "code_path": "protacxtend/data/curated_targets.csv",
+      "artifact": "strategy target_validation.uniprot_id",
+      "status": "failed",
+      "finding": "F-04",
+      "evidence_command": "strategy reports M0QZD9"
+    },
+    {
+      "claim_id": "C12",
+      "source": "todo/_02",
+      "claim": "Registry tools have executable status",
+      "code_path": "protacxtend/toolkit/registry.py",
+      "artifact": "evidence/registry_summary.txt",
+      "status": "failed",
+      "finding": "F-07",
+      "evidence_command": "summarize_toolkit_status -> available 0 executable 0"
+    },
+    {
+      "claim_id": "C13",
+      "source": "todo/_02",
+      "claim": "ToolSpec typed contract",
+      "code_path": "protacxtend/agentic/registry.py TOOL_SPECS",
+      "artifact": "list of dicts",
+      "status": "partial",
+      "finding": "-",
+      "evidence_command": "grep ToolSpec"
+    },
+    {
+      "claim_id": "C14",
+      "source": "todo/_02",
+      "claim": "Three critics (evidence/mechanism/reproducibility)",
+      "code_path": "protacxtend/canonical/critic.py",
+      "artifact": "one CriticVerifier",
+      "status": "partial",
+      "finding": "F-12",
+      "evidence_command": "inspect critic.py"
+    },
+    {
+      "claim_id": "C15",
+      "source": "todo/_02",
+      "claim": "Minimum artifact tree",
+      "code_path": "docs/ + benchmark/",
+      "artifact": "none",
+      "status": "absent",
+      "finding": "F-10",
+      "evidence_command": "ls docs benchmarks"
+    },
+    {
+      "claim_id": "C16",
+      "source": "todo/_01",
+      "claim": "E7 temporal as-of validation",
+      "code_path": "protacxtend/memory/ na",
+      "artifact": "none",
+      "status": "absent",
+      "finding": "F-11",
+      "evidence_command": "grep cutoff/as_of/temporal/leakage"
+    },
+    {
+      "claim_id": "C17",
+      "source": "todo/_01",
+      "claim": "E2 baselines under equal budget",
+      "code_path": "benchmark/BASELINES.md",
+      "artifact": "benchmark_results/acceptance/execution_log.csv (n=4)",
+      "status": "partial",
+      "finding": "F-09",
+      "evidence_command": "cat execution_log.csv"
+    },
+    {
+      "claim_id": "C18",
+      "source": "todo/_01",
+      "claim": "baseline results scored",
+      "code_path": "benchmark_results/scored/",
+      "artifact": "empty dir",
+      "status": "failed",
+      "finding": "F-09",
+      "evidence_command": "ls benchmark_results/scored"
+    },
+    {
+      "claim_id": "C19",
+      "source": "TODO.md P0",
+      "claim": "Working tree clean",
+      "code_path": "git",
+      "artifact": "git status",
+      "status": "104 deletions + untracked",
+      "finding": "failed",
+      "evidence_command": "F-14",
+      "null": [
+        "git status --short"
+      ]
+    },
+    {
+      "claim_id": "C20",
+      "source": "TODO.md P0",
+      "claim": "synglue_agent residue fixed",
+      "code_path": "pyproject.toml vs installed",
+      "artifact": "evidence/console_script.txt",
+      "status": "failed (installed)",
+      "finding": "F-15",
+      "evidence_command": "protacxtend --help"
+    },
+    {
+      "claim_id": "C21",
+      "source": "todo/_00",
+      "claim": "92 tests reported",
+      "code_path": "protacxtend/tests/",
+      "artifact": "107 selected pass + 48 selected pass",
+      "status": "partial",
+      "finding": "F-16",
+      "evidence_command": "selective pytest"
+    },
+    {
+      "claim_id": "C22",
+      "source": "todo/_00",
+      "claim": "E1-E8 figure is proposal",
+      "code_path": "na",
+      "artifact": "na",
+      "status": "verified as proposal",
+      "finding": "-",
+      "evidence_command": "no data"
+    },
+    {
+      "claim_id": "C23",
+      "source": "todo/_00",
+      "claim": "breadth x depth (8.5",
+      "code_path": "9.5)",
+      "artifact": "na",
+      "status": "na",
+      "finding": "absent",
+      "evidence_command": "-",
+      "null": [
+        "no rubric/source"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "S1",
+      "area": "pilot",
+      "status": "partial",
+      "title": "Full 48-task executed pilot does not exist",
+      "evidence": [
+        "benchmark_results/closed48/closed48_locked/manifest.json"
+      ],
+      "resolution": "closed48_locked executed all 48 cases under 3 arms with locked budgets; gold-independent outcomes only."
+    },
+    {
+      "id": "F-02",
+      "severity": "S1",
+      "area": "routing",
+      "status": "withdrawn_self_grade",
+      "title": "Executed KNOW-01 scored 0.0 (design engine used for KNOW question)",
+      "evidence": [
+        "benchmark_results/closed48/closed48_locked/case_studies/evidence_complete_KNOW-01.md"
+      ],
+      "resolution": "The old 0.0 used the self-derived overlay and is withdrawn. direct_tool correctly resolves KNOW-01 -> O60885; correctness PENDING_INDEPENDENT_GOLD."
+    },
+    {
+      "id": "F-03",
+      "severity": "S1",
+      "area": "scientific-mode",
+      "status": "failed",
+      "title": "SCIENTIFIC and DEMO canonical strategy output identical (demo fixtures leak)",
+      "evidence": [
+        "evidence/canonical_mode_divergence.txt",
+        "evidence/mode_probe.txt"
+      ]
+    },
+    {
+      "id": "F-04",
+      "severity": "S1",
+      "area": "target-resolution",
+      "status": "failed",
+      "title": "BRD4 mis-resolved to UniProt M0QZD9 instead of curated O60885",
+      "evidence": [
+        "evidence/registry_summary.txt",
+        "protacxtend/data/curated_targets.csv"
+      ]
+    },
+    {
+      "id": "F-05",
+      "severity": "S1",
+      "area": "benchmark",
+      "status": "draft_pending_independent_review",
+      "title": "48/48 mean 0.885 is circular self-grading (42/48 derived overlays)",
+      "evidence": [
+        "benchmark/gateC/rubrics/*.json",
+        "benchmark/gateC/REVIEWER_DECISIONS.tsv"
+      ],
+      "resolution": "Gate C drafted independent rubrics in benchmark/gateC/rubrics/ (no self-overlay read). Old derived overlays retained as infrastructure smoke only; no score quotable until 29 reviewer decisions are signed."
+    },
+    {
+      "id": "F-06",
+      "severity": "S1",
+      "area": "gold",
+      "status": "pending",
+      "title": "No adjudication for 29 expert-review tasks",
+      "evidence": [
+        "benchmark/gateC/REVIEWER_DECISIONS.tsv",
+        "benchmark/gold_review.tsv"
+      ],
+      "resolution": "29 reviewer decisions enumerated in benchmark/gateC/REVIEWER_DECISIONS.tsv; gold_review.tsv has one pending row per task; no reviewer identity or verdict exists."
+    },
+    {
+      "id": "F-07",
+      "severity": "S2",
+      "area": "registry",
+      "status": "partial",
+      "title": "296 registry rows; available/executable hard-coded 0",
+      "evidence": [
+        "evidence/registry_summary.txt"
+      ]
+    },
+    {
+      "id": "F-08",
+      "severity": "S2",
+      "area": "agent-tools",
+      "status": "verified",
+      "title": "34 agent tools gated with typed scientific failures",
+      "evidence": [
+        "evidence/mode_probe.txt",
+        "evidence/pytest_focused_subsystems.txt"
+      ]
+    },
+    {
+      "id": "F-09",
+      "severity": "S2",
+      "area": "baselines",
+      "status": "partial",
+      "title": "Baselines exist only at n=4; benchmark_results/scored empty",
+      "evidence": [
+        "benchmark_results/closed48/closed48_locked/results_table.csv"
+      ],
+      "resolution": "direct_tool and fixed_workflow baselines now run over all 48 cases; no external-agent baselines; accuracy pending gold."
+    },
+    {
+      "id": "F-10",
+      "severity": "S2",
+      "area": "artifacts",
+      "status": "addressed_draft_frozen",
+      "title": "Required minimum artifact tree missing",
+      "evidence": [
+        "benchmark/gateC/provenance_manifest.json",
+        "benchmark/pre_registration.md",
+        "benchmark/splits.json"
+      ],
+      "resolution": "Created benchmark/pre_registration.md, benchmark/splits.json, benchmark/gold_review.tsv, docs/tool_registry_snapshot.json and the benchmark/gateC/ package with a SHA-256 provenance manifest. Gold still 0/48 adjudicated."
+    },
+    {
+      "id": "F-11",
+      "severity": "S2",
+      "area": "temporal",
+      "status": "absent",
+      "title": "No cutoff/as-of/leakage infrastructure (E7)",
+      "evidence": [
+        "FINDINGS.md"
+      ]
+    },
+    {
+      "id": "F-12",
+      "severity": "S2",
+      "area": "critics",
+      "status": "partial",
+      "title": "One CriticVerifier, not three named critics",
+      "evidence": [
+        "protacxtend/canonical/critic.py"
+      ]
+    },
+    {
+      "id": "F-13",
+      "severity": "S2",
+      "area": "provenance",
+      "status": "partial",
+      "title": "Evidence refs are internal labels; runtime accounting inconsistent",
+      "evidence": [
+        "outputs/strategies/*.manifest.json"
+      ]
+    },
+    {
+      "id": "F-14",
+      "severity": "S3",
+      "area": "git",
+      "status": "fixed",
+      "title": "Working tree dirty: 104 deletions + untracked protacxtend-memory rename",
+      "resolution": "Committed as a rename in 82a0e4d; 104/104 tracked files byte-identical, 338 on-disk files hashed in gateC/F14_memory_provenance.json; generated paths re-ignored. No memory data deleted.",
+      "evidence": [
+        "git show --stat 82a0e4d",
+        "todo_audit/gateC/F14_memory_provenance.json"
+      ]
+    },
+    {
+      "id": "F-15",
+      "severity": "S3",
+      "area": "install",
+      "status": "failed",
+      "title": "Installed console script imports synglue_agent (stale 0.1.0)",
+      "evidence": [
+        "evidence/console_script.txt"
+      ]
+    },
+    {
+      "id": "F-16",
+      "severity": "S3",
+      "area": "ci",
+      "status": "partial",
+      "title": "pytest collects vendored repos: 1357 tests / 156 errors",
+      "evidence": [
+        "evidence/pytest_collection_raw.txt"
+      ]
+    }
+  ],
+  "studies": [
+    {
+      "study": "E1",
+      "infra": "partial",
+      "data": "registry 296",
+      "gold": "n/a",
+      "splits": false,
+      "run": "agent probes",
+      "overall": "partial"
+    },
+    {
+      "study": "E2",
+      "infra": "yes",
+      "data": "48 of 500",
+      "gold": "29 pending",
+      "splits": false,
+      "run": "n=4 acceptance",
+      "overall": "absent"
+    },
+    {
+      "study": "E3",
+      "infra": "partial",
+      "data": "48 authored",
+      "gold": "n/a",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    },
+    {
+      "study": "E4",
+      "infra": "partial",
+      "data": "none",
+      "gold": "none",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    },
+    {
+      "study": "E5",
+      "infra": "partial",
+      "data": "none",
+      "gold": "none",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    },
+    {
+      "study": "E6",
+      "infra": "partial",
+      "data": "n/a",
+      "gold": "n/a",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    },
+    {
+      "study": "E7",
+      "infra": "none",
+      "data": "none",
+      "gold": "none",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    },
+    {
+      "study": "E8",
+      "infra": "none",
+      "data": "none",
+      "gold": "none",
+      "splits": false,
+      "run": "none",
+      "overall": "absent"
+    }
+  ]
+}

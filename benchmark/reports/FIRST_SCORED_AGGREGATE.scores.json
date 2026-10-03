@@ -1,0 +1,177 @@
+{
+  "schema": "protacxtend.first_aggregate.v1",
+  "gold": "benchmark/gold_machine_v1/machine_gold.json",
+  "gold_sha256": "a70be277add8d42463dec399199199165a1b5edf5547abbcc86e910953202a90",
+  "gold_counts": {
+    "total": 48,
+    "MACHINE_VERIFIED_EXTERNAL": 7,
+    "RULE_BASED_RUBRIC": 32,
+    "PENDING_HUMAN": 9
+  },
+  "note": "Primary endpoint = MACHINE_VERIFIED_EXTERNAL (externally verified). Secondary = RULE_BASED_RUBRIC. PENDING_HUMAN excluded and reported. Not human adjudication.",
+  "n_predictions": 254,
+  "aggregate": [
+    {
+      "arm": "direct_tool",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 2,
+      "accuracy": 0.2857,
+      "wilson_lo": 0.0822,
+      "wilson_hi": 0.6411
+    },
+    {
+      "arm": "direct_tool",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 32,
+      "correct": 3,
+      "accuracy": 0.0938,
+      "wilson_lo": 0.0324,
+      "wilson_hi": 0.2422
+    },
+    {
+      "arm": "direct_tool",
+      "gold_class": "PENDING_HUMAN",
+      "n": 9,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.2992
+    },
+    {
+      "arm": "fixed_workflow",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 2,
+      "accuracy": 0.2857,
+      "wilson_lo": 0.0822,
+      "wilson_hi": 0.6411
+    },
+    {
+      "arm": "fixed_workflow",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 32,
+      "correct": 7,
+      "accuracy": 0.2188,
+      "wilson_lo": 0.1102,
+      "wilson_hi": 0.3876
+    },
+    {
+      "arm": "fixed_workflow",
+      "gold_class": "PENDING_HUMAN",
+      "n": 9,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.2992
+    },
+    {
+      "arm": "llm_only",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 1,
+      "accuracy": 0.1429,
+      "wilson_lo": 0.0257,
+      "wilson_hi": 0.5131
+    },
+    {
+      "arm": "llm_only",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 5,
+      "correct": 2,
+      "accuracy": 0.4,
+      "wilson_lo": 0.1176,
+      "wilson_hi": 0.7693
+    },
+    {
+      "arm": "llm_only",
+      "gold_class": "PENDING_HUMAN",
+      "n": 0,
+      "correct": 0,
+      "accuracy": null,
+      "wilson_lo": null,
+      "wilson_hi": null
+    },
+    {
+      "arm": "protacxtend",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.3543
+    },
+    {
+      "arm": "protacxtend",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 32,
+      "correct": 10,
+      "accuracy": 0.3125,
+      "wilson_lo": 0.1795,
+      "wilson_hi": 0.4857
+    },
+    {
+      "arm": "protacxtend",
+      "gold_class": "PENDING_HUMAN",
+      "n": 9,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.2992
+    },
+    {
+      "arm": "retrieval_only",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.3543
+    },
+    {
+      "arm": "retrieval_only",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 32,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.1072
+    },
+    {
+      "arm": "retrieval_only",
+      "gold_class": "PENDING_HUMAN",
+      "n": 9,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.2992
+    },
+    {
+      "arm": "tool_only",
+      "gold_class": "MACHINE_VERIFIED_EXTERNAL",
+      "n": 7,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.3543
+    },
+    {
+      "arm": "tool_only",
+      "gold_class": "RULE_BASED_RUBRIC",
+      "n": 32,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.1072
+    },
+    {
+      "arm": "tool_only",
+      "gold_class": "PENDING_HUMAN",
+      "n": 9,
+      "correct": 0,
+      "accuracy": 0.0,
+      "wilson_lo": 0.0,
+      "wilson_hi": 0.2992
+    }
+  ]
+}

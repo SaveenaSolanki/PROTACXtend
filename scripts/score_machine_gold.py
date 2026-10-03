@@ -30,6 +30,7 @@ from benchmark_runner.grader import grade_answer  # noqa: E402
 GOLD = ROOT / "benchmark/gold_machine_v1/machine_gold.json"
 CLOSED = ROOT / "benchmark_results/closed48/closed48_locked/predictions.jsonl"
 ADAPTERS = ROOT / "benchmark_results/first_aggregate/adapters_predictions.jsonl"
+ADAPTERS_LLM = ROOT / "benchmark_results/first_aggregate/adapters_llm_know.jsonl"
 OUT = ROOT / "benchmark_results/first_aggregate"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -52,6 +53,10 @@ def load_predictions() -> list[dict[str, Any]]:
                 rows.append(json.loads(line))
     if ADAPTERS.exists():
         for line in ADAPTERS.read_text().splitlines():
+            if line.strip():
+                rows.append(json.loads(line))
+    if ADAPTERS_LLM.exists():
+        for line in ADAPTERS_LLM.read_text().splitlines():
             if line.strip():
                 rows.append(json.loads(line))
     return rows

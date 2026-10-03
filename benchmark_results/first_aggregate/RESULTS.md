@@ -1,0 +1,30 @@
+# First scored aggregate — 48-case governed benchmark
+
+- gold: `benchmark/gold_machine_v1/machine_gold.json` (sha256 `a70be277add8d424…`)
+- gold classes: {'total': 48, 'MACHINE_VERIFIED_EXTERNAL': 7, 'RULE_BASED_RUBRIC': 32, 'PENDING_HUMAN': 9}
+- predictions scored: 254
+- **Primary endpoint**: MACHINE_VERIFIED_EXTERNAL (externally verified against UniProt/RCSB/Crossref/PubChem).
+- **Secondary endpoint**: RULE_BASED_RUBRIC (deterministic, pre-registered checklist).
+- **PENDING_HUMAN** tasks are excluded from both endpoints and reported for completeness.
+- This is machine-verified / rule-based gold, **not human adjudication**.
+
+| arm | gold class | n | correct | accuracy | 95% Wilson CI |
+|---|---|---|---|---|---|
+| direct_tool | MACHINE_VERIFIED_EXTERNAL | 7 | 2 | 0.2857 | [0.0822, 0.6411] |
+| direct_tool | RULE_BASED_RUBRIC | 32 | 3 | 0.0938 | [0.0324, 0.2422] |
+| direct_tool | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |
+| fixed_workflow | MACHINE_VERIFIED_EXTERNAL | 7 | 2 | 0.2857 | [0.0822, 0.6411] |
+| fixed_workflow | RULE_BASED_RUBRIC | 32 | 7 | 0.2188 | [0.1102, 0.3876] |
+| fixed_workflow | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |
+| llm_only | MACHINE_VERIFIED_EXTERNAL | 7 | 1 | 0.1429 | [0.0257, 0.5131] |
+| llm_only | RULE_BASED_RUBRIC | 5 | 2 | 0.4 | [0.1176, 0.7693] |
+| llm_only | PENDING_HUMAN | 0 | 0 | — | — |
+| protacxtend | MACHINE_VERIFIED_EXTERNAL | 7 | 0 | 0.0 | [0.0, 0.3543] |
+| protacxtend | RULE_BASED_RUBRIC | 32 | 10 | 0.3125 | [0.1795, 0.4857] |
+| protacxtend | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |
+| retrieval_only | MACHINE_VERIFIED_EXTERNAL | 7 | 0 | 0.0 | [0.0, 0.3543] |
+| retrieval_only | RULE_BASED_RUBRIC | 32 | 0 | 0.0 | [0.0, 0.1072] |
+| retrieval_only | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |
+| tool_only | MACHINE_VERIFIED_EXTERNAL | 7 | 0 | 0.0 | [0.0, 0.3543] |
+| tool_only | RULE_BASED_RUBRIC | 32 | 0 | 0.0 | [0.0, 0.1072] |
+| tool_only | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |

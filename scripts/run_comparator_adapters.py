@@ -29,6 +29,7 @@ def main() -> int:
     ap.add_argument("--model", default="deepseek-r1:14b")
     ap.add_argument("--tasks", default="")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--out", default="")
     args = ap.parse_args()
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
     wanted = {t.strip() for t in args.tasks.split(",") if t.strip()}
@@ -43,7 +44,7 @@ def main() -> int:
         cases = cases[: args.limit]
 
     OUT.mkdir(parents=True, exist_ok=True)
-    out_file = OUT / "adapters_predictions.jsonl"
+    out_file = Path(args.out) if args.out else (OUT / "adapters_predictions.jsonl")
     rows: list[dict] = []
     for case in cases:
         q = case.get("scientific_question", "")

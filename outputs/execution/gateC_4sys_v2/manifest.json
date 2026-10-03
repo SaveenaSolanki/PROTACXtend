@@ -1,0 +1,24 @@
+{
+  "run_id": "gateC_4sys_v2",
+  "schema": "gateC.four_system_run.v1",
+  "git": {
+    "commit": "6780a40ceae71173dbd036b7c0724f6429d3307c",
+    "dirty": "yes"
+  },
+  "python": "3.13.5",
+  "host": "iiitd",
+  "execution_mode": "scientific",
+  "online": true,
+  "systems": [
+    "S1",
+    "S2",
+    "S3",
+    "S4"
+  ],
+  "n_pilot_cases": 4,
+  "replicates": 1,
+  "max_infra_retries": 1,
+  "started_at": "2026-10-03T18:25:48.509732+00:00",
+  "gold_status": "PENDING_INDEPENDENT_REVIEW",
+  "score_note": "No correctness score: eligible gold is pending independent adjudication."
+}

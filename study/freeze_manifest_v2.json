@@ -1,0 +1,147 @@
+{
+  "schema": "protacxtend.study.freeze_manifest.v2",
+  "freeze_version": 2,
+  "phase": "next_phase_validate_comparison",
+  "supersedes": "freeze_manifest.json (v1, gateC_4sys_v1)",
+  "generated_at": "2026-10-03T18:25:46.083404+00:00",
+  "git": {
+    "commit": "6780a40ceae71173dbd036b7c0724f6429d3307c",
+    "tree": "07c98fb2e258fcc3da338cbecc20a2d6f8fa3486",
+    "dirty": true,
+    "n_dirty_files": 110,
+    "dirty_files": [
+      "enchmark_runner/live_systems.py",
+      "outputs/runs/trace_rt/candidates.parquet",
+      "outputs/runs/trace_rt/decisions.jsonl",
+      "outputs/runs/trace_rt/evidence.jsonl",
+      "outputs/runs/trace_rt/report.md",
+      "outputs/runs/trace_rt/run.json",
+      "outputs/runs/trace_rt/summary.json",
+      "outputs/runs/trace_rt/trace.jsonl",
+      "outputs/runs/trace_test/summary.json",
+      "outputs/runs/trace_test/trace.jsonl",
+      "outputs/runs/trace_tool/trace.jsonl",
+      "protacxtend/agents/design_path_agent.py",
+      "protacxtend/llm/manager.py",
+      "protacxtend/tui_bridge/server.py",
+      "pytest.ini",
+      "scripts/gateC_four_system.py",
+      "tests/test_source_backed_design_and_adapters.py",
+      "tui/README.md",
+      "tui/src/app.ts",
+      "tui/src/commands.ts",
+      ".feynman/",
+      "Dockerfile.closure",
+      "PROJECT_CLOSURE_AUDIT_AND_PLAN.md",
+      "benchmark/gateC/ADJUDICATION_PROTOCOL.md",
+      "benchmark/gateC/CASE_INVENTORY.json",
+      "benchmark/gateC/CASE_INVENTORY.md",
+      "benchmark/gateC/CHEMIST_REVIEW_PROTOCOL.md",
+      "benchmark/gateC/CLOSED48_FREEZE.json",
+      "benchmark/gateC/GATE_C_STATUS.md",
+      "benchmark/gateC/README.md",
+      "benchmark/gateC/REVIEWER_DECISIONS.json",
+      "benchmark/gateC/REVIEWER_DECISIONS.md",
+      "benchmark/gateC/REVIEWER_DECISIONS.tsv",
+      "benchmark/gateC/TEMPLATE500_INVENTORY.json",
+      "benchmark/gateC/build_gate_c.py",
+      "benchmark/gateC/chemist_review/",
+      "benchmark/gateC/evidence_packages/",
+      "benchmark/gateC/gold_review.tsv",
+      "benchmark/gateC/pilot/",
+      "benchmark/gateC/pre_registration.md",
+      "benchmark/gateC/provenance_manifest.json",
+      "benchmark/gateC/reviewer_decisions.source.json",
+      "benchmark/gateC/rubrics/",
+      "benchmark/gateC/splits.json",
+      "benchmark/gateC/tool_registry_snapshot.json",
+      "benchmark/gold_machine_v1/cache/",
+      "benchmark/gold_review.tsv",
+      "benchmark/pre_registration.md",
+      "benchmark/splits.json",
+      "benchmark500/",
+      "challenge/",
+      "data/definite_ligase_list_medvar2016.csv",
+      "data/e3_catalog_sources.json",
+      "data/e3_catalog_v2.csv",
+      "data/e3_catalog_v2_enriched.csv",
+      "data/e3_cell_context_stats.csv",
+      "data/e3_ligome_202508_systems.csv",
+      "data/evidence_snapshots/",
+      "data/live_cache/",
+      "data/request_cache/"
+    ],
+    "working_diff_sha256": "7f50f4b1a9fb3b0cb6d8d872ccb14377f654e12808cebf2497d820f04801868c"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-5.15.0-91-generic-x86_64-with-glibc2.35"
+  },
+  "models": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "temperature": 0.0,
+    "thinking": "disabled",
+    "max_tokens": 24000
+  },
+  "prompts": {
+    "live.py": "4e236db226eb6d06b5dcf102c93172dfcac54ba69da7fd5dd328c309f4a61107",
+    "live_systems.py": "abe210d7eb45509ac4ba859dc16143a781be7a72fe6ab87b3d79e56b75f0a378"
+  },
+  "instrument": {
+    "evaluator": "tpdeval/scoring.py",
+    "scoring_sha256": "d9683c08d1c58c23acf52a9070e72caef1de7e6ef1d2614bc196120f9f0833f7",
+    "gold_version": "gold_answers_v1 (UNREVIEWED)",
+    "gold_review_status": "PENDING_ADJUDICATION (0/48)",
+    "consensus_approved": false,
+    "consensus_sha256": "2672d985f2211e939c847105f492a190c722aec28f867d6b9fc24073806a4a72"
+  },
+  "datasets": {
+    "cases_dir_sha256": "d42cdb5c7d8758f8ec1591dc8b8e2d4928c31a0f9c5f49eb8a60535cc5c61fbc",
+    "gateC_pilot_sha256": "1d9124973ef3450dee2ebdf7c85c1533dd915f21222d004eec29813257b13b8d",
+    "verified_components_sha256": "fd4fe4b5ea4f5170363e2c925576ce936ba0b1ae2dc3c1b764332dbaff67e240"
+  },
+  "tool_resource_mapping": {
+    "toolkit_registry_sha256": "f9c26d886d100245d86b33e0ae175b812a72b9bc60eb07a5a25de63d26cb1d48",
+    "registered_tools": 115,
+    "installed_tools": 44,
+    "s2_s3_common_domain_tools": 40,
+    "parity_table": "outputs/execution/next_phase/s2_s3_parity.md"
+  },
+  "resource_parity": {
+    "S1": "retrieval-matched, no domain tools",
+    "S2": "flat domain tools (40 common)",
+    "S3": "native orchestration",
+    "S4": "native-only (NOT resource-matched)"
+  },
+  "telemetry": {
+    "token_cost_reported": [
+      "S1",
+      "S2",
+      "S3"
+    ],
+    "token_cost_unavailable": [
+      "S4"
+    ],
+    "cost_source": "published_rate:deepseek usd/1M in=0.14 out=0.28"
+  },
+  "gateC": {
+    "run_id": "gateC_4sys_v2",
+    "n_cases": 4,
+    "systems": [
+      "S1",
+      "S2",
+      "S3",
+      "S4"
+    ],
+    "replicates": 1,
+    "max_infra_retries": 1,
+    "online_retrieval": true,
+    "status": "development evidence (used for debugging)"
+  },
+  "budgets": {
+    "per_task_timeout_s": 600,
+    "declared_infra_retries": 1
+  },
+  "secrets_included": false
+}

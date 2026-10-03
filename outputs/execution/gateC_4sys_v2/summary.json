@@ -1,0 +1,63 @@
+{
+  "run_id": "gateC_4sys_v2",
+  "n_rows": 16,
+  "by_system": {
+    "S1": {
+      "n": 4,
+      "outcomes": {
+        "answered": 4
+      },
+      "answered": 4,
+      "abstained": 0,
+      "errored": 0,
+      "timed_out": 0,
+      "unavailable": 0,
+      "total_cost_usd": 0.001921,
+      "mean_latency_s": 13.556
+    },
+    "S2": {
+      "n": 4,
+      "outcomes": {
+        "answered": 3,
+        "abstained": 1
+      },
+      "answered": 3,
+      "abstained": 1,
+      "errored": 0,
+      "timed_out": 0,
+      "unavailable": 0,
+      "total_cost_usd": 0.004007,
+      "mean_latency_s": 5.903
+    },
+    "S3": {
+      "n": 4,
+      "outcomes": {
+        "answered": 2,
+        "abstained": 2
+      },
+      "answered": 2,
+      "abstained": 2,
+      "errored": 0,
+      "timed_out": 0,
+      "unavailable": 0,
+      "total_cost_usd": 0.002658,
+      "mean_latency_s": 2.854
+    },
+    "S4": {
+      "n": 4,
+      "outcomes": {
+        "answered": 3,
+        "abstained": 1
+      },
+      "answered": 3,
+      "abstained": 1,
+      "errored": 0,
+      "timed_out": 0,
+      "unavailable": 0,
+      "total_cost_usd": 0,
+      "mean_latency_s": 162.08
+    }
+  },
+  "gold_status": "PENDING_INDEPENDENT_REVIEW",
+  "correctness": "NOT_SCORED (eligible gold pending)"
+}

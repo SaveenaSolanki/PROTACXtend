@@ -64,7 +64,8 @@ class DesignPathAgent(ReActAgent):
         }
 
         if warhead and e3_ligand and linker and not supplied_warhead and not supplied_e3_ligand:
-            candidate = self._assemble_reference(state, warhead, linker, e3_ligand)
+            candidate = self._assemble_reference(state, warhead, linker, e3_ligand,
+                                                 reference_name=reference["reference"].get("name", ""))
             if candidate is not None:
                 state.assembled_candidates = [candidate] + [
                     c for c in state.assembled_candidates
@@ -106,7 +107,7 @@ class DesignPathAgent(ReActAgent):
 
     # ── helpers ──────────────────────────────────────────────────────
     def _assemble_reference(self, state: WorkflowState, warhead: dict, linker: dict,
-                            e3_ligand: dict) -> CandidateRecord | None:
+                            e3_ligand: dict, reference_name: str = "") -> CandidateRecord | None:
         full, message = self.toolbox.assemble_components(
             warhead["smiles"], linker["smiles"], e3_ligand["smiles"]
         )
@@ -115,8 +116,9 @@ class DesignPathAgent(ReActAgent):
             return None
         props = self.toolbox.compute_basic_properties(full)
         target = warhead.get("target") or ""
+        ref_tag = (reference_name or warhead.get("source_protac") or "reference").replace(" ", "_")
         return CandidateRecord(
-            candidate_id="SGA-VERIFIED-MZ1",
+            candidate_id=f"SGA-VERIFIED-{ref_tag}",
             target=target,
             e3_ligase=e3_ligand.get("e3_ligase", ""),
             warhead_name=warhead.get("name", ""),
@@ -134,6 +136,7 @@ class DesignPathAgent(ReActAgent):
             synthetic_feasibility_score=0.8,
             provenance={
                 "verified_components": True,
+                "source_protac": reference_name,
                 "attachment_maps": {
                     "warhead": warhead.get("attachment_atom_map"),
                     "e3_ligand": e3_ligand.get("attachment_atom_map"),

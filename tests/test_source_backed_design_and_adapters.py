@@ -102,3 +102,51 @@ def test_outcome_classifier_keeps_abstentions_and_errors_distinct():
     assert g._classify({"status": "ok", "answer": ""}) == "errored"
     assert g._behavior_match("typed_abstention_MISSING_SCIENTIFIC_INPUT", "abstained", "") is True
     assert g._behavior_match("resolved_reviewed_human_accession", "answered", "O60885") is True
+
+
+def test_paired_development_check_sufficient_vs_withheld(tmp_path):
+    """Frozen paired development check (kept out of any confirmatory cohort).
+
+    Withheld required input -> typed abstention; the same tool with sufficient
+    input -> no missing-input abstention. This must not be satisfied by
+    weakening the scientific gate.
+    """
+    import pytest
+    from protacxtend.runtime.agent_tools import run_agent_tool
+    from protacxtend.runtime.modes import MissingScientificInput
+
+    with pytest.raises(MissingScientificInput):
+        run_agent_tool("predict_cooperativity", {}, use_fixture=False, allow_network=False)
+
+    pose = tmp_path / "pose.pdb"
+    pose.write_text("ATOM      1  CA  ALA A   1       0.000   0.000   0.000  1.00  0.00           C\nEND\n")
+    try:
+        res = run_agent_tool(
+            "predict_cooperativity",
+            {"warhead_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=NC(C[*:1])c1nnc(C)n1-2",
+             "linker_smiles": "[*:1]CCOCCOCCNC(=O)C[*:2]",
+             "e3_smiles": "CC(C)[C@H](NC(=O)c1ccc([*:1])cc1)C(=O)N1CCC[C@H]1O",
+             "pose_pdb": str(pose)},
+            use_fixture=False, allow_network=False,
+        )
+        assert res.get("failure_code") != "MISSING_SCIENTIFIC_INPUT"
+    except MissingScientificInput:  # pragma: no cover - would be a regression
+        pytest.fail("sufficient inputs must not produce a missing-input abstention")
+
+
+def test_design_path_candidate_id_is_derived_from_reference():
+    """Regression: the verified candidate id was hard-coded 'SGA-VERIFIED-MZ1'
+    even when the assembled reference was dBET1 (BRD4-CRBN)."""
+    from protacxtend.agents.design_path_agent import DesignPathAgent
+    from protacxtend.backend.schemas import WorkflowState
+    from protacxtend.tools import verified_components as vc
+    ref = vc.reference_components("BRD4", "CRBN")
+    assert ref["reference"]["name"] == "dBET1"
+    state = WorkflowState(user_request="x")
+    cand = DesignPathAgent()._assemble_reference(
+        state, ref["warhead"], ref["linker"], ref["e3_ligand"],
+        reference_name=ref["reference"]["name"],
+    )
+    assert cand is not None
+    assert cand.candidate_id == "SGA-VERIFIED-dBET1"
+    assert cand.provenance.get("source_protac") == "dBET1"

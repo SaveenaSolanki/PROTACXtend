@@ -108,15 +108,22 @@ class LLMFlatToolsLiveAdapter(_LiveAdapterBase):
 
     system_id = "LLM+flat-tools"
     MAX_ROUNDS = 3
+    MIN_TOOL_CALLS = 1  # flat-tools arm must exercise the tool interface at least once
 
     def __init__(self, system_id: str | None = None, allow_real: bool = False) -> None:
         super().__init__(system_id or self.system_id, allow_real)
+
+    # Meta/introspection tools are excluded so the flat-tools arm exercises the
+    # declared *domain* tools (parity with the tools S3's agents execute).
+    META_TOOLS = {"list_scientific_capabilities", "list_capability_readiness",
+                  "diagnose_capability", "run_scientific_capability"}
 
     def _catalog(self) -> List[Dict[str, Any]]:
         from protacxtend.agentic.registry import TOOL_SPECS
         return [{"name": s["name"], "purpose": s["purpose"],
                  "inputs": s.get("inputs", {})}
-                for s in TOOL_SPECS if s.get("readiness") == "ready"]
+                for s in TOOL_SPECS
+                if s.get("readiness") == "ready" and s["name"] not in self.META_TOOLS]
 
     def execute(self, task: TaskInput, ctx: Dict[str, Any]) -> Dict[str, Any]:
         self._require_real()
@@ -126,14 +133,26 @@ class LLMFlatToolsLiveAdapter(_LiveAdapterBase):
         online = bool(ctx.get("online", False))
         catalog = self._catalog()
         tool_names = [c["name"] for c in catalog]
-        cat_text = "\n".join(f"- {c['name']}: {c['purpose'][:120]}" for c in catalog)
+
+        def _sig(inputs: Dict[str, Any]) -> str:
+            if not inputs:
+                return "()"
+            return "(" + ", ".join(str(k) for k in list(inputs)[:8]) + ")"
+
+        cat_text = "\n".join(
+            f"- {c['name']}{_sig(c['inputs'])}: {c['purpose'][:110]}" for c in catalog)
         base = (f"{task.question}\n\nSupplied inputs:\n"
                 + "\n".join("  - " + s for s in (task.supplied_inputs or [])))
-        system = (SYS_BASE_LLM + "\nYou may call the tools below. To call one, reply with a "
-                  "single JSON object: {\"tool\": name, \"params\": {...}}. To finish, reply "
-                  "with {\"final\": \"your answer\"}. Use at most "
-                  f"{self.MAX_ROUNDS} tool calls. Do not invent tool names or results.\n\n"
-                  "TOOLS:\n" + cat_text)
+        if task.permitted_tools:
+            base += ("\n\nDeclared permitted resources for this task: "
+                     + ", ".join(task.permitted_tools))
+        system = (SYS_BASE_LLM + "\nYou may call the EXACT tools below through a flat interface. "
+                  "Call a tool with a single JSON object: {\"tool\": name, \"params\": {...}}, "
+                  "using ONLY the parameter names shown in parentheses. To finish, reply with "
+                  "{\"final\": \"your answer\"}. Call at least one tool before finalizing when a "
+                  "relevant tool exists; prefer tool evidence over memory. Do not invent tool "
+                  f"names, parameters, or results. You may make at most {self.MAX_ROUNDS} tool "
+                  "calls.\n\nTOOLS:\n" + cat_text)
         history: List[Dict[str, Any]] = []
         tool_trace: List[Dict[str, Any]] = []
         final: Optional[str] = None
@@ -143,9 +162,18 @@ class LLMFlatToolsLiveAdapter(_LiveAdapterBase):
             raw = self._chat(system, user, phase=f"flat_tool_round_{_round}")
             obj = _extract_json(raw)
             if obj is None:
+                if not tool_trace and _round == 0 and self.MIN_TOOL_CALLS:
+                    user = ("You replied without a tool call. You MUST call one catalog tool "
+                            "first. Reply ONLY with a JSON object: {\"tool\": name, \"params\": {...}}.")
+                    continue
                 final = raw
                 break
             if "final" in obj and obj.get("final"):
+                if not tool_trace and _round == 0 and self.MIN_TOOL_CALLS:
+                    user = ("You replied with a final answer before using any tool. You MUST "
+                            "call the single most relevant catalog tool now. Reply ONLY with a "
+                            "JSON object: {\"tool\": name, \"params\": {...}}.")
+                    continue
                 final = str(obj["final"])
                 break
             name = str(obj.get("tool") or obj.get("tool_name") or obj.get("name") or "").strip()
@@ -158,10 +186,11 @@ class LLMFlatToolsLiveAdapter(_LiveAdapterBase):
                 continue
             try:
                 res = run_agent_tool(name, params, use_fixture=False, allow_network=online)
-                obs = {"status": res.get("status"), "failure_code": res.get("failure_code", ""),
-                       "data": _trim(res.get("scientific_result"))}
+                trimmed = _trim(res.get("scientific_result"))
+                obs = {"failure_code": res.get("failure_code", ""), **trimmed}
             except Exception as exc:  # noqa: BLE001
-                obs = {"status": "error", "error": f"{type(exc).__name__}: {exc}"}
+                obs = {"status": "error", "has_data": False,
+                       "error": f"{type(exc).__name__}: {exc}"}
             tool_trace.append({"tool": name, "params": params, **obs})
             history.append({"tool": name, "observed": obs})
             user = (f"{base}\n\nYour tool call {name} returned:\n"
@@ -267,11 +296,29 @@ def _guess_target(task: TaskInput) -> str:
 
 
 def _trim(envelope: Any) -> Any:
-    """Keep the useful part of a run_agent_tool envelope without GT leakage."""
+    """Keep the usable data AND its source/provenance fields.
+
+    A tool that ran but returned a legitimately empty result must remain
+    distinguishable from one that failed: both keep ``status`` and an explicit
+    ``has_data`` flag separates empty-but-ok from a failure.
+    """
     if not isinstance(envelope, dict):
-        return envelope
+        return {"status": "unknown", "has_data": envelope not in (None, "", [], {}),
+                "data": envelope}
     result = envelope.get("result") or {}
-    return {"status": envelope.get("status"), "data": (result.get("data") if isinstance(result, dict) else result)}
+    data = result.get("data") if isinstance(result, dict) else result
+    return {
+        "status": envelope.get("status"),
+        "summary": envelope.get("summary"),
+        "has_data": bool(data not in (None, "", [], {})),
+        "data": data,
+        "provenance": envelope.get("provenance"),
+        "evidence": envelope.get("evidence"),
+        "tools": envelope.get("tools"),
+        "artifacts": envelope.get("artifacts"),
+        "warnings": envelope.get("warnings"),
+        "errors": envelope.get("errors"),
+    }
 
 
 def _render_retrieval_context(items: List[Dict[str, Any]]) -> str:

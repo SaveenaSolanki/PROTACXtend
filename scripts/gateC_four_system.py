@@ -234,6 +234,12 @@ def main() -> int:
                     "tokens_in": result.get("tokens_in", 0),
                     "tokens_out": result.get("tokens_out", 0),
                     "cost_usd": result.get("cost_usd", 0.0),
+                    # Telemetry honesty: Biomni's real go() interface exposes no
+                    # token usage, so its cost is unavailable (never zero-filled).
+                    "tokens_available": key != "S4",
+                    "cost_available": key != "S4",
+                    "cost_source": ("published_rate:deepseek usd/1M in=0.14 out=0.28"
+                                    if key != "S4" else "not_reported_by_biomni"),
                     "attempts": attempts,
                     "expected_behavior": pilot.get("expected_behavior", ""),
                     "expected_behavior_met": _behavior_match(
@@ -257,7 +263,8 @@ def _write_results(run_dir: Path, rows: List[Dict[str, Any]], manifest: Dict[str
     # CSV
     cols = ["system_key", "system_id", "task_id", "pilot_id", "capability", "replicate",
             "status", "outcome_class", "tool_calls", "typed_abstention", "latency_s",
-            "tokens_in", "tokens_out", "cost_usd", "attempts", "infra_error",
+            "tokens_in", "tokens_out", "tokens_available", "cost_usd", "cost_available",
+            "cost_source", "attempts", "infra_error",
             "expected_behavior", "expected_behavior_met", "raw_file"]
     with (run_dir / "task_level_results.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore")

@@ -1,0 +1,2 @@
+{"record_type": "evidence", "evidence_kind": "retrieved", "validation_state": "valid", "claim": "warhead source-backed with hypothetical attachment marker", "source": "DOI 10.1021/acschembio.5b00216", "source_uri": "", "payload": {"identifiers": []}}
+{"record_type": "evidence", "evidence_kind": "missing", "validation_state": "valid", "claim": "E3 ligand source-backed without explicit dummy-atom attachment", "source": "DOI 10.1038/ncomms13312", "source_uri": "", "payload": {"identifiers": []}}

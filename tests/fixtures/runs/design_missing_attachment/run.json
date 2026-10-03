@@ -1,0 +1,31 @@
+{
+ "run_id": "design_missing_attachment",
+ "request": "Design a VHL PROTAC against BRD4 from the provided real components.",
+ "classification": "",
+ "candidates": [],
+ "warheads": [
+  {
+   "name": "w1",
+   "smiles": "CC(C)(C)OC(=O)N[C@H]...O[*:1]",
+   "source": "DOI 10.1021/acschembio.5b00216"
+  }
+ ],
+ "e3_ligands": [
+  {
+   "name": "l1",
+   "smiles": "CC(=O)NC(...)...",
+   "source": "DOI 10.1038/ncomms13312"
+  }
+ ],
+ "linkers": [
+  {
+   "name": "lk1",
+   "smiles": "[*:1]CCOCC[*:2]",
+   "source": "curated"
+  }
+ ],
+ "status_reason": "no candidates: missing explicit attachment markers",
+ "errors": [
+  "missing_attachment_marker"
+ ]
+}

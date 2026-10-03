@@ -178,14 +178,19 @@ def grade_answer(
     *,
     gt: Optional[Mapping[str, Any]] = None,
     gt_dir: Path | str | None = None,
+    use_overlay: bool = True,
 ) -> Dict[str, Any]:
     """Grade ``answer`` against the ground truth for ``task_id``.
+
+    Set ``use_overlay=False`` to grade against a reviewer-approved gold object
+    without merging the self-derived ``benchmark/scoring/*.json`` overlay.
 
     Returns a ScoreRecord-shaped dict with ``status`` in
     {``scored``, ``requires_expert_review``, ``unscorable_missing_fields``}.
     """
     gt_data = dict(gt) if gt is not None else load_ground_truth(task_id, gt_dir)
-    gt_data = _merge_overlay(gt_data, _load_overlay(task_id))
+    if use_overlay:
+        gt_data = _merge_overlay(gt_data, _load_overlay(task_id))
     gtype = gt_type(gt_data)
     readiness = scorable_status(gt_data)
     record: Dict[str, Any] = {
@@ -233,7 +238,10 @@ def grade_answer(
             predicted = list(answer or [])
         record["dimensions"] = sc.rank_score(predicted, list(expected or []))
         record["score"] = record["dimensions"]["score"]
-        record["status"] = "scored"
+        if record["dimensions"].get("no_prediction"):
+            record["status"] = "unanswered"
+        else:
+            record["status"] = "scored"
     elif gtype == "numeric":
         expected = gt_data.get("expected_value")
         try:

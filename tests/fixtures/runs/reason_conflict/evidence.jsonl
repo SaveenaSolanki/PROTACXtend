@@ -1,0 +1,2 @@
+{"record_type": "evidence", "evidence_kind": "measured", "validation_state": "valid", "claim": "direct measured precedent supports VHL recruitment for BRD4", "source": "PROTAC-Degradation-DB; 44 rows", "source_uri": "10.1038/nchembio.2329", "payload": {"identifiers": ["10.1038/nchembio.2329"]}}
+{"record_type": "evidence", "evidence_kind": "retrieved", "validation_state": "valid", "claim": "cell-context expression evidence is insufficient for VHL in this line", "source": "DepMap 24Q4 percentile", "source_uri": "", "payload": {"identifiers": []}}

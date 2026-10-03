@@ -1,0 +1,13 @@
+{
+ "run_id": "invalid_historical",
+ "request": "Reason mechanistically: BRD$-VHL",
+ "classification": "",
+ "candidates": [
+  {
+   "valid": true,
+   "rank": 1,
+   "smiles": "CCO"
+  }
+ ],
+ "status_reason": "withdrawn"
+}

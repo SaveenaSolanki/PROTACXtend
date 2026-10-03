@@ -97,9 +97,18 @@ def topk_agreement(predicted_ids: Sequence[str], expected_ids: Sequence[str],
 
 
 def rank_score(predicted: Sequence[Any], expected: Sequence[Any]) -> Dict[str, Any]:
-    return {"method": "ranked",
-            "spearman": rank_correlation(predicted, expected),
-            "score": max(0.0, (rank_correlation(predicted, expected) + 1) / 2)}
+    """Ranked score. No evidence or a length-mismatched/undefined correlation is
+    NOT worth 0.5: an empty prediction scores 0.0 (no_prediction) and a
+    mismatched alignment scores 0.0 with a reason. 1.0 only on full agreement."""
+    rho = rank_correlation(predicted, expected)
+    if not predicted:
+        return {"method": "ranked", "spearman": rho, "score": 0.0,
+                "no_prediction": True, "reason": "empty predicted ranking; no evidence"}
+    if len(predicted) != len(expected) or len(predicted) == 0:
+        return {"method": "ranked", "spearman": rho, "score": 0.0,
+                "reason": f"predicted({len(predicted)}) != expected({len(expected)}) items; "
+                          "correlation undefined; no credit for a non-matching ranking"}
+    return {"method": "ranked", "spearman": rho, "score": max(0.0, (rho + 1) / 2)}
 
 
 def score(gt_type: str, predicted: Any, expected: Any, **kw: Any) -> Dict[str, Any]:

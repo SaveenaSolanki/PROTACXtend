@@ -1,0 +1,1 @@
+{"record_type": "evidence", "evidence_kind": "measured", "validation_state": "valid", "claim": "BRD4 maps to reviewed UniProt accession O60885", "source": "curated_targets.csv; UniProt reviewed", "source_uri": "O60885", "payload": {"identifiers": ["O60885", "https://www.uniprot.org/uniprotkb/O60885"]}}

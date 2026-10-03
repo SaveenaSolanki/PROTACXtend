@@ -1,0 +1,15 @@
+{
+ "run_id": "reason_conflict",
+ "request": "Is VHL a suitable E3 for degrading BRD4 in K562?",
+ "classification": "",
+ "candidates": [],
+ "status_reason": "conflicting",
+ "scientific_answer": {
+  "evidence_cards": [
+   {
+    "card": "e3_suitability",
+    "status": "conditional"
+   }
+  ]
+ }
+}

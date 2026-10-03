@@ -1,0 +1,15 @@
+{
+ "run_id": "know_brd4",
+ "request": "What is the UniProt accession of BRD4?",
+ "classification": "",
+ "scientific_answer": {
+  "answer": "O60885 (BRD4, reviewed)",
+  "identifier_comparison": {
+   "shared": [
+    "BRD4"
+   ]
+  }
+ },
+ "candidates": [],
+ "status_reason": "answered"
+}

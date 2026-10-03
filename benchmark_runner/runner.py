@@ -28,6 +28,7 @@ from protacxtend.runtime import modes
 SYSTEM_IDS = [
     "PROTACXtend", "Biomni", "AI-Co-Scientist-compatible",
     "Base-LLM-control", "DeepSeek-Flash-control", "Local-Ollama-control",
+    "TPD-comparator",
 ]
 
 
@@ -127,9 +128,13 @@ ADAPTER_FACTORY: Dict[str, type] = {
     "Base-LLM-control": _StubAdapter,
     "DeepSeek-Flash-control": _StubAdapter,
     "Local-Ollama-control": _StubAdapter,
+    "TPD-comparator": _StubAdapter,
 }
 
-_LIVE_SYSTEMS = {"PROTACXtend", "AI-Co-Scientist-compatible", "Base-LLM-control"}
+_LIVE_SYSTEMS = {
+    "PROTACXtend", "AI-Co-Scientist-compatible", "Base-LLM-control",
+    "Biomni", "TPD-comparator",
+}
 
 
 def build_adapter(system_id: str, allow_real: bool = False) -> SystemAdapter:
@@ -139,6 +144,13 @@ def build_adapter(system_id: str, allow_real: bool = False) -> SystemAdapter:
         raise ValueError(f"unknown system {system_id!r}")
     if allow_real and system_id in _LIVE_SYSTEMS:
         from benchmark_runner import live  # local import avoids heavy deps at import time
+        if system_id in {"Biomni", "TPD-comparator"}:
+            from benchmark_runner import external
+            cls = {
+                "Biomni": external.BiomniAdapter,
+                "TPD-comparator": external.TPDComparatorAdapter,
+            }[system_id]
+            return cls(system_id, allow_real=True)
         cls = {
             "PROTACXtend": live.PROTACXtendLiveAdapter,
             "AI-Co-Scientist-compatible": live.AICoScientistLiveAdapter,

@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# --- TUI source/dist parity gate (release startup) ---
+# Rebuild the compiled TUI bundle if any TypeScript source is newer, and
+# syntax-check the shipped bundle. A drift here fails the smoke test.
+cd "$(dirname "$0")/../tui"
+node scripts/ensure-dist.mjs
+node --check dist/app.js || { echo "dist/app.js failed node --check"; exit 1; }
+cd - >/dev/null
+
 # PROTACXtend distribution smoke test.
 #
 # Installs a built wheel into a throwaway virtualenv and verifies that the

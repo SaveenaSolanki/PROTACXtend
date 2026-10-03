@@ -1,0 +1,1 @@
+{"run_id": "valid_but_unmeasured", "request": "Design a PROTAC for target X", "classification": "", "candidates": [{"valid": true, "rank": 1, "smiles": "CCOc1ccc(cc1)C(=O)N", "inchikey": "X"}], "predictions": [], "status_reason": "candidates assembled"}

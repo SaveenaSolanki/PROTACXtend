@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 import json
 from typing import Any, Dict, List
 
-from protacxtend.toolkit.registry import get_tool_status
+from protacxtend.toolkit.status import get_tool_status
 from protacxtend.tools.protac_autopilot_toolbox import ProtacXtendToolbox
 
 

@@ -810,10 +810,17 @@ class ProtacDesignToolbox:
         # Generative layer: char-GRU linker model trained on PROTAC-DB linkers
         # (ADMET-scored + diversity-selected). Toggle: PROTACPILOT_GENERATIVE_LINKERS=0.
         import os as _os
+        scoring_on = _os.environ.get("PROTACPILOT_LINKER_SCORING", "1") != "0"
         if _os.environ.get("PROTACPILOT_GENERATIVE_LINKERS", "1") != "0":
             try:
                 from protacxtend.tools.generative_linker import generate_generative_linkers
-                gen = generate_generative_linkers(max_linkers=max(6, max_linkers // 2))
+                # When Link-INVENT ranking below is active it applies ADMET to the
+                # full merged set, so skip the generative layer's own ADMET pass
+                # (saves one ~10 s isolated-venv subprocess per design run).
+                gen = generate_generative_linkers(
+                    max_linkers=max(6, max_linkers // 2),
+                    use_admet=not scoring_on,
+                )
                 existing = {l.smiles for l in linkers}
                 linkers.extend([g for g in gen if g.smiles not in existing])
             except Exception as exc:  # noqa: BLE001
@@ -853,7 +860,7 @@ class ProtacDesignToolbox:
             "MIXED POLAR": ["[*:1]CCOCCNC(=O)CC[*:2]"],
         }
         linkers: list[LinkerRecord] = []
-        for linker_type in linker_types:
+        for linker_type in (linker_types or DEFAULT_LINKER_TYPES):
             for idx, smiles in enumerate(patterns.get(_norm_name(linker_type), []), start=1):
                 props = self.compute_basic_properties(smiles)
                 linkers.append(
@@ -2853,7 +2860,7 @@ class ProtacDesignToolbox:
 
     def generate_agent_workflow_table(self, state: WorkflowState) -> list[dict[str, Any]]:
         target = state.target_record.gene_symbol if state.target_record else state.parsed_objective.target_name
-        from protacxtend.toolkit.registry import get_tool_status
+        from protacxtend.toolkit.status import get_tool_status
 
         def status_label(tool_name: str) -> str:
             status = get_tool_status(tool_name)

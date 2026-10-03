@@ -150,12 +150,22 @@ def _bRo5_flags_from_admet_ai(endpoints: dict[str, Any]) -> dict[str, Any]:
     return flags
 
 
+# In-process memo so repeated identical ADMET-AI batches (e.g. a generative
+# selection pass immediately followed by Link-INVENT ranking on the same
+# molecules) do not each pay the ~10 s isolated-venv torch import.
+_ADMET_RESULT_CACHE: dict[tuple[str, ...], "list[dict[str, Any]]"] = {}
+
+
 def _run_admet_ai(smiles_list: list[str], timeout_s: int = 600) -> list[dict[str, Any]] | None:
     """Call the isolated ADMET-AI venv. Returns endpoint dicts or None."""
     if not ADMET_AI_READY:
         return None
     if not smiles_list:
         return None
+    cache_key = tuple(smiles_list)
+    cached = _ADMET_RESULT_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
     tmp = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
     tmp.close()
     try:
@@ -169,7 +179,9 @@ def _run_admet_ai(smiles_list: list[str], timeout_s: int = 600) -> list[dict[str
         if not payload.get("ok"):
             logger.warning("admet_ai error: %s", payload.get("error", "?"))
             return None
-        return payload.get("results", [])
+        results = payload.get("results", [])
+        _ADMET_RESULT_CACHE[cache_key] = results
+        return results
     except Exception as exc:  # noqa: BLE001
         logger.warning("admet_ai call failed: %s", exc)
         return None

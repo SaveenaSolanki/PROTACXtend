@@ -176,53 +176,25 @@ def summarize_registry() -> dict[str, Any]:
     }
 
 
-# Backward-compatible names for older scaffold callers. These are registry-only
-# summaries in Phase 1, not tool availability/execution status.
+# Backward-compatible names for older scaffold callers.
+#
+# These now delegate to :mod:`protacxtend.toolkit.status`, which performs the
+# real cross-environment availability/execution detection. The import is lazy
+# because ``status`` imports ``load_toolkit_registry`` from this module; a
+# module-level import would be circular.
+#
+# History: these functions previously returned a hard-coded
+# ``available=False, executable=False`` for every entry (a Phase-1 registry-only
+# scaffold). Callers such as ``protacxtend.tools.tool_registry`` therefore
+# reported all 296 registry rows as unavailable even though 44 tools are
+# installed on this host. They are now thin compatibility shims.
 def get_tool_status(tool_name: str) -> dict[str, Any]:
-    query = normalize_text(tool_name)
-    registry = load_toolkit_registry()
-    for section in SECTION_SHEETS:
-        for entry in registry[section]:
-            if normalize_text(entry["name"]) == query:
-                return {
-                    "name": entry["name"],
-                    "type": entry["section"],
-                    "registered": True,
-                    "available": False,
-                    "executable": False,
-                    "source_sheet": entry["source_sheet"],
-                    "source_row": entry["source_row"],
-                }
-    result = search_registry(tool_name, top_k=1)
-    if result:
-        entry = result[0]
-        return {
-            "name": entry["name"],
-            "type": entry["section"],
-            "registered": True,
-            "available": False,
-            "executable": False,
-            "source_sheet": entry["source_sheet"],
-            "source_row": entry["source_row"],
-        }
-    return {
-        "name": tool_name,
-        "type": None,
-        "registered": False,
-        "available": False,
-        "executable": False,
-        "source_sheet": None,
-        "source_row": None,
-    }
+    from protacxtend.toolkit.status import get_tool_status as _get_tool_status
+
+    return _get_tool_status(tool_name)
 
 
 def summarize_toolkit_status() -> dict[str, Any]:
-    summary = summarize_registry()
-    return {
-        "source_path": summary["source_path"],
-        "collections": {
-            section: {"registered": data["count"], "available": 0, "executable": 0}
-            for section, data in summary["sections"].items()
-        },
-        "totals": {"registered": summary["total_rows"], "available": 0, "executable": 0},
-    }
+    from protacxtend.toolkit.status import summarize_toolkit_status as _summarize_toolkit_status
+
+    return _summarize_toolkit_status()

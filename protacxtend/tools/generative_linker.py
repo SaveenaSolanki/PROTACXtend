@@ -107,8 +107,16 @@ class LinkerGenerator:
         max_linkers: int = 24,
         temperature: float = 1.0,
         candidates: int = 64,
+        use_admet: bool = True,
     ) -> List[LinkerRecord]:
-        """Full pipeline: sample -> validate -> filter -> BATCH-score -> diversify."""
+        """Full pipeline: sample -> validate -> filter -> BATCH-score -> diversify.
+
+        ``use_admet=False`` skips the isolated ADMET-AI scoring pass and uses a
+        neutral risk prior. Callers that immediately run Link-INVENT ranking
+        (:func:`protacxtend.tools.linker_scoring.rank_linkers`, which itself
+        applies ADMET) set this to False to avoid launching the ~10 s ADMET venv
+        subprocess twice for the same molecules.
+        """
         from rdkit import Chem
         from rdkit.Chem import DataStructs
         from rdkit.Chem.AllChem import GetMorganFingerprintAsBitVect
@@ -140,15 +148,16 @@ class LinkerGenerator:
 
         # BATCH ADMET-AI scoring: ONE subprocess/model load for all candidates.
         risk_map: Dict[str, float] = {}
-        try:
-            from protacxtend.tools.admet_integration import _run_admet_ai
-            rows = _run_admet_ai([v["smiles"] for v in valid], timeout_s=300)
-            for row in rows or []:
-                e = row.get("endpoints", {})
-                risk = 0.50 * float(e.get("AMES") or 0.0) + 0.30 * float(e.get("DILI") or 0.0) + 0.20 * float(e.get("hERG") or 0.0)
-                risk_map[row.get("smiles")] = min(1.0, risk)
-        except Exception:  # noqa: BLE001
-            risk_map = {}
+        if use_admet:
+            try:
+                from protacxtend.tools.admet_integration import _run_admet_ai
+                rows = _run_admet_ai([v["smiles"] for v in valid], timeout_s=300)
+                for row in rows or []:
+                    e = row.get("endpoints", {})
+                    risk = 0.50 * float(e.get("AMES") or 0.0) + 0.30 * float(e.get("DILI") or 0.0) + 0.20 * float(e.get("hERG") or 0.0)
+                    risk_map[row.get("smiles")] = min(1.0, risk)
+            except Exception:  # noqa: BLE001
+                risk_map = {}
 
         for v in valid:
             ha = v["heavy_atoms"]
@@ -197,12 +206,12 @@ class LinkerGenerator:
 _GENERATOR: Optional[LinkerGenerator] = None
 
 
-def generate_generative_linkers(max_linkers: int = 24) -> List[LinkerRecord]:
+def generate_generative_linkers(max_linkers: int = 24, use_admet: bool = True) -> List[LinkerRecord]:
     """Module-level entry (cached model). Empty list when unavailable."""
     global _GENERATOR
     if _GENERATOR is None:
         _GENERATOR = LinkerGenerator()
-    return _GENERATOR.generate(max_linkers=max_linkers)
+    return _GENERATOR.generate(max_linkers=max_linkers, use_admet=use_admet)
 
 
 if __name__ == "__main__":

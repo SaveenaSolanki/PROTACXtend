@@ -59,6 +59,29 @@ class ToolkitStatusTests(unittest.TestCase):
         self.assertGreater(summary["stub"], 0)
         self.assertGreater(summary["not_connected"], 0)
 
+    def test_registry_shim_reports_real_availability(self) -> None:
+        """Regression: registry.py hard-coded available=0/executable=0.
+
+        The legacy ``protacxtend.toolkit.registry`` names must delegate to the
+        cross-environment detector instead of returning a constant zero summary,
+        otherwise every caller (e.g. ``tools.tool_registry``) sees 296/296
+        unavailable even though real tools are installed.
+        """
+        from protacxtend.toolkit.registry import get_tool_status as registry_get_tool_status
+        from protacxtend.toolkit.registry import summarize_toolkit_status as registry_summary
+
+        summary = registry_summary()
+        self.assertGreater(summary["registered"], 200)
+        self.assertGreater(summary["available"], 0)
+        self.assertGreater(summary["executable"], 0)
+        self.assertGreater(summary["by_section"]["tools"]["available"], 0)
+
+        # An installed tool must be available through the compatibility shim too.
+        status = registry_get_tool_status("RDKit")
+        self.assertTrue(status["registered"])
+        self.assertTrue(status["available"])
+        self.assertEqual(status["classification"], "real")
+
     def test_detection_helpers_are_structured(self) -> None:
         package = detect_package_availability("rdkit")
         self.assertIn("available", package)

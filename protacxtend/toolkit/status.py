@@ -370,6 +370,37 @@ def _availability_for_entry(entry: dict[str, Any]) -> dict[str, Any]:
     return {"available": False, "execution_mode": "not_connected", "evidence": "availability not applicable for registry-only section"}
 
 
+@lru_cache(maxsize=1)
+def _strong_tool_status_by_name() -> dict[str, dict[str, Any]]:
+    """Authoritative per-tool install/execution state.
+
+    :mod:`protacxtend.tools.tool_status` probes every registered toolkit
+    interpreter (current, ``protacpilot`` conda env, ``PROTACXTEND_TOOLKIT_ENVS``)
+    and ``PATH``/env ``bin/`` directories. It is the source of truth behind
+    ``analysis/inventory/toolkit_status_all.csv`` (44/115 installed on this host),
+    so the Excel-registry status view must consult it rather than relying only on
+    a same-interpreter import check.
+
+    Imported lazily to avoid a circular import (``tools.tool_status`` imports
+    ``tools.toolkit_registry`` and ``toolkit.catalog``, not this module).
+    """
+    try:
+        from protacxtend.tools.tool_status import detect_all_tool_statuses
+        from protacxtend.tools.toolkit_registry import get_toolkit_registry
+    except Exception:  # pragma: no cover - detector unavailable
+        return {}
+    try:
+        strong = detect_all_tool_statuses()
+    except Exception:  # pragma: no cover - defensive
+        return {}
+    index: dict[str, dict[str, Any]] = {}
+    for tool in get_toolkit_registry():
+        status = strong.get(tool["tool_name"])
+        if status:
+            index[_canonical_name(tool["tool_name"])] = status
+    return index
+
+
 def _status_for_entry(entry: dict[str, Any]) -> dict[str, Any]:
     availability = _availability_for_entry(entry)
     implementation = classify_existing_implementation(entry["name"])
@@ -377,16 +408,48 @@ def _status_for_entry(entry: dict[str, Any]) -> dict[str, Any]:
     if implementation["classification"] == "not_connected":
         execution_mode = availability.get("execution_mode", "not_connected")
     failure_reason = implementation["failure_reason"]
-    if availability["available"] is False and failure_reason is None:
+    classification = implementation["classification"]
+    available = bool(availability["available"])
+    executable = bool(implementation["executable"])
+    status_detail = classification
+
+    # Cross-environment detector wins when it knows the tool: it sees binaries
+    # and Python packages across all toolkit envs, plus web/commercial/API states.
+    strong = _strong_tool_status_by_name().get(_canonical_name(entry["name"]))
+    if strong is not None:
+        status_detail = strong.get("status") or status_detail
+        if strong.get("installed"):
+            available = True
+            executable = bool(strong.get("callable"))
+            classification = "real"
+            execution_mode = strong.get("provision_method") or execution_mode
+            failure_reason = None
+        else:
+            available = False
+            executable = False
+            # Keep the curated "stub" reason so stub classification stays legible.
+            if classification != "stub":
+                failure_reason = strong.get("message") or failure_reason
+        availability = {
+            "available": available,
+            "execution_mode": strong.get("provision_method") or availability.get("execution_mode", "not_connected"),
+            "evidence": (
+                f"cross-env detector: {status_detail}"
+                + (f" ({strong['version']})" if strong.get("version") else "")
+            ),
+        }
+
+    if available is False and failure_reason is None:
         failure_reason = "registered but not available on this server"
     return {
         "name": entry["name"],
         "section": entry["section"],
         "registered": True,
-        "available": bool(availability["available"]),
-        "executable": bool(implementation["executable"]),
-        "classification": implementation["classification"],
+        "available": available,
+        "executable": executable,
+        "classification": classification,
         "execution_mode": execution_mode,
+        "status_detail": status_detail,
         "evidence": {
             "availability": availability["evidence"],
             "implementation": implementation["evidence"],

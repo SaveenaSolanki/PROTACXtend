@@ -19,8 +19,8 @@
 | llm_only | MACHINE_VERIFIED_EXTERNAL | 7 | 1 | 0.1429 | [0.0257, 0.5131] |
 | llm_only | RULE_BASED_RUBRIC | 5 | 2 | 0.4 | [0.1176, 0.7693] |
 | llm_only | PENDING_HUMAN | 0 | 0 | — | — |
-| protacxtend | MACHINE_VERIFIED_EXTERNAL | 7 | 0 | 0.0 | [0.0, 0.3543] |
-| protacxtend | RULE_BASED_RUBRIC | 32 | 10 | 0.3125 | [0.1795, 0.4857] |
+| protacxtend | MACHINE_VERIFIED_EXTERNAL | 7 | 3 | 0.4286 | [0.1582, 0.7495] |
+| protacxtend | RULE_BASED_RUBRIC | 32 | 1 | 0.0312 | [0.0055, 0.1574] |
 | protacxtend | PENDING_HUMAN | 9 | 0 | 0.0 | [0.0, 0.2992] |
 | retrieval_only | MACHINE_VERIFIED_EXTERNAL | 7 | 0 | 0.0 | [0.0, 0.3543] |
 | retrieval_only | RULE_BASED_RUBRIC | 32 | 0 | 0.0 | [0.0, 0.1072] |

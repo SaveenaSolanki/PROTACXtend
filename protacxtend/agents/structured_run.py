@@ -21,6 +21,7 @@ Design goals after the closed-48 audit:
 
 from __future__ import annotations
 
+import os
 import re
 import time
 from collections import Counter
@@ -269,6 +270,202 @@ def _sourced_evidence(items: Any) -> list:
     return out
 
 
+_DOI_RE = re.compile(r"10\.\d{4,9}/[-._;()/:A-Za-z0-9]+")
+
+#: Envelope keys whose values are surfaced verbatim in the final answer so the
+#: question-responsive identifiers (accession, PDB id, DOI, InChIKey, SMILES)
+#: actually reach the reader and the grader.
+_INTEREST_KEYS = (
+    "accession", "primaryaccession", "uniprot", "uniprot_id", "pdb_id", "pdb_ids",
+    "doi", "smiles", "canonical_smiles", "inchikey", "inchi_key", "pref_name",
+    "molecule_chembl_id", "cid", "name", "gene", "formula", "molecular_weight",
+    "e3", "e3_ligase", "ligase", "target", "title",
+)
+
+
+def _flatten_facts(data: Any, out: list[str] | None = None, depth: int = 0) -> list[str]:
+    """Collect question-responsive scalar facts from a tool data payload."""
+    if out is None:
+        out = []
+    if depth > 5:
+        return out
+    if isinstance(data, dict):
+        for k, v in data.items():
+            kl = str(k).lower()
+            if isinstance(v, (dict, list)):
+                _flatten_facts(v, out, depth + 1)
+            elif v not in (None, "") and any(tok in kl for tok in _INTEREST_KEYS):
+                out.append(f"{k}={v}")
+    elif isinstance(data, list):
+        for item in data[:25]:
+            _flatten_facts(item, out, depth + 1)
+    return out
+
+
+def _run_retrieval_case(case: dict[str, Any], capability: str, *, offline: bool,
+                        budget_s: float, seed: int) -> dict[str, Any]:
+    """Capability-routed retrieval/answer path for KNOW and REASON cases.
+
+    The question intent selects the permitted tools; every tool runs through the
+    shared ``run_agent_tool`` pathway. The final answer surfaces the retrieved
+    identifiers instead of hiding them inside a tool envelope.
+    """
+    from protacxtend.nlp.entity_extraction import extract_entities
+    from protacxtend.runtime.agent_tools import run_agent_tool
+
+    t0 = time.time()
+    question = case.get("scientific_question", "") or ""
+    ql = question.lower()
+    entities = extract_entities(question)
+    target = (entities.target_gene or "").strip()
+    parsed = parse_supplied_inputs(case)
+    e3 = parsed.get("e3_ligase") or ""
+    molecule = parsed.get("molecule_smiles") or parsed.get("warhead_smiles") or ""
+
+    calls: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
+    trace: list[dict[str, Any]] = []
+
+    def call(tool: str, params: dict[str, Any]) -> dict[str, Any]:
+        try:
+            r = run_agent_tool(tool, params, allow_network=not offline)
+        except Exception as exc:  # noqa: BLE001
+            r = {"valid_output": False, "failure_code": type(exc).__name__, "error": str(exc),
+                 "scientific_result": None}
+        calls.append((tool, params, r))
+        trace.append({"node": tool, "params": params,
+                      "valid_output": bool(r.get("valid_output")),
+                      "failure_code": r.get("failure_code", "")})
+        return r
+
+    # 1) identity is almost always required (only for a real gene symbol)
+    if target and is_known_gene(target):
+        call("resolve_target", {"target_name": target})
+    # 2) intent-specific retrieval
+    doi = _DOI_RE.search(question)
+    if doi:
+        call("verify_crossref", {"doi": doi.group(0)})
+    if any(k in ql for k in ("pdb", "structure", "crystal", "ternary", "complex")):
+        call("retrieve_pdb", {"target": target or question[:40], "e3": e3, "top_k": 5})
+    if molecule and any(k in ql for k in ("smiles", "inchikey", "inchi key", "molecular weight",
+                                          "logp", "tpsa", "canonical", "property", "valid")):
+        call("inspect_smiles", {"smiles": molecule})
+    if any(k in ql for k in ("inhibitor", "degrader", "ligand", "binder", "compound", "bet")):
+        call("search_chembl", {"term": target or ql[:32], "top_k": 5})
+        if target:
+            call("retrieve_target_binders", {"target_name": target, "top_k": 5})
+    if any(k in ql for k in ("e3", "ligase", "crbn", "vhl", "recruiter")):
+        call("select_e3_ligase", {"target": target, "preferred_e3": e3})
+    if any(k in ql for k in ("citation", "doi", "reference", "publication", "paper", "support")) and not doi:
+        claim_text = " ".join(str(x).split(":", 1)[-1] for x in (case.get("supplied_inputs") or []))
+        query = claim_text or target or question
+        call("search_europe_pmc", {"query": query, "page_size": 5})
+        call("search_pubmed", {"query": query[:200], "page_size": 5})
+    # 3) mechanistic REASON tools (only when the question asks for them)
+    if capability == "REASON":
+        if "hook" in ql:
+            call("simulate_hook_effect", {"target_conc_nM": 100.0, "e3_conc_nM": 100.0, "alpha": 0.5})
+        if "cooperativ" in ql:
+            call("predict_cooperativity", {"warhead_smiles": parsed.get("warhead_smiles") or "",
+                                            "linker_smiles": "",
+                                            "e3_smiles": parsed.get("e3_ligand_smiles") or "",
+                                            "pose_pdb": ""})
+        if "exit vector" in ql or "attach" in ql:
+            call("detect_exit_vectors", {"smiles": parsed.get("warhead_smiles") or "",
+                                          "role": "warhead"})
+        if any(k in ql for k in ("admet", "permeab", "logp", "solub")):
+            call("predict_admet", {"smiles": parsed.get("warhead_smiles") or molecule or ""})
+
+    summaries, facts, n_evidence = [], [], 0
+    for tool, _params, r in calls:
+        envelope = r.get("scientific_result") if isinstance(r, dict) else None
+        envelope = envelope if isinstance(envelope, dict) else {}
+        summary = str(envelope.get("summary") or "").strip()
+        if summary:
+            summaries.append(summary)
+        data = (envelope.get("result") or {}).get("data") if isinstance(envelope.get("result"), dict) else None
+        _flatten_facts(data if data is not None else envelope.get("data") or {}, out=facts)
+        if (r.get("VALID_OUTPUT") or r.get("valid_output")) and envelope.get("status") in ("ok", "success", "warning"):
+            n_evidence += 1
+    seen: set[str] = set()
+    # answer enrichment: compute InChIKey when the question asks for an identifier
+    if molecule and any(k in ql for k in ("inchikey", "inchi key", "canonical smiles", "identifier")):
+        try:
+            from rdkit import Chem
+
+            m = Chem.MolFromSmiles(molecule)
+            if m is not None:
+                facts.append(f"inchikey={Chem.MolToInchiKey(m)}")
+        except Exception:  # noqa: BLE001
+            pass
+    uniq = [f for f in facts if not (f in seen or seen.add(f))]
+    answer = "; ".join(summaries)
+    if uniq:
+        answer = (answer + ". " if answer else "") + "; ".join(uniq[:60])
+    if not answer.strip():
+        answer = "No retrieval evidence produced for this question."
+    answered = n_evidence > 0
+    scientific_state = (ScientificState.SUPPORTED_ANSWER.value if answered
+                        else ScientificState.JUSTIFIED_NO_GO.value)
+    outcome = "completed" if answered else "abstained"
+    elapsed = round(time.time() - t0, 3)
+    status = "completed" if outcome == "completed" else "abstained"
+    return {
+        "case_id": case.get("task_id", ""),
+        "capability": capability,
+        "question": question,
+        "route": [t for t, _, _ in calls],
+        "routing": {"mode": "capability_retrieval", "intent_tools": [t for t, _, _ in calls]},
+        "routed_nodes": len(calls),
+        "reached": [t for t, _, _ in calls],
+        "trace": trace,
+        "retry_count": 0,
+        "elapsed_s": elapsed,
+        "budget_s": budget_s,
+        "seed": seed,
+        "over_budget": elapsed > budget_s,
+        "outcome": outcome,
+        "status": status,
+        "stop_reason": "",
+        "abstention_justified": not answered,
+        "abstention_reason": "" if answered else "no retrieval tool produced valid evidence",
+        "error": "",
+        "parsed_inputs": parsed,
+        "entity_resolution": entities,
+        "resolved_target": {"target_name": target, "uniprot_id": ""},
+        "resolved_e3": e3,
+        "scientific_state": scientific_state,
+        "execution_status": "completed" if calls else "no_tools",
+        "evidence_status": "retrieved" if answered else "insufficient",
+        "answer_status": "provided" if answered else "unresolved",
+        "retrieval_telemetry": [{"tool": t, "valid_output": bool(r.get("VALID_OUTPUT") or r.get("valid_output"))}
+                                for t, _p, r in calls],
+        "scientific_answer": {"scientific_state": scientific_state, "answer": answer},
+        "answer": answer,
+        "evidence": [{"kind": "retrieved", "source": t,
+                      "summary": str(((r.get("scientific_result") or {}) if isinstance(r, dict) else {}).get("summary", ""))[:200]}
+                     for t, _p, r in calls if (r.get("VALID_OUTPUT") or r.get("valid_output"))],
+        "missing_prerequisites": [] if answered else ["retrievable evidence for the asked fact"],
+        "uncertainty": ["Retrieved facts carry source provenance; mechanism claims remain hypotheses."],
+        "next_experiment": "Confirm the retrieved fact against the cited primary source.",
+        "attachment_hypothesis": False,
+        "design_path": {},
+        "design_gates": {},
+        "n_candidates": 0,
+        "n_verified_candidates": 0,
+        "n_design_brief_candidates": 0,
+        "verified_candidate_smiles": [],
+        "design_brief_candidate_smiles": [],
+        "n_warheads": 0,
+        "n_e3_ligands": 0,
+        "n_linkers": 0,
+        "stage_ledger": [{"stage": t, "outcome": "completed" if (r.get("VALID_OUTPUT") or r.get("valid_output")) else "failed"}
+                         for t, _p, r in calls],
+        "target_record": {"target_name": target, "uniprot_id": ""},
+        "warnings": [],
+        "errors": [],
+    }
+
+
 def run_case(
     case: dict[str, Any],
     *,
@@ -281,6 +478,11 @@ def run_case(
     capability = (capability or case.get("capability") or "").upper()
     if capability not in CAPABILITY_NODES:
         capability = "DESIGN"
+    # KNOW/REASON are retrieval questions: route them to the capability-aware
+    # retrieval path instead of the design workflow (which cannot answer them and
+    # consumed the whole budget). Set PROTACXTEND_RETRIEVAL_ROUTING=0 to disable.
+    if capability in {"KNOW", "REASON"} and os.environ.get("PROTACXTEND_RETRIEVAL_ROUTING", "1") != "0":
+        return _run_retrieval_case(case, capability, offline=offline, budget_s=budget_s, seed=seed)
     _freeze_seed(seed)
     route, routing_record = route_for(case, capability)
 

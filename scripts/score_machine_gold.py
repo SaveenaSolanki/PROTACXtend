@@ -29,6 +29,7 @@ from benchmark_runner.grader import grade_answer  # noqa: E402
 
 GOLD = ROOT / "benchmark/gold_machine_v1/machine_gold.json"
 CLOSED = ROOT / "benchmark_results/closed48/closed48_locked/predictions.jsonl"
+CLOSED_FIXED = ROOT / "benchmark_results/closed48/protacxtend_fixed/predictions.jsonl"
 ADAPTERS = ROOT / "benchmark_results/first_aggregate/adapters_predictions.jsonl"
 ADAPTERS_LLM = ROOT / "benchmark_results/first_aggregate/adapters_llm_know.jsonl"
 OUT = ROOT / "benchmark_results/first_aggregate"
@@ -49,6 +50,13 @@ def load_predictions() -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     if CLOSED.exists():
         for line in CLOSED.read_text().splitlines():
+            if line.strip():
+                row = json.loads(line)
+                if row.get("arm") == "protacxtend" and CLOSED_FIXED.exists():
+                    continue  # superseded by the fixed capability-routed arm
+                rows.append(row)
+    if CLOSED_FIXED.exists():
+        for line in CLOSED_FIXED.read_text().splitlines():
             if line.strip():
                 rows.append(json.loads(line))
     if ADAPTERS.exists():

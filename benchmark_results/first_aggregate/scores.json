@@ -96,19 +96,19 @@
       "arm": "protacxtend",
       "gold_class": "MACHINE_VERIFIED_EXTERNAL",
       "n": 7,
-      "correct": 0,
-      "accuracy": 0.0,
-      "wilson_lo": 0.0,
-      "wilson_hi": 0.3543
+      "correct": 3,
+      "accuracy": 0.4286,
+      "wilson_lo": 0.1582,
+      "wilson_hi": 0.7495
     },
     {
       "arm": "protacxtend",
       "gold_class": "RULE_BASED_RUBRIC",
       "n": 32,
-      "correct": 10,
-      "accuracy": 0.3125,
-      "wilson_lo": 0.1795,
-      "wilson_hi": 0.4857
+      "correct": 1,
+      "accuracy": 0.0312,
+      "wilson_lo": 0.0055,
+      "wilson_hi": 0.1574
     },
     {
       "arm": "protacxtend",

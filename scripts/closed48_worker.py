@@ -171,7 +171,9 @@ def run_arm(case: Dict[str, Any], arm: str) -> Dict[str, Any]:
     if arm == "protacxtend":
         from protacxtend.agents.structured_run import run_case
         try:
-            r = run_case(case, capability=case.get("capability", ""), offline=True, budget_s=120.0)
+            r = run_case(case, capability=case.get("capability", ""),
+                         offline=os.environ.get("PROTACXTEND_ARM_OFFLINE", "0") == "1",
+                         budget_s=120.0)
             base.update({
                 "outcome": r["outcome"], "status": r["status"],
                 "stopping_state": r["scientific_state"],

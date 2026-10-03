@@ -1,0 +1,74 @@
+[
+  {
+    "stage": "target_resolution",
+    "status": "executed",
+    "executed": true,
+    "detail": "target resolved"
+  },
+  {
+    "stage": "binder_retrieval",
+    "status": "executed",
+    "executed": true,
+    "detail": "100 binders"
+  },
+  {
+    "stage": "warhead_selection",
+    "status": "executed",
+    "executed": true,
+    "detail": "1 warheads"
+  },
+  {
+    "stage": "e3_selection",
+    "status": "executed",
+    "executed": true,
+    "detail": "1 E3 ligands"
+  },
+  {
+    "stage": "linker_generation",
+    "status": "executed",
+    "executed": true,
+    "detail": "16 linkers"
+  },
+  {
+    "stage": "construction",
+    "status": "executed",
+    "executed": true,
+    "detail": "38 assembled"
+  },
+  {
+    "stage": "validation",
+    "status": "executed",
+    "executed": true,
+    "detail": "30 valid"
+  },
+  {
+    "stage": "degradation_prediction",
+    "status": "executed",
+    "executed": true,
+    "detail": "30 predictions"
+  },
+  {
+    "stage": "admet_prediction",
+    "status": "executed",
+    "executed": true,
+    "detail": "30 records"
+  },
+  {
+    "stage": "ranking",
+    "status": "executed",
+    "executed": true,
+    "detail": "ranked candidates"
+  },
+  {
+    "stage": "ternary_coordinates",
+    "status": "unevaluated",
+    "executed": false,
+    "detail": "No validated ternary-coordinate backend/DockQ benchmark is available for this run."
+  },
+  {
+    "stage": "synthesis_route",
+    "status": "unevaluated",
+    "executed": false,
+    "detail": "Retrosynthetic routes were not executed; synthetic feasibility remains a proxy/gate."
+  }
+]

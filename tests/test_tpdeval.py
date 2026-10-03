@@ -227,7 +227,11 @@ def test_integration_status_is_honest():
     st = adapters.status_table()
     assert st["A"] == "EXECUTABLE"
     assert st["C"] == "MISSING"       # independent TPD agent not adapted
-    assert st["E"] == "MISSING"       # retrieval-only not implemented
+    # S1/S2/S4 adapters now exist and are wired (benchmark_runner.live_systems).
+    assert st["E"] == "EXECUTABLE"
+    assert st["F"] == "BLOCKED"       # wired but declared partial tool-match
+    assert st["B"] == "BLOCKED"       # wired but native-only (no resource match)
+    assert st["G"] == "MISSING"       # LLM+PROTACXtend tools not implemented
     with pytest.raises(adapters.AdapterNotWired):
         adapters.get_adapter("C")
 

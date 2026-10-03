@@ -1,0 +1,129 @@
+{
+  "control": "MZ1 reconstruction (BRD4-VHL)",
+  "reference": {
+    "name": "MZ1",
+    "role": "BRD4-VHL",
+    "smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](NC(=O)COCCOCCOCCNC(=O)C[C@@H]2N=C(c3ccc(Cl)cc3)c3c(sc(C)c3C)-n3c(C)nnc32)C(C)(C)C)cc1",
+    "canonical_smiles": "Cc1ncsc1-c1ccc(CNC(=O)C2CC(O)CN2C(=O)C(NC(=O)COCCOCCOCCNC(=O)CC2N=C(c3ccc(Cl)cc3)c3c(sc(C)c3C)-n3c(C)nnc32)C(C)(C)C)cc1",
+    "inchikey": "PTAMRJLIOCHJMQ-PYNGZGNASA-N",
+    "mw": 1002.661,
+    "pdb": "5T35",
+    "doi": "10.1021/acschembio.5b00216",
+    "db_row_doi": "10.1021/acs.jmedchem.6b01912",
+    "citation": "Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216",
+    "structure_doi": "10.1038/nchembio.2329",
+    "attribution_note": "PROTAC-DB row cites 10.1021/acs.jmedchem.6b01912 (later comparison study), not the MZ1 discovery paper",
+    "source_table": "data/protac_repos/repos/PROTAC-Degradation-Predictor/data/PROTAC-Degradation-DB.csv",
+    "assays": {
+      "dc50_nM": "8.0",
+      "dmax_percent": "98.0",
+      "cell_line": "HeLa",
+      "treatment_time_h": "24.0",
+      "assay": "Degradation of BRD4 short/long in HeLa cells after 24 h treatment",
+      "article_doi": "10.1021/acs.jmedchem.6b01912",
+      "database": "PROTAC-DB",
+      "pdb": "5T35",
+      "molecular_formula": "C49H60ClN9O8S2",
+      "source_inchikey": "PTAMRJLIOCHJMQ-PYNGZGNASA-N",
+      "source": "PROTAC-DB (PROTAC-Degradation-DB.csv)",
+      "note": "Measurements are as reported by PROTAC-DB; missing fields are not_reported and are never filled by predictions."
+    }
+  },
+  "warhead": {
+    "component_id": "BRD4_MZ1_warhead",
+    "name": "MZ1 BRD4 ligand (JQ1 triazolodiazepine)",
+    "smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+    "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+    "attachment_atom_map": 1,
+    "verified": true,
+    "target": "BRD4"
+  },
+  "linker": {
+    "component_id": "MZ1_linker",
+    "name": "MZ1 PEG3 linker",
+    "smiles": "O=C(NCCOCCOCCOCC(=O)[*:2])[*:1]",
+    "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+    "verified": true
+  },
+  "e3_ligand": {
+    "component_id": "VHL_MZ1_ligand",
+    "name": "MZ1 VHL ligand (VH032)",
+    "smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](N[*:1])C(C)(C)C)cc1",
+    "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+    "attachment_atom_map": 1,
+    "verified": true,
+    "e3_ligase": "VHL"
+  },
+  "identity_gate_inputs": {
+    "target_binder": {
+      "component_id": "BRD4_MZ1_warhead",
+      "role": "target_binder",
+      "name": "MZ1 BRD4 ligand (JQ1 triazolodiazepine)",
+      "smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+      "target": "BRD4",
+      "e3_ligase": "",
+      "source_id": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "binding_evidence": [
+        {
+          "source_id": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+          "assay": "source PROTAC component identity",
+          "value_nM": null
+        }
+      ],
+      "exit_vector_atoms": [
+        1
+      ],
+      "evidence_level": "binding_assay",
+      "metadata": {
+        "source_protac": "MZ1",
+        "inchikey": "YUZQVULRBZWKKT-JTQLQIEISA-N",
+        "verified": true
+      }
+    },
+    "e3_ligand": {
+      "component_id": "VHL_MZ1_ligand",
+      "role": "e3_ligand",
+      "name": "MZ1 VHL ligand (VH032)",
+      "smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](N[*:1])C(C)(C)C)cc1",
+      "target": "",
+      "e3_ligase": "VHL",
+      "source_id": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "binding_evidence": [
+        {
+          "source_id": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+          "assay": "source PROTAC component identity",
+          "value_nM": null
+        }
+      ],
+      "exit_vector_atoms": [
+        1
+      ],
+      "evidence_level": "binding_assay",
+      "metadata": {
+        "source_protac": "MZ1",
+        "inchikey": "ZLOXMSNKPDWMEF-ZIFCJYIRSA-N",
+        "verified": true
+      }
+    },
+    "linker": {
+      "component_id": "MZ1_linker",
+      "role": "linker",
+      "name": "MZ1 PEG3 linker",
+      "smiles": "O=C(NCCOCCOCCOCC(=O)[*:2])[*:1]",
+      "target": "",
+      "e3_ligase": "",
+      "source_id": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "binding_evidence": [],
+      "exit_vector_atoms": [
+        1,
+        2
+      ],
+      "evidence_level": "curated_exit_vector",
+      "metadata": {
+        "source_protac": "MZ1",
+        "inchikey": "BCTUXHHLONLIIU-UHFFFAOYSA-N",
+        "verified": true
+      }
+    }
+  }
+}

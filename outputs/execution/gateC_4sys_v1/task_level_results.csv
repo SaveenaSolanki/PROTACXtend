@@ -1,0 +1,17 @@
+system_key,system_id,task_id,pilot_id,capability,replicate,status,outcome_class,tool_calls,typed_abstention,latency_s,tokens_in,tokens_out,cost_usd,attempts,infra_error,expected_behavior,expected_behavior_met,raw_file
+S1,LLM+RAG,DESIGN-12,PILOT-DESIGN-12-KNOWN-NEGATIVE,DESIGN,1,ok,answered,4,False,15.93,1301,1326,0.000553,1,,linker_hypotheses_around_known_negative_warhead,,raw/S1_DESIGN-12_r1.json
+S1,LLM+RAG,DISCOVER-08,PILOT-DISCOVER-08,DISCOVER,1,ok,answered,4,False,9.618,1439,720,0.000403,1,,deterministic_ranking_under_budget,,raw/S1_DISCOVER-08_r1.json
+S1,LLM+RAG,KNOW-01,PILOT-KNOW-01,KNOW,1,ok,answered,4,False,13.25,1448,281,0.000281,1,,resolved_reviewed_human_accession,True,raw/S1_KNOW-01_r1.json
+S1,LLM+RAG,REASON-02,PILOT-REASON-02-MISSING-INPUT,REASON,1,ok,answered,4,False,10.468,1346,991,0.000466,1,,typed_abstention_MISSING_SCIENTIFIC_INPUT,False,raw/S1_REASON-02_r1.json
+S2,LLM+flat-tools,DESIGN-12,PILOT-DESIGN-12-KNOWN-NEGATIVE,DESIGN,1,ok,answered,1,False,9.594,2939,1554,0.000847,1,,linker_hypotheses_around_known_negative_warhead,,raw/S2_DESIGN-12_r1.json
+S2,LLM+flat-tools,DISCOVER-08,PILOT-DISCOVER-08,DISCOVER,1,ok,answered,0,False,2.911,1315,439,0.000307,1,,deterministic_ranking_under_budget,,raw/S2_DISCOVER-08_r1.json
+S2,LLM+flat-tools,KNOW-01,PILOT-KNOW-01,KNOW,1,ok,answered,1,False,5.272,4182,514,0.00073,1,,resolved_reviewed_human_accession,True,raw/S2_KNOW-01_r1.json
+S2,LLM+flat-tools,REASON-02,PILOT-REASON-02-MISSING-INPUT,REASON,1,ok,answered,1,False,7.572,3261,840,0.000691,1,,typed_abstention_MISSING_SCIENTIFIC_INPUT,False,raw/S2_REASON-02_r1.json
+S3,PROTACXtend,DESIGN-12,PILOT-DESIGN-12-KNOWN-NEGATIVE,DESIGN,1,failed,abstained,0,True,0.0,3876,243,0.000611,1,,linker_hypotheses_around_known_negative_warhead,,raw/S3_DESIGN-12_r1.json
+S3,PROTACXtend,DISCOVER-08,PILOT-DISCOVER-08,DISCOVER,1,failed,abstained,0,True,0.0,3794,203,0.000588,1,,deterministic_ranking_under_budget,,raw/S3_DISCOVER-08_r1.json
+S3,PROTACXtend,KNOW-01,PILOT-KNOW-01,KNOW,1,ok,answered,1,False,4.547,7864,411,0.001216,1,,resolved_reviewed_human_accession,True,raw/S3_KNOW-01_r1.json
+S3,PROTACXtend,REASON-02,PILOT-REASON-02-MISSING-INPUT,REASON,1,failed,abstained,0,True,0.0,0,0,0.0,1,,typed_abstention_MISSING_SCIENTIFIC_INPUT,True,raw/S3_REASON-02_r1.json
+S4,Biomni,DESIGN-12,PILOT-DESIGN-12-KNOWN-NEGATIVE,DESIGN,1,ok,answered,7,False,102.154,0,0,0,1,,linker_hypotheses_around_known_negative_warhead,,raw/S4_DESIGN-12_r1.json
+S4,Biomni,DISCOVER-08,PILOT-DISCOVER-08,DISCOVER,1,ok,abstained,25,True,423.42,0,0,0,1,,deterministic_ranking_under_budget,,raw/S4_DISCOVER-08_r1.json
+S4,Biomni,KNOW-01,PILOT-KNOW-01,KNOW,1,ok,answered,6,False,20.734,0,0,0,1,,resolved_reviewed_human_accession,True,raw/S4_KNOW-01_r1.json
+S4,Biomni,REASON-02,PILOT-REASON-02-MISSING-INPUT,REASON,1,ok,answered,7,False,138.282,0,0,0,1,,typed_abstention_MISSING_SCIENTIFIC_INPUT,False,raw/S4_REASON-02_r1.json

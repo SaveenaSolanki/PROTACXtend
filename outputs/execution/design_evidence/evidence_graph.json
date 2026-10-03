@@ -1,0 +1,845 @@
+{
+ "claims": [
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-VERIFIED-MZ1_st1",
+   "value": 181.7,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-VERIFIED-MZ1_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-VERIFIED-MZ1_st2",
+   "value": 181.7,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-VERIFIED-MZ1_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-3be61c9a37bc_st1",
+   "value": 10.13,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-3be61c9a37bc_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-3be61c9a37bc_st2",
+   "value": 10.13,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-3be61c9a37bc_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ea2397323ef3_st1",
+   "value": 10.13,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ea2397323ef3_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ea2397323ef3_st2",
+   "value": 10.13,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ea2397323ef3_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ba103d8ffd55_st1",
+   "value": 15.89,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ba103d8ffd55_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ba103d8ffd55_st2",
+   "value": 15.89,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ba103d8ffd55_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ba103d8ffd55_st3",
+   "value": 15.89,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ba103d8ffd55_st3"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ba103d8ffd55_st4",
+   "value": 15.89,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ba103d8ffd55_st4"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-6eca57b40ab4_st1",
+   "value": 11.18,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-6eca57b40ab4_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-6eca57b40ab4_st2",
+   "value": 11.18,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-6eca57b40ab4_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-6eca57b40ab4_st3",
+   "value": 11.18,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-6eca57b40ab4_st3"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-6eca57b40ab4_st4",
+   "value": 11.18,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-6eca57b40ab4_st4"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ecec14d26187_st1",
+   "value": 50.66,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ecec14d26187_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-2a48d39e3d9d_st1",
+   "value": 45.86,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-2a48d39e3d9d_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-ecec14d26187_st2",
+   "value": 50.66,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-ecec14d26187_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-2a48d39e3d9d_st2",
+   "value": 45.86,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-2a48d39e3d9d_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-1572f5937a0f_st1",
+   "value": 16.4,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-1572f5937a0f_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-1572f5937a0f_st2",
+   "value": 16.4,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-1572f5937a0f_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-06c5303334ea_st1",
+   "value": 32.56,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-06c5303334ea_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-06c5303334ea_st2",
+   "value": 32.56,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-06c5303334ea_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-102f4f338d09_st1",
+   "value": 25.82,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-102f4f338d09_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-102f4f338d09_st2",
+   "value": 25.82,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-102f4f338d09_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-7b876e93f5ea_st1",
+   "value": 16.52,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-7b876e93f5ea_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-7b876e93f5ea_st2",
+   "value": 16.52,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-7b876e93f5ea_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-be02b9a5d489_st1",
+   "value": 16.6,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-be02b9a5d489_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-be02b9a5d489_st2",
+   "value": 16.6,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-be02b9a5d489_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-5b677b9a7606_st1",
+   "value": 21.37,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-5b677b9a7606_st1"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  },
+  {
+   "command": "design",
+   "dimension": "degradation",
+   "kind": "computed",
+   "statement": "ML-predicted degradation for SGA-5b677b9a7606_st2",
+   "value": 21.37,
+   "unit": "nM",
+   "assay_context": {},
+   "provenance": {
+    "tool": "deterministic_design_engine.degradation_prediction",
+    "version": "tack-style-v1 (DC50/Dmax primary) + chemprop cross-check",
+    "query": "",
+    "params": {
+     "candidate_id": "SGA-5b677b9a7606_st2"
+    },
+    "source_ids": [],
+    "artifact": "outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json",
+    "measured_source": false
+   },
+   "uncertainty": {
+    "ci_low": null,
+    "ci_high": null,
+    "std": null,
+    "note": ""
+   },
+   "status": "standalone",
+   "conflict_of": []
+  }
+ ],
+ "fingerprint": "06188a73f8c92f99"
+}

@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-10-03T17:37:02Z",
+  "cases": 48,
+  "gold_review_rows": 48,
+  "gold_review_pending": 48,
+  "reviewer_decisions": 29,
+  "reviewer_decisions_pending": 29,
+  "consensus_exists": true,
+  "consensus_approved": false,
+  "consensus_cases_resolved": 0,
+  "scoring_possible": false,
+  "reviewer_1_workbook": true,
+  "reviewer_2_workbook": true,
+  "adjudicator_workbook": true
+}

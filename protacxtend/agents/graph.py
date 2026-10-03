@@ -98,6 +98,7 @@ CAPABILITY_NODES: dict[str, list[str]] = {
     "DESIGN": [
         "parse_user_request", "create_design_plan", "control_np_hard_search",
         "safety_precheck", "resolve_target", "retrieve_target_binders",
+        "design_path",
         "select_warheads", "select_e3_ligands", "detect_exit_vectors",
         "generate_linkers", "construct_protacs", "expand_stereoisomers",
         "validate_protacs", "score_cell_context", "predict_admet", "check_novelty",

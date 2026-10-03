@@ -1,0 +1,11 @@
+{
+  "n_cases_present": 48,
+  "n_filled_both": 0,
+  "n_blank_in_one_or_both": 48,
+  "agree": 0,
+  "percent_agreement": null,
+  "cohens_kappa": null,
+  "disagreements": [],
+  "verdict_distribution_a": {},
+  "verdict_distribution_b": {}
+}

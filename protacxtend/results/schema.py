@@ -52,6 +52,7 @@ class ToolRun:
     valid_output: bool = False
     version: str = ""
     backend: str = ""
+    execution_mode: str = ""
     evidence_kind: str = "missing"
     params: dict[str, Any] = field(default_factory=dict)
     params_sha256: str = ""
@@ -79,7 +80,7 @@ class ToolRun:
             "params_sha256": self.params_sha256,
             "latency_s": self.latency_s,
         }
-        for name in ("version", "backend", "error", "started_at", "ended_at"):
+        for name in ("version", "backend", "execution_mode", "error", "started_at", "ended_at"):
             value = getattr(self, name)
             if value:
                 out[name] = value
@@ -101,6 +102,7 @@ class ToolRun:
             valid_output=bool(data.get("valid_output", False)),
             version=str(data.get("version", "")),
             backend=str(data.get("backend", "")),
+            execution_mode=str(data.get("execution_mode", "")),
             evidence_kind=str(data.get("evidence_kind", "missing")),
             params=dict(data.get("params") or {}),
             params_sha256=str(data.get("params_sha256", "")),

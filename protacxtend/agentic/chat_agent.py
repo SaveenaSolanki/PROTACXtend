@@ -105,8 +105,10 @@ class ConversationalAgent:
     def __init__(self, cfg: Optional[ProviderConfig] = None, *,
                  llm_action: Optional[Callable[[str, str], Dict[str, Any]]] = None,
                  workflow_runner: Optional[Callable[[DesignObjective], Dict[str, Any]]] = None,
-                 session_context: Optional[Dict[str, Any]] = None) -> None:
+                 session_context: Optional[Dict[str, Any]] = None,
+                 allow_handoff: bool = True) -> None:
         self.cfg = cfg or get_config()
+        self.allow_handoff = allow_handoff
         self._llm_action_hook = llm_action
         self._workflow_runner = workflow_runner or self._default_workflow
         self.session_context: Dict[str, Any] = dict(session_context or {})
@@ -138,6 +140,10 @@ class ConversationalAgent:
         for step in range(MAX_STEPS):
             run.steps = step + 1
             system = SYSTEM_HEAD + SYSTEM_TOOLS.format(tools=tools_catalog_text())
+            if not self.allow_handoff:
+                system += ("\nIMPORTANT: workflow_handoff is DISABLED for this turn. Never return "
+                           "workflow_handoff. For design requests, return final_answer with a concise "
+                           "plan and tell the user to run `/design <objective>` to execute the graph.\n")
             if self.session_context:
                 system += ("\nSession context (previous runs/objective — reuse it on follow-ups):\n"
                            + json.dumps(self.session_context, indent=1) + "\n")
@@ -178,6 +184,11 @@ class ConversationalAgent:
                 raise ClarificationNeeded(clarification, run)
 
             if name == "workflow_handoff":
+                if not self.allow_handoff:
+                    run.emit("system", action="handoff_disabled", status="error",
+                             summary="workflow_handoff disabled \u2014 answering directly")
+                    observations.append("workflow_handoff is disabled; return final_answer instead.")
+                    continue
                 return self._do_handoff(run, action.get("objective") or {})
 
             if name == "tool_call":

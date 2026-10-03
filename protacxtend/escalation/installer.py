@@ -289,8 +289,10 @@ class InstallManager:
             return record
 
         try:
+            from protacxtend.security.safe_io import run_args
+
             proc = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=timeout
+                run_args(command), shell=False, capture_output=True, text=True, timeout=timeout
             )
             success = proc.returncode == 0
             version_after = detect_version(candidate) if success else ""

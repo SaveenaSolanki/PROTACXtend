@@ -38,8 +38,11 @@ class CanonicalState:
     request: ScientificRequest
     engine_state: Any = None
     module_outputs: dict[str, dict[str, Any]] = field(default_factory=dict)
+    policy_decisions: list[dict[str, Any]] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
+    #: True when a required module was explicitly abstained (not failed).
+    abstained: bool = False
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -89,6 +92,9 @@ class ScientificModule:
     title: str = ""
     description: str = ""
     optional: bool = False
+    #: Optional fallback module id used by the execution policy when the
+    #: primary module fails and fallback is enabled.
+    fallback: str = ""
 
     def execute(self, state: CanonicalState, context: ModuleContext) -> ModuleResult:  # pragma: no cover - abstract
         raise NotImplementedError
@@ -105,6 +111,8 @@ class ScientificModule:
         errors: list[str] | None = None,
         tool: str = "",
     ) -> ModuleResult:
+        from protacxtend.canonical.provenance import provenance_payload
+
         result = ModuleResult(
             module_id=self.module_id.value,
             title=self.title,
@@ -113,7 +121,7 @@ class ScientificModule:
             outputs=outputs,
             warnings=list(warnings or []),
             errors=list(errors or []),
-            provenance={"tool_version": f"protacxtend:{self.module_id.value}:v1", "tool": tool},
+            provenance=provenance_payload(tool, module_id=self.module_id.value),
         )
         result.evidence_refs = context.evidence.add_module_result(result)
         return result
@@ -236,6 +244,20 @@ class ChemistryWarheadModule(ScientificModule):
     def execute(self, state: CanonicalState, context: ModuleContext) -> ModuleResult:
         view = self._engine_view(state, context)
         warheads = view.list("selected_warheads")
+        # Defense in depth: a demo/fixture warhead must not reach a scientific
+        # strategy even if an upstream engine leaked one past the loader filter.
+        from protacxtend.runtime.modes import filter_scientific_rows, is_scientific
+
+        raw_warheads = []
+        for item in warheads:
+            record = _to_dict(item)
+            if not record.get("source"):
+                record["source"] = record.get("warhead_source") or ""
+            raw_warheads.append(record)
+        kept_warheads, dropped_warheads = filter_scientific_rows(
+            raw_warheads, source_key="source"
+        )
+        warheads = kept_warheads
         linkers = view.list("generated_linkers")
         candidates = view.list("valid_candidates") or view.list("assembled_candidates")
         novelty = [_to_dict(item) for item in view.list("novelty_results")]
@@ -255,6 +277,11 @@ class ChemistryWarheadModule(ScientificModule):
         }
         status = TaskStatus.SUCCEEDED if candidates else TaskStatus.DEGRADED
         warnings = [] if candidates else ["No chemically valid PROTAC candidate was assembled."]
+        if dropped_warheads:
+            warnings.append(
+                f"Dropped {len(dropped_warheads)} demo-sourced warhead(s) in "
+                f"{('scientific' if is_scientific() else 'non-scientific')} mode."
+            )
         return self._result(
             status=status,
             summary=f"{outputs['n_valid']} valid candidate(s) from {outputs['n_warheads']} warhead(s) x {outputs['n_linkers']} linker(s).",

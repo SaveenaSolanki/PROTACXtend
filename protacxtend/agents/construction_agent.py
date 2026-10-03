@@ -24,8 +24,14 @@ class MolecularConstructionAgent(ReActAgent):
             use_retrosynthesis_filtering=state.parsed_objective.use_retrosynthesis_filtering,
         )
         state.construction_attempts.extend(attempts)
-        state.assembled_candidates = candidates
-        if not candidates:
+        # Never let exploratory generation drop a source-backed verified
+        # reference candidate assembled by the design-path node.
+        verified = [c for c in state.assembled_candidates if c.provenance.get("verified_components")]
+        verified_smiles = {c.full_protac_smiles for c in verified}
+        state.assembled_candidates = verified + [
+            c for c in candidates if c.full_protac_smiles not in verified_smiles
+        ]
+        if not state.assembled_candidates:
             state.errors.append("No PROTAC candidates assembled. Check attachment vectors and linker library.")
         return state
 

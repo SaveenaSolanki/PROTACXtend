@@ -1092,9 +1092,9 @@ def predict_degradation_with_model(
                 # For now, return placeholder
                 return _heuristic_prediction(protac_smiles, target_name, e3_ligase, model_path)
             elif model_path.endswith(".pkl"):
-                import pickle
-                with open(model_path, "rb") as f:
-                    study = pickle.load(f)
+                from protacxtend.security.safe_io import safe_pickle_load
+
+                study = safe_pickle_load(model_path)
                 # Optuna study - extract best trial
                 if hasattr(study, "best_trial"):
                     return _heuristic_prediction(protac_smiles, target_name, e3_ligase, 

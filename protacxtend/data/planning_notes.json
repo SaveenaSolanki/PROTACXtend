@@ -1,0 +1,19 @@
+{
+  "schema": "planning_notes.v1",
+  "notes": {
+    "EGFR": {
+      "biology": "EGFR (epidermal growth factor receptor) kinase; canonical oncology target (NSCLC, colorectal, head-and-neck).",
+      "ligand_notes": "Well-established kinase-inhibitor warhead space (erlotinib, gefitinib family); literature DOI 10.1056/NEJMoa020938; 10.1056/NEJMoa020910.",
+      "e3_notes": "Measured PROTAC degradation rows exist in the packaged context set (CRBN)."
+    },
+    "KRAS": {
+      "biology": "KRAS is a small GTPase; historically considered undruggable; druggability now centered on allele-specific pockets (e.g., G12C covalent site).",
+      "ligand_notes": "Ligand space is allele-specific/covalent (sotorasib DOI 10.1056/NEJMoa2007241; adagrasib DOI 10.1056/NEJMoa2108395). No packaged binder records in the curated table; no measured PROTAC degradation rows in the packaged context set.",
+      "e3_notes": "No measured E3 precedent in the packaged context set; E3 ranking would be exploratory (expression/context only)."
+    }
+  },
+  "commitments": [
+    "Planning notes are literature-sourced only; they never substitute for retrieved evidence in /investigate.",
+    "A plan never executes compound design and never presents a design result; /design generates candidates, /report summarizes completed artifacts."
+  ]
+}

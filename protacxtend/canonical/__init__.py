@@ -19,8 +19,23 @@ Tool Executor, not parallel entry points. The legacy seven-layer
 """
 
 from protacxtend.canonical.critic import CriticVerifier
+from protacxtend.canonical.critics import (
+    BaseCritic,
+    EvidenceCritic,
+    MechanismCritic,
+    ReproducibilityCritic,
+    default_critics,
+)
 from protacxtend.canonical.decision import DecisionEngine
 from protacxtend.canonical.evidence import CanonicalEvidenceStore
+from protacxtend.canonical.failures import (
+    CriticResult,
+    Failure,
+    FailureClass,
+    classify_failure,
+    failure_taxonomy,
+    make_failure,
+)
 from protacxtend.canonical.modules import (
     MODULE_CLASSES,
     CanonicalState,
@@ -30,6 +45,13 @@ from protacxtend.canonical.modules import (
     module_dependencies,
 )
 from protacxtend.canonical.orchestrator import CanonicalOrchestrator, run_canonical
+from protacxtend.canonical.policy import (
+    ExecutionPolicy,
+    PolicyAction,
+    PolicyDecision,
+    RetryPolicy,
+    policy_from_config,
+)
 from protacxtend.canonical.request_parser import ScientificRequestParser
 from protacxtend.canonical.schemas import (
     SCIENTIFIC_MODULE_ORDER,
@@ -67,6 +89,7 @@ from protacxtend.canonical.tool_executor import ToolExecutionError, ToolExecutor
 
 __all__ = [
     "ADMERisk",
+    "BaseCritic",
     "BinaryStructureAssessment",
     "Biomarker",
     "CanonicalEvidenceStore",
@@ -75,19 +98,29 @@ __all__ = [
     "CanonicalState",
     "CombinationStrategy",
     "Contradiction",
+    "CriticResult",
     "CriticVerdict",
     "CriticVerifier",
     "DecisionEngine",
     "DegradationPredictionSummary",
     "E3Recommendation",
     "EvidenceBundle",
+    "EvidenceCritic",
+    "ExecutionPolicy",
     "ExperimentalPlan",
     "ExperimentalPlanStep",
+    "Failure",
+    "FailureClass",
     "GoNoGoCriterion",
+    "MechanismCritic",
     "MODULE_CLASSES",
     "ModuleContext",
     "ModuleResult",
+    "PolicyAction",
+    "PolicyDecision",
+    "ReproducibilityCritic",
     "ResistanceMechanism",
+    "RetryPolicy",
     "RunManifest",
     "SCIENTIFIC_MODULE_ORDER",
     "STRATEGY_SCHEMA_VERSION",
@@ -109,6 +142,11 @@ __all__ = [
     "ToolExecutor",
     "UncertaintyDecomposition",
     "canonical_modules",
+    "classify_failure",
+    "default_critics",
+    "failure_taxonomy",
+    "make_failure",
     "module_dependencies",
+    "policy_from_config",
     "run_canonical",
 ]

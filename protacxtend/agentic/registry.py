@@ -173,6 +173,69 @@ TOOL_SPECS: List[Dict[str, Any]] = [
     _spec("predict_admet", "prediction",
           "ADMET flags (hERG/AMES/BBB/Lipinski...).", {"smiles": ""},
           EvidenceType.ML_PREDICTION, [], deterministic=True),
+    _spec("predict_protac_activity", "prediction",
+          "Repo-backed PROTAC degradation activity (PROTAC-Degradation-Predictor "
+          "is_protac_active) executed in its own conda environment.",
+          {"smiles": "", "e3_ligase": "VHL", "target_uniprot": "", "cell_line": "HeLa"},
+          EvidenceType.ML_PREDICTION,
+          ["Upstream repo model; applicability domain not characterised here."],
+          readiness="ready", ml=True),
+    _spec("predict_deepprotacs", "prediction",
+          "Repo-backed DeepPROTACs degradation prediction (0/1) from a complex "
+          "directory of mol2 pockets/ligands + linker.smi.",
+          {"complex_dir": "single_test"}, EvidenceType.ML_PREDICTION,
+          ["Published model saved under PyG 1.x; loaded via a legacy-tolerant "
+           "unpickler on PyG 2.0.4 / torch 2.0.1 CPU."],
+          readiness="ready", ml=True),
+    _spec("predict_protac_stan", "prediction",
+          "Repo-backed PROTAC-STAN interpretable degradation prediction over a "
+          "prepared dataset (cached ESM embeddings).",
+          {"root": "data/demo", "name": "demo"}, EvidenceType.ML_PREDICTION,
+          ["New proteins need esm_embed/get_embed_s.py first."],
+          readiness="ready", ml=True),
+    _spec("split_protac_bellerophon", "chemistry",
+          "Repo-backed split of a PROTAC into warhead / linker / E3 ligand "
+          "using Bellerophon's curated default libraries.",
+          {"protac_smiles": ""}, EvidenceType.CALCULATED,
+          ["Matches the bundled 605-warhead / 101-E3 SDF libraries only."],
+          readiness="ready", deterministic=True),
+    _spec("sample_ternary_ternify", "structure",
+          "Repo-backed TERNIFY Monte-Carlo sampling of PROTAC-induced ternary "
+          "complex conformers from a prepared input directory.",
+          {"data_dir": "data/6hay", "n_ini": 1000, "n_keep": 200},
+          EvidenceType.STRUCTURAL_SURROGATE,
+          ["Force-field sampling, not an experimental complex."],
+          readiness="ready", deterministic=True),
+    _spec("predict_se3_protacs", "prediction",
+          "Repo-backed SE(3)-PROTACs degradation prediction from component "
+          "SMILES + FASTA sequences (252 MB model + ESM embeddings).",
+          {"ligase_smiles": "", "ligase_seq": "", "target_smiles": "",
+           "target_seq": "", "linker_smiles": ""}, EvidenceType.ML_PREDICTION,
+          ["First run downloads ESM weights; model filename needed a symlink."],
+          readiness="ready", ml=True),
+    _spec("run_degradomap_experiment", "decision",
+          "Repo-backed degradomap LOO E3-tractability experiment (bundled "
+          "merged dataset, no network download).",
+          {"merged_csv": "data/merged_dataset.csv"}, EvidenceType.CALCULATED,
+          ["This is degradomap's documented NULL RESULT baseline; AUCs near "
+           "0.5 are the expected honest finding."], readiness="ready", deterministic=True),
+    _spec("assign_e3_mechanism", "target",
+          "Map an E3 gene symbol to degradomap's mechanism class "
+          "(pocket_binder / molecular_glue / covalent).",
+          {"gene_symbol": "VHL"}, EvidenceType.CALCULATED,
+          ["Literature-derived mapping; curated set only."],
+          readiness="ready", deterministic=True),
+    _spec("inspect_repo_assets", "decision",
+          "List safe metadata/assets of any cloned PROTAC research repo "
+          "(files, models, data, entry points, env specs) without executing it.",
+          {"repo_name": "MEGA-PROTAC", "max_files": 4000}, EvidenceType.CALCULATED,
+          ["Metadata/asset listing only; no pipeline is executed."],
+          readiness="ready", deterministic=True),
+    _spec("list_repo_tools", "decision",
+          "Cloned PROTAC research repos and their honest callability status.",
+          {"limit": 40}, EvidenceType.CALCULATED,
+          ["Only repos with a verified environment are reported callable."],
+          readiness="ready", deterministic=True),
 
     # WORKFLOW
     _spec("run_protacpilot_structural", "workflow",
@@ -218,12 +281,17 @@ def _get(url: str, params: Optional[Dict[str, Any]] = None) -> Any:
 
 def exec_europe_pmc(query: str, page_size: int = 8) -> ToolResult:
     try:
+        # resultType=core returns title + abstractText + identifiers (pmid/pmcid/doi);
+        # the default search payload omits abstractText (raw-response inspection,
+        # KNOW-06/REASON-03 repair 2026-09-24).
         data = _get("https://www.ebi.ac.uk/europepmc/webservices/rest/search",
-                    {"query": query, "format": "json", "pageSize": page_size})
+                    {"query": query, "format": "json", "pageSize": page_size,
+                     "resultType": "core"})
         hits = data.get("resultList", {}).get("result", [])
         rows = [{"id": h.get("id"), "source": h.get("source"), "title": h.get("title"),
-                 "year": h.get("pubYear"), "doi": h.get("doi"), "pmcid": h.get("pmcid"),
-                 "journal": h.get("journalTitle")} for h in hits]
+                 "abstract": (h.get("abstractText") or "")[:4000],
+                 "year": h.get("pubYear"), "doi": h.get("doi"), "pmid": h.get("pmid"),
+                 "pmcid": h.get("pmcid"), "journal": h.get("journalTitle")} for h in hits]
         return ToolResult(
             tool="search_europe_pmc", status=ToolStatus.SUCCESS,
             summary=f"Europe PMC → {len(rows)} results",
@@ -572,7 +640,7 @@ def exec_check_synthetic_feasibility(smiles: str, use_aizynth: bool = True) -> T
                           evidence_type=EvidenceType.NOT_AVAILABLE)
 
 
-def exec_predict_degradation(smiles: str, e3: str = "CRBN", cell_line: str = "default",
+def exec_predict_degradation(smiles: str, e3: str = "", cell_line: str = "",
                              target: str = "") -> ToolResult:
     try:
         from protacxtend.tools.degradation_endpoint import predict_degradation_endpoint
@@ -668,16 +736,41 @@ def exec_build_candidate_dossier(candidate_id: str = "", candidate: Any = None) 
                       limitations=["Dossier reflects recorded run evidence only."])
 
 
-def _find_candidate_record(candidate_id: str) -> Dict[str, Any]:
-    """Best-effort lookup of a candidate row across run output tables."""
+def _find_candidate_record(candidate_id: str, *, include_comparison_only: bool = False) -> Dict[str, Any]:
+    """Best-effort lookup of a candidate row across run output tables.
+
+    Scientific search by default excludes BOTH invalid runs and
+    comparison-only replays: neither may be cited as a reconstruction or
+    selected as candidate evidence. Pass ``include_comparison_only=True`` only
+    for explicit audit/regression lookups (rows then carry the comparison
+    flag)."""
     from pathlib import Path
 
     roots = [Path("outputs/runs"), Path("protacxtend/outputs/candidates"),
              Path.home() / ".protacxtend" / "outputs"]
+    from protacxtend.run_quarantine import run_status
+
     for root in roots:
         if not root.exists():
             continue
         for path in sorted(root.rglob("*.json")) + sorted(root.rglob("*.jsonl")):
+            # Never surface a candidate from an invalid run. Comparison-only
+            # replays are excluded from scientific search by default; only an
+            # explicit audit lookup may retrieve them, visibly flagged.
+            comparison_only = False
+            skip = False
+            for parent in path.parents:
+                if parent.name.startswith("run"):
+                    st = run_status(parent)
+                    if st == "INVALID":
+                        skip = True
+                        break
+                    if st == "COMPARISON_ONLY" and not include_comparison_only:
+                        skip = True
+                    elif st == "COMPARISON_ONLY":
+                        comparison_only = True
+            if skip:
+                continue
             try:
                 text = path.read_text(encoding="utf-8")
             except Exception:
@@ -689,6 +782,10 @@ def _find_candidate_record(candidate_id: str) -> Dict[str, Any]:
                     try:
                         row = json.loads(line)
                         if isinstance(row, dict):
+                            if comparison_only:
+                                row = dict(row)
+                                row["comparison_only"] = True
+                                row["citation_claim"] = "citeable as a reference reconstruction (comparison_only); not scientific evidence"
                             return row
                     except Exception:
                         continue
@@ -810,7 +907,7 @@ def exec_model_ternary_complex(target: str = "", e3: str = "", linker_smiles: st
         from protacxtend.tools.ternary_ensemble import run_ensemble
 
         candidate = {"candidate_id": "agent_input", "full_protac_smiles": smiles or linker_smiles,
-                     "target": target, "e3_ligase": e3 or "CRBN", "linker_smiles": linker_smiles}
+                     "target": target, "e3_ligase": e3, "linker_smiles": linker_smiles}
         result = run_ensemble(candidate, methods=["geometric_proxy"])
         payload = _plain(result)
         return ToolResult(tool="model_ternary_complex",
@@ -911,6 +1008,165 @@ def exec_predict_admet(smiles: str = "", backend: str = "auto") -> ToolResult:
                           summary=f"ADMET error · {exc}", evidence_type=EvidenceType.NOT_AVAILABLE)
 
 
+def exec_predict_protac_activity(smiles: str = "", e3_ligase: str = "VHL",
+                                 target_uniprot: str = "", cell_line: str = "HeLa") -> ToolResult:
+    """Repo-backed degradation activity via PROTAC-Degradation-Predictor."""
+    from protacxtend.tools.repo_tool_channel import predict_protac_activity
+
+    out = predict_protac_activity(smiles, e3_ligase, target_uniprot, cell_line)
+    if not out.get("available"):
+        return ToolResult(tool="predict_protac_activity", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"repo predictor unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    active = out.get("active")
+    return ToolResult(
+        tool="predict_protac_activity", status=ToolStatus.SUCCESS,
+        summary=f"PROTAC-Degradation-Predictor → {'active' if active else 'inactive'}",
+        data=out, evidence_type=EvidenceType.ML_PREDICTION,
+        model_version="PROTAC-Degradation-Predictor",
+        limitations=["Upstream model in its own conda env; applicability domain not characterised."])
+
+
+def exec_predict_deepprotacs(complex_dir: str = "single_test") -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import predict_deepprotacs
+
+    out = predict_deepprotacs(complex_dir)
+    if not out.get("available"):
+        return ToolResult(tool="predict_deepprotacs", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"DeepPROTACs unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="predict_deepprotacs", status=ToolStatus.SUCCESS,
+                      summary=f"DeepPROTACs → {out['prediction']}", data=out,
+                      evidence_type=EvidenceType.ML_PREDICTION,
+                      model_version="DeepPROTACs",
+                      limitations=["Published PyG-1.x model; legacy-tolerant load."])
+
+
+def exec_predict_protac_stan(root: str = "data/demo", name: str = "demo") -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import predict_protac_stan
+
+    out = predict_protac_stan(root, name)
+    if not out.get("available"):
+        return ToolResult(tool="predict_protac_stan", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"PROTAC-STAN unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="predict_protac_stan", status=ToolStatus.SUCCESS,
+                      summary=f"PROTAC-STAN → {out['n_active']}/{out['n']} predicted active",
+                      data=out, evidence_type=EvidenceType.ML_PREDICTION,
+                      model_version="PROTAC-STAN",
+                      limitations=["Prepared dataset + cached ESM embeddings required."])
+
+
+def exec_split_protac_bellerophon(protac_smiles: str) -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import split_protac_bellerophon
+
+    out = split_protac_bellerophon(protac_smiles)
+    if not out.get("available"):
+        return ToolResult(tool="split_protac_bellerophon", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"Bellerophon unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="split_protac_bellerophon", status=ToolStatus.SUCCESS,
+                      summary=f"Bellerophon → {out.get('n_solutions', 0)} solution(s)",
+                      data=out, evidence_type=EvidenceType.CALCULATED,
+                      model_version="Bellerophon")
+
+
+def exec_sample_ternary_ternify(data_dir: str = "data/6hay", n_ini: int = 1000,
+                                n_keep: int = 200) -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import sample_ternary_ternify
+
+    out = sample_ternary_ternify(data_dir, n_ini=int(n_ini), n_keep=int(n_keep))
+    if not out.get("available"):
+        return ToolResult(tool="sample_ternary_ternify", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"TERNIFY unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="sample_ternary_ternify", status=ToolStatus.SUCCESS,
+                      summary=f"TERNIFY → {out['n_conformers']} ternary conformers",
+                      data=out, evidence_type=EvidenceType.STRUCTURAL_SURROGATE,
+                      model_version="TERNIFY",
+                      limitations=["Force-field Monte-Carlo sampling, not experimental."])
+
+
+def exec_predict_se3_protacs(ligase_smiles: str = "", ligase_seq: str = "",
+                             target_smiles: str = "", target_seq: str = "",
+                             linker_smiles: str = "") -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import predict_se3_protacs
+
+    out = predict_se3_protacs(ligase_smiles, ligase_seq, target_smiles, target_seq,
+                              linker_smiles)
+    if not out.get("available"):
+        return ToolResult(tool="predict_se3_protacs", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"SE(3)-PROTACs unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="predict_se3_protacs", status=ToolStatus.SUCCESS,
+                      summary=f"SE(3)-PROTACs → score {out['degradation_score']:.4f} "
+                              f"({out.get('prediction','')})",
+                      data=out, evidence_type=EvidenceType.ML_PREDICTION,
+                      model_version="SE(3)-PROTACs",
+                      limitations=["252 MB model + ESM embeddings; CPU inference."])
+
+
+def exec_run_degradomap_experiment(merged_csv: str = "data/merged_dataset.csv") -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import run_degradomap_experiment
+
+    out = run_degradomap_experiment(merged_csv)
+    if not out.get("available"):
+        return ToolResult(tool="run_degradomap_experiment", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"degradomap unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    auc = out.get("auc", {})
+    return ToolResult(
+        tool="run_degradomap_experiment", status=ToolStatus.SUCCESS,
+        summary=(f"degradomap LOO AUC structural={auc.get('structural',0):.3f} "
+                 f"biological={auc.get('biological',0):.3f} "
+                 f"combined={auc.get('combined',0):.3f}"),
+        data=out, evidence_type=EvidenceType.CALCULATED, model_version="degradomap",
+        limitations=["Documented null-result baseline; AUC~0.5 is expected."])
+
+
+def exec_assign_e3_mechanism(gene_symbol: str = "") -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import assign_e3_mechanism
+
+    out = assign_e3_mechanism(gene_symbol)
+    if not out.get("available"):
+        return ToolResult(tool="assign_e3_mechanism", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"mechanism not found for '{gene_symbol}' "
+                                  f"({out.get('reason','')})"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(tool="assign_e3_mechanism", status=ToolStatus.SUCCESS,
+                      summary=f"{gene_symbol} → {out['mechanism_class']}",
+                      data=out, evidence_type=EvidenceType.CALCULATED,
+                      model_version="degradomap")
+
+
+def exec_inspect_repo_assets(repo_name: str = "", max_files: int = 4000) -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import repo_assets
+
+    out = repo_assets(repo_name, int(max_files))
+    if not out.get("available"):
+        return ToolResult(tool="inspect_repo_assets", status=ToolStatus.NOT_AVAILABLE,
+                          summary=f"repo assets unavailable · {out.get('reason','')}"[:200],
+                          evidence_type=EvidenceType.NOT_AVAILABLE)
+    return ToolResult(
+        tool="inspect_repo_assets", status=ToolStatus.SUCCESS,
+        summary=(f"{repo_name}: {out['n_python']} py · {out['n_notebooks']} notebooks · "
+                 f"{len(out['models'])} models · {out['n_data_files']} data files"),
+        data=out, evidence_type=EvidenceType.CALCULATED,
+        limitations=["Metadata only; heavy pipeline stays manual."])
+
+
+def exec_list_repo_tools(limit: int = 40) -> ToolResult:
+    from protacxtend.tools.repo_tool_channel import list_repo_channel, channel_summary
+
+    rows = list_repo_channel()[: max(1, int(limit))]
+    return ToolResult(
+        tool="list_repo_tools", status=ToolStatus.SUCCESS,
+        summary=f"{channel_summary()['repos_cloned']} cloned repos · "
+                f"{channel_summary()['callable_now']} callable",
+        data={"repos": rows, "summary": channel_summary()},
+        evidence_type=EvidenceType.CALCULATED)
+
+
 def exec_run_scientific_capability(capability: str, params: Dict[str, Any] | None = None) -> ToolResult:
     """Capability-first dispatch through the licence-gated scientific backend layer."""
     try:
@@ -1008,8 +1264,8 @@ _EXECUTORS: Dict[str, Callable[..., ToolResult]] = {
     "check_synthetic_feasibility": lambda params: exec_check_synthetic_feasibility(
         params.get("smiles", ""), bool(params.get("use_aizynth", True))),
     "predict_degradation": lambda params: exec_predict_degradation(
-        params.get("smiles", ""), params.get("e3", "CRBN"),
-        params.get("cell_line", "default"), params.get("target", "")),
+        params.get("smiles", ""), params.get("e3", ""),
+        params.get("cell_line", ""), params.get("target", "")),
     "predict_cell_context": lambda params: exec_predict_cell_context(
         params.get("protac", "") or params.get("smiles", ""),
         params.get("cell_line", ""), params.get("poi", ""), params.get("e3", "")),
@@ -1043,6 +1299,29 @@ _EXECUTORS: Dict[str, Callable[..., ToolResult]] = {
         float(params.get("alpha", 1.0))),
     "predict_admet": lambda params: exec_predict_admet(
         params.get("smiles", ""), params.get("backend", "auto")),
+    "predict_protac_activity": lambda params: exec_predict_protac_activity(
+        params.get("smiles", ""), params.get("e3_ligase", "VHL"),
+        params.get("target_uniprot", ""), params.get("cell_line", "HeLa")),
+    "predict_deepprotacs": lambda params: exec_predict_deepprotacs(
+        params.get("complex_dir", "single_test")),
+    "predict_protac_stan": lambda params: exec_predict_protac_stan(
+        params.get("root", "data/demo"), params.get("name", "demo")),
+    "split_protac_bellerophon": lambda params: exec_split_protac_bellerophon(
+        params.get("protac_smiles", "")),
+    "sample_ternary_ternify": lambda params: exec_sample_ternary_ternify(
+        params.get("data_dir", "data/6hay"), int(params.get("n_ini", 1000)),
+        int(params.get("n_keep", 200))),
+    "predict_se3_protacs": lambda params: exec_predict_se3_protacs(
+        params.get("ligase_smiles", ""), params.get("ligase_seq", ""),
+        params.get("target_smiles", ""), params.get("target_seq", ""),
+        params.get("linker_smiles", "")),
+    "run_degradomap_experiment": lambda params: exec_run_degradomap_experiment(
+        params.get("merged_csv", "data/merged_dataset.csv")),
+    "assign_e3_mechanism": lambda params: exec_assign_e3_mechanism(
+        params.get("gene_symbol", "")),
+    "inspect_repo_assets": lambda params: exec_inspect_repo_assets(
+        params.get("repo_name", ""), int(params.get("max_files", 4000))),
+    "list_repo_tools": lambda params: exec_list_repo_tools(int(params.get("limit", 40))),
 }
 
 

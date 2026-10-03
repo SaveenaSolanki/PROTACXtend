@@ -1,0 +1,27 @@
+{
+  "schema": "disease_associations.v1 (curated template; literature-grounded, NOT a live genetics query)",
+  "EGFR": {
+    "diseases": [
+      {"name": "Non-small cell lung cancer", "evidence": "oncogenic driver; germline/acquired mutations; sensitivity to EGFR inhibitors", "doi": "10.1056/NEJMoa020938"},
+      {"name": "Colorectal cancer", "evidence": "EGFR pathway dependence; anti-EGFR therapy response contexts", "doi": "10.1056/NEJMoa0805019"},
+      {"name": "Glioblastoma", "evidence": "EGFR amplification/EGFRvIII in GBM", "doi": "10.1126/science.1061504"}
+    ],
+    "note": "Association (genetic context and inhibitor response) is strong; explicit dependency (CRISPR) direction must be checked in the assessed cell context."
+  },
+  "KRAS": {
+    "diseases": [
+      {"name": "Pancreatic ductal adenocarcinoma", "evidence": "KRAS is a causal driver oncogene (mutant alleles G12D/G12V/G12C); core dependency context", "doi": "10.1038/nature09010"},
+      {"name": "Non-small cell lung cancer", "evidence": "KRAS G12C covalent inhibitors (sotorasib) show clinical activity -> mutant-KRAS dependency", "doi": "10.1056/NEJMoa2007241"},
+      {"name": "Colorectal cancer", "evidence": "KRAS-mutant CRC dependence context", "doi": "10.1056/NEJMoa2108395"}
+    ],
+    "note": "KRAS is a validated causal dependency when mutated; variant-specific (G12C) chemistry exists; no packaged binder records in the curated table."
+  },
+  "BRD4": {
+    "diseases": [
+      {"name": "NUT carcinoma", "evidence": "BRD4-NUT fusion is the defining oncogenic driver", "doi": "10.1158/2159-8290.CD-21-0368"},
+      {"name": "Acute myeloid leukemia / MLL-rearranged", "evidence": "BET bromodomain dependence; MZ1/dBET1 degrader biology", "doi": "10.1021/acschembio.5b00216"},
+      {"name": "Multiple myeloma", "evidence": "BET dependence contexts; CRBN/VHL PROTAC precedents (44/33 measured rows)", "doi": "10.1038/nchembio.2329"}
+    ],
+    "note": "Strong dependency + degrader precedent; validated PROTAC biology (MZ1, 5T35)."
+  }
+}

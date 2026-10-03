@@ -121,7 +121,8 @@ def load_local_admet_model(model_path: str | Path) -> dict[str, Any]:
             model = joblib.load(path)
         else:
             with path.open("rb") as handle:
-                model = pickle.load(handle)
+                from protacxtend.security.safe_io import safe_pickle_load
+                model = safe_pickle_load(path)
     except Exception as exc:
         return {"success": False, "error": f"Local ADMET model load failed: {exc}", "model": None, "status": "unavailable"}
     return {"success": True, "error": None, "model": model, "status": "ok"}

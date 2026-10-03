@@ -74,6 +74,8 @@ def run_protacpilot(
         raise ValueError(f"Unknown mode '{mode}'. Valid: {sorted(VALID_MODES)}")
 
     config = config or {}
+    if not config.get("capability"):
+        config = {**config, "capability": _detect_capability(user_request)}
     run_id = config.get("run_id") or f"run_{uuid.uuid4().hex[:8]}"
     t0 = time.time()
 
@@ -93,6 +95,26 @@ def run_protacpilot(
     except Exception:
         trace = None
 
+    # TargetTherapeuticsAssessment design gate: a design must not bypass
+    # identity / chemistry / therapeutic-window gates. Blocked or
+    # assessment-mandatory cases fail closed with a typed reason.
+    gate_out: dict[str, Any] = {}
+    try:
+        from protacxtend.therapeutics.api import design_gate, TherapeuticallyUnsuitable
+        spec = config.get("target_spec") or _target_spec_from_request(user_request)
+        if spec:
+            gate_out = design_gate(spec,
+                                   disease=config.get("disease", "") or "",
+                                   cell_line=config.get("cell_line", "") or "",
+                                   require_assessment=bool(config.get("require_assessment", False)),
+                                   allow_requires_review=bool(config.get("allow_requires_review", True)))
+    except TherapeuticallyUnsuitable as gate_err:
+        if trace:
+            trace.error("gate", str(gate_err))
+            trace.end(status="blocked")
+        return {"status": "blocked", "gate": "therapeutics", "error": str(gate_err),
+                "request": user_request, "run_id": run_id, "runtime_s": round(time.time() - t0, 2)}
+
     try:
         if mode == "deterministic":
             result = _run_deterministic(user_request, config)
@@ -107,6 +129,8 @@ def run_protacpilot(
         raise
 
     runtime_s = round(time.time() - t0, 2)
+    if gate_out:
+        result["therapeutic_assessment"] = gate_out
 
     # Canonical control plane (single execution stack):
     #   Scientific Request Parser -> Evidence Store -> Critic -> Decision Engine
@@ -230,12 +254,46 @@ def run_protacpilot(
     }
 
 
+def _target_spec_from_request(request: str) -> str:
+    """Best-effort target spec (symbol + optional variant) from the request."""
+    try:
+        from protacxtend.contracts.entities import parse_request
+        import re as _re
+        m = _re.search(r"([A-Z]{1,2}\d{2,4}[A-Z](?:del|ins|dup)?)", request or "")
+        variant = m.group(1) if m else ""
+        pr = parse_request(request or "")
+        base = pr.target or ""
+        return f"{base} {variant}".strip() if base else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+_KNOW_MARKERS = ("which", "what is", "what are", "accession", "uniprot", "how many",
+                  "pocket", "family", "documented", "list the", "identify the", "who")
+_REASON_MARKERS = ("assess", "why", "explain", "retain", "liability", "mechanic",
+                   "pharmacophore", "suitable", "compare", "would", "because", "motif")
+
+
+def _detect_capability(question: str) -> str:
+    """Smallest general KNOW/REASON router fallback (used when the caller does
+    not supply an explicit capability). DESIGN/DISCOVER stay engine-default."""
+    q = (question or "").lower()
+    if any(m in q for m in _KNOW_MARKERS):
+        return "KNOW"
+    if any(m in q for m in _REASON_MARKERS):
+        return "REASON"
+    return ""
+
+
 def _run_deterministic(user_request: str, config: Dict[str, Any]) -> Dict[str, Any]:
-    """v0.1 reproducible workflow (unchanged behavior)."""
+    """v0.1 reproducible workflow; honors config['capability'] (KNOW/REASON/
+    DESIGN/DISCOVER) so KNOW/REASON questions take the retrieval/evidence
+    route instead of the full design graph."""
     from protacxtend.agents.graph import run_syn_glue_workflow
     from protacxtend.backend.main import summarize_state
 
-    state = run_syn_glue_workflow(user_request)
+    capability = (config.get("capability") or "").strip()
+    state = run_syn_glue_workflow(user_request, capability=capability or None)
     return {
         "status": "ok",
         "summary": summarize_state(state),

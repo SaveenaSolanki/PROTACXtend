@@ -580,10 +580,21 @@ class WorkflowState(BaseModel):
     # AGENT_ARCHITECTURE_UPDATE additions (observability of what was NOT done)
     retrieval_census: List[RetrievalCensus] = Field(default_factory=list)
     retrieval_status: str = "ok"          # ok | sparse | empty
+    retrieval_telemetry: List[Dict[str, Any]] = Field(default_factory=list)
+    execution_status: str = "SUCCESS"
+    evidence_status: str = "UNDETERMINED"
+    answer_status: str = "ABSTAIN"
     seen_inchikeys: set[str] = Field(default_factory=set)
     generation_records: List[GenerationRecord] = Field(default_factory=list)
     fitness_spec: Optional[FitnessSpec] = None
     revised_degradation: List[DegradationPrediction] = Field(default_factory=list)
+
+    # Typed final answer payload (scientific state + evidence + uncertainty + next
+    # experiment). Populated by the capability/reasoning answer agents and the
+    # design-path node; never left as a bare report string.
+    scientific_answer: Dict[str, Any] = Field(default_factory=dict)
+    stage_ledger: List[Dict[str, Any]] = Field(default_factory=list)
+    entity_resolution: Dict[str, Any] = Field(default_factory=dict)
 
 
 def model_to_dict(value: Any) -> Any:

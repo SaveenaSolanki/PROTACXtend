@@ -51,14 +51,23 @@ class CheapFilterAgent(ReActAgent):
     action = "cheap_filter_candidates"
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
+        verified = [c for c in state.valid_candidates if c.provenance.get("verified_components")]
+        rest = [c for c in state.valid_candidates if not c.provenance.get("verified_components")]
         kept, summary = self.toolbox.cheap_filter_candidates(
-            state.valid_candidates,
+            rest,
             state.admet_predictions,
             state.novelty_results,
             state.applicability_domain_results,
             state.e3_context_predictions,
             max_candidates=state.search_policy.cheap_filter_budget,
         )
+        # A source-backed, atom-mapped reference candidate is exempt from the
+        # generic property funnel; dropping it would hide the only defensible
+        # design. It is still validated and property-checked, just not filtered.
+        if verified:
+            kept = verified + kept
+            summary["verified_retained"] = len(verified)
+            summary["note"] = "verified reference candidates bypass the property funnel"
         kept_ids = {item.candidate_id for item in kept}
         state.valid_candidates = kept
         state.admet_predictions = self.toolbox.filter_prediction_records(state.admet_predictions, kept_ids)

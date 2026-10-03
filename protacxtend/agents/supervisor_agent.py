@@ -14,7 +14,25 @@ class SupervisorAgent(ReActAgent):
     action = "parse_user_request"
 
     def _execute(self, state: WorkflowState) -> WorkflowState:
-        state.parsed_objective = self.toolbox.parse_user_request(state.user_request)
+        parsed = self.toolbox.parse_user_request(state.user_request)
+        seed = state.design_plan.get("structured_seed") if state.design_plan else None
+        if seed:
+            # A structured seed was supplied by a benchmark/API caller. The
+            # seeded objective is authoritative: free-text parsing must not
+            # inject a verb/noun as a target or warhead (the audited
+            # "warhead='to'" / "AR inside warhead" defect).
+            seeded = state.parsed_objective
+            for field in ("target_name", "e3_ligase", "warhead_smiles",
+                          "e3_ligand_smiles", "target_uniprot_id", "disease_context",
+                          "cell_line"):
+                setattr(parsed, field, getattr(seeded, field, None))
+            if not seed.get("target_supplied"):
+                parsed.target_name = ""
+            if not seed.get("warhead_supplied"):
+                parsed.warhead_smiles = None
+            if not seed.get("e3_ligand_supplied"):
+                parsed.e3_ligand_smiles = None
+        state.parsed_objective = parsed
         if not state.parsed_objective.target_name:
             state.warnings.append("Target name was not confidently parsed. User input or target resolver should be checked.")
         return state

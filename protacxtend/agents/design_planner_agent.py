@@ -80,8 +80,16 @@ class DesignPlannerAgent(ReActAgent):
         if should_run_retrosynthesis:
             tools_to_call.insert(8, "RetrosynthesisFilter")
 
+        seed = state.design_plan.get("structured_seed") or {}
+        seed_capability = str(seed.get("capability", "")).upper()
+        allows_component_route = seed_capability in {"KNOW", "REASON", "DISCOVER"}
         plan: dict[str, Any] = {
-            "status": "needs_user_input" if not objective.target_name else "continue",
+            "status": (
+                "needs_user_input"
+                if (not objective.target_name and not objective.warhead_smiles
+                    and not allows_component_route)
+                else "continue"
+            ),
             "tools_to_call": tools_to_call,
             "repeat_policy": {
                 "max_retries_per_step": 1,
@@ -136,8 +144,11 @@ class DesignPlannerAgent(ReActAgent):
                 "runs ADME/novelty for all candidates, and gates expensive structure-aware validation to explicit requests."
             ),
         }
+        preserved = {k: state.design_plan[k] for k in ("structured_seed", "routing") if k in state.design_plan}
         state.design_plan = plan
-        if not objective.target_name:
+        state.design_plan.update(preserved)
+        if (not objective.target_name and not objective.warhead_smiles
+                and not allows_component_route):
             state.errors.append("Planner requires a target protein/gene before the design workflow can continue.")
         return state
 

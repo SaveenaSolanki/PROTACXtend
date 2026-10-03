@@ -164,10 +164,10 @@ def extract_grover_embedding(smiles: str) -> Optional[np.ndarray]:
         # Step 1: Extract RDKit 2D features
         try:
             subprocess.run(
-                f"python {GROVER_DIR}/scripts/save_features.py "
-                f"--data_path {smiles_file} --save_path {features_file} "
-                f"--features_generator rdkit_2d_normalized --restart",
-                shell=True, check=True, env=env, capture_output=True, timeout=120,
+                ["python", f"{GROVER_DIR}/scripts/save_features.py",
+                 "--data_path", str(smiles_file), "--save_path", str(features_file),
+                 "--features_generator", "rdkit_2d_normalized", "--restart"],
+                shell=False, check=True, env=env, capture_output=True, timeout=120,
             )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
             logger.warning(f"GROVER feature extraction failed: {e}")
@@ -176,11 +176,11 @@ def extract_grover_embedding(smiles: str) -> Optional[np.ndarray]:
         # Step 2: Run GROVER fingerprint extraction
         try:
             subprocess.run(
-                f"python {GROVER_DIR}/main.py fingerprint "
-                f"--data_path {smiles_file} --features_path {features_file} "
-                f"--checkpoint_path {MODEL_PATHS['grover_checkpoint']} "
-                f"--fingerprint_source both --output {fingerprint_file}",
-                shell=True, check=True, env=env, capture_output=True, timeout=300,
+                ["python", f"{GROVER_DIR}/main.py", "fingerprint",
+                 "--data_path", str(smiles_file), "--features_path", str(features_file),
+                 "--checkpoint_path", str(MODEL_PATHS["grover_checkpoint"]),
+                 "--fingerprint_source", "both", "--output", str(fingerprint_file)],
+                shell=False, check=True, env=env, capture_output=True, timeout=300,
             )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
             logger.warning(f"GROVER fingerprint extraction failed: {e}")

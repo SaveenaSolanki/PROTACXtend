@@ -58,6 +58,9 @@ class AgentRunRecord(BaseModel):
     final_candidates: list[dict[str, Any]] = Field(default_factory=list)
     pareto_front: list[dict[str, Any]] = Field(default_factory=list)
 
+    #: One canonical run verdict + reasons (see protacxtend/run_verdict.py).
+    verdict: dict[str, Any] = Field(default_factory=dict)
+
     llm_model: str | None = None
     llm_calls: int = 0
     llm_failures: int = 0
@@ -201,12 +204,32 @@ def build_agent_run_record(
     ]
 
     evidence_records: list[dict[str, Any]] = []
-    for binders in _as_list(state.get("retrieved_binders")):
+    empty_binders = 0
+    for b in _as_list(state.get("retrieved_binders")):
+        smiles = str(getattr(b, "smiles", "") or "").strip()
+        name = str(getattr(b, "name", "") or "").strip()
+        source = str(getattr(b, "source", "") or "").strip()
+        # Data contract: an empty placeholder (no structure and no identity)
+        # must NEVER be promoted to a counted binder. This run previously
+        # counted 19 records with name="", smiles="", source="?" as binders.
+        if not smiles and not name:
+            empty_binders += 1
+            continue
+        activity = getattr(b, "activity_nM", None)
         evidence_records.append({
-            "type": "binder", "source": getattr(binders, "source", "?"),
-            "name": getattr(binders, "name", ""), "smiles": getattr(binders, "smiles", ""),
-            "activity_nM": getattr(binders, "activity_nM", None),
-            "p_activity": getattr(binders, "p_activity", None),
+            "type": "binder", "source": source or "unknown",
+            "name": name, "smiles": smiles,
+            "activity_nM": activity,
+            "p_activity": getattr(b, "p_activity", None),
+            "has_structure": bool(smiles),
+            "has_activity": activity is not None,
+            "evidence_status": ("structure_and_identity" if smiles and name
+                                else "identity_only" if name else "structure_only"),
+        })
+    if empty_binders:
+        evidence_records.append({
+            "type": "binder_rejected", "reason": "empty_placeholder_no_name_or_smiles",
+            "count": empty_binders,
         })
     # agentic graph stores per-stage evidence summaries under state["evidence"]
     evidence_bundle = state.get("evidence") or {}
@@ -259,11 +282,24 @@ def build_agent_run_record(
     meta["llm_calls"] = llm_calls
     meta["llm_failures"] = llm_failures
 
+    # Canonical verdict computed by summarize_state; fall back to the state.
+    verdict = dict(summary.get("verdict_detail") or {})
+    if not verdict:
+        try:
+            from protacxtend.run_verdict import compute_verdict
+
+            verdict = compute_verdict(state)
+        except Exception:
+            verdict = {}
+    if summary.get("verdict") and not verdict.get("verdict"):
+        verdict["verdict"] = summary["verdict"]
+
     return AgentRunRecord(
         run_id=run_id,
         user_objective=user_request,
         parsed_objective=parsed_dict,
         metadata=meta,
+        verdict=verdict,
         execution_plan=_as_list(state.get("design_plan")) if isinstance(state.get("design_plan"), list) else [state.get("design_plan", {})],
         tools_requested=list(dict.fromkeys(tools_executed)),
         tools_executed=list(dict.fromkeys(tools_executed)),
@@ -307,9 +343,39 @@ def write_run_record(run_dir: Path, record: AgentRunRecord, state: dict[str, Any
     decisions = []
     for d in _as_list(state.get("decision_log")):
         decisions.append(d.model_dump() if hasattr(d, "model_dump") else d)
+    if not decisions and record.verdict:
+        # The deterministic path wrote no decision log; record the actual gate
+        # outcomes + verdict so decisions.jsonl is never a misleading empty file.
+        v = record.verdict
+        c = v.get("counts", {}) or {}
+        def _dec(stage: str, accept: bool, ok: str, no: str) -> dict:
+            return {"stage": stage, "decision_type": "accept" if accept else "abstain",
+                    "reason": ok if accept else no}
+        decisions = [
+            _dec("resolve_target", bool(c.get("target_resolved")),
+                 "target resolved", "no target resolved from request or curated data"),
+            _dec("retrieve_binders", bool(c.get("binders_retrieved")),
+                 f"{c.get('binders_retrieved', 0)} binder(s) retrieved",
+                 "no target-matched binders retrieved"),
+            _dec("construct_candidates", bool(c.get("candidates_valid")),
+                 f"{c.get('candidates_valid', 0)} valid candidate(s)", "no candidate assembled"),
+            _dec("verify_provenance", bool(c.get("candidates_verified")),
+                 f"{c.get('candidates_verified', 0)} verified candidate(s)",
+                 "candidates lack verified component provenance"),
+            _dec("rank", bool(c.get("candidates_ranked")),
+                 f"{c.get('candidates_ranked', 0)} ranked candidate(s)", "nothing to rank"),
+            {"stage": "run_verdict",
+             "decision_type": str(v.get("verdict", "")).lower().replace(" ", "_"),
+             "reason": v.get("reason", "")},
+        ]
     with (run_dir / "decisions.jsonl").open("w", encoding="utf-8") as fh:
         for d in decisions:
             fh.write(json.dumps(d, default=str) + "\n")
+
+    # verdict.json — the single final-result line, machine-readable
+    if record.verdict:
+        (run_dir / "verdict.json").write_text(
+            json.dumps(record.verdict, indent=2, default=str), encoding="utf-8")
 
     # evidence.jsonl
     with (run_dir / "evidence.jsonl").open("w", encoding="utf-8") as fh:
@@ -333,11 +399,33 @@ def write_run_record(run_dir: Path, record: AgentRunRecord, state: dict[str, Any
             if rows and any(rows):
                 pd.DataFrame(rows).to_parquet(run_dir / "candidates.parquet", index=False)
         if record.pareto_front:
-            pd.DataFrame(record.pareto_front).to_csv(run_dir / "pareto_front.csv", index=False)
+            # Include the actual PROTAC SMILES + identity so the ranked table is
+            # inspectable (previously pareto_front.csv had no structure column).
+            by_id = {c.get("candidate_id"): c for c in record.final_candidates
+                     if isinstance(c, dict)}
+            rows = []
+            for r in record.pareto_front:
+                row = dict(r)
+                c = by_id.get(row.get("candidate_id"), {})
+                for key in ("full_protac_smiles", "target", "e3_ligase", "validity_status",
+                            "warhead_name", "e3_ligand_name", "linker_class"):
+                    if row.get(key) in (None, "") and c.get(key) not in (None, ""):
+                        row[key] = c.get(key)
+                rows.append(row)
+            pd.DataFrame(rows).to_csv(run_dir / "pareto_front.csv", index=False)
     except Exception:
         pass
 
-    # report.md
-    (run_dir / "report.md").write_text(report_text or (state.get("report") or "# No report generated"), encoding="utf-8")
+    # report.md — verdict banner first so the final result is unmissable
+    report_body = report_text or (state.get("report") or "# No report generated")
+    v = record.verdict or {}
+    if v.get("verdict"):
+        banner = (
+            f"> **VERDICT: {v['verdict']}** \u2014 {v.get('reason', '')}\n"
+            f"> scientific_result: {str(v.get('scientific_result', False)).lower()}\n"
+            f"> reasons: {'; '.join(v.get('reasons') or []) or '\u2014'}\n\n"
+        )
+        report_body = banner + report_body
+    (run_dir / "report.md").write_text(report_body, encoding="utf-8")
 
     return run_json

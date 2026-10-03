@@ -13,6 +13,14 @@ class WarheadSelectionAgent(ReActAgent):
         objective = state.parsed_objective
         warheads = []
 
+        # A source-backed verified warhead seeded by the design-path node must
+        # not be replaced by the curated/demo selection path.
+        if state.selected_warheads and any(w.provenance.get("verified") for w in state.selected_warheads):
+            state.warnings.append(
+                "WarheadSelectionAgent: using source-backed verified warhead; skipping library selection."
+            )
+            return state
+
         # 1. If user provided a warhead SMILES, use it
         if objective.warhead_smiles:
             from rdkit import Chem
@@ -56,15 +64,63 @@ class WarheadSelectionAgent(ReActAgent):
                 if not any(w.smiles == record.smiles for w in warheads):
                     warheads.append(record)
 
+        # 2b. Convert live retrieved binders into warheads. The toolbox marks
+        #     binders without a known attachment chemistry with a hypothetical
+        #     exit-vector marker and lowers their deriv/exit-vector confidence
+        #     ("chemist review required") — this is not a filter relaxation: the
+        #     conventional curated-table path simply never consumed
+        #     ``state.retrieved_binders``, which is why SCIENTIFIC mode could
+        #     retrieve 90 ChEMBL binders and then abort with zero warheads.
+        if state.retrieved_binders:
+            from protacxtend.runtime.modes import filter_scientific_rows, is_scientific
+
+            max_warheads = int(getattr(objective, "max_warheads", None) or 6)
+            binder_warheads = self.toolbox.select_warheads(
+                state.target_record,
+                state.retrieved_binders,
+                user_warhead_smiles=objective.warhead_smiles,
+                max_warheads=max_warheads,
+            )
+            seen = {w.smiles for w in warheads}
+            for w in binder_warheads:
+                if w.smiles not in seen:
+                    warheads.append(w)
+                    seen.add(w.smiles)
+            if is_scientific():
+                warheads, dropped = filter_scientific_rows(
+                    [dict(w.model_dump()) if hasattr(w, "model_dump") else dict(w.__dict__) for w in warheads],
+                    source_key="source",
+                )
+                warheads = [
+                    WarheadRecord(**w) for w in warheads
+                ] if warheads else []
+                if dropped and state.target_record:
+                    state.warnings.append(
+                        f"WarheadSelectionAgent: dropped {len(dropped)} non-scientific warhead row(s) "
+                        f"in SCIENTIFIC mode ({sorted({d.get('source') for d in dropped})})."
+                    )
+
         # 3. If no warheads found, add demo warheads from curated list.
-        #    SCIENTIFIC mode forbids this silent substitution and abstains.
+        #    SCIENTIFIC mode forbids this silent substitution and abstains with
+        #    stage-specific reasons (retrieved-binder census included).
         if not warheads:
             from protacxtend.runtime.modes import SyntheticInputNotAllowed, is_scientific
 
             if is_scientific():
+                dropped = self.toolbox.demo_rows_dropped.get("curated_warheads.csv", 0)
+                n_binders = len(state.retrieved_binders)
+                sources = sorted({b.source for b in state.retrieved_binders[:20]})
+                detail = (
+                    f" ({dropped} demo warhead row(s) were dropped because their "
+                    "source is a local_demo fixture)" if dropped else ""
+                )
                 raise SyntheticInputNotAllowed(
                     "No warheads selected: target-matched warheads are unavailable "
-                    "and demo/placeholder warheads are forbidden in SCIENTIFIC mode"
+                    f"and demo/placeholder warheads are forbidden in SCIENTIFIC mode{detail}. "
+                    f"Stage census: {n_binders} binder(s) retrieved "
+                    f"(sources={sources}); none satisfied warhead criteria. "
+                    "ABSTAIN: supply a real warhead SMILES, a validated binder set, "
+                    "or 'real' curated warhead rows before rerunning."
                 )
             for row in curated[:5]:
                 smiles = row.get("smiles", "")

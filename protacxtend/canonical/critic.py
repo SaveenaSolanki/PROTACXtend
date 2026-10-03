@@ -1,112 +1,137 @@
 """Critic / Verifier — one verdict for the canonical stack.
 
-The critic is a separate stage (as requested: "add critics separately"). It
-consumes module results and evidence and answers three questions:
+The verifier is a separate stage (as requested: "add critics separately"). It
+runs three independent critics — :class:`~protacxtend.canonical.critics.EvidenceCritic`,
+:class:`~protacxtend.canonical.critics.MechanismCritic` and
+:class:`~protacxtend.canonical.critics.ReproducibilityCritic` — then adds the
+legacy contract critique and merges everything into one
+:class:`~protacxtend.canonical.schemas.CriticVerdict`.
+
+It answers three questions:
 
 1. Is every claim supported by evidence produced in this run?
-2. Are the scientific preconditions met (valid chemistry, AD, provenance)?
-3. Should the run advance, revise, or stop?
+2. Is the mechanism chain consistent and are the scientific preconditions met?
+3. Is the result pinned and reproducible?
 
-It unifies the previously separate checks in
-:class:`protacxtend.agentic.audit.ScientificCriticAgent` and
-:func:`protacxtend.scientific_contract.critique_scientific_state`.
+The previous monolithic checks are retained as a defense-in-depth layer, but
+each is now attributed to a named critic so a rejection has a trace.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from protacxtend.canonical.critics import (
+    REQUIRED_EVIDENCE_MODULES,
+    default_critics,
+)
 from protacxtend.canonical.evidence import CanonicalEvidenceStore
+from protacxtend.canonical.failures import Failure, FailureClass, classify_failure
 from protacxtend.canonical.modules import CanonicalState, EngineView
 from protacxtend.canonical.schemas import CriticVerdict, ModuleResult, TaskStatus
 
-_REQUIRED_EVIDENCE_MODULES = {
-    "chemistry_warhead",
-    "degradation",
-}
+_REQUIRED_EVIDENCE_MODULES = set(REQUIRED_EVIDENCE_MODULES)
 
 
 class CriticVerifier:
-    """Verify module claims against recorded evidence."""
+    """Verify module claims against recorded evidence via three critics."""
 
     name = "CriticVerifier"
+
+    def __init__(self, critics: list[Any] | None = None):
+        self.critics = critics or default_critics()
 
     def review(
         self,
         state: CanonicalState,
         module_results: list[ModuleResult],
         evidence: CanonicalEvidenceStore,
+        *,
+        tools_provenance: dict[str, Any] | None = None,
+        config: dict[str, Any] | None = None,
     ) -> CriticVerdict:
         checks: list[str] = []
-        failures: list[str] = []
+        failures: list[Failure] = []
         unsupported: list[str] = []
         warnings: list[str] = []
         uncertainty: dict[str, str] = {}
 
         by_id = {result.module_id: result for result in module_results}
 
-        # 1. Required modules must have produced evidence.
+        # ── the three named critics ──────────────────────────────────
+        critic_results: dict[str, Any] = {}
+        for critic in self.critics:
+            result = critic.review(
+                state,
+                module_results,
+                evidence,
+                tools_provenance=tools_provenance,
+                config=config,
+            )
+            critic_results[result.name] = result
+            checks.extend(f"{result.name}:{check}" for check in result.checks_run)
+            failures.extend(result.failures)
+            warnings.extend(result.warnings)
+            unsupported.extend(result.unsupported_claims)
+            uncertainty.update(result.uncertainty)
+
+        # ── defense in depth (legacy checks, attributed) ─────────────
         for module_id in sorted(_REQUIRED_EVIDENCE_MODULES):
             checks.append(f"module_present:{module_id}")
             result = by_id.get(module_id)
             if result is None:
-                failures.append("missing_required_module")
+                failures.append(classify_failure("missing_required_module", module_id=module_id))
                 unsupported.append(f"required module {module_id} did not run")
             elif result.status in {TaskStatus.FAILED, TaskStatus.SKIPPED}:
-                failures.append("required_module_failed")
+                failures.append(classify_failure("required_module_failed", module_id=module_id))
                 unsupported.append(f"required module {module_id} status={result.status.value}")
             elif not result.evidence_refs and not result.outputs:
                 unsupported.append(f"module {module_id} produced no evidence")
 
-        # 2. Degradation predictions must not be silently presented as measured.
         checks.append("measured_vs_predicted")
-        degradation = by_id.get("degradation")
-        if degradation and degradation.outputs.get("heuristic_fallback"):
-            warnings.append("Predicted degradation uses heuristic fallback; do not present as measured DC50/Dmax.")
-            uncertainty["model"] = "heuristic degradation fallback"
-        elif degradation and degradation.outputs.get("n_predictions"):
-            uncertainty["model"] = "trained/typed degradation backend"
 
-        # 3. Structural claims require structural evidence.
         checks.append("structural_claim_gate")
         structure = by_id.get("structure_ternary")
         if structure and structure.status == TaskStatus.DEGRADED:
             warnings.append("No ternary/structure evidence; structural claims are blocked.")
             uncertainty["structural"] = "no ternary evidence"
 
-        # 4. ADMET applicability domain.
         checks.append("applicability_domain")
         adme = by_id.get("adme_safety")
         if adme and adme.outputs.get("outside_domain"):
             warnings.append("One or more candidates fall outside the applicability domain.")
-            failures.append("outside_applicability_domain")
+            failures.append(
+                classify_failure("outside_applicability_domain", module_id="adme_safety")
+            )
 
-        # 5. Provenance completeness.
         checks.append("provenance_complete")
         summary = evidence.summary()
         if summary["n_records"] == 0:
-            failures.append("provenance_break")
+            failures.append(classify_failure("provenance_break", module_id="evidence_store"))
             unsupported.append("no evidence records were written")
 
-        # 6. Contract-level critique when a WorkflowState engine ran.
+        # ── contract-level critique when a WorkflowState engine ran ──
         contract = self._contract_critique(state)
         if contract is not None:
             checks.append("scientific_contract_critique")
             warnings.extend(contract.get("warnings", []))
-            failures.extend(contract.get("failure_categories", []))
+            failures.extend(
+                classify_failure(cat, module_id="scientific_contract")
+                for cat in contract.get("failure_categories", [])
+            )
             unsupported.extend(contract.get("unsupported_claims", []))
             uncertainty.update(contract.get("uncertainty", {}))
             contract_status = contract.get("status", "")
         else:
             contract_status = ""
 
-        # 7. Legacy deterministic critic when compatible.
+        # ── legacy deterministic critic when compatible ──────────────
         legacy = self._legacy_critique(state)
         if legacy is not None:
             checks.append("legacy_scientific_critic")
             warnings.extend(legacy.get("warnings", []))
             if legacy.get("status") == "fail" and "stop_no_valid_candidates" in legacy.get("actions", []):
-                failures.append("no_valid_candidates")
+                failures.append(classify_failure("no_valid_candidates", module_id="legacy_critic"))
 
         status = self._status(by_id, failures, contract_status)
         recommended = {
@@ -115,9 +140,12 @@ class CriticVerifier:
             "SUPPORTED": "prepare experiment dossier",
             "INSUFFICIENT EVIDENCE": "retrieve missing target, E3, and chemistry evidence",
         }.get(status, "review")
+        failure_categories = sorted({failure.failure_class.value for failure in failures})
         return CriticVerdict(
             status=status,
-            failure_categories=sorted(set(failures)),
+            failure_categories=failure_categories,
+            failures=failures,
+            critic_results=critic_results,
             unsupported_claims=sorted(set(unsupported)),
             warnings=sorted(set(warnings)),
             uncertainty=uncertainty,
@@ -127,10 +155,14 @@ class CriticVerifier:
 
     # ------------------------------------------------------------------
     @staticmethod
-    def _status(by_id: dict[str, ModuleResult], failures: list[str], contract_status: str) -> str:
-        if "required_module_failed" in failures or "missing_required_module" in failures:
+    def _status(by_id: dict[str, ModuleResult], failures: list[Failure], contract_status: str) -> str:
+        classes = {failure.failure_class for failure in failures}
+        critical = {failure.failure_class for failure in failures if failure.severity == "critical"}
+        if FailureClass.MODULE_FAILED in classes or FailureClass.MISSING_REQUIRED_MODULE in classes:
             return "INSUFFICIENT EVIDENCE"
-        if "outside_applicability_domain" in failures or "provenance_break" in failures:
+        if FailureClass.INVALID_CHEMISTRY in classes or FailureClass.PROVENANCE_BREAK in critical:
+            return "REJECT"
+        if FailureClass.OUTSIDE_APPLICABILITY_DOMAIN in classes or FailureClass.PROVENANCE_BREAK in classes:
             return "REVISE"
         if contract_status in {"REJECT", "REVISE", "SUPPORTED", "INSUFFICIENT EVIDENCE"}:
             return contract_status

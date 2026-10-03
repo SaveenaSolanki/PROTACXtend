@@ -6,13 +6,14 @@ renders events based on type; the Python backend emits them.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import sys
 import time
 import uuid
 from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Iterator, Optional
 
 
 class EventType(str, Enum):
@@ -156,11 +157,49 @@ DATABASES = [
 
 
 def emit(event: dict[str, Any]) -> None:
-    """Emit a JSONL event to stdout for the TUI to read."""
+    """Emit a JSONL event.
+
+    Default sink: stdout (the JSONL bridge protocol used by the Node TUI).
+    In-process callers (Textual TUI, tests) install sinks via
+    :func:`capture_events`; while any sink is registered, events are
+    delivered to the sinks as dict copies and NOT written to stdout.
+    """
     event.setdefault("ts", time.time())
-    line = json.dumps(event, default=str)
-    sys.stdout.write(line + "\n")
+    payload = json.loads(json.dumps(event, default=str))
+    if _EVENT_SINKS:
+        for sink in list(_EVENT_SINKS):
+            try:
+                sink(dict(payload))
+            except Exception:  # noqa: BLE001 - a sink must not break emission
+                pass
+        return
+    sys.stdout.write(json.dumps(payload, default=str) + "\n")
     sys.stdout.flush()
+
+
+# In-process event sinks (Textual TUI / tests). When non-empty, emit()
+# delivers copies to every sink instead of writing to stdout.
+_EVENT_SINKS: list = []
+
+
+@contextlib.contextmanager
+def capture_events() -> Iterator[list[dict[str, Any]]]:
+    """Context manager collecting all emitted events into a returned list.
+
+    Usage::
+
+        with capture_events() as events:
+            handle_command("design", {...})   # no stdout, no terminal noise
+        assert any(e["type"] == "research_answer" for e in events)
+
+    Not thread-safe by design: the TUI runs one command at a time.
+    """
+    collector: list[dict[str, Any]] = []
+    _EVENT_SINKS.append(collector.append)
+    try:
+        yield collector
+    finally:
+        _EVENT_SINKS.remove(collector.append)
 
 
 def emit_ready() -> None:
@@ -240,13 +279,15 @@ def emit_prediction(model: str, target: str, value: Any, confidence: float = 0.0
     })
 
 
-def emit_candidate(candidate_id: str, smiles: str, score: float, tier: str = "") -> None:
+def emit_candidate(candidate_id: str, smiles: str, score: float, tier: str = "",
+                   score_label: str = "") -> None:
     """Signal a ranked candidate."""
     emit({
         "type": EventType.CANDIDATE,
         "candidate_id": candidate_id,
         "smiles": smiles,
         "score": score,
+        "score_label": score_label,
         "tier": tier,
     })
 

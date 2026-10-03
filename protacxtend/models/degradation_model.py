@@ -90,7 +90,8 @@ def _load_model_file(model_path: str | Path, endpoint: str) -> dict[str, Any]:
             payload = joblib.load(path)
         elif suffix == ".pkl":
             with path.open("rb") as handle:
-                payload = pickle.load(handle)
+                from protacxtend.security.safe_io import safe_pickle_load
+                payload = safe_pickle_load(path)
         elif suffix in {".pt", ".pth"}:
             try:
                 import torch

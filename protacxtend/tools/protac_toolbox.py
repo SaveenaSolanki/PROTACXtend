@@ -95,6 +95,14 @@ from protacxtend.tools.chemistry_core import (
     compute_descriptors as compute_core_descriptors,
 )
 from protacxtend.tools.structural_scoring import score_ternary_pose_for_candidate
+from protacxtend.identity_gate import (
+    candidate_passes_identity_gate,
+    evaluate_candidate_identity,
+    gate_payload,
+    source_record_from_e3_ligand,
+    source_record_from_linker,
+    source_record_from_warhead,
+)
 
 try:  # pragma: no cover - optional scientific dependency.
     from rdkit import Chem, rdBase
@@ -218,6 +226,35 @@ def chem_identity(smiles: str) -> Optional[str]:
     except Exception:  # noqa: BLE001
         return None
 
+def _deg_real_output(preds) -> bool:
+    return any(not p.degraded_fallback and p.model_version and p.status != "NOT_AVAILABLE" for p in preds)
+
+
+def _deg_stub_class(preds) -> str:
+    if not preds:
+        return "not_connected"
+    if any(not p.degraded_fallback and p.model_version for p in preds):
+        return "MODEL_PREDICTED"
+    return "UNAVAILABLE_heuristic_fallback_excluded"
+
+
+def _deg_tool_label(preds) -> str:
+    if _deg_real_output(preds):
+        return "Trained degradation model (chemprop ensemble; TACK-style cross-check)"
+    if preds:
+        return "heuristic degradation fallback — UNAVAILABLE as a scientific prediction"
+    return "No degradation prediction produced"
+
+
+def _deg_limitation(preds) -> str:
+    if _deg_real_output(preds):
+        return "Predictions are MODEL_PREDICTED (computational), never experimental evidence."
+    if preds:
+        return ("Only heuristic fallback values exist: excluded from scientific claims and ranking "
+                "evidence; rendered as UNAVAILABLE in candidate tables.")
+    return "No degradation backend produced predictions in this run."
+
+
 class ProtacDesignToolbox:
     """All deterministic PROTAC design tools used by SynGlue agents."""
 
@@ -225,6 +262,9 @@ class ProtacDesignToolbox:
         ensure_directories()
         self.data_dir = Path(data_dir)
         self.rdkit_available = RDKIT_AVAILABLE
+        # Audit trail of curated rows dropped because SCIENTIFIC mode forbids
+        # demo seeds. ``{table: n_dropped}`` — never silently swallowed.
+        self.demo_rows_dropped: dict[str, int] = {}
 
     # ------------------------------------------------------------------
     # Data loading
@@ -236,17 +276,27 @@ class ProtacDesignToolbox:
         with path.open("r", newline="", encoding="utf-8") as handle:
             return [dict(row) for row in csv.DictReader(handle)]
 
+    def _load_table_mode_aware(self, filename: str) -> list[dict[str, str]]:
+        """Load a curated table, dropping demo-sourced rows in SCIENTIFIC mode."""
+        from protacxtend.runtime.modes import filter_scientific_rows
+
+        rows = self.load_table(filename)
+        kept, dropped = filter_scientific_rows(rows)
+        if dropped:
+            self.demo_rows_dropped[filename] = self.demo_rows_dropped.get(filename, 0) + len(dropped)
+        return kept
+
     def load_curated_targets(self) -> list[dict[str, str]]:
         return self.load_table("curated_targets.csv")
 
     def load_curated_warheads(self) -> list[dict[str, str]]:
-        return self.load_table("curated_warheads.csv")
+        return self._load_table_mode_aware("curated_warheads.csv")
 
     def load_external_warhead_seed(self) -> list[dict[str, str]]:
         return self.load_table("warhead_seed_metaboglue_gold.csv")
 
     def load_curated_e3_ligands(self) -> list[dict[str, str]]:
-        return self.load_table("curated_e3_ligands.csv")
+        return self._load_table_mode_aware("curated_e3_ligands.csv")
 
     def load_curated_linkers(self) -> list[dict[str, str]]:
         return self.load_table("curated_linkers.csv")
@@ -640,7 +690,24 @@ class ProtacDesignToolbox:
         for ligase in requested:
             ligands = grouped.get(ligase, [])
             ligands.sort(key=lambda item: item.exit_vector_confidence + item.source_confidence + item.diversity_score, reverse=True)
-            selected.extend(ligands[:max_ligands_per_e3])
+            for ligand in ligands[:max_ligands_per_e3]:
+                if not _has_attachment(ligand.smiles):
+                    # Real DOI-cited rows ship without a baked-in dummy atom
+                    # (only demo rows carry one). Construction hard-requires a
+                    # marker on every component, so without this step every
+                    # scientific-mode candidate would fail assembly. Append a
+                    # hypothetical attachment marker and cap confidence exactly
+                    # as the warhead path does for binders without a known
+                    # derivatization vector ("chemist review required"). This is
+                    # not a filter relaxation: provenance records the action.
+                    ligand.smiles = _annotate_hypothetical_attachment(ligand.smiles)
+                    ligand.exit_vector_confidence = min(ligand.exit_vector_confidence or 0.75, 0.42)
+                    ligand.provenance = dict(ligand.provenance or {})
+                    ligand.provenance["attachment_warning"] = (
+                        "Hypothetical attachment marker appended by deterministic tool; "
+                        "chemist review required."
+                    )
+                selected.append(ligand)
         return selected
 
     def detect_exit_vectors(self, molecules: Sequence[Any], role: str) -> list[ExitVectorRecord]:
@@ -937,6 +1004,11 @@ class ProtacDesignToolbox:
                                         "linker_source": linker.source,
                                         "rdkit_available": self.rdkit_available,
                                         "warhead_provenance": warhead.provenance,
+                                        "source_components": {
+                                            "target_binder": source_record_from_warhead(warhead).model_dump(),
+                                            "e3_ligand": source_record_from_e3_ligand(e3_ligand).model_dump(),
+                                            "linker": source_record_from_linker(linker).model_dump(),
+                                        },
                                     },
                                     warning_flags=(
                                         ([] if self.rdkit_available else ["rdkit_unavailable_unverified_smiles"])
@@ -1128,6 +1200,11 @@ class ProtacDesignToolbox:
                             candidate.warning_flags.append(warning)
                 if status == "unverified_no_rdkit":
                     candidate.warning_flags.append("install_rdkit_for_chemical_validation")
+                gate = evaluate_candidate_identity(candidate)
+                candidate.provenance = dict(candidate.provenance or {})
+                candidate.provenance["identity_assembly_gate"] = gate_payload(gate)
+                if not gate.all_required_passed and "identity_assembly_gate_failed" not in candidate.warning_flags:
+                    candidate.warning_flags.append("identity_assembly_gate_failed")
                 valid.append(candidate)
         return self.remove_duplicate_candidates(valid)
 
@@ -1160,6 +1237,10 @@ class ProtacDesignToolbox:
         the heuristic remains ONLY as a labelled fallback when the model path
         fails (model_version starts with 'heuristic_proxy').
         """
+        gated_candidates = [c for c in candidates if candidate_passes_identity_gate(c)]
+        if not gated_candidates:
+            return []
+        candidates = gated_candidates
         from protacxtend.tools.degradation_endpoint import predict_degradation_batch
         smiles = [c.full_protac_smiles for c in candidates]
         ids = [c.candidate_id for c in candidates]
@@ -2078,6 +2159,7 @@ class ProtacDesignToolbox:
         hook_by_id = {item.candidate_id: item for item in (hook_results or [])}
         e3_context_by_id = {item.candidate_id: item for item in (e3_context_results or [])}
 
+        candidates = [candidate for candidate in candidates if candidate_passes_identity_gate(candidate)]
         rows: list[RankingResult] = []
         for candidate in candidates:
             deg = degradation_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
@@ -2217,6 +2299,7 @@ class ProtacDesignToolbox:
             ),
             reverse=True,
         )
+        ordered = [candidate for candidate in ordered if candidate_passes_identity_gate(candidate)]
         finalists: list[CandidateRecord] = []
         for candidate in ordered:
             if len(finalists) >= max_finalists:
@@ -2714,8 +2797,14 @@ class ProtacDesignToolbox:
                     "HBD": admet.hbd,
                     "HBA": admet.hba,
                     "Rotatable bonds": admet.rotatable_bonds,
-                    "Predicted DC50 nM": deg.predicted_dc50_nM,
-                    "Predicted Dmax %": deg.predicted_dmax_percent,
+                    "Predicted DC50 nM": (float(deg.predicted_dc50_nM) if not deg.degraded_fallback
+                                          else "UNAVAILABLE (heuristic fallback excluded)"),
+                    "Predicted Dmax %": (float(deg.predicted_dmax_percent) if not deg.degraded_fallback
+                                         else "UNAVAILABLE (heuristic fallback excluded)"),
+                    "Degradation evidence type": ("MODEL_PREDICTED" if (not deg.degraded_fallback and deg.model_version and deg.status != "NOT_AVAILABLE")
+                                                  else "UNAVAILABLE_heuristic_fallback"
+                                                  if deg.degraded_fallback
+                                                  else "NOT_AVAILABLE"),
                     "Degradation confidence": deg.model_confidence,
                     "Applicability domain": deg.applicability_domain_score,
                     "hERG risk": admet.hERG_risk,
@@ -3085,13 +3174,13 @@ class ProtacDesignToolbox:
             },
             {
                 "step_name": "DC50/Dmax prediction",
-                "selected_tool_or_method": "Heuristic SynGlue-demo degradation predictor",
+                "selected_tool_or_method": _deg_tool_label(state.degradation_predictions),
                 "tool_status": label("DC50/Dmax prediction"),
                 "output_type": "list[DegradationPrediction]",
-                "real_output_generated": False,
-                "stub_or_heuristic": "heuristic_stub",
+                "real_output_generated": _deg_real_output(state.degradation_predictions),
+                "stub_or_heuristic": _deg_stub_class(state.degradation_predictions),
                 "evidence": evidence("DC50/Dmax prediction", f"degradation_predictions={len(state.degradation_predictions)}"),
-                "limitation": "Predicted DC50/Dmax values are heuristic demo outputs, not trained model outputs.",
+                "limitation": _deg_limitation(state.degradation_predictions),
                 "next_integration_needed": "Load validated SynGlue/DeepPROTACs/PROTAC-STAN/Chemprop models with uncertainty.",
             },
             {

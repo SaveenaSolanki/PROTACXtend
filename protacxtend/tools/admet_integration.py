@@ -42,9 +42,112 @@ ADMET_AI_READY = ADMET_AI_VENV_PY.exists() and ADMET_AI_RUNNER.exists()
 
 ADMET_AI_KEY_ENDPOINTS = [
     "hERG", "AMES", "DILI", "ClinTox", "CYP3A4_Veith", "CYP2D6_Veith",
-    "Clearance_Hepatocyte_AZ", "LD50_Zhu", "Solubility_AqSolDB",
+    "Clearance_Hepatocyte_AZ", "Clearance_Microsome_AZ", "Half_Life_Obach",
+    "LD50_Zhu", "Solubility_AqSolDB",
     "BBB_Martins", "PPBR_AZ", "Bioavailability_Ma", "Pgp_Broccatelli",
+    # PROTAC permeability panel (verified present in ADMET-AI 2.0.1 output columns,
+    # 2026-09-24 GPU probe): Caco-2 log cm/s, HIA probability, PAMPA probability.
+    "Caco2_Wang", "HIA_Hou", "PAMPA_NCATS",
 ]
+
+# Percentile-vs-DrugBank-approvals companions for the endpoints we interpret.
+# These give the "percentile vs approved drugs" context that is more honest for
+# bRo5 molecules than the raw value alone (e.g., MW percentile 94.5 for an 785 Da
+# PROTAC means "heavier than ~95% of approved drugs").
+ADMET_AI_PERCENTILE_ENDPOINTS = [
+    "Caco2_Wang_drugbank_approved_percentile",
+    "HIA_Hou_drugbank_approved_percentile",
+    "PAMPA_NCATS_drugbank_approved_percentile",
+    "Pgp_Broccatelli_drugbank_approved_percentile",
+    "Clearance_Hepatocyte_AZ_drugbank_approved_percentile",
+    "Clearance_Microsome_AZ_drugbank_approved_percentile",
+    "Solubility_AqSolDB_drugbank_approved_percentile",
+    "Bioavailability_Ma_drugbank_approved_percentile",
+    "Half_Life_Obach_drugbank_approved_percentile",
+    "hERG_drugbank_approved_percentile",
+    "DILI_drugbank_approved_percentile",
+    "AMES_drugbank_approved_percentile",
+    "molecular_weight_drugbank_approved_percentile",
+    "tpsa_drugbank_approved_percentile",
+]
+
+
+def _bRo5_flags_from_admet_ai(endpoints: dict[str, Any]) -> dict[str, Any]:
+    """Derive PROTAC-specific flags from the ADMET-AI endpoint panel.
+
+    Thresholds are documented heuristics for bRo5 heterobifunctional molecules
+    (not hard filters); each flag is an observation plus a "risk" label, never
+    a disqualification. Raw values are kept so downstream tools (rankers,
+    scorecard, summaries) can apply their own cutoffs.
+    """
+    def _num(key: str) -> float | None:
+        v = endpoints.get(key)
+        try:
+            return float(v) if v is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    caco2 = _num("Caco2_Wang")
+    pampa = _num("PAMPA_NCATS")
+    hia = _num("HIA_Hou")
+    pgp = _num("Pgp_Broccatelli")
+    cl_hep = _num("Clearance_Hepatocyte_AZ")
+    cl_mic = _num("Clearance_Microsome_AZ")
+    half_life = _num("Half_Life_Obach")
+    sol = _num("Solubility_AqSolDB")
+    bioav = _num("Bioavailability_Ma")
+
+    flags: dict[str, Any] = {}
+    # Permeability — Caco-2 (log cm/s): <= -5.7 is commonly treated as low.
+    if caco2 is not None:
+        flags["Caco2_log_cm_s"] = caco2
+        flags["Caco2_flag"] = "low" if caco2 <= -5.7 else ("moderate" if caco2 <= -5.0 else "good")
+    if pampa is not None:
+        flags["PAMPA_prob"] = pampa
+        flags["PAMPA_flag"] = "permeable" if pampa >= 0.5 else "not_permeable"
+    if hia is not None:
+        flags["HIA_prob"] = hia
+        flags["HIA_flag"] = "absorbed" if hia >= 0.7 else ("moderate" if hia >= 0.3 else "poor")
+    # Efflux: P-gp substrate probability from Broccatelli model.
+    if pgp is not None:
+        flags["Pgp_substrate_prob"] = pgp
+        flags["efflux_risk"] = "high" if pgp >= 0.7 else ("medium" if pgp >= 0.4 else "low")
+    # Metabolic stability: hepatocyte clearance (mL/min/kg), microsomal clearance,
+    # and Obach half-life proxy (h).
+    if cl_hep is not None:
+        flags["Clearance_Hepatocyte_raw"] = cl_hep
+        # AZ hepatocyte-clearance values are log-scale in the TDC-derived model;
+        # use the DrugBank-approvals percentile (scale-free) for the flag.
+        hep_pct = _num(endpoints.get("Clearance_Hepatocyte_AZ_drugbank_approved_percentile"))
+        flags["Clearance_Hepatocyte_drugbank_pct"] = hep_pct
+        if hep_pct is not None:
+            flags["hepatocyte_clearance_flag"] = (
+                "high" if hep_pct >= 90 else ("moderate" if hep_pct >= 40 else "low")
+            )
+        else:
+            flags["hepatocyte_clearance_flag"] = "unknown_scale"
+    if cl_mic is not None:
+        flags["Clearance_Microsome_raw"] = cl_mic
+        mic_pct = _num(endpoints.get("Clearance_Microsome_AZ_drugbank_approved_percentile"))
+        flags["Clearance_Microsome_drugbank_pct"] = mic_pct
+        if mic_pct is not None:
+            flags["microsome_clearance_flag"] = (
+                "high" if mic_pct >= 90 else ("moderate" if mic_pct >= 40 else "low")
+            )
+        else:
+            flags["microsome_clearance_flag"] = "unknown_scale"
+    if half_life is not None:
+        flags["Half_Life_Obach_h"] = half_life
+        flags["half_life_flag"] = "stable" if half_life >= 4 else ("moderate" if half_life >= 1 else "short")
+    # Solubility: AqSolDB log solubility (mol/L).
+    if sol is not None:
+        flags["Solubility_AqSolDB_logS"] = sol
+        flags["solubility_flag"] = "soluble" if sol >= -4 else ("moderate" if sol >= -6 else "poor")
+    # Oral bioavailability proxy (Ma model, probability).
+    if bioav is not None:
+        flags["Bioavailability_Ma_prob"] = bioav
+        flags["oral_F_flag"] = "likely" if bioav >= 0.5 else "unlikely"
+    return flags
 
 
 def _run_admet_ai(smiles_list: list[str], timeout_s: int = 600) -> list[dict[str, Any]] | None:
@@ -206,6 +309,12 @@ def predict_admet_properties(smiles: str) -> dict[str, Any]:
     if ml:
         endpoints = ml[0].get("endpoints", {})
         result["admet_ai"] = {k: endpoints.get(k) for k in ADMET_AI_KEY_ENDPOINTS if k in endpoints}
+        for pct in ADMET_AI_PERCENTILE_ENDPOINTS:
+            if pct in endpoints:
+                result["admet_ai"][pct] = endpoints[pct]
+        # Derived bRo5 flags (permeability / efflux / metabolic stability /
+        # solubility / oral-F) — thresholds documented in _bRo5_flags_from_admet_ai.
+        result["admet_ai_flags"] = _bRo5_flags_from_admet_ai(endpoints)
         result["prediction_source"] = "admet_ai+rules"
         result["source"] = "admet_ai+rdkit"
     else:

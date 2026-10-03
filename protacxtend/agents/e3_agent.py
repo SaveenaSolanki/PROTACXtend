@@ -23,6 +23,14 @@ class E3LigandSelectionAgent(ReActAgent):
         objective = state.parsed_objective
         ligands = []
 
+        # A source-backed verified E3 ligand seeded by the design-path node must
+        # not be replaced by the curated/demo selection path.
+        if state.selected_e3_ligands and any(lig.provenance.get("verified") for lig in state.selected_e3_ligands):
+            state.warnings.append(
+                "E3LigandSelectionAgent: using source-backed verified E3 ligand; skipping library selection."
+            )
+            return state
+
         # 1. If user provided an E3 ligand SMILES, use it
         if objective.e3_ligand_smiles:
             from rdkit import Chem
@@ -64,25 +72,48 @@ class E3LigandSelectionAgent(ReActAgent):
             mol = Chem.MolFromSmiles(smiles) if smiles else None
             ligase = row.get("e3_ligase", "CRBN")
             subcell = E3_SUBCELLULAR.get(ligase, {"nuclear": False, "cytoplasmic": True})
-            
+
+            exit_conf = float(row.get("exit_vector_confidence", 0.5))
+            provenance: dict = {}
+            if "[*" not in smiles:
+                # Real DOI-cited rows ship without a baked-in dummy atom while
+                # construction hard-requires a marker on every component.
+                # Append a hypothetical attachment marker and cap confidence
+                # (same conservative pattern as the warhead path); provenance
+                # records the action so chemists can revisit the vector.
+                smiles = f"{smiles}[*:1]"
+                exit_conf = min(exit_conf, 0.42)
+                provenance["attachment_warning"] = (
+                    "Hypothetical attachment marker appended by deterministic tool; "
+                    "chemist review required."
+                )
+
             record = E3LigandRecord(
                 name=row.get("name", f"e3_{ligase}"),
                 e3_ligase=ligase,
                 smiles=smiles,
                 ligand_class=row.get("ligand_class", "unknown"),
                 source=row.get("source", "curated"),
-                exit_vector_confidence=float(row.get("exit_vector_confidence", 0.5)),
+                exit_vector_confidence=exit_conf,
                 stereochemistry_valid=mol is not None,
                 source_confidence=float(row.get("source_confidence", 0.5)),
                 diversity_score=float(row.get("diversity_score", 0.5)),
+                provenance=provenance,
             )
             ligands.append(record)
 
         budget = max(1, getattr(state, "search_policy", None).e3_ligand_budget if getattr(state, "search_policy", None) else len(ligands))
         ligands.sort(key=lambda item: item.exit_vector_confidence + item.source_confidence + item.diversity_score, reverse=True)
         state.selected_e3_ligands = ligands[:budget]
-        
+
         if not state.selected_e3_ligands:
+            from protacxtend.runtime.modes import SyntheticInputNotAllowed, is_scientific
+
+            if is_scientific():
+                raise SyntheticInputNotAllowed(
+                    "No E3 ligands selected: no source-backed E3 ligand is available "
+                    "and demo/placeholder ligands are forbidden in SCIENTIFIC mode"
+                )
             state.errors.append("E3LigandSelectionAgent: No E3 ligands selected.")
         
         return state

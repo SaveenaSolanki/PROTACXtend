@@ -307,7 +307,9 @@ def provision_tool(
         allow = os.environ.get("PROTACXTEND_ALLOW_INSTALL") == "1" or True  # explicit mode
         started = time.time()
         try:
-            proc = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=timeout)
+            from protacxtend.security.safe_io import run_args
+
+            proc = subprocess.run(run_args(command), shell=False, capture_output=True, text=True, timeout=timeout)
             record["success"] = proc.returncode == 0
             record["detail"] = ((proc.stdout or "")[-800:] + (proc.stderr or "")[-800:]).strip()
             record["exit_code"] = proc.returncode

@@ -32,6 +32,7 @@ from textual.reactive import reactive
 from textual.widgets import (
     Footer,
     Header,
+    Input,
     Label,
     ListItem,
     ListView,
@@ -40,6 +41,7 @@ from textual.widgets import (
 )
 
 from protacxtend import __version__
+from protacxtend.tui import engine as tui_engine
 
 # ── Constants ──────────────────────────────────────────────────────
 
@@ -277,7 +279,15 @@ class AgentItem(ListItem):
 # ── Main TUI App ──────────────────────────────────────────────────
 
 class PROTACXtendTUI(App):
-    """PROTACXtend Feynman-style terminal interface.
+    """PROTACXtend Feynman-style terminal interface (real engine mode).
+
+    Every command typed into the input bar is routed through the SAME bridge
+    handlers the Node TUI uses (``tui_bridge.server.handle_command``) via
+    ``protacxtend.tui.engine.execute_command`` — /design runs the existing
+    deterministic deliverable engine, /plan the planner, /investigate and
+    /reason their research contracts, chat the LLM agent. Stage statuses are
+    real (executed / unevaluated / failed): no pipeline node is ever marked
+    done without the backend reporting it.
 
     Layout (Feynman-inspired):
     ┌──────────────────────────────────────────────────────────────────┐
@@ -291,12 +301,13 @@ class PROTACXtendTUI(App):
     │  ✓ 🛡️ Safe │  ✓ rdkit, torch, pandas    │  contract: KNOW→... │
     │  ✓ 🎯 Targ │                            │                     │
     │  ✓ 🔬 Bind ├────────────────────────────┴─────────────────────┤
-    │  ▶ 💊 Warh │  🔬 RESEARCH WORKFLOWS                          │
+    │  ▶ 💊 Warh │  🔬 RESEARCH WORKFLOW                          │
     │  · 🔗 E3   │  14:32:01 supervisor  Parsed request            │
-    │  · 🚪 Exit │  14:32:02 planner     Tool selection            │
-    │  ...       │  14:32:03 safety      No hazards                │
-    │  · 📄 Repo │  14:32:04 target      BRD4 → P25...             │
+    │  · 🚪 Exit │  /design Design a CRBN-recruiting PROTAC for BRD4│
+    │  ...       │  ➜ executed_design=true · 150 valid candidates  │
+    │  · 📄 Repo │  ➜ ternary_coordinates: unevaluated             │
     ├─────────────┴──────────────────────────────────────────────────┤
+    │  /design <objective>  ·  /plan <objective>  ·  /help          │
     │  F1=Help  F2=Status  F5=Refresh  Ctrl+C=Quit                  │
     └──────────────────────────────────────────────────────────────────┘
     """
@@ -349,6 +360,10 @@ class PROTACXtendTUI(App):
                     yield Static(" 🔬 RESEARCH WORKFLOW ", id="workflow-title")
                     yield RichLog(id="workflow-log", highlight=True, markup=True, wrap=True)
 
+        # Command bar — routes through the real bridge handlers
+        yield Input(placeholder="/design <objective> · /plan <objective> · /investigate <q> · free text = chat",
+                    id="cmd-input")
+
         # Footer
         yield Footer()
 
@@ -360,9 +375,20 @@ class PROTACXtendTUI(App):
             f"[bold green]PROTACXtend TUI v{__version__}[/bold green] "
             f"[dim]{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]"
         )
-        log.write("[dim]Type a design request or press F2 for status. /help for commands.[/dim]")
+        log.write("[dim]Commands route to the real engine (bridge handlers + run_protacpilot).[/dim]")
+        log.write("[dim]Type /design, /plan, /investigate, /reason, /evidence, /run … or free text.[/dim]")
         log.write("[dim]Directory: " + str(PROJECT_ROOT) + "[/dim]")
         log.write("")
+
+    @on(Input.Submitted, "#cmd-input")
+    async def on_command_submitted(self, event: Input.Submitted) -> None:
+        """Route the typed command through the real engine (worker)."""
+        text = (event.value or "").strip()
+        self.query_one("#cmd-input", Input).value = ""
+        if not text:
+            return
+        self.log_workflow("input", text[:78], "info")
+        self.submit_request(text)
 
     # ── Agent status updates ───────────────────────────────────────
 
@@ -425,25 +451,27 @@ class PROTACXtendTUI(App):
         """Show help."""
         log = self.query_one("#workflow-log", RichLog)
         log.write("")
-        log.write("[bold]═══ PROTACXtend Commands ═══[/bold]")
-        log.write("  [bold cyan]/design[/bold cyan] <request>      Run PROTAC design workflow")
-        log.write("  [bold cyan]/evidence[/bold cyan] <query>       Retrieve PROTAC-DB, literature data")
-        log.write("  [bold cyan]/structure[/bold cyan] <smiles>     Ternary feasibility + docking")
-        log.write("  [bold cyan]/validate[/bold cyan] <smiles>      RDKit validation + ADMET proxy")
-        log.write("  [bold cyan]/rank[/bold cyan]                   Multi-objective ranking")
-        log.write("  [bold cyan]/learn[/bold cyan]                  Active-learning feedback")
-        log.write("  [bold cyan]/report[/bold cyan]                 Generate scientist report")
-        log.write("  [bold cyan]/contract[/bold cyan]               Scientific contracts + dossiers")
-        log.write("  [bold cyan]/models[/bold cyan]                 Model system details")
-        log.write("  [bold cyan]/benchmarks[/bold cyan]             Model benchmarks")
-        log.write("  [bold cyan]/run[/bold cyan] <request>          Execute full workflow")
-        log.write("  [bold cyan]/plan[/bold cyan] <request>         Fast plan-only (no execution)")
-        log.write("  [bold cyan]/ui[/bold cyan]                    Launch Streamlit web UI")
-        log.write("  [bold cyan]/api[/bold cyan]                   Launch FastAPI backend")
-        log.write("  [bold cyan]/status[/bold cyan]                 System status")
-        log.write("  [bold cyan]/about[/bold cyan]                  PROTACXtend information")
-        log.write("  [bold cyan]/exit[/bold cyan]                   Quit")
-        log.write("[dim]  F1=Help  F2=Status  F5=Refresh  Ctrl+C=Quit[/dim]")
+        log.write("[bold]═══ PROTACXtend Commands (real engine routing) ═══[/bold]")
+        log.write("  [bold cyan]/plan[/bold cyan] <objective>       Evidence-grounded research strategy (planner)")
+        log.write("  [bold cyan]/design[/bold cyan] <objective>     Run the existing deterministic design engine")
+        log.write("  [bold cyan]/run[/bold cyan] <objective>        Execute the full workflow graph")
+        log.write("  [bold cyan]/investigate[/bold cyan] <q>        Target/binder/precedent research contract")
+        log.write("  [bold cyan]/reason[/bold cyan] <q>             Mechanistic diagnosis engine")
+        log.write("  [bold cyan]/evidence[/bold cyan] <q>           Shared evidence graph query")
+        log.write("  [bold cyan]/compare[/bold cyan] <q>            Descriptor comparison (>=2 smiles:…)")
+        log.write("  [bold cyan]/validate[/bold cyan] <smiles>      RDKit validation + ADMET proxies")
+        log.write("  [bold cyan]/admet[/bold cyan] <smiles>         Physicochemical risk flags")
+        log.write("  [bold cyan]/degradation[/bold cyan] <smiles>   Trained-model prediction (predicted label)")
+        log.write("  [bold cyan]/structure[/bold cyan] <smiles>     Score-level ternary feasibility")
+        log.write("  [bold cyan]/synthesis[/bold cyan] <smiles>     Retrosynthesis engine status")
+        log.write("  [bold cyan]/experiment[/bold cyan] <q>         Discriminating assay selection")
+        log.write("  [bold cyan]/explain[/bold cyan] run_<id>       Typed explanation of a persisted run")
+        log.write("  [bold cyan]/report[/bold cyan] run_<id>        Persisted run report")
+        log.write("  [bold cyan]/status[/bold cyan]                 System status (llm, deps, project)")
+        log.write("  [bold cyan]/doctor[/bold cyan]                 Diagnostics")
+        log.write("  [bold cyan]/clear[/bold cyan]                  Reset conversation context")
+        log.write("  [bold cyan]/quit[/bold cyan]                   Quit · F1=Help F2=Status F5=Refresh")
+        log.write("[dim]Free text = LLM chat; bare recognized target = deterministic target card.[/dim]")
         log.write("")
 
     def action_status(self) -> None:
@@ -473,40 +501,146 @@ class PROTACXtendTUI(App):
         except Exception:
             pass
 
-    # ── Run a design workflow (async) ──────────────────────────────
+    # ── Run a command through the REAL engine (async) ──────────────
 
     @work(exclusive=True, group="workflow", thread=True)
     def run_workflow(self, request: str) -> None:
-        """Run the PROTACXtend workflow and stream status to the TUI."""
-        import uuid
+        """Route one typed command through the real bridge handlers.
 
-        run_id = f"run_{uuid.uuid4().hex[:8]}"
-        self.run_id = run_id
-        self.run_status = "Running"
+        Equivalent to what the Node TUI sends over JSONL: /design → the
+        deterministic deliverable engine, /plan → planner, /investigate →
+        research contract, /reason → diagnose engine, free text → chat. The
+        worker thread captures backend events; UI updates happen through
+        call_from_thread so Textual is never mutated from a foreign thread.
+        """
+        cmd, args = tui_engine.parse_input(request)
+        if cmd == "quit":
+            self.call_from_thread(self.exit)
+            return
+        self.run_id = ""
+        self.run_status = "Executing"
+        self.log_workflow("runtime", f"{cmd}: {args[:64]}" if args else cmd, "running")
         t0 = time.time()
-
-        self.log_workflow("runtime", f"Starting workflow [{run_id}]", "running")
-        self.log_workflow("runtime", f"Request: {request[:80]}{'...' if len(request) > 80 else ''}", "info")
-
-        for agent in AGENT_PIPELINE:
-            self.mark_current_agent(agent["id"])
-            self.log_workflow(agent["name"], agent["desc"], "running")
-            self.run_status = f"Running: {agent['name']}"
-            try:
-                time.sleep(0.3)
-            except Exception:
-                pass
-            self.update_agent_status(agent["id"], "done")
-            self.log_workflow(agent["name"], "Completed", "ok")
-
+        try:
+            result = tui_engine.execute_command(cmd, args, offline=True,
+                                                conversation_id="tui-default")
+        except Exception as exc:  # noqa: BLE001
+            self.call_from_thread(self._render_engine_error, cmd, str(exc))
+            return
+        events = result["events"]
+        answer = result["answer"]
         elapsed = round(time.time() - t0, 2)
+        if not events:
+            self.call_from_thread(self._render_engine_error, cmd, "backend emitted no events")
+            return
         self.run_status = f"Done ({elapsed}s)"
-        self.log_workflow("runtime", f"Workflow complete in {elapsed}s [{run_id}]", "ok")
-        self.log_workflow("runtime", f"Outputs: {PROJECT_ROOT / 'outputs' / run_id}", "info")
+        self.call_from_thread(self._render_engine_events, cmd, events, answer, elapsed)
+
+    def _render_engine_events(self, cmd: str, events: list, answer: Any, elapsed: float) -> None:
+        """Render captured backend events honestly (executed/unevaluated/failed)."""
+        log = self.query_one("#workflow-log", RichLog)
+        stages_seen = []
+        for ev in events:
+            t = ev.get("type")
+            if t == "progress":
+                self._mark_stage(ev.get("stage"), ev.get("status"), ev.get("detail"))
+            elif t == "research_answer" and ev.get("stage_timeline"):
+                for s in ev["stage_timeline"]:
+                    self._mark_stage(s.get("stage"), s.get("status"), s.get("detail"))
+                    stages_seen.append(s.get("stage"))
+            elif t == "warning":
+                log.write(f"[yellow]![/yellow] [dim]{str(ev.get('message'))[:90]}[/dim]")
+            elif t == "error":
+                log.write(f"[red]✗[/red] {str(ev.get('message'))[:90]}")
+
+        if answer:
+            t = answer.get("type")
+            if t == "research_answer" and answer.get("command") == "design":
+                counts = answer.get("assembly_counts") or {}
+                log.write(
+                    f"[bold green]➜ design executed[/bold green] · "
+                    f"{counts.get('assembled')} assembled → {counts.get('valid')} valid "
+                    f"(rejected_before_scoring {counts.get('rejected_before_scoring')})")
+                rows = answer.get("candidate_evidence_table") or []
+                if rows:
+                    top = rows[0]
+                    log.write(f"  top: {top.get('candidate_id')} · "
+                              f"pDC50 {((top.get('degradation') or {}).get('predicted_dc50_nM'))} nM · "
+                              f"score {((top.get('ranking') or {}).get('final_priority_score'))}")
+                gates = answer.get("evidence_gates") or {}
+                for name, g in gates.items():
+                    gs = (g or {}).get("status")
+                    style = "green" if gs in ("passed", "predicted") else ("yellow" if gs == "unevaluated" else "dim")
+                    log.write(f"  gate {name}: [{style}]{gs}[/{style}]")
+            elif t == "plan_answer":
+                log.write(f"[bold]➜ plan:[/bold] {str(answer.get('interpretation'))[:96]}")
+                if answer.get("question"):
+                    log.write(f"[yellow]➜ question:[/yellow] {str(answer.get('question'))[:96]}")
+            elif t == "research_answer" and answer.get("command") == "investigate":
+                f = answer.get("findings") or {}
+                log.write(f"[bold]➜ investigate:[/bold] {f.get('target')} · "
+                          f"{f.get('uniprot')} · {f.get('known_binder_count')} binders · "
+                          f"{f.get('measured_precedent_rows')} measured rows")
+            elif t == "diagnosis_answer":
+                n = len(answer.get("hypotheses") or [])
+                log.write(f"[bold]➜ reason:[/bold] {n} competing hypotheses · "
+                          f"gated={answer.get('gated')} · case={str((answer.get('case') or {}).get('target') or answer.get('case'))[:40]}")
+            elif t == "chat_answer":
+                kind = answer.get("kind")
+                ans = str(answer.get("answer") or "")[:200].replace("\n", " ")
+                log.write(f"[bold]➜ chat ({kind}):[/bold] [dim]{ans}[/dim]")
+            elif t == "results":
+                log.write(f"[bold]➜ run:[/bold] status={answer.get('status')} · "
+                          f"candidates_generated={answer.get('candidates_generated')} · "
+                          f"persisted={answer.get('persisted')}")
+            elif t == "run_complete":
+                log.write(f"[dim]➜ run_complete status={answer.get('status')}[/dim]")
+            elif t == "explain":
+                log.write(f"[bold]➜ explain:[/bold] scientific_outcome={answer.get('scientific_outcome')} · "
+                          f"render={answer.get('render_status')}")
+            elif t == "status":
+                log.write(f"[bold]➜ status:[/bold] v{answer.get('version')} · llm "
+                          f"{str((answer.get('llm') or {}).get('provider'))}")
+            elif t == "error":
+                log.write(f"[red]➜ error:[/red] {str(answer.get('message'))[:90]}")
+        summary = tui_engine.summarize(events)
+        uneval = summary["unevaluated"]
+        if uneval:
+            log.write(f"[yellow]unevaluated stages:[/yellow] {', '.join(uneval)}")
+        self.run_status = f"Done ({elapsed}s)"
         self.current_node = "idle"
+        log.write(f"[dim]completed in {elapsed}s · events: {len(events)}[/dim]")
+        log.write("")
+
+    def _render_engine_error(self, cmd: str, error: str) -> None:
+        """Honest failure rendering (never hide a backend error)."""
+        log = self.query_one("#workflow-log", RichLog)
+        log.write(f"[red]✗ {cmd} failed:[/red] {str(error)[:120]}")
+        self.run_status = f"Error: {cmd}"
+        self.current_node = "idle"
+        log.write("")
+
+    def _mark_stage(self, stage: Any, status: Any, detail: Any) -> None:
+        """Map a real backend stage status onto the agent sidebar + log."""
+        stage = str(stage or "")
+        status = str(status or "")
+        detail = str(detail or "")
+        style = "red" if status in ("failed", "error") else ("yellow" if status == "unevaluated" else "green")
+        self.log_workflow(stage or "stage", detail or status, style)
+        # best-effort sidebar sync: stage name -> pipeline agent id
+        sid = stage.lower().replace("_", "")
+        for agent in AGENT_PIPELINE:
+            if sid in agent["id"] or agent["id"] in sid:
+                st = "skipped" if status == "unevaluated" else ("done" if status == "executed" else status)
+                if st == "done":
+                    self.update_agent_status(agent["id"], "done")
+                elif st == "skipped":
+                    self.update_agent_status(agent["id"], "skipped")
+                elif st in ("failed", "error"):
+                    self.update_agent_status(agent["id"], "error")
 
     def submit_request(self, request: str) -> None:
-        """Public method to kick off a workflow run."""
+        """Public method to kick off a real engine run."""
         self.run_workflow(request)
 
 

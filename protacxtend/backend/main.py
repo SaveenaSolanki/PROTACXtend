@@ -36,6 +36,11 @@ def summarize_state(state: WorkflowState) -> dict[str, Any]:
     for row in workflow_rows:
         status = row.get("Tool status", "unknown")
         tool_status_counts[status] = tool_status_counts.get(status, 0) + 1
+
+    # One canonical verdict so run.json / summary.json / report.md / TUI agree.
+    from protacxtend.run_verdict import compute_verdict, verdict_line
+    verdict = compute_verdict(state)
+
     return {
         "target": state.parsed_objective.target_name,
         "e3_ligase": state.parsed_objective.e3_ligase or "CRBN/VHL branch",
@@ -50,6 +55,11 @@ def summarize_state(state: WorkflowState) -> dict[str, Any]:
         "top_score": getattr(top, "final_priority_score", None),
         "tool_status_counts": tool_status_counts,
         "pipeline_status": pipeline_status,
+        "verdict": verdict["verdict"],
+        "scientific_result": verdict["scientific_result"],
+        "verdict_reason": verdict["reason"],
+        "verdict_detail": verdict,
+        "verdict_line": verdict_line(verdict),
         "planned_integrations": [
             row["Selected tool"]
             for row in workflow_rows

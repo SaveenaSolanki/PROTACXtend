@@ -163,6 +163,72 @@ def _print_json(payload: Any) -> None:
     print(json.dumps(model_to_dict(payload), indent=2))
 
 
+def _print_validate_summary(result: Any) -> None:
+    """Concise, scientist-facing summary for `validate` (default).
+
+    Full machine payload is still available with `--json`.
+    """
+    data = model_to_dict(result) if not isinstance(result, dict) else result
+    validation = (data.get("validation") or {})
+    chemistry = (data.get("chemistry") or {})
+    descriptors = (chemistry.get("descriptors") or {})
+    admet = (data.get("admet") or {})
+    degradation = (data.get("degradation") or {})
+    smiles = (data.get("input") or {}).get("smiles", "")
+    canonical = validation.get("canonical_smiles") or smiles
+
+    line = lambda label, value, width=13: print(f"  {label:<{width}}{value}")  # noqa: E731
+
+    print(f"PROTACXtend validate \u2014 {smiles}")
+    ok = validation.get("valid")
+    line("valid", f"{'yes' if ok else 'NO'}" + (f"  (canonical {canonical})" if ok else ""))
+
+    def fmt(key: str, unit: str = "") -> str:
+        v = descriptors.get(key)
+        if v is None:
+            return "n/a"
+        return f"{v:.2f}{unit}" if isinstance(v, (int, float)) else f"{v}{unit}"
+
+    print("  properties   " + " \u00b7 ".join([
+        f"MW {fmt('MW')}", f"logP {fmt('LogP')}", f"TPSA {fmt('TPSA')}",
+        f"HBD {descriptors.get('HBD', 'n/a')}", f"HBA {descriptors.get('HBA', 'n/a')}",
+        f"rotB {descriptors.get('rotatable_bonds', 'n/a')}",
+    ]))
+    qed = descriptors.get("QED")
+    sa = descriptors.get("SA_score")
+    print("  drug-likeness " + " \u00b7 ".join([
+        f"QED {qed:.3f}" if isinstance(qed, (int, float)) else "QED n/a",
+        f"SA {sa:.2f}" if isinstance(sa, (int, float)) else "SA unavailable",
+    ]))
+
+    print("  ADMET        " + " \u00b7 ".join([
+        f"hERG {admet.get('hERG_risk', 'n/a')}", f"AMES {admet.get('AMES_risk', 'n/a')}",
+        f"DILI {admet.get('DILI_risk', 'n/a')}", f"CYP {admet.get('CYP_risk', 'n/a')}",
+        f"Pgp {admet.get('Pgp_risk', 'n/a')}",
+    ]))
+
+    dc50 = degradation.get("predicted_dc50_nM")
+    dmax = degradation.get("predicted_dmax_percent")
+    status = degradation.get("status", "n/a")
+    print("  degradation  " + (f"{status}: DC50 {dc50} nM \u00b7 Dmax {dmax}%"
+                               if dc50 is not None else str(status)))
+
+    labels = data.get("status_labels") or []
+    if labels:
+        def mark(item: dict) -> str:
+            ts = item.get("tool_status") or {}
+            real = item.get("real_output_generated")
+            if ts.get("available") and real:
+                return "\u2713"
+            if ts.get("registered"):
+                return "\u25cb"
+            return "\u2717"
+
+        print("  tools        " + " \u00b7 ".join(
+            f"{l.get('selected_tool_or_method', '?')} {mark(l)}" for l in labels))
+    print("  (full JSON: add --json)")
+
+
 def _request_from_parts(parts: list[str] | None, default: str = "") -> str:
     return " ".join(parts or []).strip() or default
 
@@ -426,6 +492,113 @@ def _toolkit_command(args: argparse.Namespace) -> int:
 
     print(f"Unknown toolkit action: {action}")
     return 2
+
+
+def _scorecard_command(args: argparse.Namespace) -> int:
+    """10-challenge scorecard + Feynman-style brief (+ optional literature anchors).
+
+    Sources of input:
+      --json <workflow-state.json>   full design run state (recommended)
+      --candidate <candidate_id>     restrict scorecard to one candidate
+      --literature '<query>' / --dimensions a,b,c
+      --out <path>                   save the markdown brief
+    """
+    from protacxtend.tools.challenge_scorecard import (
+        run_workflow_scorecard,
+        scorecard_markdown,
+        scorecard_from_workflow,
+        rows_to_dicts,
+        aggregate,
+    )
+    from protacxtend.tools.feynman_summary import (
+        summarize_campaign,
+        summarize_candidate,
+        campaign_brief_from_json,
+        resolve_target_meta,
+    )
+    from protacxtend.tools.literature_synthesis import (
+        literature_block_markdown,
+        dimension_queries,
+        campaign_literature,
+        campaign_literature_markdown,
+    )
+
+    # --- literature-only fast path -----------------------------------------
+    if args.literature_only:
+        if not args.literature and not args.json:
+            print("literature-only requires --literature '<query>' or --json <workflow.json>")
+            return 2
+        if args.literature:
+            from protacxtend.tools.literature_synthesis import literature_block
+            lit = literature_block(args.literature, top_k=args.top_k, timeout_s=args.timeout)
+            md = literature_block_markdown(lit)
+        else:
+            import json as _json
+            workflow = _json.loads(open(args.json, encoding="utf-8").read())
+            lit = campaign_literature(workflow, args.candidate or None,
+                                      top_k=args.top_k, timeout_s=args.timeout)
+            md = campaign_literature_markdown(lit)
+        if args.out:
+            from pathlib import Path
+            Path(args.out).write_text(md, encoding="utf-8")
+            print(f"literature anchors written: {args.out}")
+        else:
+            print(md)
+        return 0
+
+    # --- scorecard path ----------------------------------------------------
+    if not args.json:
+        print("scorecard requires --json <workflow-state.json> "
+              "(run a design first: python3 -m protacxtend.backend.main --mode design \"...\" --stem <s>)")
+        return 2
+
+    import json as _json
+    from pathlib import Path
+
+    path = Path(args.json)
+    if not path.exists():
+        print(f"not found: {path}")
+        return 2
+    workflow = _json.loads(path.read_text(encoding="utf-8"))
+    cid = args.candidate or (workflow.get("assembled_candidates") or [{}])[0].get("candidate_id", "?")
+
+    report = run_workflow_scorecard(path, args.candidate or None, enrich_admet_ai=args.enrich_admet)
+    rows = scorecard_from_workflow(workflow, args.candidate or None, enrich_admet_ai=args.enrich_admet)
+    agg = aggregate(rows)
+
+    brief = summarize_candidate(rows, cid, meta={
+        "campaign": path.stem,
+        "target": resolve_target_meta(workflow),
+        "e3": (workflow.get("selected_e3_ligands") or [{}])[0].get("e3_ligase", "?") if workflow.get("selected_e3_ligands") else "?",
+    })
+    print(brief)
+    print()
+    print("```json")
+    print(_json.dumps(report, indent=2, default=str)[:6000])
+    print("```")
+
+    # --- optional literature anchors ----------------------------------------
+    if args.literature or args.dimensions:
+        dims = [d.strip() for d in args.dimensions.split(",") if d.strip()] if args.dimensions else None
+        lit = campaign_literature(workflow, cid, top_k=args.top_k, timeout_s=args.timeout,
+                                  dimensions=dims)
+        md = campaign_literature_markdown(lit)
+        print()
+        print(md)
+        report["literature"] = lit
+
+    if args.out:
+        out_path = Path(args.out)
+        if out_path.suffix == ".json":
+            out_path.write_text(_json.dumps(report, indent=2, default=str), encoding="utf-8")
+        else:
+            full = brief + "\n\n"
+            if report.get("literature"):
+                full += campaign_literature_markdown(report["literature"]) + "\n\n"
+            full += "## Full JSON report\n\n```json\n" + _json.dumps(report, indent=2, default=str) + "\n```"
+            out_path.write_text(full, encoding="utf-8")
+        print(f"\nbrief written: {out_path}")
+    return 0
 
 
 def _escalation_command(args: argparse.Namespace) -> int:
@@ -760,8 +933,25 @@ def _strategy_command(args: argparse.Namespace) -> int:
     canonical ToolExecutor, not parallel front doors.
     """
     from protacxtend.canonical import run_canonical
+    from protacxtend.runtime import modes as _modes
 
-    request = _request_from_parts(args.request, "Design CRBN PROTACs for BRD4 degradation.")
+    # No hidden default in SCIENTIFIC mode: an empty request is a typed failure,
+    # not a silent CRBN/BRD4 design. DEMO/TEST keep the exploratory default.
+    default_request = "" if _modes.is_scientific() else "Design CRBN PROTACs for BRD4 degradation."
+    request = _request_from_parts(args.request, default_request)
+    if not request:
+        payload = {
+            "status": "failed",
+            "failure_code": _modes.FailureCode.MISSING_SCIENTIFIC_INPUT.value,
+            "message": "a scientific request is required; empty input is not "
+                       "silently replaced by a default target in SCIENTIFIC mode",
+        }
+        if args.json:
+            _print_json(payload)
+        else:
+            print(f"error: {payload['failure_code']}: {payload['message']}", file=sys.stderr)
+        return 2
+
     result = run_canonical(request, config={"engine": args.engine})
     strategy = result.strategy
     out_dir = PROJECT_ROOT / "outputs" / "strategies"
@@ -831,7 +1021,42 @@ def _mode_command(mode: str, args: argparse.Namespace) -> int:
         value = getattr(args, key, None)
         if value not in (None, ""):
             payload[key] = value
-    _print_json(run_mode(payload))
+    result = run_mode(payload)
+    if mode == "validate" and not getattr(args, "json", False):
+        _print_validate_summary(result)
+    else:
+        _print_json(result)
+    return 0
+
+
+def _controlled_run_command(args: argparse.Namespace) -> int:
+    """Run the typed controlled contract flow and persist inspectable artifacts."""
+    from uuid import uuid4
+    from protacxtend.contracts import INJECTIONS, has_scientific_result, run_controlled
+    from protacxtend.contracts.consistency import verify_run_dir
+
+    run_id = getattr(args, "run_id", "") or f"controlled_{uuid4().hex[:8]}"
+    out = (Path(args.out) if getattr(args, "out", "")
+           else PROJECT_ROOT / "outputs" / "controlled_runs" / run_id)
+    record = run_controlled(args.request, run_id=run_id,
+                            inject=getattr(args, "inject", None), out_dir=out)
+    issues = verify_run_dir(out)
+    print(f"run_id:   {record.run_id}")
+    print(f"status:   {record.status}")
+    print(f"reason:   {record.status_reason}")
+    print(f"target:   {record.identity_summary().get('target')} "
+          f"({record.identity_summary().get('target_uniprot')})")
+    print(f"e3:       {record.identity_summary().get('e3')} "
+          f"({record.identity_summary().get('e3_uniprot')})")
+    print(f"funnel:   {record.funnel.model_dump()}")
+    print(f"result:   {'valid candidate' if has_scientific_result(record) else 'no scientific result'}")
+    print(f"out:      {out}")
+    if issues:
+        print("consistency: FAILED")
+        for issue in issues:
+            print(f"  - {issue}")
+        return 1
+    print("consistency: OK")
     return 0
 
 
@@ -1453,7 +1678,85 @@ def build_parser() -> argparse.ArgumentParser:
     strategy.add_argument("request", nargs="*", help="Natural-language PROTAC design request.")
     strategy.add_argument("--engine", choices=["deterministic", "agentic"], default="deterministic")
     strategy.add_argument("--json", action="store_true", help="Print the result paths as JSON.")
+    strategy.add_argument("--report", action="store_true",
+                          help="Also render the evidence-driven report (summary + technical + tables).")
     strategy.set_defaults(func=_strategy_command)
+
+    explain = sub.add_parser(
+        "explain",
+        help="Render the typed researcher-facing explanation for a persisted run.",
+    )
+    explain.add_argument("--run", required=True, help="run_id under outputs/runs/")
+    explain.add_argument("--section", default="concise",
+                         choices=["concise", "plain", "technical", "why", "evidence", "wrong", "next"],
+                         help="Which render to print (default concise).")
+    explain.set_defaults(func=_explain_command)
+
+    report = sub.add_parser(
+        "report",
+        help="Render an evidence-driven report from a run record / strategy artifact set.",
+    )
+    report.add_argument("--strategy", required=True, help="Path to <run>.strategy.json")
+    report.add_argument("--manifest", default="", help="Path to <run>.manifest.json (optional)")
+    report.add_argument("--trace", default="", help="Path to stage-trace JSON (optional)")
+    report.add_argument("--out", default="", help="Output directory (default outputs/reports/<run_id>)")
+    report.set_defaults(func=_report_command)
+
+    understand = sub.add_parser(
+        "understand",
+        help="Parse + tool-resolve + decide one research request (shared request-understanding layer).",
+    )
+    understand.add_argument("request", nargs="*", help="Natural-language research/design request.")
+    understand.add_argument("--action", default="plan",
+                            choices=["plan", "investigate", "reason", "compare", "design", "optimize",
+                                     "structure", "selectivity", "degradation", "admet", "synthesis",
+                                     "experiment", "evidence", "run"])
+    understand.add_argument("--offline", action="store_true", help="Never call the live UniProt API.")
+    understand.add_argument("--json", action="store_true", help="Print the structured state snapshot as JSON.")
+    understand.set_defaults(func=_understand_command)
+
+    workflow = sub.add_parser(
+        "workflow",
+        help="Run one of the 14 mechanistic research commands (plan/investigate/reason/compare/design/"
+             "optimize/structure/selectivity/degradation/admet/synthesis/experiment/evidence/run).",
+    )
+    workflow.add_argument("command", choices=["plan", "investigate", "reason", "compare", "design",
+                                              "optimize", "structure", "selectivity", "degradation",
+                                              "admet", "synthesis", "experiment", "evidence", "run"])
+    workflow.add_argument("request", nargs="*", help="Input for the command (text, series:path, smiles:...).")
+    workflow.add_argument("--series", default="", help="Series CSV path for /optimize.")
+    workflow.add_argument("--smiles", default="", help="Candidate SMILES for /reason, /degradation, /admet, /structure.")
+    workflow.add_argument("--offline", action="store_true", help="Avoid live calls.")
+    workflow.add_argument("--json", action="store_true", help="Print raw JSON payload.")
+    workflow.set_defaults(func=_workflow_command)
+
+    landscape = sub.add_parser(
+        "landscape",
+        help="Capability landscape M1-M12: score run artifacts against the versioned evidence rubric.",
+    )
+    landscape.add_argument("--run-dir", default="",
+                           help="Persisted run artifact directory containing run.json/evidence.jsonl/decisions.jsonl/trace.jsonl.")
+    landscape.add_argument("--out-dir", default=os.path.join("outputs", "landscape"),
+                           help="Output directory for scored_record.json, scores.csv, scores.md, coordinates.json and figure.")
+    landscape.add_argument("--record", nargs="*", default=[],
+                           help="Legacy hand-entry mode: --record M5 4 --evidence <file> --reviewer <name> --date <date> --reason <why>")
+    landscape.add_argument("--evidence", default="")
+    landscape.add_argument("--reviewer", default="")
+    landscape.add_argument("--date", default="")
+    landscape.add_argument("--reason", default="")
+    landscape.add_argument("--plot", action="store_true", help="Write coordinates (and PNG when matplotlib is available).")
+    landscape.set_defaults(func=_landscape_command)
+
+    controlled = sub.add_parser(
+        "controlled-run",
+        help="Run the typed BRD4-VHL contract flow and write inspectable artifacts + run page.",
+    )
+    controlled.add_argument("--request", default="BRD4-VHL", help="Request text (default BRD4-VHL).")
+    controlled.add_argument("--inject", default=None,
+                            help="Deliberate failure injection (see contracts.run.INJECTIONS).")
+    controlled.add_argument("--run-id", dest="run_id", default="", help="Explicit run id.")
+    controlled.add_argument("--out", default="", help="Output directory override.")
+    controlled.set_defaults(func=_controlled_run_command)
 
     ask = sub.add_parser("ask", help="Search tools, databases, skills, and local literature context.")
     ask.add_argument("query", nargs="*", help="Question or search query.")
@@ -1462,6 +1765,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     validate = sub.add_parser("validate", help="Validate and score a PROTAC SMILES.")
     validate.add_argument("--smiles", required=True)
+    validate.add_argument("--json", action="store_true",
+                          help="Emit the full JSON result (default: concise summary).")
     validate.set_defaults(func=lambda args: _mode_command("validate", args))
 
     ternary = sub.add_parser("ternary", help="Run ternary-feasibility mode for one SMILES.")
@@ -1687,6 +1992,21 @@ def build_parser() -> argparse.ArgumentParser:
     toolkit.add_argument("--fast", action="store_true", help="Skip content hashing in truth.")
     toolkit.add_argument("--json", action="store_true")
     toolkit.set_defaults(func=_toolkit_command)
+
+    scorecard = sub.add_parser(
+        "scorecard",
+        help="10-challenge scorecard + Feynman-style brief for a design run or a candidate SMILES.",
+    )
+    scorecard.add_argument("--json", default="", help="Workflow-state JSON path (outputs/candidates/<stem>.json).")
+    scorecard.add_argument("--candidate", default="", help="candidate_id to focus the scorecard on.")
+    scorecard.add_argument("--enrich-admet", action="store_true", help="Live ADMET-AI ML enrichment for the scored candidate (isolated venv, ~5-10 s/candidate).")
+    scorecard.add_argument("--literature", default="", help="Optional free-text query for literature anchors (bounded deep-research).")
+    scorecard.add_argument("--dimensions", default="", help="Comma-separated dimensions for literature anchors (default ternary_complex,cell_permeability,in_vivo_efficacy).")
+    scorecard.add_argument("--literature-only", action="store_true", help="Skip scorecard; fetch literature anchors only.")
+    scorecard.add_argument("--out", default="", help="Write the markdown brief to this path.")
+    scorecard.add_argument("--top-k", type=int, default=3, help="Max literature anchors per dimension.")
+    scorecard.add_argument("--timeout", type=int, default=120, help="Seconds per literature block.")
+    scorecard.set_defaults(func=_scorecard_command)
     return parser
 
 
@@ -1694,6 +2014,11 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     command_names = {
         "run",
+        "report",
+        "explain",
+        "landscape",
+        "understand",
+        "workflow",
         "llm",
         "chat",
         "auth",
@@ -1707,6 +2032,8 @@ def main(argv: list[str] | None = None) -> int:
         "doctor",
         "pilot",
         "design",
+        "strategy",
+        "controlled-run",
         "ask",
         "validate",
         "ternary",
@@ -1729,6 +2056,7 @@ def main(argv: list[str] | None = None) -> int:
         "install",
         "audit",
         "validate-complex",
+        "scorecard",
     }
     if not argv:
         # First run automatically opens setup when no provider is configured.
@@ -1773,6 +2101,196 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 0
     return int(args.func(args) or 0)
+
+
+
+def _workflow_command(args: argparse.Namespace) -> int:
+    """One per-command mechanistic workflow (shared evidence graph)."""
+    import json as _json
+    from protacxtend.workflows.api import run_command
+
+    text = " ".join(args.request or [])
+    payload = run_command(args.command, text, offline=args.offline,
+                          series_path=args.series, smiles_arg=args.smiles)
+    if args.json:
+        print(_json.dumps(payload, indent=1, default=str))
+        return 0
+    status = payload.get("status", "unknown")
+    print(f"[{args.command}] status={status}")
+    if payload.get("question"):
+        print(f"  QUESTION: {payload['question']}")
+        return 2
+    if status == "tool_failed":
+        print(f"  ERROR: {payload.get('error')}")
+        return 1
+    if payload.get("interpretation"):
+        print(f"  {payload['interpretation']}")
+    if payload.get("signature"):
+        print(f"  graph signature: {payload['signature']} (goal {payload.get('goal_type')})")
+        for n in payload.get("nodes", []):
+            print(f"    node {n['node_id']:28} cap={n['capability']:24} gate={n.get('evidence_gate','')[:50]}")
+        print(f"  evidence needed: {payload.get('evidence_needed')}")
+        print(f"  alternatives: {payload.get('alternatives')}")
+    if payload.get("replans"):
+        print(f"  REPLANS ({len(payload['replans'])}):")
+        for r in payload["replans"]:
+            print(f"    - {r.get('node')}: {r.get('reason')[:110]}")
+    if payload.get("hypotheses"):
+        print(f"  hypotheses: {len(payload['hypotheses'])}")
+        for h in payload["hypotheses"]:
+            print(f"    {h['hypothesis_id']} [{h['axis']}]: {h['statement'][:90]}")
+    if payload.get("tests"):
+        print(f"  tests: {len(payload['tests'])}")
+        for t in payload["tests"][:5]:
+            print(f"    {t['test_id']} {t['hypothesis_id']} [{t['hypothesis_axis']}] {t['assay'][:60]}")
+    if payload.get("evidence_graph"):
+        print(f"  evidence graph: {payload['evidence_graph']}")
+    return 0
+
+
+def _understand_command(args: argparse.Namespace) -> int:
+    """Shared request-understanding front door for all research commands."""
+    import json as _json
+    from protacxtend.request.controller import RequestController
+
+    text = " ".join(args.request or [])
+    controller = RequestController(offline=True if args.offline else None)
+    u = controller.understand(text, default_action=args.action)
+    dec = u.clarification
+    if dec.pending:
+        print(f"[{u.action}] clarification needed: {dec.question}")
+        if args.json:
+            print(_json.dumps({"clarification": dec.question, "candidates": dec.candidates,
+                               "state": u.to_snapshot()}, indent=2))
+        return 2
+    doc = controller.run_plan(u)
+    print(doc.interpretation_line)
+    for s in doc.stages:
+        print(f"  [{s.label:>12}] {s.step}: {s.summary[:110]}")
+    for a in u.assumptions:
+        print(f"  ASSUMPTION: {a}")
+    for lim in doc.limitations:
+        print(f"  LIMITATION: {lim}")
+    if args.json:
+        print(_json.dumps({"interpretation": doc.interpretation_line,
+                           "state": u.to_snapshot(),
+                           "evidence_steps": [{"step": s.step, "label": s.label, "summary": s.summary,
+                                               "evidence": s.evidence} for s in doc.stages]}, indent=2))
+    return 0
+
+
+def _report_command(args: argparse.Namespace) -> int:
+    """Evidence-driven report: plain summary (default stdout), technical
+    report + CSV tables + preserved raw JSON on disk."""
+    from protacxtend.reporting.build_record import build_from_artifacts
+    from protacxtend.reporting.reporter import render
+    from protacxtend.reporting.run_record import write_run_record
+
+    rec = build_from_artifacts(args.strategy, args.manifest or None, args.trace or None)
+    out_dir = args.out or os.path.join("outputs", "reports", rec.run_id)
+    record_path = write_run_record(rec, out_dir)
+    rendered = render(rec, out_dir)
+    from protacxtend.run_quarantine import citation_claim, run_status
+    print(rendered["summary"], end="")
+    claim = citation_claim(os.path.dirname(record_path))
+    print(f"citation claim: {claim}")
+    print(f"technical: {rendered['technical_path']}")
+    print(f"tables: {', '.join(rendered['tables'])}")
+    print(f"run record: {record_path}")
+    print(f"raw strategy preserved: {os.path.join(out_dir, 'raw_strategy.json')}")
+    return 0
+
+
+def _landscape_command(args: argparse.Namespace) -> int:
+    """Landscape M1-M12: score run artifacts; legacy hand-entry remains available."""
+    if not args.record:
+        from protacxtend.reporting.landscape_scoring import render_markdown, score_run_artifacts
+        record, paths = score_run_artifacts(args.run_dir or None, args.out_dir, plot=args.plot)
+        print(render_markdown(record))
+        print("derived artifacts:")
+        for name, path in paths.items():
+            print(f"  {name}: {path}")
+        expert = record["summary"]["expert_review_dimensions"]
+        print("expert-review dependent dimensions: " + (", ".join(expert) if expert else "none"))
+        return 0
+
+    from protacxtend.reporting.landscape import (coordinates, load_scores, record_score,
+                                                  render_table, DEFAULT_SCORES_FILE)
+    if args.record:
+        if len(args.record) != 2:
+            print("usage: --record <module> <0..6|None> --evidence <file> --reviewer <n> --date <d> --reason <why>")
+            return 2
+        module, score = args.record
+        score_val = None if score.lower() == "none" else int(score)
+        rec = record_score(module, score_val, evidence=args.evidence, reviewer=args.reviewer,
+                           date=args.date, reason=args.reason)
+        print(f"recorded {module}: score={rec['score']} level={rec['validation_level']}")
+        print(f"  evidence: {rec['evidence']}")
+        print(f"  reviewer: {rec['reviewer']} date: {rec['date']}")
+        print(f"  reason: {rec['reason']}")
+        print("warning: --record is legacy hand-entry mode; run-artifact scoring is the default.")
+    scores = load_scores()
+    print(render_table(scores))
+    coords = coordinates(scores)
+    coord_path = os.path.join("outputs", "landscape", "coordinates.json")
+    os.makedirs(os.path.dirname(coord_path), exist_ok=True)
+    with open(coord_path, "w") as f:
+        json.dump(coords, f, indent=1)
+    print(f"coordinates written: {coord_path} (reproducible from {DEFAULT_SCORES_FILE})")
+    if args.plot:
+        try:
+            import matplotlib
+            matplotlib.use("Agg")
+            import matplotlib.pyplot as plt
+            xs = [c["x"] for c in coords["coordinates"].values()]
+            ys = [c["y"] for c in coords["coordinates"].values()]
+            labels = list(coords["coordinates"].keys())
+            fig, ax = plt.subplots(figsize=(9, 4))
+            ax.scatter(xs, [0 if y is None else y for y in ys], s=90, color="#706bd6")
+            for i, lab in enumerate(labels):
+                ax.annotate(lab, (xs[i], (0 if ys[i] is None else ys[i])), textcoords="offset points",
+                            xytext=(4, 6), fontsize=7)
+            ax.set_xlabel("validation level (rubric)"); ax.set_ylabel("recorded score")
+            ax.set_xticks(range(7))
+            png = os.path.join("outputs", "landscape", "landscape.png")
+            fig.savefig(png, dpi=150, bbox_inches="tight")
+            print(f"landscape plot: {png}")
+        except Exception as exc:
+            print(f"plot skipped (matplotlib unavailable): {exc}")
+    return 0
+
+
+
+def _explain_command(args: argparse.Namespace) -> int:
+    from protacxtend.explain.builder import build_explanation
+    from protacxtend.explain.renderer import render
+
+    run_dir = os.path.join("outputs", "runs", args.run)
+    if not os.path.isdir(run_dir):
+        print(f"error: run {args.run!r} not found under outputs/runs/")
+        return 2
+    ans = build_explanation(run_dir)
+    rendered = render(ans)
+    if args.section == "why":
+        from protacxtend.explain.renderer import why
+        print(why(ans), end="")
+    elif args.section == "evidence":
+        from protacxtend.explain.renderer import evidence
+        print(evidence(ans), end="")
+    elif args.section == "wrong":
+        from protacxtend.explain.renderer import what_could_be_wrong
+        print(what_could_be_wrong(ans), end="")
+    elif args.section == "next":
+        from protacxtend.explain.renderer import next_experiment
+        print(next_experiment(ans), end="")
+    elif args.section == "plain":
+        print(rendered["plain"], end="")
+    elif args.section == "technical":
+        print(rendered["technical"], end="")
+    else:
+        print(rendered["concise"], end="")
+        print(f"[expandable sections: --section why|evidence|wrong|next|plain|technical]")
+    return 0
 
 
 if __name__ == "__main__":

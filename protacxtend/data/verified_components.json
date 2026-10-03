@@ -1,0 +1,270 @@
+{
+  "schema": "verified_components.v2",
+  "note": "Real, atom-mapped PROTAC components derived from curated structures of KNOWN compounds (MZ1 / dBET1 / MT-802). These are reconstruction references, never novel designs. Every component passed a split/reassembly InChIKey identity check. MZ1 attribution corrected to the discovery paper 10.1021/acschembio.5b00216 and structure 10.1038/nchembio.2329 (PDB 5T35); the PROTAC-DB row DOI 10.1021/acs.jmedchem.6b01912 is a later comparison study.",
+  "assembly_convention": "warhead [*:1]; linker [*:1]->warhead, [*:2]->E3; E3 ligand [*:1]",
+  "components": [
+    {
+      "component_id": "BRD4_MZ1_warhead",
+      "role": "warhead",
+      "name": "MZ1 BRD4 ligand (JQ1 triazolodiazepine)",
+      "smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+      "canonical_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=NC(C[*:1])c1nnc(C)n1-2",
+      "isomeric_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+      "inchikey": "YUZQVULRBZWKKT-JTQLQIEISA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "source_protac": "MZ1",
+      "applicability": [
+        "BRD4 BD1/BD2",
+        "BET family; selectivity not implied"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "target": "BRD4"
+    },
+    {
+      "component_id": "VHL_MZ1_ligand",
+      "role": "e3_ligand",
+      "name": "MZ1 VHL ligand (VH032)",
+      "smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](N[*:1])C(C)(C)C)cc1",
+      "canonical_smiles": "Cc1ncsc1-c1ccc(CNC(=O)C2CC(O)CN2C(=O)C(N[*:1])C(C)(C)C)cc1",
+      "isomeric_smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](N[*:1])C(C)(C)C)cc1",
+      "inchikey": "ZLOXMSNKPDWMEF-ZIFCJYIRSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "source_protac": "MZ1",
+      "applicability": [
+        "VHL VBC complex",
+        "not CRBN"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "e3_ligase": "VHL"
+    },
+    {
+      "component_id": "MZ1_linker",
+      "role": "linker",
+      "name": "MZ1 PEG3 linker",
+      "smiles": "O=C(NCCOCCOCCOCC(=O)[*:2])[*:1]",
+      "canonical_smiles": "O=C(NCCOCCOCCOCC(=O)[*:2])[*:1]",
+      "isomeric_smiles": "O=C(NCCOCCOCCOCC(=O)[*:2])[*:1]",
+      "inchikey": "BCTUXHHLONLIIU-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": "1(warhead)/2(e3)",
+      "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+      "source_protac": "MZ1",
+      "applicability": [
+        "rigid-length PEG3; not a general linker library"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey"
+    },
+    {
+      "component_id": "BRD4_dBET1_warhead",
+      "role": "warhead",
+      "name": "dBET1 BRD4 ligand (JQ1 triazolodiazepine)",
+      "smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+      "canonical_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=NC(C[*:1])c1nnc(C)n1-2",
+      "isomeric_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](C[*:1])c1nnc(C)n1-2",
+      "inchikey": "YUZQVULRBZWKKT-JTQLQIEISA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB dBET1; DOI 10.1126/science.aab1433",
+      "source_protac": "dBET1",
+      "applicability": [
+        "BRD4 BD1/BD2",
+        "BET family; selectivity not implied"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "target": "BRD4"
+    },
+    {
+      "component_id": "CRBN_dBET1_ligand",
+      "role": "e3_ligand",
+      "name": "dBET1 CRBN ligand (pomalidomide-type)",
+      "smiles": "O=C1CCC(N2C(=O)c3cccc([*:1])c3C2=O)C(=O)N1",
+      "canonical_smiles": "O=C1CCC(N2C(=O)c3cccc([*:1])c3C2=O)C(=O)N1",
+      "isomeric_smiles": "O=C1CCC(N2C(=O)c3cccc([*:1])c3C2=O)C(=O)N1",
+      "inchikey": "UEJJHQNACJXSKW-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB dBET1; DOI 10.1126/science.aab1433",
+      "source_protac": "dBET1",
+      "applicability": [
+        "CRBN thalidomide-binding domain",
+        "not VHL"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "e3_ligase": "CRBN"
+    },
+    {
+      "component_id": "dBET1_linker",
+      "role": "linker",
+      "name": "dBET1 alkyl-amide linker",
+      "smiles": "O=C(CO[*:2])NCCCCNC(=O)[*:1]",
+      "canonical_smiles": "O=C(CO[*:2])NCCCCNC(=O)[*:1]",
+      "isomeric_smiles": "O=C(CO[*:2])NCCCCNC(=O)[*:1]",
+      "inchikey": "HCNUGXGFDQDGDA-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": "1(warhead)/2(e3)",
+      "source": "PROTAC-DB dBET1; DOI 10.1126/science.aab1433",
+      "source_protac": "dBET1",
+      "applicability": [
+        "alkyl/diamide linker; not a general linker library"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey"
+    },
+    {
+      "component_id": "BTK_MT-802_warhead",
+      "role": "warhead",
+      "name": "MT-802 BTK ligand (pyrimidine-phenyl)",
+      "smiles": "Nc1ncnc2c1c(-c1ccc(Oc3ccccc3)cc1)nn2C1CCN([*:1])CC1",
+      "canonical_smiles": "Nc1ncnc2c1c(-c1ccc(Oc3ccccc3)cc1)nn2C1CCN([*:1])CC1",
+      "isomeric_smiles": "Nc1ncnc2c1c(-c1ccc(Oc3ccccc3)cc1)nn2C1CCN([*:1])CC1",
+      "inchikey": "LGWZZMCTBPCKHR-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB MT-802; DOI 10.1016/j.bmcl.2019.126877",
+      "source_protac": "MT-802",
+      "applicability": [
+        "BTK kinase domain",
+        "not a BET bromodomain"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "target": "BTK"
+    },
+    {
+      "component_id": "CRBN_MT-802_ligand",
+      "role": "e3_ligand",
+      "name": "MT-802 CRBN ligand (pomalidomide-type)",
+      "smiles": "O=C1CCC(N2C(=O)c3ccc([*:1])cc3C2=O)C(=O)N1",
+      "canonical_smiles": "O=C1CCC(N2C(=O)c3ccc([*:1])cc3C2=O)C(=O)N1",
+      "isomeric_smiles": "O=C1CCC(N2C(=O)c3ccc([*:1])cc3C2=O)C(=O)N1",
+      "inchikey": "UEJJHQNACJXSKW-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": 1,
+      "source": "PROTAC-DB MT-802; DOI 10.1016/j.bmcl.2019.126877",
+      "source_protac": "MT-802",
+      "applicability": [
+        "CRBN thalidomide-binding domain",
+        "not VHL"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey",
+      "e3_ligase": "CRBN"
+    },
+    {
+      "component_id": "MT-802_linker",
+      "role": "linker",
+      "name": "MT-802 PEG2-amide linker",
+      "smiles": "O=C(COCCOCC[*:1])N[*:2]",
+      "canonical_smiles": "O=C(COCCOCC[*:1])N[*:2]",
+      "isomeric_smiles": "O=C(COCCOCC[*:1])N[*:2]",
+      "inchikey": "NHCPQLWQFVVDHX-UHFFFAOYSA-N",
+      "inchikey_note": "InChIKey of the attachment-hydrogen (capped) fragment",
+      "attachment_atom_map": "1(warhead)/2(e3)",
+      "source": "PROTAC-DB MT-802; DOI 10.1016/j.bmcl.2019.126877",
+      "source_protac": "MT-802",
+      "applicability": [
+        "short PEG2-amide linker; not a general linker library"
+      ],
+      "verified": true,
+      "identity_check": "molzip reassembly reproduces source InChIKey"
+    }
+  ],
+  "references": [
+    {
+      "name": "MZ1",
+      "role": "BRD4-VHL",
+      "smiles": "Cc1ncsc1-c1ccc(CNC(=O)[C@@H]2C[C@@H](O)CN2C(=O)[C@@H](NC(=O)COCCOCCOCCNC(=O)C[C@@H]2N=C(c3ccc(Cl)cc3)c3c(sc(C)c3C)-n3c(C)nnc32)C(C)(C)C)cc1",
+      "canonical_smiles": "Cc1ncsc1-c1ccc(CNC(=O)C2CC(O)CN2C(=O)C(NC(=O)COCCOCCOCCNC(=O)CC2N=C(c3ccc(Cl)cc3)c3c(sc(C)c3C)-n3c(C)nnc32)C(C)(C)C)cc1",
+      "inchikey": "PTAMRJLIOCHJMQ-PYNGZGNASA-N",
+      "mw": 1002.661,
+      "pdb": "5T35",
+      "doi": "10.1021/acschembio.5b00216",
+      "db_row_doi": "10.1021/acs.jmedchem.6b01912",
+      "citation": "Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216",
+      "structure_doi": "10.1038/nchembio.2329",
+      "attribution_note": "PROTAC-DB row cites 10.1021/acs.jmedchem.6b01912 (later comparison study), not the MZ1 discovery paper",
+      "source_table": "data/protac_repos/repos/PROTAC-Degradation-Predictor/data/PROTAC-Degradation-DB.csv",
+      "assays": {
+        "dc50_nM": "8.0",
+        "dmax_percent": "98.0",
+        "cell_line": "HeLa",
+        "treatment_time_h": "24.0",
+        "assay": "Degradation of BRD4 short/long in HeLa cells after 24 h treatment",
+        "article_doi": "10.1021/acs.jmedchem.6b01912",
+        "database": "PROTAC-DB",
+        "pdb": "5T35",
+        "molecular_formula": "C49H60ClN9O8S2",
+        "source_inchikey": "PTAMRJLIOCHJMQ-PYNGZGNASA-N",
+        "source": "PROTAC-DB (PROTAC-Degradation-DB.csv)",
+        "note": "Measurements are as reported by PROTAC-DB; missing fields are not_reported and are never filled by predictions."
+      }
+    },
+    {
+      "name": "dBET1",
+      "role": "BRD4-CRBN",
+      "smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)NCCCCNC(=O)COc1cccc3c1C(=O)N(C1CCC(=O)NC1=O)C3=O)c1nnc(C)n1-2",
+      "canonical_smiles": "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=NC(CC(=O)NCCCCNC(=O)COc1cccc3c1C(=O)N(C1CCC(=O)NC1=O)C3=O)c1nnc(C)n1-2",
+      "inchikey": "LKEGXJXRNBALBV-PMCHYTPCSA-N",
+      "mw": 785.283,
+      "pdb": "not_reported",
+      "doi": "10.1126/science.aab1433",
+      "db_row_doi": "10.1126/science.aab1433",
+      "citation": "",
+      "structure_doi": "",
+      "attribution_note": "",
+      "source_table": "data/protac_repos/repos/PROTAC-Degradation-Predictor/data/PROTAC-Degradation-DB.csv",
+      "assays": {
+        "dc50_nM": "430.0",
+        "dmax_percent": "not_reported",
+        "cell_line": "SUM149",
+        "treatment_time_h": "18.0",
+        "assay": "Degradation of BRD4 in SUM149 cells after 18 h treatment",
+        "article_doi": "10.1126/science.aab1433",
+        "database": "PROTAC-DB",
+        "pdb": "not_reported",
+        "molecular_formula": "C38H37ClN8O7S",
+        "source_inchikey": "LKEGXJXRNBALBV-PMCHYTPCSA-N",
+        "source": "PROTAC-DB (PROTAC-Degradation-DB.csv)",
+        "note": "Measurements are as reported by PROTAC-DB; missing fields are not_reported and are never filled by predictions."
+      }
+    },
+    {
+      "name": "MT-802",
+      "role": "BTK-CRBN",
+      "smiles": "Nc1ncnc2c1c(-c1ccc(Oc3ccccc3)cc1)nn2C1CCN(CCOCCOCC(=O)Nc2ccc3c(c2)C(=O)N(C2CCC(=O)NC2=O)C3=O)CC1",
+      "canonical_smiles": "Nc1ncnc2c1c(-c1ccc(Oc3ccccc3)cc1)nn2C1CCN(CCOCCOCC(=O)Nc2ccc3c(c2)C(=O)N(C2CCC(=O)NC2=O)C3=O)CC1",
+      "inchikey": "AJTLGUJXIKEZCQ-UHFFFAOYSA-N",
+      "mw": 787.834,
+      "pdb": "not_reported",
+      "doi": "10.1016/j.bmcl.2019.126877",
+      "db_row_doi": "10.1016/j.bmcl.2019.126877",
+      "citation": "",
+      "structure_doi": "",
+      "attribution_note": "",
+      "source_table": "data/protac_repos/repos/PROTAC-Degradation-Predictor/data/PROTAC-Degradation-DB.csv",
+      "assays": {
+        "dc50_nM": "6.2",
+        "dmax_percent": "99.0",
+        "cell_line": "NAMALWA",
+        "treatment_time_h": "24.0",
+        "assay": "Degradation of BTK in NAMALWA cells after 24 h treatment",
+        "article_doi": "10.1016/j.bmcl.2019.126877",
+        "database": "PROTAC-DB",
+        "pdb": "not_reported",
+        "molecular_formula": "C41H41N9O8",
+        "source_inchikey": "AJTLGUJXIKEZCQ-UHFFFAOYSA-N",
+        "source": "PROTAC-DB (PROTAC-Degradation-DB.csv)",
+        "note": "Measurements are as reported by PROTAC-DB; missing fields are not_reported and are never filled by predictions."
+      }
+    }
+  ]
+}

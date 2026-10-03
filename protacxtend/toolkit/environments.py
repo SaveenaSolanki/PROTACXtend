@@ -242,7 +242,7 @@ def toolkit_envs(*, include_all: bool = False, refresh: bool = False) -> list[To
 # ── probing ─────────────────────────────────────────────────────────────
 
 _PROBE_SOURCE = r"""
-import importlib, importlib.metadata as md, json, sys
+import importlib.util, importlib.metadata as md, json, sys
 mods = json.load(sys.stdin)
 out = {}
 for mod in mods:
@@ -254,23 +254,15 @@ for mod in mods:
         continue
     version = ""
     try:
-        module = importlib.import_module(mod)
-        version = getattr(module, "__version__", "") or getattr(module, "VERSION", "")
-        if isinstance(version, (tuple, list)):
-            version = ".".join(str(x) for x in version)
+        version = md.version(mod)
     except Exception:
-        version = ""
-    if not version:
-        try:
-            version = md.version(mod)
-        except Exception:
-            version = "installed"
+        version = "installed"
     out[mod] = str(version)
 json.dump(out, sys.stdout)
 """
 
 
-def probe_env_modules(env: ToolkitEnv, modules: Iterable[str], timeout: int = 120) -> dict[str, str]:
+def probe_env_modules(env: ToolkitEnv, modules: Iterable[str], timeout: int = 15) -> dict[str, str]:
     """Return {module: version} for every importable module in *env*."""
     modules = sorted({m for m in modules if m})
     if not modules or not env.exists() or not env.python:
@@ -305,8 +297,12 @@ def _load_cache() -> dict[str, Any]:
 
 def _save_cache(payload: dict[str, Any]) -> None:
     path = _cache_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    except OSError:
+        # Discovery must still work in read-only/sandboxed environments.
+        return
 
 
 def build_index(modules: Iterable[str], *, include_all: bool = False, force: bool = False) -> dict[str, Any]:
@@ -417,15 +413,26 @@ def executable_search_paths(include_all: bool = False) -> list[Path]:
 def find_executable(name: str, *, include_all: bool = False) -> tuple[str, str] | None:
     """Locate an executable on PATH or in a registered env's bin/ dir.
 
-    Returns ``(path, env_name)`` or ``None``.
+    Returns ``(path, env_name)`` or ``None``. Matching is case-insensitive as
+    a fallback so registry rows like ``Perseus`` resolve a ``perseus`` binary
+    (and vice-versa), which is the only difference for several tools.
     """
     if not name:
         return None
+    lower = name.lower()
     for env in toolkit_envs(include_all=include_all):
-        candidate = Path(env.bin_dir) / name
+        bin_dir = Path(env.bin_dir)
+        candidate = bin_dir / name
         if candidate.exists() and os.access(candidate, os.X_OK):
             return str(candidate), env.name
+        if bin_dir.is_dir():
+            for entry in bin_dir.iterdir():
+                if entry.name.lower() == lower and os.access(entry, os.X_OK):
+                    return str(entry), env.name
     found = shutil.which(name)
+    if found:
+        return found, "PATH"
+    found = shutil.which(lower)
     if found:
         return found, "PATH"
     return None
@@ -436,7 +443,10 @@ def reset_cache() -> None:
     _MODULE_MEMO.clear()
     path = _cache_path()
     if path.exists():
-        path.unlink()
+        try:
+            path.unlink()
+        except OSError:
+            return
 
 
 __all__ = [

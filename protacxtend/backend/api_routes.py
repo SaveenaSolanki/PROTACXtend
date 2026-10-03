@@ -64,9 +64,34 @@ def get_app():
 
     app = FastAPI(title="PROTACXtend API", version=__version__)
 
+    # Scientific-input policy violations (fixture/placeholder/missing input in
+    # SCIENTIFIC mode) must surface as a typed 422, never as an opaque HTTP 500.
+    from protacxtend.runtime import modes as _sci_modes
+
+    @app.exception_handler(_sci_modes.ScientificInputError)
+    async def _scientific_input_error_handler(request, exc):  # noqa: ANN001
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=422, content=exc.to_failure(context=str(request.url)))
+
     @app.get("/health")
     def health():
         return {"status": "ok", "service": "PROTACXtend"}
+
+    @app.get("/")
+    def root():
+        """Service banner — humans land here, machines use /docs or /openapi.json."""
+        return {
+            "service": "PROTACXtend API",
+            "version": __version__,
+            "status": "ok",
+            "docs": "/docs",
+            "openapi": "/openapi.json",
+            "health": "/health",
+            "capabilities": "/capabilities",
+            "tools": "/tools",
+            "hint": "Interactive API docs are at /docs (Swagger UI) and /redoc.",
+        }
 
     @app.get("/resources/health")
     def resources_health():
@@ -94,6 +119,47 @@ def get_app():
     def capability_detail(name: str):
         from protacxtend.runtime.registry import build_registry, trace
         return trace(build_registry(), name)
+
+    @app.get("/runs/{run_id}/explain")
+    def run_explain(run_id: str):
+        """Typed researcher-facing explanation built from the persisted run
+        record (never from display-layer text)."""
+        from pathlib import Path
+        from protacxtend.explain.builder import build_explanation
+        from protacxtend.explain.renderer import render
+
+        run_dir = Path(__file__).resolve().parents[2] / "outputs" / "runs" / run_id
+        if not run_dir.is_dir():
+            return {"status": "error", "run_id": run_id, "error": f"run {run_id!r} not found"}
+        ans = build_explanation(run_dir)
+        rendered = render(ans)
+        return {"status": ans.status, "run_id": ans.run_id, "mode": ans.mode,
+                "answer": ans.model_dump(), **rendered}
+
+    @app.get("/runs/{run_id}")
+    def run_record(run_id: str):
+        """Serve a persisted run with its classification (OK / COMPARISON_ONLY /
+        INVALID). The corrected replay is visibly comparison_only; invalid runs
+        are never served as scientific evidence."""
+        from pathlib import Path
+        from protacxtend.run_quarantine import serve_payload, citation_claim
+
+        run_dir = Path(__file__).resolve().parents[2] / "outputs" / "runs" / run_id
+        if not run_dir.is_dir():
+            return {"status": "error", "run_id": run_id,
+                    "error": f"run {run_id!r} not found"}
+        payload = serve_payload(run_dir)
+        record = {}
+        for name in ("run.json", "manifest.json", "corrected_run.json"):
+            cand = run_dir / name
+            if cand.exists():
+                try:
+                    import json as _json
+                    record = _json.loads(cand.read_text(encoding="utf-8"))
+                    break
+                except Exception:
+                    continue
+        return {**payload, "record": record, "citation_claim": citation_claim(run_dir)}
 
     @app.post("/capabilities/{name}/run")
     def capability_run(name: str, req: CapabilityRunRequest):

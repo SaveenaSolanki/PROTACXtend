@@ -56,6 +56,16 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _execution_mode_value() -> str:
+    """Active execution mode, recorded on every strategy and manifest."""
+    try:
+        from protacxtend.runtime.modes import get_execution_mode
+
+        return get_execution_mode().value
+    except Exception:  # pragma: no cover - modes must never break a run
+        return "unknown"
+
+
 def _as_dict(value: Any) -> dict[str, Any]:
     if hasattr(value, "model_dump"):
         return value.model_dump()
@@ -107,6 +117,7 @@ class DecisionEngine:
             strategy_id=strategy_id,
             run_id=run_id,
             schema_version=STRATEGY_SCHEMA_VERSION,
+            execution_mode=_execution_mode_value(),
             target=request.target,
             disease_context=request.disease_context,
             indication=request.disease_context or config.get("indication", ""),
@@ -268,9 +279,11 @@ class DecisionEngine:
     # ══════════════════════════════════════════════════════════════════
 
     def _warheads(self, view: EngineView | None) -> list[dict[str, Any]]:
-        out: list[dict[str, Any]] = []
+        from protacxtend.runtime.modes import filter_scientific_rows
+
+        raw: list[dict[str, Any]] = []
         for item in _records(view, "selected_warheads"):
-            out.append(
+            raw.append(
                 {
                     "name": item.get("name") or item.get("warhead_name") or "",
                     "smiles": item.get("smiles") or item.get("warhead_smiles") or "",
@@ -279,7 +292,8 @@ class DecisionEngine:
                     "target": item.get("target") or "",
                 }
             )
-        return out
+        kept, _dropped = filter_scientific_rows(raw, source_key="source")
+        return kept
 
     def _attachment_vectors(self, view: EngineView | None) -> list[dict[str, Any]]:
         out: list[dict[str, Any]] = []
@@ -734,7 +748,7 @@ class DecisionEngine:
                     left="run output",
                     right=f"critic failure category {failure}",
                     resolution=verdict.recommended_action,
-                    severity="error" if failure in {"required_module_failed", "provenance_break"} else "warning",
+                    severity="error" if failure in {"required_module_failed", "module_failed", "provenance_break", "invalid_chemistry", "missing_required_module"} else "warning",
                 )
             )
         return contradictions
@@ -778,6 +792,7 @@ class DecisionEngine:
             strategy_id=strategy_id,
             schema_version=STRATEGY_SCHEMA_VERSION,
             engine=str(config.get("engine") or "deterministic"),
+            execution_mode=_execution_mode_value(),
             request=request.normalized_request or request.raw_request,
             started_at=started_at or "",
             finished_at=_now(),

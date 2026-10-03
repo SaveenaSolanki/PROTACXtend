@@ -526,11 +526,35 @@ class CognitiveMemoryBridge:
         }
 
     def ingest_run_file(self, path: str | Path, **kwargs: Any) -> dict[str, Any]:
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        from protacxtend.run_quarantine import run_status
+
+        run_path = Path(path)
+        status = run_status(run_path.parent)
+        if status != "OK":
+            return {"enabled": False, "quarantined": status == "INVALID",
+                    "comparison_only": status == "COMPARISON_ONLY",
+                    "run_id": run_path.parent.name,
+                    "reason": "comparison_only: not scientific evidence" if status == "COMPARISON_ONLY"
+                              else "quarantined invalid run",
+                    "episode": None, "failure_episodes": [],
+                    "predictions": [], "n_failure_episodes": 0, "n_predictions": 0}
+        data = json.loads(run_path.read_text(encoding="utf-8"))
         return self.ingest_run_record(data, **kwargs)
 
     def ingest_run_dir(self, run_dir: str | Path, **kwargs: Any) -> dict[str, Any]:
-        return self.ingest_run_file(Path(run_dir) / "run.json", **kwargs)
+        from protacxtend.run_quarantine import run_status
+
+        path = Path(run_dir)
+        status = run_status(path)
+        if status != "OK":
+            return {"enabled": False, "quarantined": status == "INVALID",
+                    "comparison_only": status == "COMPARISON_ONLY",
+                    "run_id": path.name,
+                    "reason": "comparison_only: not scientific evidence" if status == "COMPARISON_ONLY"
+                              else "quarantined invalid run",
+                    "episode": None, "failure_episodes": [],
+                    "predictions": [], "n_failure_episodes": 0, "n_predictions": 0}
+        return self.ingest_run_file(path / "run.json", **kwargs)
 
     # ── outcomes ─────────────────────────────────────────────────────────────
     def find_prediction(

@@ -26,6 +26,7 @@ from enum import Enum
 from typing import Any, Optional
 
 from protacxtend.backend.schemas import BaseModel, Field
+from protacxtend.canonical.failures import CriticResult, Failure
 
 
 class ScientificModuleId(str, Enum):
@@ -67,6 +68,9 @@ class TaskStatus(str, Enum):
     DEGRADED = "degraded"
     FAILED = "failed"
     SKIPPED = "skipped"
+    #: Explicit, typed non-answer: the module could not be recovered by the
+    #: retry/fallback policy and the run declines to fabricate a result.
+    ABSTAINED = "abstained"
 
 
 class ScientificRequest(BaseModel):
@@ -147,15 +151,23 @@ class TaskGraphSpec(BaseModel):
 
 
 class CriticVerdict(BaseModel):
-    """Output of the Critic / Verifier stage."""
+    """Output of the Critic / Verifier stage.
+
+    ``failure_categories`` is retained as the flat, backward-compatible view.
+    ``failures`` and ``critic_results`` carry the typed taxonomy and the
+    per-critic evidence/mechanism/reproducibility breakdown.
+    """
 
     status: str = "INSUFFICIENT EVIDENCE"
     failure_categories: list[str] = Field(default_factory=list)
+    failures: list[Failure] = Field(default_factory=list)
+    critic_results: dict[str, CriticResult] = Field(default_factory=dict)
     unsupported_claims: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     uncertainty: dict[str, str] = Field(default_factory=dict)
     recommended_action: str = ""
     checks_run: list[str] = Field(default_factory=list)
+    policy_action: str = ""
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -312,6 +324,7 @@ class RunManifest(BaseModel):
     strategy_id: str = ""
     schema_version: str = STRATEGY_SCHEMA_VERSION
     engine: str = ""
+    execution_mode: str = ""
     request: str = ""
     started_at: str = ""
     finished_at: str = ""
@@ -338,6 +351,7 @@ class TherapeuticStrategy(BaseModel):
     strategy_id: str = ""
     run_id: str = ""
     schema_version: str = STRATEGY_SCHEMA_VERSION
+    execution_mode: str = ""
 
     # ── Objective ──
     target: str = ""
@@ -398,6 +412,7 @@ class CanonicalRunResult(BaseModel):
     critic: CriticVerdict = Field(default_factory=CriticVerdict)
     strategy: TherapeuticStrategy = Field(default_factory=TherapeuticStrategy)
     engine_state: Any = None
+    policy_decisions: list[dict[str, Any]] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
     runtime_s: float = 0.0

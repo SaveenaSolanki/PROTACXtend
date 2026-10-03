@@ -127,10 +127,10 @@ def run_lean_magnetdb_inference(
         return _failure(query, "Lean MagnetDB pickle files are not present.", trie_file, metadata_file)
 
     try:
-        with trie_file.open("rb") as handle:
-            trie = pickle.load(handle)
-        with metadata_file.open("rb") as handle:
-            metadata_hash = pickle.load(handle)
+        from protacxtend.security.safe_io import safe_pickle_load
+
+        trie = safe_pickle_load(trie_file)
+        metadata_hash = safe_pickle_load(metadata_file)
     except Exception as exc:
         return _failure(query, f"Lean MagnetDB files could not be loaded: {exc}", trie_file, metadata_file)
 

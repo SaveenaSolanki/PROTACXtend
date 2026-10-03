@@ -55,6 +55,11 @@ __all__ = [
     "classify_input_origin",
     "is_placeholder_smiles",
     "is_synthetic_artifact",
+    "is_demo_source",
+    "filter_scientific_rows",
+    "scan_scientific_payload",
+    "assert_scientific_payload_clean",
+    "DEMO_SOURCE_PREFIXES",
 ]
 
 
@@ -88,6 +93,9 @@ class FailureCode(str, Enum):
     FIXTURE_FORBIDDEN = "FIXTURE_FORBIDDEN"
     SYNTHETIC_INPUT_FORBIDDEN = "SYNTHETIC_INPUT_FORBIDDEN"
     INVALID_SCIENTIFIC_INPUT = "INVALID_SCIENTIFIC_INPUT"
+    RETRIEVAL_DEADLINE_EXCEEDED = "RETRIEVAL_DEADLINE_EXCEEDED"
+    RETRIEVAL_UNAVAILABLE = "RETRIEVAL_UNAVAILABLE"
+    AMBIGUOUS_ENTITY = "AMBIGUOUS_ENTITY"
 
 
 class ScientificInputError(RuntimeError):
@@ -127,6 +135,27 @@ class MissingScientificInput(ScientificInputError):
     """A required scientific input was absent in SCIENTIFIC mode."""
 
     code = FailureCode.MISSING_SCIENTIFIC_INPUT
+
+
+class RetrievalDeadlineExceeded(ScientificInputError):
+    """A live retrieval did not complete inside the propagated run deadline.
+
+    Raised instead of silently spending the whole run budget on a hanging
+    source. Callers convert it into a typed ``retrieval_status`` on the state
+    and continue with whatever cited/offline evidence exists.
+    """
+
+    code = FailureCode.RETRIEVAL_DEADLINE_EXCEEDED
+
+
+class AmbiguousEntityError(ScientificInputError):
+    """A supplied entity mapped to more than one plausible identifier.
+
+    The workflow must refuse to pick one silently; the caller has to
+    disambiguate (or the case is a justified no-go).
+    """
+
+    code = FailureCode.AMBIGUOUS_ENTITY
 _MODE_ENV = "PROTACXTEND_EXECUTION_MODE"
 _UNSET = object()
 _ACTIVE_MODE: ContextVar[Any] = ContextVar("protacxtend_execution_mode", default=_UNSET)
@@ -263,6 +292,7 @@ SCIENTIFIC_REQUIRED_INPUTS: Mapping[str, Sequence[str]] = {
     "search_chembl": ("term",),
     "search_bindingdb": ("target",),
     "detect_exit_vectors": ("smiles",),
+    "generate_linkers": ("warhead_smiles", "e3_smiles"),
     "construct_protac": ("warhead_smiles", "linker_smiles", "e3_smiles"),
     "check_synthetic_feasibility": ("smiles",),
     # capability tooling
@@ -388,6 +418,49 @@ def is_synthetic_artifact(value: Any) -> bool:
                ("synthetic_ternary", "demo_warhead", "placeholder_warhead"))
 
 
+# Bundled curated tables mix literature-sourced rows with demo seeds. The demo
+# seeds are identified by their ``source`` column (e.g. ``local_demo_warhead``,
+# ``local_demo_e3_ligand``). SCIENTIFIC mode must never build a strategy from
+# them, even though DEMO/TEST exploration may.
+DEMO_SOURCE_PREFIXES = ("local_demo", "demo_", "curated_demo")
+
+
+def is_demo_source(value: Any) -> bool:
+    """True when a record's provenance ``source`` marks it as a demo seed."""
+    if not isinstance(value, str):
+        return False
+    lowered = value.strip().lower()
+    if not lowered:
+        return False
+    if lowered in {"demo", "demo_only"}:
+        return True
+    if lowered.startswith(DEMO_SOURCE_PREFIXES):
+        return True
+    return any(tag in lowered for tag in
+               ("demo_warhead", "demo_e3_ligand", "placeholder_warhead"))
+
+
+def filter_scientific_rows(
+    rows: Iterable[Mapping[str, Any]],
+    *,
+    source_key: str = "source",
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Split curated rows into ``(kept, dropped_demo)`` for the active mode.
+
+    In SCIENTIFIC mode every row whose ``source`` is a demo seed is dropped;
+    DEMO/TEST modes keep all rows. Callers that drop rows should surface the
+    count so the abstention is auditable rather than silent.
+    """
+    materialised = [dict(row) for row in rows]
+    if not is_scientific():
+        return materialised, []
+    kept: list[dict[str, Any]] = []
+    dropped: list[dict[str, Any]] = []
+    for row in materialised:
+        (dropped if is_demo_source(row.get(source_key, "")) else kept).append(row)
+    return kept, dropped
+
+
 def classify_input_origin(
     payload: Mapping[str, Any] | None,
     *,
@@ -419,6 +492,80 @@ def classify_input_origin(
         origins[key] = InputOrigin.USER.value
     return origins
 
+
+
+# ---------------------------------------------------------------------------
+# Recursive public-payload scan
+# ---------------------------------------------------------------------------
+
+def _is_smiles_leaf_key(key: str) -> bool:
+    leaf = key.rsplit(".", 1)[-1].lower()
+    return leaf in _SMILES_KEYS or leaf.endswith("_smiles") or leaf in {
+        "canonical_smiles", "isomeric_smiles", "full_protac_smiles",
+    }
+
+
+def _is_path_leaf_key(key: str) -> bool:
+    leaf = key.rsplit(".", 1)[-1].lower()
+    return leaf in _PATH_KEYS or leaf.endswith("_path") or leaf.endswith("_file") or leaf.endswith("_dir")
+
+
+def _is_source_leaf_key(key: str) -> bool:
+    leaf = key.rsplit(".", 1)[-1].lower()
+    return leaf in {"source", "origin", "fixture", "fixture_name", "fixture_kind"} or leaf.endswith("_source")
+
+
+def _walk_payload(value: Any, prefix: str = "") -> Iterable[tuple[str, Any]]:
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            name = f"{prefix}.{key}" if prefix else str(key)
+            yield from _walk_payload(item, name)
+    elif isinstance(value, (list, tuple)):
+        for idx, item in enumerate(value):
+            name = f"{prefix}[{idx}]" if prefix else f"[{idx}]"
+            yield from _walk_payload(item, name)
+    else:
+        yield prefix, value
+
+
+def scan_scientific_payload(payload: Any) -> list[dict[str, str]]:
+    """Return fixture/synthetic contamination findings in a public payload.
+
+    This is intentionally narrower than a free-text grep: explanatory strings
+    may mention that demo rows were excluded, but structure fields, paths,
+    provenance/source fields, and fixture metadata must not carry probe inputs
+    in SCIENTIFIC mode.
+    """
+    findings: list[dict[str, str]] = []
+    for path, value in _walk_payload(payload):
+        if not isinstance(value, str):
+            continue
+        text = value.strip()
+        lowered = text.lower()
+        if _is_smiles_leaf_key(path) and is_placeholder_smiles(text):
+            findings.append({"path": path, "value": text, "reason": "placeholder_smiles"})
+            continue
+        if _is_path_leaf_key(path) and is_synthetic_artifact(text):
+            findings.append({"path": path, "value": text, "reason": "synthetic_or_fixture_path"})
+            continue
+        if _is_source_leaf_key(path) and (is_demo_source(text) or is_synthetic_artifact(text)):
+            findings.append({"path": path, "value": text, "reason": "demo_or_fixture_source"})
+            continue
+        if path.rsplit(".", 1)[-1].lower() in {"input_origin", "input_origins"} and lowered in {"fixture", "synthetic"}:
+            findings.append({"path": path, "value": text, "reason": "non_scientific_input_origin"})
+    return findings
+
+
+def assert_scientific_payload_clean(context: str, payload: Any) -> None:
+    """Fail closed when a SCIENTIFIC-mode public payload contains fixtures."""
+    findings = scan_scientific_payload(payload)
+    if not findings:
+        return
+    first = findings[0]
+    raise SyntheticInputNotAllowed(
+        f"{context}: scientific payload contains {len(findings)} fixture/synthetic "
+        f"finding(s); first at {first['path']}: {first['reason']}={first['value']!r}"
+    )
 
 def dominant_input_origin(origins: Mapping[str, str]) -> str:
     """Single label for a tool call.

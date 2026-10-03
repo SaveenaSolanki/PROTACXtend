@@ -150,3 +150,139 @@ def search_bindingdb_local(target_name_or_uniprot: str, top_k: int = 100, path: 
         "status": "ok" if records else "no_hits",
         "records": records,
     }
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# BindingDB public RESTful API (no API key required)
+#
+# Reference: https://www.bindingdb.org/rwd/bind/BindingDBRESTfulAPI.jsp
+#   getLigandsByUniprot?uniprot={UNIPROT};{cutoff}&response=application/json
+#   getLigandsByUniprots?uniprot={UNIPROTS}&cutoff={cutoff}&response=application/json
+#   getLigandsByPDBs?pdb={PDBs}&cutoff={cutoff}&identity={identity}&response=application/json
+#
+# The earlier client appended an optional ``api_key`` and warned that one was
+# required; the public REST service does not require a key. The response shapes
+# differ between the singular and plural endpoints, so both are parsed here.
+# ──────────────────────────────────────────────────────────────────────────
+
+BINDINGDB_REST_BASE = "https://bindingdb.org/rest"
+
+
+def build_bindingdb_uniprot_url(uniprot: str, cutoff: int = 1000) -> str:
+    """Singular ``getLigandsByUniprot`` URL (documented, key-free)."""
+    uniprot = (uniprot or "").strip()
+    return (
+        f"{BINDINGDB_REST_BASE}/getLigandsByUniprot"
+        f"?uniprot={uniprot};{int(cutoff)}&response=application/json"
+    )
+
+
+def build_bindingdb_uniprots_url(uniprots: Sequence[str], cutoff: int = 1000) -> str:
+    """Plural ``getLigandsByUniprots`` URL for several accessions."""
+    joined = ",".join(u.strip() for u in uniprots if u and u.strip())
+    return (
+        f"{BINDINGDB_REST_BASE}/getLigandsByUniprots"
+        f"?uniprot={joined}&cutoff={int(cutoff)}&response=application/json"
+    )
+
+
+def build_bindingdb_pdb_url(pdbs: Sequence[str], cutoff: int = 1000, identity: int = 90) -> str:
+    """``getLigandsByPDBs`` URL for structure-derived binder search."""
+    joined = ",".join(p.strip() for p in pdbs if p and p.strip())
+    return (
+        f"{BINDINGDB_REST_BASE}/getLigandsByPDBs"
+        f"?pdb={joined}&cutoff={int(cutoff)}&identity={int(identity)}&response=application/json"
+    )
+
+
+def _parse_affinity_float(raw: Any) -> float | None:
+    if raw in (None, ""):
+        return None
+    text = str(raw).strip().replace(",", "")
+    # BindingDB sometimes returns ranges like "12.4/40" -> take the first value.
+    text = text.split("/")[0].strip()
+    try:
+        value = float(text)
+    except (ValueError, TypeError):
+        return None
+    return value if value > 0 else None
+
+
+def parse_bindingdb_rest_json(data: Any, *, source_url: str = "") -> list[dict[str, Any]]:
+    """Parse either BindingDB REST JSON shape into normalized binder records.
+
+    Handles:
+      * ``getLindsByUniprotResponse``  (singular) -> ``bdb.affinities``
+      * ``getLindsByUniprotsResponse`` (plural)   -> ``affinities``
+      * a bare/empty string or empty payload      -> ``[]``
+    """
+    if not data or not isinstance(data, dict):
+        return []
+    payload: Any = None
+    for key in ("getLindsByUniprotResponse", "getLindsByUniprotsResponse",
+                "getLindsByPDBsResponse", "getLindsByPdbResponse"):
+        if key in data:
+            payload = data[key]
+            break
+    if payload is None:
+        # Some deployments return {"affinities": [...]} directly.
+        payload = data if "affinities" in data or "bdb.affinities" in data else None
+    if payload is None:
+        return []
+    if isinstance(payload, str):
+        return []
+    entries = payload.get("affinities") or payload.get("bdb.affinities") or []
+    if not isinstance(entries, list):
+        return []
+
+    records: list[dict[str, Any]] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        smiles = (entry.get("smile") or entry.get("bdb.smile") or entry.get("smiles") or "").strip()
+        if not smiles:
+            continue
+        activity_type = (entry.get("affinity_type") or entry.get("bdb.affinity_type") or "").strip() or None
+        activity_value = _parse_affinity_float(entry.get("affinity") or entry.get("bdb.affinity"))
+        monomer_id = entry.get("monomerid") or entry.get("bdb.monomerid")
+        records.append({
+            "source": "BindingDB REST",
+            "target": entry.get("query") or entry.get("bdb.primary") or "",
+            "target_id": entry.get("bdb.primary") or "",
+            "molecule_name": f"BDB_{monomer_id}" if monomer_id else "BDB_ligand",
+            "monomer_id": str(monomer_id) if monomer_id is not None else "",
+            "smiles": smiles,
+            "canonical_smiles": _canonical_smiles(smiles),
+            "activity_type": activity_type,
+            "activity_value": activity_value,
+            "activity_unit": "nM",
+            "pmid": entry.get("pmid", ""),
+            "doi": entry.get("doi", ""),
+            "assay_description": entry.get("query", ""),
+            "confidence_score": 0.6,
+            "source_url": source_url or BINDINGDB_REST_BASE,
+            "success": activity_value is not None,
+            "error": None,
+        })
+    return [r for r in records if r["activity_value"] is not None]
+
+
+def fetch_bindingdb_rest(uniprot: str, cutoff: int = 1000, *, fetcher, source_url: str = "") -> dict[str, Any]:
+    """Fetch and normalize one UniProt's BindingDB REST binders.
+
+    *fetcher* is a ``url -> parsed JSON | None`` callable (the binder agent's
+    cached/deadline-bounded HTTP client), injected to avoid an import cycle.
+    """
+    uniprot = (uniprot or "").strip()
+    url = build_bindingdb_uniprot_url(uniprot, cutoff)
+    if not uniprot:
+        return {"source": "BindingDB REST", "success": False, "status": "missing_input",
+                "error": "UniProt accession required", "records": [], "url": url}
+    data = fetcher(url)
+    if not data:
+        return {"source": "BindingDB REST", "success": False, "status": "empty",
+                "error": "empty_or_unreachable", "records": [], "url": url}
+    records = parse_bindingdb_rest_json(data, source_url=source_url or url)
+    return {"source": "BindingDB REST", "success": bool(records),
+            "status": "ok" if records else "empty",
+            "error": None if records else "no_records", "records": records, "url": url}

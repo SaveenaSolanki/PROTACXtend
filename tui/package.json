@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prestart": "node scripts/ensure-dist.mjs",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "node --import tsx --test tests/*.test.ts"

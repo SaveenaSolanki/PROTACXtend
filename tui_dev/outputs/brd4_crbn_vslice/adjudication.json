@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-09-25T10:16:05",
+  "gold_status": "PENDING_HUMAN_ADJUDICATION (machinery scores are provisional overlays)",
+  "protocol": "frozen B1 protocol; abstentions excluded from means; rubric cases require expert review",
+  "n_matched_attempted": 6,
+  "n_abstained": 9,
+  "mean_score": 0.3056,
+  "correct_at_0_5": 2,
+  "wilson95": [
+    0.097,
+    0.7
+  ],
+  "per_case": [
+    [
+      "KNOW-01",
+      0.5,
+      "scored",
+      "checklist",
+      "exact"
+    ],
+    [
+      "KNOW-07",
+      0.0,
+      "scored",
+      "checklist",
+      "exact"
+    ],
+    [
+      "KNOW-09",
+      1.0,
+      "scored",
+      "checklist",
+      "exact"
+    ],
+    [
+      "KNOW-10",
+      0.3333333333333333,
+      "scored",
+      "checklist",
+      "categorical"
+    ],
+    [
+      "DISCOVER-06",
+      0.0,
+      "requires_expert_review",
+      "rubric_checklist",
+      "design_rubric"
+    ],
+    [
+      "DESIGN-04",
+      0.0,
+      "requires_expert_review",
+      "rubric_checklist",
+      "design_rubric"
+    ]
+  ],
+  "empty_answer_baselines": [
+    {
+      "case_id": "KNOW-01",
+      "empty_score": 0.0
+    },
+    {
+      "case_id": "KNOW-07",
+      "empty_score": 0.0
+    },
+    {
+      "case_id": "KNOW-09",
+      "empty_score": 0.0
+    },
+    {
+      "case_id": "KNOW-10",
+      "empty_score": 0.0
+    },
+    {
+      "case_id": "DISCOVER-06",
+      "empty_score": 0.0
+    },
+    {
+      "case_id": "DESIGN-04",
+      "empty_score": 0.0
+    }
+  ],
+  "abstentions": [
+    {
+      "case_id": "KNOW-02",
+      "reason": "No source-backed BRD4 warhead identifiers (curated_warheads.csv has only BRD4_demo_JQ1_like, source=local_demo_jq1_like_warhead \u2014 no resolvable DB id)."
+    },
+    {
+      "case_id": "KNOW-04",
+      "reason": "Packaged context reports per-E3 counts (CRBN 26/VHL 32/FEM1B 7) but no degrader names with citations; protacdb_local.csv rows are DEMO-only."
+    },
+    {
+      "case_id": "KNOW-05",
+      "reason": "select_e3_ligase returns demo-named ligands (CRBN_demo_*, VHL_demo_*) with empty article_doi \u2014 cannot name documented degraders."
+    },
+    {
+      "case_id": "REASON-09",
+      "reason": "score_lysine_ubiquitination requires a supplied ternary pose (structure_paths); the slice has no pose-supply path (tool WARNING verified)."
+    },
+    {
+      "case_id": "DISCOVER-01",
+      "reason": "Ranked-supplied-table cases need case-supplied candidate tables; the slice handlers accept free text, not supplied_inputs tables."
+    },
+    {
+      "case_id": "DISCOVER-04",
+      "reason": "same supplied-table limitation."
+    },
+    {
+      "case_id": "DISCOVER-08",
+      "reason": "same supplied-table limitation."
+    },
+    {
+      "case_id": "DISCOVER-11",
+      "reason": "same supplied-table limitation."
+    },
+    {
+      "case_id": "DESIGN-02",
+      "reason": "Supplied-component inputs (warhead/E3 SMILES from case file) are not consumed by the slice design surface; assembly uses its own library."
+    }
+  ],
+  "registered_findings": [
+    "registry retrieve_pdb(BRD4,VHL) searches RCSB BY KEYWORD and misses 5T35 (24 hits, none 5T35)",
+    "curated_warheads.csv contains demo rows only for BRD4 (no resolvable DB identifiers)",
+    "select_e3_ligase ranks demo-named ligands above DOI-backed ones (higher exit_vector_confidence)",
+    "target card (curated_table) DOES list 5T35/2OSS/3MXF and O60885",
+    "cell_context_atlas rows are local_seed_prior (not a permitted quantitative source)"
+  ]
+}

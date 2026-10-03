@@ -1,0 +1,6 @@
+{"stage": "resolve_target", "decision_type": "accept", "reason": "target resolved"}
+{"stage": "retrieve_binders", "decision_type": "accept", "reason": "100 binder(s) retrieved"}
+{"stage": "construct_candidates", "decision_type": "accept", "reason": "150 valid candidate(s)"}
+{"stage": "verify_provenance", "decision_type": "abstain", "reason": "candidates lack verified component provenance"}
+{"stage": "rank", "decision_type": "accept", "reason": "150 ranked candidate(s)"}
+{"stage": "run_verdict", "decision_type": "design_brief_only", "reason": "candidates lack verified component/attachment provenance"}

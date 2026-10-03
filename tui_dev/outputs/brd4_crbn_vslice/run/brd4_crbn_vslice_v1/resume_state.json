@@ -1,0 +1,7 @@
+{
+  "run_id": "brd4_crbn_vslice_v1",
+  "resumed_from": "",
+  "failed_stage": "",
+  "resume_command": "/resume outputs/workflows/design/brd4_crbn_vslice_v1/resume_state.json",
+  "request": "Design a CRBN-recruiting PROTAC for BRD4"
+}

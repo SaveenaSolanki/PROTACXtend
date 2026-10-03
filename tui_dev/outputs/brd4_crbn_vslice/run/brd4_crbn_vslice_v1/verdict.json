@@ -1,0 +1,16 @@
+{
+  "verdict": "DESIGN BRIEF ONLY",
+  "scientific_result": false,
+  "reason": "candidates lack verified component/attachment provenance",
+  "reasons": [
+    "candidates lack verified component/attachment provenance"
+  ],
+  "counts": {
+    "target_resolved": true,
+    "binders_retrieved": 100,
+    "candidates_valid": 150,
+    "candidates_verified": 0,
+    "candidates_ranked": 150
+  },
+  "warnings_total": 12
+}

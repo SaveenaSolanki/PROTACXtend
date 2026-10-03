@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-09-25T11:06:32",
+  "driver": "drive_bridge.py",
+  "protocol": "JSONL stdin/stdout \u2014 python -m protacxtend.tui_bridge.server",
+  "offline": true,
+  "checks": [
+    {
+      "check": "status returns real backend payload",
+      "ok": true,
+      "detail": "{\"type\": \"status\", \"version\": \"0.3.0\", \"project_root\": \"/storage/saveena/protacxtend\", \"dependencies\": {\"rdkit\": \"2026.03.4\", \"pandas\": \"2.3.3\", \"torch\": \"2.10."
+    },
+    {
+      "check": "plan routes to planner (not chat)",
+      "ok": true,
+      "detail": "{\"plan_id\": \"plan_28374089\", \"run_status\": \"plan_ready\", \"objective\": \"design_protac_strategy (goal-driven investigation)\", \"interpretation\": \"Target: BRD4 [O60885]; objective: PROTAC strategy; E3: CR"
+    },
+    {
+      "check": "plan interpretation line present",
+      "ok": true,
+      "detail": "Target: BRD4 [O60885]; objective: PROTAC strategy; E3: CRBN."
+    },
+    {
+      "check": "plan never executes design",
+      "ok": true,
+      "detail": "executed_design=False"
+    },
+    {
+      "check": "design routes to existing engine (executed_design=True)",
+      "ok": true,
+      "detail": "{\"command\": \"design\", \"run_id\": \"design_5ba22e5d9d\", \"raw_request\": \"Design a CRBN-recruiting PROTAC for BRD4\", \"state\": {\"action\": \"design\", \"intent\": \"design_protac_strategy\", \"raw_text\": \"Design a "
+    },
+    {
+      "check": "design payload carries candidate evidence table",
+      "ok": true,
+      "detail": "150 rows"
+    },
+    {
+      "check": "design shows ternary_coordinates honestly unevaluated",
+      "ok": true,
+      "detail": "{\"status\": \"unevaluated\", \"limitation\": \"No validated coordinate backend/DockQ benchmark available in this run.\"}"
+    },
+    {
+      "check": "design shows synthesis_route honestly unevaluated",
+      "ok": true,
+      "detail": "{\"status\": \"unevaluated\", \"limitation\": \"No retrosynthetic route execution; no route claim is nominated.\"}"
+    },
+    {
+      "check": "design degradation labelled predicted",
+      "ok": true,
+      "detail": "{\"status\": \"predicted\", \"limitation\": \"ML prediction only; cannot be observed without published/wet-lab assay source.\"}"
+    },
+    {
+      "check": "stage timeline has executed + unevaluated stages",
+      "ok": true,
+      "detail": "12 stages"
+    },
+    {
+      "check": "intermediate artifacts persisted (evidence graph + csv)",
+      "ok": true,
+      "detail": "{\"stage_timeline\": \"outputs/workflows/design/design_5ba22e5d9d/stage_timeline.json\", \"candidate_evidence_json\": \"outputs/workflows/design/design_5ba22e5d9d/candidate_evidence.json\", \"candidate_evidenc"
+    },
+    {
+      "check": "engine run record persisted",
+      "ok": true,
+      "detail": "/storage/saveena/protacxtend/outputs/runs/design_5ba22e5d9d"
+    },
+    {
+      "check": "investigate routes to deterministic handler (research_answer)",
+      "ok": true,
+      "detail": "{\"command\": \"investigate\", \"run_id\": \"investigate_1790314584\", \"raw_request\": \"BRD4 cereblon degraders and ligands\", \"state\": {\"action\": \"degradation\", \"intent\": \"degradation_research\", \"raw_text\": \"B"
+    },
+    {
+      "check": "investigate records BRD4 identity + binder census",
+      "ok": true,
+      "detail": "{\"target\": \"BRD4\", \"uniprot\": \"O60885\", \"known_binder_count\": \"120\", \"measured_precedent_rows\": 65, \"e3_precedent\": {\"CRBN\": 26, \"VHL\": 32, \"FEM1B\": 7}, \"e3_fam"
+    },
+    {
+      "check": "investigate persists evidence graph",
+      "ok": true,
+      "detail": "outputs/workflows/investigate/investigate_1790314584_evidence.json"
+    },
+    {
+      "check": "reason routes to deterministic handler (diagnosis_answer)",
+      "ok": true,
+      "detail": "{\"type\": \"diagnosis_answer\", \"command\": \"reason\", \"conversation_id\": \"tui-default\", \"case\": \"EGFR (P00533)\", \"observations\": {\"target_engagement\": \"measured\", \"binding_endpoint\": \"Kd 0.8 nM\", \"cellula"
+    },
+    {
+      "check": "reason emits competing hypotheses + recommended action",
+      "ok": true,
+      "detail": "3 hypotheses"
+    },
+    {
+      "check": "evidence routes to deterministic handler (research_answer)",
+      "ok": true,
+      "detail": "{\"command\": \"evidence\", \"run_id\": \"evidence_1790314585\", \"raw_request\": \"BRD4 degraders\", \"state\": {\"action\": \"degradation\", \"intent\": \"degradation_research\", \"raw_text\": \"BRD4 degraders\", \"target\": {"
+    },
+    {
+      "check": "evidence reports claim count (even when 0)",
+      "ok": true,
+      "detail": "n_claims=18"
+    },
+    {
+      "check": "compare routes to deterministic handler (research_answer)",
+      "ok": true,
+      "detail": "{\"command\": \"compare\", \"run_id\": \"compare_1790314585\", \"raw_request\": \"compare smiles:CC(=O)Nc1ccc(O)cc1 smiles:CC(=O)Oc1ccccc1C(=O)O\", \"state\": {\"action\": \"compare\", \"intent\": \"compare_research\", \"ra"
+    },
+    {
+      "check": "compare computes descriptors (calculated, not measured)",
+      "ok": true,
+      "detail": "[{\"smiles\": \"CC(=O)Nc1ccc(O)cc1\", \"valid\": true, \"MW\": 151.2, \"TPSA\": 49.3, \"logP\": 1.35, \"rot_bonds\": 1, \"verdict\": \"descriptor comparison only (computed); act"
+    },
+    {
+      "check": "bare recognized target answered deterministically (never LLM identification)",
+      "ok": true,
+      "detail": "{\"type\": \"chat_answer\", \"kind\": \"target_card\", \"provider\": \"ollama\", \"model\": \"qwen2.5:7b\", \"answer\": \"## Target card \\u2014 BRD4\\n\\n**Identity:** BRD4 \\u00b7 U"
+    },
+    {
+      "check": "unknown command emits typed error",
+      "ok": true,
+      "detail": "{\"type\": \"error\", \"message\": \"Unknown command: bogus\", \"ts\": 1790314586.425545, \"_t\": 1790314586.426}"
+    },
+    {
+      "check": "chat answers (or reports provider failure honestly)",
+      "ok": true,
+      "detail": "kind=answer"
+    }
+  ],
+  "n_passed": 24,
+  "n_failed": 0,
+  "n_events": 18,
+  "elapsed_s": 226.1,
+  "trace_file": "/storage/saveena/protacxtend/tui_dev/outputs/brd4_crbn_vslice/traces/bridge_trace.jsonl"
+}

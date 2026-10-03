@@ -7,7 +7,7 @@
  */
 
 import { createTheme, type Theme } from "./theme.js";
-import { truncateToWidth, padRight, printLine, printError, printSection } from "./terminal.js";
+import { truncateToWidth, padRight, printLine, printInfo, printError, printSection, printWarning, printKv } from "./terminal.js";
 
 const theme = createTheme();
 
@@ -151,13 +151,16 @@ export function renderPrediction(model: string, target: string, value: unknown, 
   printLine(`    ${theme.muted("◈")} ${theme.semantic("text", padRight(model, 16))} ${theme.dim(target)} = ${String(value).slice(0, 20)}  ${confStr}`);
 }
 
-export function renderCandidate(candidateId: string, smiles: string, score: number, tier: string): void {
-  const scoreStr =
-    score > 0.7 ? theme.success(score.toFixed(2)) :
-    score > 0.4 ? theme.muted(score.toFixed(2)) :
-    theme.error(score.toFixed(2));
+export function renderCandidate(candidateId: string, smiles: string, score: number | null,
+                              tier: string, scoreLabel = ""): void {
+  const hasScore = typeof score === "number" && !Number.isNaN(score);
+  const scoreStr = !hasScore ? theme.dim("n/a")
+    : score > 0.7 ? theme.success(score.toFixed(2))
+      : score > 0.4 ? theme.muted(score.toFixed(2))
+        : theme.error(score.toFixed(2));
+  const label = scoreLabel ? ` ${theme.dim(scoreLabel)}` : "";
   const tierStr = tier ? ` ${theme.fg("cyan", `[${tier}]`)}` : "";
-  printLine(`    ${theme.fg("mint", "◆")} ${theme.semantic("text", truncateToWidth(candidateId, 18))} ${scoreStr}${tierStr}`);
+  printLine(`    ${theme.fg("mint", "◆")} ${theme.semantic("text", truncateToWidth(candidateId, 18))} ${scoreStr}${label}${tierStr}`);
   printLine(`      ${theme.dim(truncateToWidth(smiles, 62))}`);
 }
 
@@ -273,9 +276,129 @@ export function renderDatabasesList(databases: Record<string, unknown>[]): void 
 
 // ── Generic event handler ────────────────────────────────────────
 
+// ── Conversational (LLM) answers ─────────────────────────────────
+
+export function renderChatAnswer(event: Record<string, unknown>): void {
+  const kind = String(event.kind ?? "answer");
+  const answer = String(event.answer ?? "").trim();
+  const evidence = (event.evidence as string[]) || [];
+  const provider = String(event.provider ?? "");
+  const model = String(event.model ?? "");
+
+  printLine("");
+  printLine(`  ${theme.grad("\u2500".repeat(58), "#9B94F0", "#5AB9CD")}`);
+  const title = kind === "error" ? "ANSWER UNAVAILABLE"
+    : kind === "clarification" ? "CLARIFICATION NEEDED"
+      : kind === "handoff" ? "WORKFLOW HANDOFF" : "ANSWER";
+  const colored = kind === "error" ? theme.error(title) : theme.accent(title);
+  const backend = provider || model ? `  ${theme.dim(`${provider}/${model}`)}` : "";
+  printLine(`  ${colored}${backend}`);
+  printLine("");
+  for (const line of answer.split("\n")) {
+    printLine(`  ${line}`);
+  }
+  if (evidence.length) {
+    printLine("");
+    printLine(`  ${theme.dim("evidence".padEnd(12))}${theme.muted(evidence.join(" \u00b7 "))}`);
+  }
+  printLine(`  ${theme.grad("\u2500".repeat(58), "#9B94F0", "#5AB9CD")}`);
+  printLine("");
+}
+
+// ── Live progress + persisted-run report ─────────────────────────
+
+/** The single final-result line for a run (see protacxtend/run_verdict.py). */
+export function renderVerdict(event: Record<string, unknown>): void {
+  const verdict = String(event.verdict ?? "");
+  const reason = String(event.reason ?? "");
+  const scientific = event.scientific_result === true;
+  const counts = (event.counts as Record<string, unknown>) || {};
+  const reasons = (event.reasons as string[]) || [];
+  const line = `\u2550`.repeat(58);
+  printLine("");
+  printLine(`  ${theme.grad(line, "#9B94F0", "#5AB9CD")}`);
+  const head = verdict === "SCIENTIFIC RESULT" ? theme.success(`VERDICT: ${verdict}`)
+    : (verdict === "HOLLOW RUN" || verdict === "ABSTAINED") ? theme.error(`VERDICT: ${verdict}`)
+      : theme.warning(`VERDICT: ${verdict}`);
+  printLine(`  ${head}`);
+  printLine(`  ${reason}`);
+  for (const r of reasons.slice(0, 6)) printLine(`    ${theme.dim(`\u2022 ${r}`)}`);
+  printLine(`  ${theme.dim(`target=${counts.target_resolved ? "yes" : "no"} \u00b7 `
+    + `binders=${counts.binders_retrieved ?? 0} \u00b7 `
+    + `candidates=${counts.candidates_valid ?? 0} \u00b7 `
+    + `verified=${counts.candidates_verified ?? 0} \u00b7 `
+    + `scientific_result=${scientific}`)}`);
+  printLine(`  ${theme.grad(line, "#9B94F0", "#5AB9CD")}`);
+  printLine("");
+}
+
+/** One line per graph node so a multi-minute run is not silent. */
+export function renderProgress(event: Record<string, unknown>): void {
+  const stage = String(event.stage ?? "");
+  const status = String(event.status ?? "");
+  const elapsed = Number(event.elapsed_s ?? 0);
+  const index = Number(event.index ?? 0);
+  const total = Number(event.total ?? 0);
+  const pos = total ? `${index + 1}/${total}` : "";
+  if (status === "start") {
+    printLine(`  ${theme.fg("cyan", "\u25b6")} ${theme.dim(pos.padEnd(7))} ${theme.semantic("text", stage)}`);
+  } else if (status === "done") {
+    printLine(`  ${theme.success("\u2713")} ${theme.dim(pos.padEnd(7))} ${theme.dim(`${stage} ${elapsed.toFixed(2)}s`)}`);
+  } else if (status === "retry") {
+    printLine(`  ${theme.warning("\u21bb")} ${theme.dim(`${stage} retry`)}`);
+  }
+}
+
+/** `/report run_xxxx` — render a persisted run's report and artifact manifest. */
+export function renderReport(event: Record<string, unknown>): void {
+  const status = String(event.status ?? "");
+  const runId = String(event.run_id ?? "");
+  printLine("");
+  if (status !== "ok") {
+    printWarning(`report: ${event.error ?? "failed"}`);
+    return;
+  }
+  printSection(`PERSISTED RUN REPORT \u00b7 ${runId}`);
+  printKv("directory", String(event.dir ?? ""), 12);
+  const summary = (event.summary as Record<string, unknown>) || {};
+  for (const [k, v] of Object.entries(summary)) printKv(k, String(v), 12);
+  const artifacts = (event.artifacts as Array<{ name: string; bytes: number }>) || [];
+  if (artifacts.length) {
+    printLine("");
+    printSection("ARTIFACTS");
+    for (const a of artifacts) {
+      printLine(`  ${theme.dim(String(a.name).padEnd(30))} ${theme.dim(`${a.bytes} B`)}`);
+    }
+  }
+  const report = String(event.report ?? "");
+  if (report) {
+    printLine("");
+    printSection("REPORT.MD");
+    for (const line of report.split("\n").slice(0, 80)) printLine(`  ${line}`);
+    if (report.split("\n").length > 80) printLine(`  ${theme.dim("\u2026 (truncated; see report.md)")}`);
+  }
+  printLine("");
+}
+
 export function renderEvent(event: Record<string, unknown>): void {
   const type = event.type as string;
   switch (type) {
+    case "chat_start":
+      printInfo(`thinking\u2026  ${theme.dim(`${event.provider ?? ""}/${event.model ?? ""}`)}`);
+      break;
+    case "chat_event": {
+      const kind = String(event.kind ?? "");
+      const action = String(event.action ?? "");
+      const tool = String(event.tool ?? "");
+      const summary = String(event.summary ?? "");
+      if (!summary) break;
+      const label = tool ? `${kind}:${tool}` : `${kind}:${action}`;
+      printLine(`  ${theme.dim(label.padEnd(22))} ${theme.muted(truncateToWidth(summary, 52))}`);
+      break;
+    }
+    case "chat_answer":
+      renderChatAnswer(event);
+      break;
     case "agent_start":
       renderAgentStart(event.agent_name as string, event.stage as string);
       break;
@@ -294,8 +417,18 @@ export function renderEvent(event: Record<string, unknown>): void {
     case "prediction":
       renderPrediction(event.model as string, event.target as string, event.value, event.confidence as number);
       break;
+    case "verdict":
+      renderVerdict(event);
+      break;
+    case "progress":
+      renderProgress(event);
+      break;
+    case "report":
+      renderReport(event);
+      break;
     case "candidate":
-      renderCandidate(event.candidate_id as string, event.smiles as string, event.score as number, event.tier as string);
+      renderCandidate(event.candidate_id as string, event.smiles as string, event.score as number,
+        event.tier as string, event.score_label as string);
       break;
     case "warning":
       renderWarning(event.message as string, event.source as string);

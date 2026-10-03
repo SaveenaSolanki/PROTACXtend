@@ -33,8 +33,33 @@ import {
   padRight,
   centerText,
 } from "./terminal.js";
+import {
+  RESEARCH_WORKFLOWS,
+  WORKFLOW_INDEX,
+  COMMANDS,
+  commandNames,
+  groupedCommands,
+  resolveCommand,
+  looksTargetOnly,
+  neededInputLabel,
+  RESEARCH_INTENTS,
+  CHAT_INTENTS,
+  type CommandSpec,
+  type WorkflowInfo,
+} from "./commands.js";
 
 const theme = createTheme();
+
+/** Phase chip for a stage name (KNOW/REASON/DESIGN/DISCOVER colouring). */
+function typeChip(label: string): string {
+  const t = (label || "").toLowerCase();
+  const col =
+    /(target|binder|warhead|evidence|investigate|resolve)/.test(t) ? "violet"
+      : /(e3|linker|exit|reason|diagnos|mechanis)/.test(t) ? "purple"
+        : /(construct|valid|degrad|admet|ternary|synthes|design|assemble)/.test(t) ? "cyan"
+          : "mint";
+  return theme.fg(col as "violet" | "purple" | "cyan" | "mint", `[${label}]`);
+}
 
 // ── Version & identity ───────────────────────────────────────────
 
@@ -45,118 +70,7 @@ const LAUNCH_URL = "https://raw.githubusercontent.com/the-ahuja-lab/PROTACXtend/
 
 // ── Primary research workflows ───────────────────────────────────
 
-interface WorkflowInfo {
-  cmd: string;
-  slug: string;
-  phase: "KNOW" | "REASON" | "DESIGN" | "DISCOVER";
-  desc: string;
-  def: string;
-  example: string;
-  agents: string;
-}
-
-const RESEARCH_WORKFLOWS: WorkflowInfo[] = [
-  {
-    cmd: "/plan", slug: "plan", phase: "KNOW",
-    desc: "Evidence-grounded TPD research strategy",
-    def: "Build an evidence-grounded research strategy and determine which PROTACXtend workflows, agents and tools are required.",
-    example: "/plan BRD4 degradation programme",
-    agents: "Supervisor · Design Planner · Evidence Sufficiency",
-  },
-  {
-    cmd: "/investigate", slug: "investigate", phase: "KNOW",
-    desc: "Target, E3, degrader & literature intelligence",
-    def: "Retrieve and synthesise target biology, E3 biology, existing degraders, ligands, structures, literature and experimental evidence.",
-    example: "/investigate BRD4 cereblon degraders and ligands",
-    agents: "Target Resolver · Binder Retrieval · Safety Precheck",
-  },
-  {
-    cmd: "/reason", slug: "reason", phase: "REASON",
-    desc: "Mechanistic reasoning across evidence",
-    def: "Perform mechanistic reasoning across target, warhead, E3, linker, ternary-complex, ubiquitination, degradation and cellular evidence.",
-    example: "/reason why VHL PROTACs degrade BRD4 faster than CRBN",
-    agents: "Warhead Selection · E3 Ligand Selection · Exit Vector · Repair Controller",
-  },
-  {
-    cmd: "/compare", slug: "compare", phase: "DISCOVER",
-    desc: "Compare & explain PROTAC candidates",
-    def: "Compare existing PROTAC candidates and explain mechanistically why their behaviour differs.",
-    example: "/compare MZ1 dBET1 dBET6 potency and selectivity",
-    agents: "Binder Retrieval · Novelty Check · Ranking · Reflection",
-  },
-  {
-    cmd: "/design", slug: "design", phase: "DESIGN",
-    desc: "Generate & prioritise degrader candidates",
-    def: "Generate and prioritise new degrader candidates.",
-    example: "/design CRBN PROTACs for BRD4 degradation",
-    agents: "Linker Generation · Molecular Construction · Validation · Ternary Feasibility",
-  },
-  {
-    cmd: "/optimize", slug: "optimize", phase: "DESIGN",
-    desc: "Improve a degrader or design series",
-    def: "Diagnose limitations of an existing PROTAC and propose rational warhead/E3/linker/whole-molecule improvements.",
-    example: "/optimize MZ1-like series for solubility",
-    agents: "Reflection · Evolution Refinement · Diversity · Ranking",
-  },
-  {
-    cmd: "/structure", slug: "structure", phase: "DESIGN",
-    desc: "Ternary, interface & ubiquitination geometry",
-    def: "Perform ternary feasibility, docking, interface analysis, cooperativity, lysine accessibility and ubiquitination-geometry reasoning.",
-    example: "/structure BRD4 CRBN ternary feasibility",
-    agents: "Ternary Feasibility · Exit Vector Detection · Applicability Domain",
-  },
-  {
-    cmd: "/selectivity", slug: "selectivity", phase: "DISCOVER",
-    desc: "Target, E3, proteome & cell-context selectivity",
-    def: "Evaluate target, isoform, E3, proteome and cellular-context selectivity.",
-    example: "/selectivity BET family selectivity of BRD4 degraders",
-    agents: "Proteome Selectivity · Cellular Context (DepMap) · Ranking",
-  },
-  {
-    cmd: "/degradation", slug: "degradation", phase: "DESIGN",
-    desc: "Predict & interpret degradation behaviour",
-    def: "Predict and interpret degradation potency, Dmax, DC50, kinetics, hook-effect and degradation mechanism.",
-    example: "/degradation CC(=O)Nc1ccc(O)cc1 predict DC50 Dmax",
-    agents: "Degradation Prediction · Hook Effect Modeler · ADMET",
-  },
-  {
-    cmd: "/admet", slug: "admet", phase: "DESIGN",
-    desc: "Molecular properties & developability",
-    def: "Assess molecular properties, permeability, solubility, stability and developability.",
-    example: "/admet CC(=O)Nc1ccc(O)cc1",
-    agents: "ADMET Prediction · Candidate Validation",
-  },
-  {
-    cmd: "/synthesis", slug: "synthesis", phase: "DISCOVER",
-    desc: "Synthetic accessibility & retrosynthesis",
-    def: "Assess synthetic accessibility, retrosynthesis and building-block routes.",
-    example: "/synthesis CC(=O)Nc1ccc(O)cc1",
-    agents: "Retrosynthesis (ASKCOS · AiZynthFinder) · Novelty Check",
-  },
-  {
-    cmd: "/experiment", slug: "experiment", phase: "DISCOVER",
-    desc: "Assays & next experiments",
-    def: "Recommend assays, controls and next experiments to test the current scientific hypothesis.",
-    example: "/experiment validate predicted hook effect in H1299",
-    agents: "Active Learning · Memory · Report",
-  },
-  {
-    cmd: "/evidence", slug: "evidence", phase: "KNOW",
-    desc: "Citations, confidence & provenance",
-    def: "Expose citations, database records, model provenance, confidence, uncertainty and supporting/contradictory evidence.",
-    example: "/evidence DC50 values reported for dBET1",
-    agents: "Evidence Sufficiency · Retrieval agents · Novelty Check",
-  },
-  {
-    cmd: "/run", slug: "run", phase: "KNOW",
-    desc: "Execute KNOW → REASON → DESIGN → DISCOVER",
-    def: "Autonomously execute the complete KNOW → REASON → DESIGN → DISCOVER workflow.",
-    example: "/run BRD4 degraders via CRBN with PEG linkers",
-    agents: "all 23 agent nodes (governed graph)",
-  },
-];
-
-const WORKFLOW_INDEX: Record<string, WorkflowInfo> = Object.fromEntries(RESEARCH_WORKFLOWS.map((w) => [w.slug, w]));
+// ── Primary research workflows (shared registry: ./commands.ts) ──
 
 /** Objective prefix routed into the agent graph for each workflow. */
 const WORKFLOW_PROMPT: Record<string, string> = {
@@ -205,44 +119,6 @@ const SKILL_GUIDE: Record<string, { cmd: string; example: string }> = {
 
 // ── Help catalogue ───────────────────────────────────────────────
 
-const COMMAND_GROUPS: { title: string; rows: [string, string][] }[] = [
-  {
-    title: "RESEARCH WORKFLOWS",
-    rows: RESEARCH_WORKFLOWS.map((w) => [w.cmd, w.desc]),
-  },
-  {
-    title: "LOW-LEVEL SKILL TOOLS",
-    rows: [
-      ["/validate <SMILES>", "RDKit validation + ADMET proxies, one line"],
-      ["/retro <SMILES>", "Retrosynthesis (ASKCOS + AiZynthFinder)"],
-      ["/docking <SMILES> [pdb]", "AutoDock Vina docking"],
-      ["/stereo <SMILES>", "Stereochemistry + isomer enumeration"],
-      ["/generator <request>", "Linker engine (PEG, alkyl, rigid, triazole…)"],
-      ["/skill <id> [args]", "Skill profile — and run it with args"],
-      ["/cellctx <q>", "Cell-line context score (legacy)"],
-      ["/rank <q>", "Ranking pass (legacy)"],
-      ["/learn <feedback>", "Active-learning feedback (legacy)"],
-      ["/report <q>", "Report generation (legacy)"],
-    ],
-  },
-  {
-    title: "CATALOGUE & SYSTEM",
-    rows: [
-      ["/skills", "Full skill catalogue, 18 scientific categories"],
-      ["/databases", "API databases & data sources"],
-      ["/workflows", "The 14 primary research workflows"],
-      ["/contract", "KNOW → REASON → DESIGN → DISCOVER"],
-      ["/status", "System · model · dependencies health"],
-      ["/agents", "23-node agent pipeline view"],
-      ["/about", "Project, architecture, validation, launch"],
-      ["/launch", "Launch recipes"],
-      ["/help", "This command reference"],
-      ["/clear", "Clear screen + redraw header"],
-      ["/quit", "Exit PROTACXtend"],
-    ],
-  },
-];
-
 // ── Main App ─────────────────────────────────────────────────────
 
 export class ProtacXtendApp {
@@ -259,6 +135,9 @@ export class ProtacXtendApp {
   private lastActivity = "";
   private skillsCache: Record<string, unknown>[] | null = null;
   private latestSchema: Record<string, unknown> | null = null;
+  private llmLabel = "";
+  private pendingPlanClarification = false;
+  private conversationId = "tui-default";
 
   constructor() {
     this.bridge = new PythonBridge();
@@ -334,10 +213,12 @@ export class ProtacXtendApp {
 
   /** Ask backend for a payload and resolve when the matching event arrives. */
   private ask(type: string, want: string[], timeoutMs = 10_000,
-               extra: Record<string, unknown> = {}): Promise<Record<string, unknown> | undefined> {
+               extra: Record<string, unknown> = {},
+               match?: (event: BridgeEvent) => boolean): Promise<Record<string, unknown> | undefined> {
     return new Promise((resolve) => {
       const onEvent = (event: BridgeEvent) => {
-        if (event.type === want.find((w) => w === event.type)) {
+        const wanted = want.includes(event.type as string);
+        if (wanted && (match ? match(event) : true)) {
           cleanup();
           resolve(event as Record<string, unknown>);
         }
@@ -377,6 +258,16 @@ export class ProtacXtendApp {
       this.agentCount = Number(status.agents ?? this.agentCount);
       this.skillsCount = Number(status.skills ?? 0);
       this.databaseCount = Number(status.databases ?? 0);
+      const llm = status.llm as Record<string, unknown> | undefined;
+      if (llm) {
+        const provider = String(llm.provider ?? "").trim();
+        const model = String(llm.model ?? "").trim();
+        if (provider && provider !== "(none)") {
+          this.llmLabel = `${provider}${model ? `/${model}` : ""}${llm.healthy ? "" : " (unreachable)"}`;
+        } else {
+          this.llmLabel = "not configured \u2014 run: protacxtend setup";
+        }
+      }
     }
     await this.ask("agents", ["agents"]);
     await this.ask("workflows", ["workflows"]);
@@ -390,7 +281,7 @@ export class ProtacXtendApp {
     const session = new Date().toISOString().slice(0, 19).replace("T", " · ");
     const mem = Math.round(totalmem() / 1024 ** 3);
     const data: HeaderData = {
-      model: process.env.PROTACXTEND_MODEL || "ollama/gpt-oss:20b (auto)",
+      model: process.env.PROTACXTEND_MODEL || this.llmLabel || "not configured \u2014 run: protacxtend setup",
       directory: process.cwd(),
       session,
       system: `${cpus().length} cores · ${mem} GB RAM${process.env.PROTACXTEND_GPU ? ` · ${process.env.PROTACXTEND_GPU}` : ""}`,
@@ -422,11 +313,8 @@ export class ProtacXtendApp {
   // ── REPL ───────────────────────────────────────────────────────
 
   private commandHints(): string[] {
-    const list = new Set<string>();
-    for (const g of COMMAND_GROUPS) for (const [cmd] of g.rows) list.add(cmd);
+    const list = new Set<string>(commandNames());
     for (const k of Object.keys(SKILL_GUIDE)) list.add(`/skill ${k}`);
-    list.add("/retrosynthesis");
-    list.add("/doctor");
     return [...list];
   }
 
@@ -468,22 +356,88 @@ export class ProtacXtendApp {
   }
 
   private async handleInput(input: string): Promise<void> {
+    // Context update: "actually use VHL" or "use VHL" changes E3 only (spec §13).
+    const e3Update = input.match(/^(?:actually\s+)?use\s+([A-Za-z][A-Za-z0-9]*)\s*$/i);
+    if (e3Update) {
+      const e3 = e3Update[1].toUpperCase();
+      const ev = await this.ask("context", ["context_answer"], 12_000,
+        { action: "set_e3", e3, conversation_id: this.conversationId ?? "tui-default" });
+      if (ev) {
+        printInfo(`E3 context updated: ${String(ev.old_e3 ?? "(none)")} → ${String(ev.new_e3 ?? e3)}`);
+        const c = ev.context as Record<string, unknown> | undefined;
+        if (c?.target_symbol) printInfo(`Context: target ${String(c.target_symbol)} · E3 ${String(c.e3)}`);
+      } else printWarning("Context backend did not answer.");
+      return;
+    }
     if (input.startsWith("/")) {
       await this.handleCommand(input);
     } else {
-      await this.handleDesignRequest(input);
+      // While a plan is waiting for a correction (e.g. "EFRG" -> "EGFR"),
+      // the very next free-text message is an answer to the plan, not general
+      // chat. The plan backend applies "latest explicit correction wins".
+      if (this.pendingPlanClarification) {
+        this.pendingPlanClarification = false;
+        const plan = await this.ask("plan", ["plan_answer", "plan_complete"], 60000,
+          { request: input, conversation_id: this.conversationId });
+        if (plan) this.renderPlanAnswer(plan as Record<string, unknown>);
+        return;
+      }
+      // Free text is conversational — answered by the LLM agent, exactly like
+      // Pi/Feynman. Explicit workflow verbs (/design, /run, …) still drive the
+      // deterministic agent graph.
+      await this.handleChat(input);
     }
   }
 
   // ── Commands ───────────────────────────────────────────────────
 
   private async handleCommand(input: string): Promise<void> {
-    const parts = input.split(/\s+/);
-    let cmd = parts[0].toLowerCase();
-    const args = parts.slice(1).join(" ").trim();
+    // ONE registry drives normalization, aliases and dispatch (./commands.ts).
+    const { name, spec, args } = resolveCommand(input);
+    if (!spec) {
+      printWarning(`Unknown command: ${name || "(empty)"}`);
+      printInfo("Type /help for the command centre.");
+      return;
+    }
+    const cmd = spec.cmd;
 
-    // aliases
-    if (cmd === "/retrosynthesis") cmd = "/retro";
+    // Argument gate: a command that needs input must ask for it (or offer a
+    // target-only workflow) rather than silently no-op.
+    if (spec.needs !== "none" && !args) {
+      this.promptForInput(spec);
+      return;
+    }
+
+    // ── intent routing (single registry, used by the routing tests too) ──
+    // Deterministic research workflows route to their bridge handlers
+    // (design|investigate|reason|evidence|compare) — the shared engine, never
+    // the chat agent. Conversational intents (/ask, /explain) use chat.
+    const researchSlug = RESEARCH_INTENTS[cmd];
+    if (researchSlug) {
+      if (cmd === "/compare" && (!args || /case-study|benchmark|\.csv$/i.test(args))) {
+        await this.runCompare(args || "");
+        return;
+      }
+      if (args) {
+        await this.runResearchWorkflow(researchSlug, args);
+        return;
+      }
+      return; // no-args case was handled by the needs gate above
+    }
+    if (CHAT_INTENTS.includes(cmd)) {
+      if (cmd === "/explain" && /^run_[A-Za-z0-9_-]+$/i.test(args)) {
+        // Typed explanation for a persisted run: bridge handle_explain reads
+        // outputs/runs/<run_id> and emits an "explain" payload.
+        printInfo(`Reading persisted run ${args} …`);
+        const ev = await this.ask("explain", ["explain"], 60_000, { run: args });
+        if (ev) this.renderExplanation(ev as Record<string, unknown>);
+        else printWarning("Explanation backend did not answer in time.");
+        return;
+      }
+      if (args) await this.handleChat(args);
+      else this.showUsage(cmd, "a scientific question", `${cmd} what is BRD4 and why is it a PROTAC target?`);
+      return;
+    }
 
     switch (cmd) {
       case "/help":
@@ -549,23 +503,44 @@ export class ProtacXtendApp {
       }
 
       // ── primary research workflows ──
+      case "/therapeutics": {
+        const tokens = (args || "").split(/\s+/).filter(Boolean);
+        // /therapeutics KRAS G12C  -> target=KRAS, variant=G12C
+        const target = tokens[0] || "";
+        const rest = tokens.slice(1).join(" ");
+        const ev = await this.ask("therapeutics", ["therapeutics_answer"], 30000,
+          { target: rest ? `${target} ${rest}` : target });
+        if (ev && ev.verdict) {
+          printInfo(`assessment ${ev.verdict} — gates: ${JSON.stringify(ev.gates)}`);
+          if (ev.rationale) printInfo(String(ev.rationale).slice(0, 200));
+        } else printWarning("No assessment answer from backend.");
+        break;
+      }
       case "/plan":
-        this.showPlan();
+        if (args) {
+          this.pendingPlanClarification = true;
+          const plan = await this.ask("plan", ["plan_answer", "plan_complete"], 60000,
+            { request: args, conversation_id: this.conversationId ?? "tui-default" });
+          if (plan) {
+            this.renderPlanAnswer(plan as Record<string, unknown>);
+          } else {
+            printWarning("Plan backend did not answer in time.");
+          }
+        } else this.showPlan();
         break;
-      case "/investigate":
-        await this.runWorkflow("investigate", args);
-        break;
-      case "/reason":
-        await this.runWorkflow("reason", args);
-        break;
-      case "/compare":
-        await this.runCompare(args || "");
-        break;
-      case "/design":
-        await this.runWorkflow("design", args);
-        break;
+      // Intent routing (/investigate /reason /explain /ask /compare /design
+      // /evidence) is handled by RESEARCH_INTENTS / CHAT_INTENTS above the
+      // switch — single registry shared with the routing tests.
       case "/optimize":
-        await this.runWorkflow("optimize", args);
+        // Target-only optimization has no starting molecule: route to the
+        // target-only design workflow and say so explicitly.
+        if (looksTargetOnly(args)) {
+          printWarning("Optimize needs a starting molecule or series; only a target/programme was given.");
+          printInfo(`Routing to the design workflow instead: /design ${args}`);
+          await this.runResearchWorkflow("design", args);
+        } else {
+          await this.runWorkflow("optimize", args);
+        }
         break;
       case "/structure":
         await this.runWorkflow("structure", args);
@@ -585,14 +560,19 @@ export class ProtacXtendApp {
       case "/experiment":
         await this.runWorkflow("experiment", args);
         break;
-      case "/evidence":
-        if (args) {
-          await this.runWorkflow("evidence", args);
-        } else {
-          this.showEvidenceProvenance();
-        }
-        break;
       case "/run":
+        if (/^plan_[A-Za-z0-9_-]+$/.test(args || "")) {
+          printInfo(`Executing persisted plan ${args} …`);
+          const ev = await this.ask("run", ["run_answer"], 120_000, { request: args });
+          if (ev) {
+            printInfo(`Plan ${String(args)} — ${String(ev.conclusion ?? "")}`);
+            const stages = (ev.executed_stages as Array<Record<string, unknown>>) || [];
+            for (const st of stages.slice(0, 12)) {
+              printLine(`  ${theme.dim(String(st.stage))}  ${theme.semantic("text", String(st.status ?? ""))}`);
+            }
+          } else printWarning("run backend did not answer in time.");
+          return;
+        }
         if (/brd4-vhl-(case-study|benchmark)/i.test(args)) {
           await this.runCompare("");
         } else {
@@ -637,8 +617,17 @@ export class ProtacXtendApp {
         this.showLearn(args);
         break;
       case "/report":
-        if (args) await this.handleDesignRequest(`Generate report: ${args}`);
-        else this.showUsage(cmd, "a completed design", "report on the BRD4 run");
+        // `/report run_xxxx` reads the persisted run; a free-text objective still
+        // generates a report through the graph.
+        if (!args) {
+          printInfo("Opening the latest persisted run\u2026");
+          this.bridge.send("report", { run_id: "" });
+        } else if (/^run_[A-Za-z0-9_-]+$/i.test(args) || args.includes("/")) {
+          printInfo(`Opening persisted run ${args}\u2026`);
+          this.bridge.send("report", { run_id: args.trim() });
+        } else {
+          await this.handleDesignRequest(`Generate report: ${args}`);
+        }
         break;
       case "/contract":
         this.showContract();
@@ -646,6 +635,7 @@ export class ProtacXtendApp {
 
       case "/clear":
         process.stdout.write("\x1b[2J\x1b[H");
+        this.bridge.send("chat_reset", {});
         await this.printHeader();
         break;
       case "/quit":
@@ -664,6 +654,26 @@ export class ProtacXtendApp {
   private showUsage(cmd: string, what: string, example: string): void {
     printInfo(`Usage: ${cmd} ${what}`);
     printLine(`  ${theme.dim("example")}  ${theme.semantic("text", example)}`);
+  }
+
+  /** Ask for the specific missing input; never silently no-op. */
+  private promptForInput(spec: CommandSpec): void {
+    const label = neededInputLabel(spec.needs);
+    const usage = spec.usage ? ` ${spec.usage}` : "";
+    printLine("");
+    printWarning(`${spec.cmd} needs ${label}.`);
+    printInfo(`Usage: ${spec.cmd}${usage}`);
+    const example = spec.sl ? WORKFLOW_INDEX[spec.sl]?.example : undefined;
+    if (example) printLine(`  ${theme.dim("example")}  ${theme.semantic("text", example)}`);
+    if (spec.needs === "smiles") {
+      printInfo(`Provide a molecule, e.g. ${spec.cmd} CC(=O)Nc1ccc(O)cc1`);
+    } else if (spec.needs === "molecule_or_series") {
+      printInfo("Give a starting molecule or series, e.g. /optimize MZ1-like series for solubility.");
+      printInfo("Target-only option: /design <target> [E3] generates candidates instead.");
+    } else if (spec.sl) {
+      printInfo("Target-only option: /design <target> [E3] runs the design workflow.");
+    }
+    printLine("");
   }
 
   /** /evidence — expose provenance + evidence from the last schema result. */
@@ -784,6 +794,338 @@ export class ProtacXtendApp {
     printSection("UNCERTAINTY & NEXT EXPERIMENTS");
     for (const u of unc) printLine(`  ${theme.warning("\u26a0")} ${theme.dim(truncateToWidth(u, 78))}`);
     printLine(`  ${theme.dim("Next: measure DC50/Dmax in a VHL-proficient line (e.g. H1299) with DMSO controls to convert these predictions into measured evidence.")}`);
+    printLine("");
+  }
+
+  // ── Research workflow dispatcher (deterministic handlers) ──────────
+
+  /**
+   * Route a research-workflow command to its deterministic bridge handler
+   * (design|investigate|reason|compare|evidence|…), waiting for the typed
+   * research_answer event. These handlers run through
+   * protacxtend.workflows.api.run_command — the SAME engine the CLI and API
+   * use — and persist artifacts + evidence graphs; this is intent routing,
+   * never a second implementation (and never chat).
+   */
+  private async runResearchWorkflow(slug: string, args: string): Promise<void> {
+    const wf = WORKFLOW_INDEX[slug];
+    const label = wf ? `${wf.cmd}` : `/${slug}`;
+    printInfo(`${label} → deterministic engine · ${truncateToWidth(args, 64)}`);
+    // Terminal events per bridge handler: handle_research emits
+    // research_answer; handle_diagnose (reason) emits diagnosis_answer.
+    const terminal: Record<string, string[]> = {
+      design: ["research_answer"],
+      investigate: ["research_answer", "investigate_answer"],
+      reason: ["diagnosis_answer", "research_answer"],
+      evidence: ["research_answer"],
+      compare: ["research_answer"],
+    };
+    const ev = await this.ask(slug, terminal[slug] ?? ["research_answer"], 300_000, {
+      request: args,
+      conversation_id: this.conversationId ?? "tui-default",
+    }, (event) => {
+      // Correlation: research_answer events carry the command slug; never
+      // let a concurrent workflow's response resolve another workflow's ask.
+      if (event.type !== "research_answer") return true;
+      return String(event.command) === slug;
+    });
+    if (!ev) {
+      printWarning(`${label} did not return a research_answer in time.`);
+      return;
+    }
+    this.latestSchema = ev;
+    if (ev.type === "diagnosis_answer") {
+      this.renderDiagnosisAnswer(ev as Record<string, unknown>);
+    } else {
+      this.renderResearchAnswer(ev as Record<string, unknown>);
+    }
+  }
+
+  /**
+   * Full plan rendering: interpretation, task list, open questions/blockers,
+   * stage statuses and persisted artifacts. Resource-selection logs
+   * (resource_reason_summary) are never rendered as the scientific answer.
+   */
+  private renderPlanAnswer(ev: Record<string, unknown>): void {
+    const interp = String(ev.interpretation ?? "").replace(/\n/g, " · ").trim();
+    if (interp) printInfo(interp);
+    const tasks = (ev.tasks as Array<Record<string, unknown>>) || [];
+    const blockers = ((ev.open_questions as Array<unknown>) || []).map(String);
+    const stages: Record<string, string> = {};
+    for (const s of ((ev.stage_timeline as Array<Record<string, unknown>>) || [])) {
+      if (s && s.stage) stages[String(s.stage)] = String(s.status ?? "");
+    }
+    const artifactMap = (ev.artifact_paths as Record<string, unknown>) || {};
+    const artifacts = Object.values(artifactMap).map(String).filter(Boolean);
+
+    if (tasks.length) {
+      printSection("PLAN TASKS");
+      for (const t of tasks.slice(0, 12)) {
+        const tid = String(t.id ?? "?");
+        const title = truncateToWidth(String(t.title ?? ""), 50);
+        const ex = String(t.executor ?? "");
+        printLine(`  ${theme.accent(tid)}  ${theme.semantic("text", title)}  ${theme.dim(ex)}`);
+      }
+      if (tasks.length > 12) printLine(`  ${theme.dim(`… and ${tasks.length - 12} more; full plan: plan.json`)}`);
+    }
+    if (blockers.length) {
+      printSection("OPEN QUESTIONS / BLOCKERS");
+      for (const q of blockers.slice(0, 6)) {
+        printLine(`  ${theme.warning("?")} ${theme.semantic("text", truncateToWidth(q, 74))}`);
+      }
+    }
+    if (Object.keys(stages).length) {
+      printSection("STAGE STATUS");
+      for (const [st, sts] of Object.entries(stages)) {
+        printLine(`  ${typeChip(st)}  ${theme.dim(sts)}`);
+      }
+    }
+    if (artifacts.length) {
+      printSection("PERSISTED ARTIFACTS");
+      for (const v of artifacts.slice(0, 6)) printLine(`  ${theme.fg("mint", "✓")} ${theme.dim(truncateToWidth(v, 74))}`);
+    }
+    const planSecs = (ev.plan_sections as Record<string, unknown>) || {};
+    const planStages = (planSecs.workflow_stages as Array<Record<string, unknown>>) || [];
+    if (planStages.length) {
+      printSection("PLAN STAGES (ORDERED)");
+      for (const st of planStages) {
+        const ex = st.expensive_to_execute ? theme.warning(" [run-only]") : "";
+        printLine(`  ${theme.accent(String(st.stage))}${ex}`);
+        if (st.gate) printLine(`      ${theme.dim("gate:".padEnd(6))} ${theme.semantic("text", String(st.gate))}`);
+        const tasks = (st.tasks as string[]) || [];
+        if (tasks.length) printLine(`      ${theme.dim("tasks:".padEnd(6))} ${theme.dim(tasks.join(", "))}`);
+      }
+      const exp = (planSecs.expensive_stages_require_run as string[]) || [];
+      if (exp.length) printLine(`  ${theme.warning("expensive stages require /run or /design:")} ${theme.dim(exp.join("; "))}`);
+      if (ev.plan_object_path) printLine(`  ${theme.fg("mint", "✓")} ${theme.dim(`plan persisted: ${String(ev.plan_object_path)}`)}`);
+    }
+  }
+
+  /** diagnosis_answer renderer (reason handler payload). */
+  private renderDiagnosisAnswer(ev: Record<string, unknown>): void {
+    const command = String(ev.command ?? "reason");
+    printLine("");
+    const intent = String(ev.intent ?? "");
+    printLine(`  ${theme.grad("MECHANISTIC REASONING", "#9B94F0", "#5AB9CD")}  ${theme.dim(command)}  ${theme.dim(intent)}`);
+    if (ev.case) printLine(`  ${theme.dim("case".padEnd(10))} ${theme.semantic("text", String(ev.case))}`);
+
+    // ── semantic sections (intent-driven) take precedence over legacy template ──
+    const sections = (ev.sections as Array<Record<string, unknown>>) || [];
+    if (sections.length) {
+      this.renderSections(sections);
+      if (ev.conclusion && typeof ev.conclusion === "object") {
+        const c = ev.conclusion as Record<string, unknown>;
+        printSection("CONCLUSION");
+        printLine(`  ${theme.accent("→")} ${theme.semantic("text", truncateToWidth(String(c.rationale ?? ""), 76))}`);
+        if (c.confidence) printLine(`  ${theme.dim("confidence".padEnd(10))} ${theme.semantic("text", String(c.confidence))}`);
+      }
+      printLine("");
+      return;
+    }
+
+    // ── row-level direct evidence (answers "which PROTAC works for X") ──
+    const direct = (ev.scientific_direct_answer as string[]) || [];
+    if (direct.length) {
+      printSection("DIRECT EVIDENCE ROWS");
+      for (const d of direct.slice(0, 7)) printLine(`  ${theme.fg("mint", "·")} ${theme.semantic("text", truncateToWidth(String(d), 78))}`);
+    }
+    const gap = String(ev.evidence_gap_conclusion ?? "").trim();
+    if (gap) {
+      printSection("EVIDENCE GAP");
+      printLine(`  ${theme.fg("mint", "·")} ${theme.semantic("text", truncateToWidth(gap, 78))}`);
+    }
+    if (ev.case_source) printLine(`  ${theme.dim(`case source: ${String(ev.case_source)}`)}`);
+
+    const hypotheses = (ev.hypotheses as Array<Record<string, unknown>>) || [];
+    const tests = (ev.tests as Array<Record<string, unknown>>) || [];
+    if (hypotheses.length) {
+      printSection("HYPOTHESES");
+      for (const h of hypotheses.slice(0, 6)) {
+        const axis = String(h.axis ?? "");
+        const label = String(h.label ?? h.title ?? h.statement ?? "").trim();
+        if (!label) continue; // never render the "H ?" placeholder
+        printLine(`  ${theme.fg("purple", "H")} ${theme.semantic("text", truncateToWidth(label, 60))} ${theme.dim(axis)}`);
+        const rationale = String(h.rationale ?? "").trim();
+        if (rationale) printLine(`      ${theme.dim("rationale")} ${theme.semantic("text", truncateToWidth(rationale, 66))}`);
+        const htests = (h.discriminating_tests as Array<unknown>) || [];
+        if (htests.length) printLine(`      ${theme.dim("test")} ${theme.semantic("text", truncateToWidth(String(htests[0]), 72))}`);
+      }
+    }
+    if (tests.length) {
+      printSection("DISCRIMINATING TESTS");
+      for (const t of tests.slice(0, 5)) {
+        const txt = String(t.test ?? t.name ?? "").trim();
+        if (!txt) continue;
+        printLine(`  ${theme.fg("mint", "→")} ${theme.semantic("text", truncateToWidth(txt, 72))}`);
+      }
+    }
+    if (ev.recommended_action) {
+      printSection("RECOMMENDED ACTION");
+      printLine(`  ${theme.accent("→")} ${theme.semantic("text", truncateToWidth(String(ev.recommended_action), 78))}`);
+    }
+    const gated = ((ev.gated as Array<unknown>) || []).map(String).filter(Boolean);
+    if (gated.length) printLine(`  ${theme.dim("gated".padEnd(10))} ${theme.warning(gated.join(" · "))}`);
+    if (ev.summary && typeof ev.summary === "object") {
+      const s = ev.summary as Record<string, unknown>;
+      if (s.note) printLine(`  ${theme.dim(String(s.note))}`);
+    }
+    const diagTimeline = (ev.stage_timeline as Array<Record<string, unknown>>) || [];
+    if (diagTimeline.length) {
+      printSection("STAGE STATUS");
+      for (const s of diagTimeline) {
+        printLine(`  ${typeChip(String(s.stage ?? ""))}  ${theme.dim(String(s.status ?? ""))}`);
+      }
+    }
+    const diagArtifactMap = (ev.artifact_paths as Record<string, unknown>) || {};
+    const diagArtifacts = Object.values(diagArtifactMap).map(String).filter(Boolean);
+    if (ev.evidence_graph) diagArtifacts.push(String(ev.evidence_graph));
+    if (diagArtifacts.length) {
+      printSection("PERSISTED ARTIFACTS");
+      for (const v of diagArtifacts.slice(0, 6)) printLine(`  ${theme.fg("mint", "✓")} ${theme.dim(truncateToWidth(v, 74))}`);
+    }
+    printLine("");
+  }
+
+  /** Typed explanation renderer (bridge handle_explain payload). */
+  private renderExplanation(ev: Record<string, unknown>): void {
+    const runId = String(ev.run_id ?? "");
+    const outcome = String(ev.scientific_outcome ?? ev.status ?? "?");
+    printLine("");
+    printLine(`  ${theme.grad("EXPLANATION", "#9B94F0", "#5AB9CD")}  ${theme.dim(`run ${runId}`)}`);
+    printLine(`  ${theme.dim("outcome".padEnd(10))} ${theme.semantic("text", truncateToWidth(outcome, 60))}`);
+    const concise = String(ev.concise ?? "");
+    for (const line of concise.split("\n").slice(0, 8)) {
+      if (line.trim()) printLine(`  ${theme.semantic("text", truncateToWidth(line, 74))}`);
+    }
+    printLine(`  ${theme.dim("sections")}  ${theme.dim(String(Array.isArray(ev.sections) ? (ev.sections as string[]).join(" · ") : ""))}`);
+    if (String(ev.status) === "error") printWarning(String(ev.error ?? "explanation failed"));
+    printLine("");
+  }
+
+  /** Compact honest rendering of a research_answer payload (per command). */
+  /** Scientific sections renderer with tier glyphs (§11: ✓ ◆ ~ ? ! ×). */
+  private renderSections(sections: Array<Record<string, unknown>>): void {
+    const GLYPH: Record<string, string> = {
+      verified: "✓", computed: "◆", approximation: "~", inferred: "?", limitation: "!", failed_gate: "×",
+    };
+    for (const sec of sections) {
+      printSection(String(sec.title ?? "SECTION"));
+      const stmts = (sec.statements as Array<Record<string, unknown>>) || [];
+      for (const st of stmts.slice(0, 6)) {
+        const g = GLYPH[String(st.tier ?? "inferred")] ?? "·";
+        printLine(`  ${g} ${theme.semantic("text", truncateToWidth(String(st.text ?? ""), 76))}`);
+      }
+      const evs = (sec.evidence as Array<Record<string, unknown>>) || [];
+      for (const e of evs.slice(0, 5)) {
+        printLine(`      · ${theme.dim(truncateToWidth(String(e.text ?? ""), 60))} [${String(e.tier ?? "?")}] ${theme.dim(String(e.source ?? ""))}`);
+      }
+    }
+  }
+
+  private renderResearchAnswer(ev: Record<string, unknown>): void {
+    const command = String(ev.command ?? "research");
+    const status = String(ev.status ?? "ok");
+    const runId = String(ev.run_id ?? "");
+    const title = command === "design" ? "DESIGN RESULT"
+      : command === "investigate" ? "INVESTIGATION"
+        : command === "reason" ? "MECHANISTIC REASONING"
+          : command === "evidence" ? "EVIDENCE GRAPH"
+            : command.toUpperCase();
+    printLine("");
+    printLine(`  ${theme.grad(`${title} · ${command}`, "#9B94F0", "#5AB9CD")}  ${status === "ok" ? theme.success(status) : theme.error(status)}`);
+    if (runId) printLine(`  ${theme.dim("run".padEnd(10))} ${theme.semantic("text", runId)}`);
+    if (ev.executed_design === true) printLine(`  ${theme.dim("design".padEnd(10))} ${theme.success("executed_design=true")}  ${theme.dim(`engine ${String(ev.engine ?? "")}`)}`);
+
+    // ── stage timeline — executed vs honestly-unevaluated ──
+    const timeline = (ev.stage_timeline as Array<Record<string, unknown>>) || [];
+    if (timeline.length) {
+      printSection("STAGE TIMELINE");
+      for (const s of timeline) {
+        const stage = String(s.stage ?? "");
+        const st = String(s.status ?? "");
+        const chip = st === "executed" ? theme.success("executed")
+          : st === "unevaluated" ? theme.warning("unevaluated")
+            : st === "failed" ? theme.error("failed")
+              : theme.muted(st || "?");
+        printLine(`  ${typeChip(stage)} ${chip}  ${theme.dim(truncateToWidth(String(s.detail ?? ""), 56))}`);
+      }
+    }
+
+    // ── scientific findings (shared contract field) — never logs ──
+    const findings = (ev.scientific_findings as string[]) || [];
+    const gap = String(ev.evidence_gap_conclusion ?? "").trim();
+    if (findings.length) {
+      printSection("FINDINGS");
+      for (const f of findings.slice(0, 8)) printLine(`  ${theme.fg("mint", "·")} ${theme.semantic("text", truncateToWidth(String(f), 78))}`);
+    } else if (gap) {
+      printSection("EVIDENCE GAP");
+      printLine(`  ${theme.fg("mint", "·")} ${theme.semantic("text", truncateToWidth(gap, 78))}`);
+    } else {
+      printWarning("No substantive scientific result in this payload (contract: findings or evidence-gap conclusion required).");
+    }
+
+    // ── scientific sections (semantics layer): tiered statements + evidence ──
+    const sections = (ev.sections as Array<Record<string, unknown>>) || [];
+    if (sections.length) this.renderSections(sections);
+
+    // ── resource selection reasons: debug-only, NEVER the scientific answer ──
+    if (process.env.PROTACXTEND_DEBUG_RESOURCE_REASONS === "1") {
+      const resourceReasons = (ev.resource_reason_summary as Record<string, unknown>) || {};
+      printSection("RESOURCE REASONS (debug)");
+      printLine(`  ${theme.dim(String(resourceReasons.status ?? ""))} ${theme.dim(String(resourceReasons.limitation ?? ""))}`);
+    }
+
+    // ── candidates (design / run) ──
+    const rows = (ev.candidate_evidence_table as Array<Record<string, unknown>>) || [];
+    if (rows.length) {
+      const counts = (ev.assembly_counts as Record<string, unknown>) || {};
+      printSection("CANDIDATES");
+      if (Object.keys(counts).length) {
+        printLine(`  ${theme.dim("assembled")} ${String(counts.assembled ?? "?")}  ${theme.dim("valid")} ${String(counts.valid ?? "?")}  ${theme.dim("rejected_before_scoring")} ${String(counts.rejected_before_scoring ?? "?")}`);
+      }
+      for (const r of rows.slice(0, 5)) {
+        const rank = (r.ranking as Record<string, unknown>) || {};
+        const deg = (r.degradation as Record<string, unknown>) || {};
+        const id = String(r.candidate_id ?? "?");
+        const score = rank.final_priority_score !== undefined && rank.final_priority_score !== null
+          ? theme.fg("cyan", Number(rank.final_priority_score).toFixed(3)) : theme.dim("no score");
+        const dc50 = deg.predicted_dc50_nM !== undefined && deg.predicted_dc50_nM !== null
+          ? `${theme.dim("pDC50")} ${String(deg.predicted_dc50_nM)} nM` : "";
+        const flags = (r.warning_flags as string[]) || [];
+        printLine(`  ${theme.accent(`#${String(rank.rank ?? "?")}`)}  ${theme.semantic("text", truncateToWidth(id, 34))}  ${score}  ${dc50}`);
+        if (flags.length) printLine(`      ${theme.warning("!")} ${theme.dim(truncateToWidth(flags.join("; "), 68))}`);
+      }
+      if (rows.length > 5) printLine(`  ${theme.dim(`… and ${rows.length - 5} more; full table: candidate_evidence.csv`)}`);
+    }
+
+    // ── evidence gates ──
+    const gates = (ev.evidence_gates as Record<string, unknown>) || {};
+    if (Object.keys(gates).length) {
+      printSection("EVIDENCE GATES");
+      for (const [name, g] of Object.entries(gates)) {
+        const info = (g as Record<string, unknown>) || {};
+        const gs = String(info.status ?? "?");
+        const chip = gs === "passed" || gs === "predicted" ? theme.success(gs)
+          : gs === "unevaluated" || gs === "not_assessable" ? theme.warning(gs)
+            : theme.muted(gs);
+        printLine(`  ${theme.dim(padRight(name, 22))} ${chip}`);
+        const lim = String(info.limitation ?? "");
+        if (lim) printLine(`      ${theme.dim(truncateToWidth(lim, 70))}`);
+      }
+    }
+
+    // ── persistence ──
+    const files = (ev.intermediate_files as Record<string, unknown>) || {};
+    const artifactPaths = (ev.artifact_paths as Record<string, unknown>) || {};
+    const vals = Object.values({ ...artifactPaths, ...files }).map(String).filter(Boolean);
+    if (ev.evidence_graph) vals.push(String(ev.evidence_graph));
+    const uniqueVals = Array.from(new Set(vals));
+    if (uniqueVals.length) {
+      printSection("PERSISTED ARTIFACTS");
+      for (const v of uniqueVals.slice(0, 6)) printLine(`  ${theme.fg("mint", "✓")} ${theme.dim(truncateToWidth(v, 74))}`);
+    }
+    const resume = (ev.resume_state as Record<string, unknown>) || {};
+    if (resume.resume_command) printLine(`  ${theme.dim("resume")}  ${theme.dim(String(resume.resume_command))}`);
     printLine("");
   }
 
@@ -927,17 +1269,21 @@ export class ProtacXtendApp {
         await this.handleDesignRequest(`Selectivity analysis: ${argsText}`);
         break;
       case "/investigate":
-        await this.handleDesignRequest(`Investigate: ${argsText}`);
+        await this.runResearchWorkflow("investigate", argsText);
         break;
       case "/compare":
-        await this.handleDesignRequest(`Compare candidates: ${argsText}`);
+        await this.runResearchWorkflow("compare", argsText);
         break;
       case "/learn":
         printSection("ACTIVE LEARNING");
         printLine(`  ${theme.dim("feedback")}  ${theme.semantic("text", argsText || "improve next run")}`);
         break;
       case "/report":
-        await this.handleDesignRequest(`Generate report: ${argsText}`);
+        if (/^run_[A-Za-z0-9_-]+$/i.test(argsText)) {
+          this.bridge.send("report", { run_id: argsText.trim() });
+        } else {
+          await this.handleDesignRequest(`Generate report: ${argsText}`);
+        }
         break;
       case "/design":
       case "/run":
@@ -947,6 +1293,26 @@ export class ProtacXtendApp {
   }
 
   // ── Design request execution ───────────────────────────────────
+
+  /** Conversational (LLM) turn — renders chat_answer from the bridge. */
+  private async handleChat(request: string): Promise<void> {
+    const text = request.trim();
+    if (!text) {
+      printInfo("Ask a question, e.g. “What is BRD4 and why is it a PROTAC target?”");
+      return;
+    }
+    printLine("");
+    this.bridge.send("chat", { request: text });
+    await new Promise<void>((resolve) => {
+      const handler = (event: BridgeEvent) => {
+        if (event.type === "chat_complete") {
+          this.bridge.removeListener("event", handler);
+          resolve();
+        }
+      };
+      this.bridge.on("event", handler);
+    });
+  }
 
   private async handleDesignRequest(request: string): Promise<void> {
     printLine("");
@@ -1236,32 +1602,19 @@ export class ProtacXtendApp {
     printLine(`  ${theme.dim("\u2500".repeat(Math.min(lineW, 80)))}`);
     printLine("");
 
-    // 1 ── Primary Research Workflows
-    printSection("PRIMARY RESEARCH WORKFLOWS");
-    for (const w of RESEARCH_WORKFLOWS) {
-      printLine(`  ${col(w.cmd)} ${dim(w.desc)}`);
+    // Every advertised line comes from the SAME registry that dispatches it.
+    for (const { group, specs } of groupedCommands()) {
+      printSection(group);
+      for (const spec of specs) {
+        const usage = spec.usage ? ` ${spec.usage}` : "";
+        printLine(`  ${col(spec.cmd + usage)} ${dim(spec.desc)}`);
+        if (spec.aliases?.length) {
+          printLine(`  ${theme.dim("".padEnd(cmdW))} ${theme.dim(`aliases: ${spec.aliases.join(", ")}`)}`);
+        }
+      }
+      printLine("");
     }
-    printLine(`  ${theme.dim("Tip: a workflow with no arguments opens its definition card; add an objective to execute it.")}`);
-    printLine("");
-
-    // 2 ── System / Utility Commands
-    printSection("SYSTEM / UTILITY COMMANDS");
-    const sysRows: [string, string][] = [
-      ["/doctor", "Run system diagnostics (bridge, package, deps, llm)"],
-      ["/status", "System, model and dependency health"],
-      ["/agents", "23-node agent pipeline view"],
-      ["/skills", "Full skill catalogue \u2014 18 scientific categories"],
-      ["/skill <id> [args]", "Skill profile \u2014 and run it with args"],
-      ["/databases", "API databases & data sources"],
-      ["/workflows", "The 14 primary research workflows"],
-      ["/contract", "KNOW \u2192 REASON \u2192 DESIGN \u2192 DISCOVER"],
-      ["/about", "Project, architecture, validation, launch"],
-      ["/launch", "Launch recipes"],
-      ["/clear", "Clear screen + redraw header"],
-      ["/quit", "Exit PROTACXtend"],
-    ];
-    for (const [c, d] of sysRows) printLine(`  ${col(c)} ${dim(d)}`);
-    printLine(`  ${theme.dim("Advanced skill tools (low-level): /validate <SMILES> \u00b7 /retro \u00b7 /docking \u00b7 /stereo \u00b7 /generator")}`);
+    printLine(`  ${theme.dim("A workflow with no arguments asks for the input it needs; add an objective to execute it.")}`);
     printLine("");
 
     // 3 ── Common examples

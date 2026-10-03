@@ -75,3 +75,5 @@ echo ""
 
 # ── 5. run ──
 exec node dist/index.js "$@"
+# ensure compiled TUI bundle is current before launch (source/dist parity)
+node scripts/ensure-dist.mjs

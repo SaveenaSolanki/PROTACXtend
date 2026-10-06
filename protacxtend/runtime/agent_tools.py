@@ -33,6 +33,13 @@ from protacxtend.runtime import modes
 ROOT = Path(__file__).resolve().parents[2]
 
 # ── minimal real fixtures (one per registered agent tool) ───────────────
+#: Source-backed MZ1 canonical SMILES (PROTAC-DB; DOI 10.1021/acschembio.5b00216),
+#: used as a real smoke input for repo-backed tools (never a placeholder like CCO).
+_MZ1_SMILES = (
+    "Cc1ncsc1-c1ccc(CNC(=O)C2CC(O)CN2C(=O)C(NC(=O)COCCOCCOCCNC(=O)"
+    "CC2N=C(c3ccc(Cl)cc3)c3c(sc(C)c3C)-n3c(C)nnc32)C(C)(C)C)cc1"
+)
+
 PROBE_FIXTURES: dict[str, dict[str, Any]] = {
     # research / retrieval
     "deep_research": {"query": "BRD4 PROTAC degradation", "page_size": 2},
@@ -95,6 +102,25 @@ PROBE_FIXTURES: dict[str, dict[str, Any]] = {
                                        {"candidate_id": "b", "log_dc50": 2.0}]},
     "build_candidate_dossier": {"candidate_id": "a",
                                 "candidate": {"candidate_id": "a", "log_dc50": 1.0}},
+    # repo-backed tools (cloned PROTAC repositories) with real smoke inputs
+    "predict_protac_activity": {"smiles": _MZ1_SMILES, "e3_ligase": "VHL",
+                                "target_uniprot": "O60885", "cell_line": "HeLa"},
+    "predict_deepprotacs": {"complex_dir": "single_test"},
+    "split_protac_bellerophon": {"protac_smiles": _MZ1_SMILES},
+    "assign_e3_mechanism": {"gene_symbol": "CRBN"},
+    "inspect_repo_assets": {"repo_name": "PROTAC-Model", "max_files": 5},
+    "list_repo_tools": {"limit": 5},
+}
+
+#: Repo-backed tools whose technical smoke check cannot run without repo-specific
+#: data, weights or a dataset (three hang; one returns an invalid envelope).
+#: Declared probe-exempt so the exposure contract stays honest: a registered tool
+#: with no runnable smoke check is not silently treated as verified (spec §6).
+PROBE_EXEMPT: dict[str, str] = {
+    "run_degradomap_experiment": "requires a merged DEG dataset (merged_csv); smoke hangs without it",
+    "predict_protac_stan": "requires trained STAN checkpoints/root; smoke hangs without them",
+    "sample_ternary_ternify": "requires a ternary data_dir; smoke hangs without it",
+    "predict_se3_protacs": "requires the SE(3) model + valid ligand/sequence inputs; envelope invalid",
 }
 
 # ToolResult.evidence_type -> ScientificResult evidence kind (frozen vocabulary)
@@ -188,7 +214,7 @@ def _typed_result(tool: str, tr: Any, params: dict, degraded: bool) -> dict[str,
 
 
 def list_agent_tools() -> list[dict[str, Any]]:
-    """Registry view of the 34 callable agent tools."""
+    """Registry view of the ready callable agent tools."""
     from protacxtend.agentic.registry import TOOL_SPECS, _EXECUTORS
 
     return [
@@ -199,6 +225,7 @@ def list_agent_tools() -> list[dict[str, Any]]:
             "readiness": s["readiness"],
             "has_executor": s["name"] in _EXECUTORS,
             "has_fixture": s["name"] in PROBE_FIXTURES,
+            "probe_exempt": PROBE_EXEMPT.get(s["name"], ""),
             "input_schema": s.get("inputs", {}),
             "surfaces": ["tui:tool", "api:/tools/{name}/run", "web:capability-runner",
                          "agent:execute_tool"],
@@ -334,4 +361,4 @@ def run_agent_tool(name: str, params: dict[str, Any] | None = None,
     }
 
 
-__all__ = ["PROBE_FIXTURES", "list_agent_tools", "run_agent_tool"]
+__all__ = ["PROBE_FIXTURES", "PROBE_EXEMPT", "list_agent_tools", "run_agent_tool"]

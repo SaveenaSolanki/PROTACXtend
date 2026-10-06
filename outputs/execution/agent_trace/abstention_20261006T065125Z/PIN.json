@@ -1,0 +1,13 @@
+{
+  "type": "run_identity",
+  "task": "abstention:predict_cooperativity",
+  "generated_at": "2026-10-06T06:53:42.145503+00:00",
+  "git_commit": "cb79b188e614dd408f8fce6b4866149864db950e",
+  "python": "3.13.5",
+  "mode": "scientific",
+  "model": "deepseek-v4-flash",
+  "budgets": {
+    "per_task_timeout_s": 60
+  },
+  "trace_schema": "protacxtend.agent_trace.v1"
+}

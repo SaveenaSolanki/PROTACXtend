@@ -255,6 +255,29 @@ def summarize_design_result(result: dict[str, Any], *, request: str, resume_from
         "resume_command": f"/resume {run_dir / 'resume_state.json'}",
         "request": request,
     }
+    # Evidence-kind separation (spec §5/§9): the SCIENTIFIC-mode payload scanner is
+    # the policy of record for what counts as a fixture/synthetic input. Candidates
+    # the scanner flags (demo/placeholder/synthetic provenance) are routed out of the
+    # scientific candidate table into a separate exploratory artifact, so the public
+    # payload stays clean while legitimate generated-linker candidates remain.
+    from protacxtend.runtime import modes as _modes
+
+    def _row_scanner_clean(row: dict) -> bool:
+        try:
+            return not _modes.scan_scientific_payload(row)
+        except Exception:  # noqa: BLE001 - never let a scan error drop a candidate
+            return True
+
+    scientific_rows = [r for r in rows if _row_scanner_clean(r)]
+    exploratory_rows = [r for r in rows if not _row_scanner_clean(r)]
+    scientific_ids = {r["candidate_id"] for r in scientific_rows}
+    source_backed = [r for r in rows if (r.get("provenance") or {}).get("verified_components")]
+    run_dir.mkdir(parents=True, exist_ok=True)
+    exploratory_artifact = run_dir / "exploratory_candidates.json"
+    if exploratory_rows:
+        exploratory_artifact.write_text(
+            json.dumps(exploratory_rows, indent=1, default=str), encoding="utf-8")
+
     payload = {
         "status": result.get("status") or "ok",
         "run_id": run_id,
@@ -270,10 +293,23 @@ def summarize_design_result(result: dict[str, Any], *, request: str, resume_from
             "valid": len(valid_ids),
             "rejected_before_scoring": max(0, len(assembled_ids) - len(valid_ids)),
         },
-        "downstream_scoring_candidate_ids": sorted((deg_ids | admet_ids) & valid_ids),
-        "candidate_evidence_table": rows,
+        "downstream_scoring_candidate_ids": sorted((deg_ids | admet_ids) & valid_ids & scientific_ids),
+        "source_backed_candidate_count": len(source_backed),
+        "candidate_evidence_table": scientific_rows,
+        "exploratory_design_brief": {
+            "count": len(exploratory_rows),
+            "artifact": str(exploratory_artifact) if exploratory_rows else "",
+            "evidence_kind": "hypothetical_or_generated",
+            "note": (
+                "Candidates flagged by the SCIENTIFIC-mode scanner (demo/placeholder/synthetic "
+                "provenance) are excluded from the scientific candidate table so the public "
+                "payload carries no demo/synthetic provenance."
+            ),
+        },
         "scientific_findings": [
-            f"{len(valid_ids)} valid PROTAC candidate(s) reached degradation/ADMET scoring.",
+            f"{len(source_backed)} source-backed and "
+            f"{max(0, len(scientific_rows) - len(source_backed))} generated candidate(s) are in the scientific candidate table.",
+            f"{len(exploratory_rows)} demo/synthetic-provenance candidate(s) were separated into the exploratory design brief.",
             f"{max(0, len(assembled_ids) - len(valid_ids))} assembled candidate(s) were rejected before downstream scoring.",
             "Degradation and ADMET values are computational predictions/calculations, not observed measurements.",
             "Ternary coordinates and synthesis routes remain unevaluated evidence gates.",

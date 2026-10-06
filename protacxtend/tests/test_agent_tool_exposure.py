@@ -22,13 +22,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 # ── exposure / resolution ──────────────────────────────────────────────
 
 def test_all_agent_tools_resolved_and_fixtured():
-    from protacxtend.runtime.agent_tools import PROBE_FIXTURES, list_agent_tools
+    from protacxtend.runtime.agent_tools import PROBE_EXEMPT, PROBE_FIXTURES, list_agent_tools
 
     tools = list_agent_tools()
-    assert len(tools) == 34
+    assert len(tools) == 44
     assert all(t["has_executor"] for t in tools)
-    assert all(t["has_fixture"] for t in tools), [t["name"] for t in tools if not t["has_fixture"]]
-    assert set(PROBE_FIXTURES) >= {t["name"] for t in tools}
+    names = {t["name"] for t in tools}
+    fixtured = {t["name"] for t in tools if t["has_fixture"]}
+    exempt = {t["name"] for t in tools if t.get("probe_exempt")}
+    # Every ready tool is either probed by a real fixture or explicitly declared
+    # probe-exempt (repo-backed tools with no runnable smoke check).
+    assert fixtured | exempt == names, sorted(names - fixtured - exempt)
+    assert fixtured == set(PROBE_FIXTURES)
+    assert exempt == set(PROBE_EXEMPT), sorted(set(PROBE_EXEMPT) - exempt)
 
 
 @pytest.mark.parametrize("name,params", [
@@ -83,7 +89,7 @@ def test_fastapi_tool_routes():
     from protacxtend.backend.api_routes import get_app
 
     client = TestClient(get_app())
-    assert client.get("/tools").json()["count"] == 34
+    assert client.get("/tools").json()["count"] == 44
     detail = client.get("/tools/inspect_smiles").json()
     assert detail["found"] is True and detail["fixture"]
     run = client.post("/tools/inspect_smiles/run", json={"params": {"smiles": "CCO"}}).json()

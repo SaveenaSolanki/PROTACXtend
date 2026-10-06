@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import pickle
+import shutil
 import tempfile
 import unittest
 from contextlib import contextmanager
@@ -39,6 +40,18 @@ def pushd(path: Path):
         os.chdir(previous)
 
 
+@contextmanager
+def _repo_tempdir():
+    """Temp dir UNDER the repo (outputs/) so the G12 artifact allowlist accepts it."""
+    root = Path(__file__).resolve().parents[2] / "outputs" / "_test_tmp"
+    root.mkdir(parents=True, exist_ok=True)
+    d = tempfile.mkdtemp(dir=root)
+    try:
+        yield d
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
 class DegradationModelTests(unittest.TestCase):
     def _candidate(self) -> CandidateRecord:
         return CandidateRecord(
@@ -64,7 +77,11 @@ class DegradationModelTests(unittest.TestCase):
                 self.assertFalse(result["real_output_generated"])
 
     def test_tiny_pickle_models_load_and_predict(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        # The G12 loader only loads artifacts under the repo's own data/model
+        # trees (protacxtend/security/safe_io.py); use a repo-local temp dir so
+        # the test exercises the real loader instead of tripping the security
+        # allowlist with a /tmp path.
+        with _repo_tempdir() as directory:
             root = Path(directory)
             model_dir = root / "models"
             model_dir.mkdir(parents=True, exist_ok=True)

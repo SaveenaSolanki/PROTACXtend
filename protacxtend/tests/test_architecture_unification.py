@@ -69,7 +69,8 @@ class TestModeRouterUnified:
         assert "agentic" in VALID_MODES
 
         det = run_mode({"mode": "design", "request": "Design BRD4 PROTACs with CRBN, PEG linkers."})
-        assert len(det["state"]["ranking_results"]) > 0  # v0.1 path unchanged
+        assert len(det["state"]["valid_candidates"]) > 0
+        assert len(det["state"]["ranking_results"]) == 0  # demo/unverified candidates are not assessable
 
         ag = run_mode({"mode": "agentic", "request": "Design BRD4 PROTACs with CRBN."})
         assert "run_id" in ag and ag["mode"] == "agentic"

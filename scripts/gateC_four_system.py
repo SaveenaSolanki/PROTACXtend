@@ -38,7 +38,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-os.environ.setdefault("PROTACXTEND_EXECUTION_MODE", "scientific")
+# NOTE: PROTACXTEND_EXECUTION_MODE is set inside main(), NOT at import time.
+# Importing this module must not mutate process-global state (a test importing
+# it for _classify/_behavior_match previously leaked 'scientific' mode into the
+# rest of the pytest process).
 
 PILOT_DIR = ROOT / "benchmark" / "gateC" / "pilot"
 CASES_DIR = ROOT / "benchmark" / "cases"
@@ -129,6 +132,7 @@ def _task_input(pilot: Dict[str, Any]):
 
 
 def main() -> int:
+    os.environ.setdefault("PROTACXTEND_EXECUTION_MODE", "scientific")
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--systems", default="S1,S2,S3,S4")

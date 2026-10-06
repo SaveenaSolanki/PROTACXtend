@@ -1,0 +1,70 @@
+{
+  "spec": "PROTACXtend_Agent_System_Specification.md",
+  "generated_at": "2026-10-06T06:29:35.842224+00:00",
+  "pytest": {
+    "final": {
+      "failed": 30,
+      "passed": 1423,
+      "skipped": 41
+    },
+    "before_leak_fix": {
+      "failed": 46,
+      "passed": 1388
+    },
+    "after_first_fix": {
+      "failed": 40,
+      "passed": 1398
+    }
+  },
+  "capability_classes": {
+    "spec": 19,
+    "found_in_scientific_backends": 19,
+    "gaps": []
+  },
+  "agent_tools": {
+    "exposed": 44,
+    "with_executor": 44,
+    "with_probe_fixture": 34,
+    "without_probe_fixture": 10,
+    "fixture_missing": [
+      "predict_protac_activity",
+      "predict_deepprotacs",
+      "predict_protac_stan",
+      "split_protac_bellerophon",
+      "sample_ternary_ternify",
+      "predict_se3_protacs",
+      "run_degradomap_experiment",
+      "assign_e3_mechanism",
+      "inspect_repo_assets",
+      "list_repo_tools"
+    ]
+  },
+  "ledger_512": {
+    "status": "BLOCKED",
+    "reason": "source runtime ledger not present in workspace",
+    "available_ledger_events": 7
+  },
+  "gold": {
+    "adjudicated": 0,
+    "total": 48,
+    "status": "BLOCKED(human)"
+  },
+  "fixes": [
+    "scripts/gateC_four_system.py: mode set moved into main()",
+    "scripts/closed48_worker.py: mode set moved into main()",
+    "tests/test_source_backed_design_and_adapters.py: explicit monkeypatch mode"
+  ],
+  "design_scientific_gate": {
+    "status": "FAIL",
+    "reason": "scientific payload contains 14 fixture/synthetic findings (curated_demo_linker)"
+  },
+  "pre_change_commit": "71624fa",
+  "artifacts": {
+    "report": "outputs/execution/spec_compliance/REPORT.md",
+    "logs": [
+      "pytest_full.log",
+      "pytest_full_after_leakfix.log",
+      "pytest_full_final.log"
+    ]
+  }
+}

@@ -28,7 +28,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-os.environ.setdefault("PROTACXTEND_EXECUTION_MODE", "scientific")
+# NOTE: PROTACXTEND_EXECUTION_MODE is set inside main(), NOT at import time.
+# This module is imported by tests for its helpers (e.g. _extract_target_e3);
+# module-level env mutation leaked 'scientific' mode into the whole pytest
+# process and caused cascading failures in unrelated tests.
 
 JQ1 = "COc1cc2c(cc1c1c(C)onc1C)cc(c(=O)n2Cc1ccccn1)"
 VH032 = "N[C@@H](C(C)(C)C)C(=O)N1C[C@@H](C[C@H]1C(=O)N[C@H](c1ccc(cc1)c1scnc1C)C)O"
@@ -250,6 +253,7 @@ def run_arm(case: Dict[str, Any], arm: str) -> Dict[str, Any]:
 
 
 def main() -> int:
+    os.environ.setdefault("PROTACXTEND_EXECUTION_MODE", "scientific")
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--case", required=True)
     ap.add_argument("--arm", required=True, choices=["protacxtend", "direct_tool", "fixed_workflow"])

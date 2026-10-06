@@ -104,14 +104,16 @@ def test_outcome_classifier_keeps_abstentions_and_errors_distinct():
     assert g._behavior_match("resolved_reviewed_human_accession", "answered", "O60885") is True
 
 
-def test_paired_development_check_sufficient_vs_withheld(tmp_path):
+def test_paired_development_check_sufficient_vs_withheld(tmp_path, monkeypatch):
     """Frozen paired development check (kept out of any confirmatory cohort).
 
     Withheld required input -> typed abstention; the same tool with sufficient
     input -> no missing-input abstention. This must not be satisfied by
-    weakening the scientific gate.
+    weakening the scientific gate. The execution mode is set explicitly here
+    via monkeypatch so the check is deterministic and cannot leak to other tests.
     """
     import pytest
+    monkeypatch.setenv("PROTACXTEND_EXECUTION_MODE", "scientific")
     from protacxtend.runtime.agent_tools import run_agent_tool
     from protacxtend.runtime.modes import MissingScientificInput
 

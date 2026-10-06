@@ -1,0 +1,10 @@
+{
+ "case": "Q6_scientific_mode_integrity",
+ "status": "PASS",
+ "demo_claim_allowed": false,
+ "exploratory_claim_allowed": false,
+ "critic_verdict_on_demo_only_claim": "BLOCK",
+ "demo_row_flagged": true,
+ "verified_row_clean": true,
+ "evidence": "ontology policy + critic BLOCK + payload scanner"
+}

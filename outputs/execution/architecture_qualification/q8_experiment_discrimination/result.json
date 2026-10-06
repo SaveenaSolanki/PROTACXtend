@@ -1,0 +1,34 @@
+{
+ "case": "Q8_experiment_discrimination",
+ "status": "PASS",
+ "hypotheses": [
+  "H1_linker_too_short",
+  "H2_e3_orientation",
+  "H3_permeability"
+ ],
+ "chosen": {
+  "experiment": "linker_length_series_degradation",
+  "competing_hypotheses": [
+   "H1_linker_too_short",
+   "H2_e3_orientation",
+   "H3_permeability"
+  ],
+  "predicted_outcome_under": {
+   "H1_linker_too_short": "degradation increases with length",
+   "H2_e3_orientation": "no length dependence; E3 contacts lost",
+   "H3_permeability": "no length dependence; low cellular exposure"
+  },
+  "information_gain": "separates 3 distinct outcome(s) across 3 hypotheses",
+  "required_controls": [
+   "parent warhead",
+   "E3-only control"
+  ],
+  "decision_after_each_outcome": {
+   "H1_linker_too_short": "extend linker",
+   "H2_e3_orientation": "re-model ternary",
+   "H3_permeability": "permeability optimization"
+  },
+  "discrimination_score": 3
+ },
+ "evidence": "max-distinct-outcome experiment selected with per-hypothesis outcomes"
+}

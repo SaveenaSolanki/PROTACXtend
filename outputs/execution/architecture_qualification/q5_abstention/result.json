@@ -1,0 +1,8 @@
+{
+ "case": "Q5_justified_abstention",
+ "status": "PASS",
+ "terminal": "JUSTIFIED_ABSTENTION",
+ "termination_reason": "no source-backed candidate could be assembled from permitted evidence",
+ "candidate_count": 0,
+ "evidence": "state.finalization + no candidate"
+}

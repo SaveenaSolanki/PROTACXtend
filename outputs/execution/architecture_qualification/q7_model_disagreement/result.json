@@ -1,0 +1,65 @@
+{
+ "case": "Q7_model_disagreement",
+ "status": "PASS",
+ "axes": {
+  "target_engagement": "UNKNOWN",
+  "ternary_geometry": "LOW",
+  "cooperativity": "LOW",
+  "residence_time": "UNKNOWN",
+  "ubiquitination_competence": "LOW",
+  "degradation_ml": "HIGH",
+  "permeability": "LOW",
+  "efflux": "UNKNOWN",
+  "cell_context": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "evidence_support": "UNKNOWN"
+ },
+ "disagreements": [
+  {
+   "disagreement_id": "dis_ternary_geometry_vs_degradation_ml_0",
+   "axis": "ternary_geometry_vs_degradation_ml",
+   "positions": {
+    "degradation_ml": "HIGH",
+    "ternary_geometry": "LOW"
+   },
+   "decision_relevant": true,
+   "interpretation": "Similarity to known degraders does not establish productive interaction-state geometry.",
+   "resolving_action": "Perform a higher-confidence ternary/cooperativity assessment.",
+   "evidence_ids": [
+    "ev_deg",
+    "ev_geom"
+   ]
+  },
+  {
+   "disagreement_id": "dis_permeability_vs_degradation_ml_1",
+   "axis": "permeability_vs_degradation_ml",
+   "positions": {
+    "degradation_ml": "HIGH",
+    "permeability": "LOW"
+   },
+   "decision_relevant": true,
+   "interpretation": "A predicted degrader cannot act if cellular exposure is limiting.",
+   "resolving_action": "Run a permeability/efflux assessment.",
+   "evidence_ids": [
+    "ev_deg",
+    "ev_geom"
+   ]
+  },
+  {
+   "disagreement_id": "dis_ubiquitination_vs_degradation_ml_2",
+   "axis": "ubiquitination_vs_degradation_ml",
+   "positions": {
+    "ubiquitination_competence": "LOW",
+    "degradation_ml": "HIGH"
+   },
+   "decision_relevant": true,
+   "interpretation": "Ternary formation without transfer competence need not degrade the target.",
+   "resolving_action": "Assess lysine accessibility and ubiquitination competence.",
+   "evidence_ids": [
+    "ev_deg",
+    "ev_geom"
+   ]
+  }
+ ],
+ "evidence": "per-axis disagreement objects with resolving actions (no averaging)"
+}

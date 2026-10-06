@@ -1,0 +1,280 @@
+{
+ "architecture_version": "PROTACXTEND_AGENTIC_ARCHITECTURE_V1",
+ "git_commit": "ff21db5a37b9b8f57bf196853044649a4023a42a",
+ "generated_at": "2026-10-06T11:22:59.148273+00:00",
+ "state_schema_version": "therapeutic_hypothesis_state.v1",
+ "evidence_schema_version": "evidence_record.v1",
+ "trace_schema_version": "protacxtend.agent_trace.v2",
+ "logical_workers": [
+  "biology_causal",
+  "evidence",
+  "protac_design",
+  "interaction_state",
+  "translational",
+  "experiment",
+  "critic"
+ ],
+ "action_worker_map": {
+  "resolve_target": "evidence",
+  "retrieve_target_binders": "evidence",
+  "select_e3": "protac_design",
+  "assemble_reference": "protac_design",
+  "assess_interaction": "interaction_state",
+  "predict_degradation": "translational",
+  "predict_admet": "translational",
+  "verify": "critic",
+  "finalize": "orchestrator"
+ },
+ "coordinator": {
+  "module": "protacxtend/architecture/coordinator.py",
+  "sha": "e9445845f73ac0ae"
+ },
+ "state_module_sha": "7fdbc7054afc430e",
+ "ontology_module_sha": "92a707c26357f793",
+ "tool_registry": {
+  "count": 44,
+  "sha": "500d05bc75562d09",
+  "probe_fixtures": 40,
+  "probe_exempt": 4
+ },
+ "model_configurations": {
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "temperature": 0.0
+ },
+ "memory_policy": {
+  "L0_run_state": true,
+  "L1_thread_memory": "existing protacxtend-memory",
+  "L2_project_memory": "existing",
+  "L3_curated_external": "registry/DB"
+ },
+ "scientific_mode_policy": "payload-scanner separation; upstream identity gate not yet tightened",
+ "retry_policy": {
+  "max_retries": 3,
+  "no_progress_guard": true
+ },
+ "fallback_policy": "classify -> retry/repair/fallback/alternate/abstain (budget bounded)",
+ "termination_policy": "typed TerminalStatus + termination_reason",
+ "qualification": {
+  "passed": 9,
+  "failed": 0,
+  "results": [
+   {
+    "case": "Q1_normal_success",
+    "status": "PASS",
+    "terminal": "SUCCESS",
+    "candidate_count": 1,
+    "e3": [
+     "CRBN"
+    ],
+    "evidence_kinds": [
+     "DERIVED",
+     "INSUFFICIENT_EVIDENCE",
+     "MODEL_PREDICTED",
+     "RETRIEVED"
+    ],
+    "steps": 11,
+    "evidence": "state.json + trace.jsonl"
+   },
+   {
+    "case": "Q2_true_replanning",
+    "status": "PASS",
+    "plan_versions": [
+     1,
+     2
+    ],
+    "revision_reason": "requested/assumed E3 route for BTK has no source-backed component pair; revise E3 assumption",
+    "triggering_evidence_ids": [
+     "ev_e3_missing_VHL_5d85ff944e96d810"
+    ],
+    "final_e3": [
+     "CRBN"
+    ],
+    "terminal": "SUCCESS",
+    "evidence": "state.plan v2 revision_reason + triggering evidence + trace revise_plan record"
+   },
+   {
+    "case": "Q3_tool_failure_recovery",
+    "status": "PASS",
+    "failures": [
+     "predict_cooperativity:RuntimeError"
+    ],
+    "fallbacks": [
+     "predict_cooperativity->run_scientific_capability"
+    ],
+    "fallback_trace_steps": [
+     6
+    ],
+    "terminal": "SUCCESS",
+    "evidence": "state.control.fallbacks + trace fallback field"
+   },
+   {
+    "case": "Q4_contradictory_evidence",
+    "status": "PASS",
+    "contradictions": [
+     {
+      "contradiction_id": "con1",
+      "claim_id": "c_coop",
+      "evidence_id_a": "evA",
+      "evidence_id_b": "evB",
+      "axis": "cooperativity",
+      "description": "retrieved structure vs derived geometry disagree",
+      "resolution": "UNRESOLVED",
+      "decision_relevant": true
+     }
+    ],
+    "critic_verdict": "REVISE",
+    "findings": [
+     {
+      "check": "evidence_provenance",
+      "result": "PASS",
+      "detail": "2 scientific-admissible, 0 demo/exploratory"
+     },
+     {
+      "check": "contradiction",
+      "result": "REVISE",
+      "detail": "1 contradicted evidence record(s)"
+     }
+    ],
+    "evidence": "state.contradictions + critic findings"
+   },
+   {
+    "case": "Q5_justified_abstention",
+    "status": "PASS",
+    "terminal": "JUSTIFIED_ABSTENTION",
+    "termination_reason": "no source-backed candidate could be assembled from permitted evidence",
+    "candidate_count": 0,
+    "evidence": "state.finalization + no candidate"
+   },
+   {
+    "case": "Q6_scientific_mode_integrity",
+    "status": "PASS",
+    "demo_claim_allowed": false,
+    "exploratory_claim_allowed": false,
+    "critic_verdict_on_demo_only_claim": "BLOCK",
+    "demo_row_flagged": true,
+    "verified_row_clean": true,
+    "evidence": "ontology policy + critic BLOCK + payload scanner"
+   },
+   {
+    "case": "Q7_model_disagreement",
+    "status": "PASS",
+    "axes": {
+     "target_engagement": "UNKNOWN",
+     "ternary_geometry": "LOW",
+     "cooperativity": "LOW",
+     "residence_time": "UNKNOWN",
+     "ubiquitination_competence": "LOW",
+     "degradation_ml": "HIGH",
+     "permeability": "LOW",
+     "efflux": "UNKNOWN",
+     "cell_context": "UNKNOWN",
+     "pk": "UNKNOWN",
+     "evidence_support": "UNKNOWN"
+    },
+    "disagreements": [
+     {
+      "disagreement_id": "dis_ternary_geometry_vs_degradation_ml_0",
+      "axis": "ternary_geometry_vs_degradation_ml",
+      "positions": {
+       "degradation_ml": "HIGH",
+       "ternary_geometry": "LOW"
+      },
+      "decision_relevant": true,
+      "interpretation": "Similarity to known degraders does not establish productive interaction-state geometry.",
+      "resolving_action": "Perform a higher-confidence ternary/cooperativity assessment.",
+      "evidence_ids": [
+       "ev_deg",
+       "ev_geom"
+      ]
+     },
+     {
+      "disagreement_id": "dis_permeability_vs_degradation_ml_1",
+      "axis": "permeability_vs_degradation_ml",
+      "positions": {
+       "degradation_ml": "HIGH",
+       "permeability": "LOW"
+      },
+      "decision_relevant": true,
+      "interpretation": "A predicted degrader cannot act if cellular exposure is limiting.",
+      "resolving_action": "Run a permeability/efflux assessment.",
+      "evidence_ids": [
+       "ev_deg",
+       "ev_geom"
+      ]
+     },
+     {
+      "disagreement_id": "dis_ubiquitination_vs_degradation_ml_2",
+      "axis": "ubiquitination_vs_degradation_ml",
+      "positions": {
+       "ubiquitination_competence": "LOW",
+       "degradation_ml": "HIGH"
+      },
+      "decision_relevant": true,
+      "interpretation": "Ternary formation without transfer competence need not degrade the target.",
+      "resolving_action": "Assess lysine accessibility and ubiquitination competence.",
+      "evidence_ids": [
+       "ev_deg",
+       "ev_geom"
+      ]
+     }
+    ],
+    "evidence": "per-axis disagreement objects with resolving actions (no averaging)"
+   },
+   {
+    "case": "Q8_experiment_discrimination",
+    "status": "PASS",
+    "hypotheses": [
+     "H1_linker_too_short",
+     "H2_e3_orientation",
+     "H3_permeability"
+    ],
+    "chosen": {
+     "experiment": "linker_length_series_degradation",
+     "competing_hypotheses": [
+      "H1_linker_too_short",
+      "H2_e3_orientation",
+      "H3_permeability"
+     ],
+     "predicted_outcome_under": {
+      "H1_linker_too_short": "degradation increases with length",
+      "H2_e3_orientation": "no length dependence; E3 contacts lost",
+      "H3_permeability": "no length dependence; low cellular exposure"
+     },
+     "information_gain": "separates 3 distinct outcome(s) across 3 hypotheses",
+     "required_controls": [
+      "parent warhead",
+      "E3-only control"
+     ],
+     "decision_after_each_outcome": {
+      "H1_linker_too_short": "extend linker",
+      "H2_e3_orientation": "re-model ternary",
+      "H3_permeability": "permeability optimization"
+     },
+     "discrimination_score": 3
+    },
+    "evidence": "max-distinct-outcome experiment selected with per-hypothesis outcomes"
+   },
+   {
+    "case": "Q9_durability",
+    "status": "PASS",
+    "run_id": "q9_resume",
+    "steps_before_checkpoint": 6,
+    "steps_after_resume": 13,
+    "candidates_before": 1,
+    "candidates_after": 1,
+    "terminal": "SUCCESS",
+    "trace_continuity": true,
+    "evidence": "checkpoint.json + resumed trace.jsonl"
+   }
+  ]
+ },
+ "known_limitations": [
+  "seven logical workers are responsibilities mapped to coordinator actions, not independent deployed loops",
+  "identity_assembly_gate still passes demo/generated linkers; separation is at payload layer",
+  "residence-time / ubiquitination / PK-PD have typed slots but no validated predictors",
+  "critic implements a subset of the 18-point falsification checklist",
+  "human-in-the-loop (Q10) deferred",
+  "Skills/SOP registry not implemented"
+ ]
+}

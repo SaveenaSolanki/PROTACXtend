@@ -1,0 +1,30 @@
+{
+ "case": "Q4_contradictory_evidence",
+ "status": "PASS",
+ "contradictions": [
+  {
+   "contradiction_id": "con1",
+   "claim_id": "c_coop",
+   "evidence_id_a": "evA",
+   "evidence_id_b": "evB",
+   "axis": "cooperativity",
+   "description": "retrieved structure vs derived geometry disagree",
+   "resolution": "UNRESOLVED",
+   "decision_relevant": true
+  }
+ ],
+ "critic_verdict": "REVISE",
+ "findings": [
+  {
+   "check": "evidence_provenance",
+   "result": "PASS",
+   "detail": "2 scientific-admissible, 0 demo/exploratory"
+  },
+  {
+   "check": "contradiction",
+   "result": "REVISE",
+   "detail": "1 contradicted evidence record(s)"
+  }
+ ],
+ "evidence": "state.contradictions + critic findings"
+}

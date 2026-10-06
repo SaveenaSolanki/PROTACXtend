@@ -1,0 +1,401 @@
+{
+ "run_identity": {
+  "run_id": "q5_abstention",
+  "thread_id": "q5_abstention",
+  "architecture_version": "PROTACXTEND_AGENTIC_ARCHITECTURE_V1",
+  "state_schema_version": "therapeutic_hypothesis_state.v1",
+  "timestamp": "2026-10-06T10:36:21.047586+00:00",
+  "execution_mode": "scientific"
+ },
+ "request": {
+  "original_query": "Design a VHL-recruiting PROTAC for MYC",
+  "scientific_intent": "design",
+  "objective": "Design a VHL-recruiting PROTAC for MYC",
+  "constraints": [
+   "scientific-mode: source-backed evidence only",
+   "no fabricated measurements"
+  ],
+  "allowed_actions": [],
+  "forbidden_actions": [],
+  "assumptions": []
+ },
+ "biological_context": {
+  "disease": "",
+  "indication": "",
+  "tissue": "",
+  "cell_context": "",
+  "patient_context": "",
+  "biomarker_context": ""
+ },
+ "target_biology": {
+  "target": "MYC",
+  "causal_evidence": [],
+  "target_validation": "resolved:P01106",
+  "desired_perturbation": "degradation",
+  "pathway_context": "",
+  "ppi_context": "",
+  "degradation_rationale": ""
+ },
+ "protac_design": {
+  "e3_candidates": [],
+  "target_warheads": [],
+  "e3_recruiters": [],
+  "attachment_points": [],
+  "linker_candidates": [],
+  "candidate_structures": []
+ },
+ "interaction_state": {
+  "binary_binding": "UNKNOWN",
+  "ternary_complexes": "UNKNOWN",
+  "ternary_geometry": "UNKNOWN",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "conformational_state": "UNKNOWN",
+  "interface_contacts": "UNKNOWN",
+  "accessible_lysines": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "hook_effect_risk": "UNKNOWN"
+ },
+ "residence": {
+  "binary_target_residence": null,
+  "binary_e3_residence": null,
+  "ternary_residence": null,
+  "formation_rate": null,
+  "dissociation_rate": null,
+  "cooperativity_relationship": "",
+  "evidence_source": "",
+  "prediction_source": "",
+  "confidence": null,
+  "status": "INSUFFICIENT_EVIDENCE"
+ },
+ "cellular_pharmacology": {
+  "target_abundance": "UNKNOWN",
+  "e3_abundance": "UNKNOWN",
+  "localization": "UNKNOWN",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "degradation_prediction": "UNKNOWN",
+  "degradation_kinetics": "UNKNOWN",
+  "dc50": null,
+  "dmax": null,
+  "recovery_kinetics": "UNKNOWN"
+ },
+ "translational": {
+  "selectivity": "UNKNOWN",
+  "off_target_degradation": "UNKNOWN",
+  "toxicity": "UNKNOWN",
+  "resistance": "UNKNOWN",
+  "resistance_mechanisms": [],
+  "metabolism": "UNKNOWN",
+  "admet": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "pd": "UNKNOWN",
+  "pk_pd_relationship": "UNKNOWN",
+  "synthesis_feasibility": "UNKNOWN"
+ },
+ "evidence": {
+  "claims": [],
+  "evidence_records": [
+   {
+    "evidence_id": "ev_target_b68615b147ca4775",
+    "claim_id": "",
+    "content": "MYC -> P01106",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "SUPPORTED",
+    "source": "UniProt",
+    "source_version": "live",
+    "citation": "",
+    "tool": "resolve_target",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "5b9b9696b311a06a",
+    "supports_claims": [
+     "target_identity"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:22.052320+00:00"
+   },
+   {
+    "evidence_id": "ev_binders_87b2d57cd5016c65_4f53cda18c2baa0c",
+    "claim_id": "",
+    "content": "0 warhead record(s)",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "PARTIALLY_SUPPORTED",
+    "source": "ChEMBL",
+    "source_version": "",
+    "citation": "",
+    "tool": "retrieve_target_binders",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "87b2d57cd5016c65",
+    "supports_claims": [
+     "warhead_evidence"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:28.600948+00:00"
+   },
+   {
+    "evidence_id": "ev_e3_missing_VHL_1ab96de163451af6",
+    "claim_id": "",
+    "content": "no source-backed MYC-VHL component pair",
+    "evidence_kind": "INSUFFICIENT_EVIDENCE",
+    "evidence_status": "INSUFFICIENT_EVIDENCE",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "verified_components",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "",
+    "supports_claims": [],
+    "contradicts_claims": [
+     "route_supported"
+    ],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:28.601373+00:00"
+   },
+   {
+    "evidence_id": "ev_e3_missing_CRBN_1ab96de163451af6",
+    "claim_id": "",
+    "content": "no source-backed MYC-CRBN component pair",
+    "evidence_kind": "INSUFFICIENT_EVIDENCE",
+    "evidence_status": "INSUFFICIENT_EVIDENCE",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "verified_components",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "",
+    "supports_claims": [],
+    "contradicts_claims": [
+     "route_supported"
+    ],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:28.601658+00:00"
+   }
+  ],
+  "citations": [],
+  "provenance": [
+   "UniProt",
+   "ChEMBL"
+  ],
+  "contradictions": [],
+  "disagreements": []
+ },
+ "axes": {
+  "target_engagement": "UNKNOWN",
+  "ternary_geometry": "UNKNOWN",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "degradation_ml": "UNKNOWN",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "cell_context": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "evidence_support": "UNKNOWN"
+ },
+ "epistemics": {
+  "known": [],
+  "derived": [],
+  "predicted": [],
+  "hypothesized": [],
+  "exploratory": [],
+  "uncertainties": [],
+  "unresolved_questions": []
+ },
+ "plan": {
+  "version": 2,
+  "goal": "design PROTAC for MYC",
+  "steps": [
+   {
+    "step_id": "s1",
+    "worker": "evidence",
+    "action": "resolve_target",
+    "capability": "target_biology",
+    "status": "done",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s2",
+    "worker": "evidence",
+    "action": "retrieve_target_binders",
+    "capability": "warhead_evidence",
+    "status": "done",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s3b",
+    "worker": "protac_design",
+    "action": "select_e3",
+    "capability": "e3_selection",
+    "status": "active",
+    "observation": "switch to alternate E3: CRBN",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s4",
+    "worker": "protac_design",
+    "action": "assemble_reference",
+    "capability": "candidate_assembly",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s5",
+    "worker": "interaction_state",
+    "action": "assess_interaction",
+    "capability": "ternary_docking",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s8",
+    "worker": "critic",
+    "action": "verify",
+    "capability": "critic",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   }
+  ],
+  "revision_reason": "requested/assumed E3 route for MYC has no source-backed component pair; revise E3 assumption",
+  "triggering_evidence_ids": [
+   "ev_e3_missing_VHL_1ab96de163451af6"
+  ],
+  "created_by": "coordinator"
+ },
+ "plan_history": [
+  {
+   "version": 1,
+   "goal": "design PROTAC for MYC",
+   "steps": [
+    {
+     "step_id": "s1",
+     "worker": "evidence",
+     "action": "resolve_target",
+     "capability": "target_biology",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s2",
+     "worker": "evidence",
+     "action": "retrieve_target_binders",
+     "capability": "warhead_evidence",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s3",
+     "worker": "protac_design",
+     "action": "select_e3",
+     "capability": "e3_selection",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s4",
+     "worker": "protac_design",
+     "action": "assemble_reference",
+     "capability": "candidate_assembly",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s5",
+     "worker": "interaction_state",
+     "action": "assess_interaction",
+     "capability": "ternary_docking",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s6",
+     "worker": "translational",
+     "action": "predict_degradation",
+     "capability": "protac_scoring",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s7",
+     "worker": "translational",
+     "action": "predict_admet",
+     "capability": "admet",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    },
+    {
+     "step_id": "s8",
+     "worker": "critic",
+     "action": "verify",
+     "capability": "critic",
+     "status": "pending",
+     "observation": "",
+     "evidence_ids": [],
+     "blocked_reason": ""
+    }
+   ],
+   "revision_reason": "",
+   "triggering_evidence_ids": [],
+   "created_by": "coordinator"
+  }
+ ],
+ "control": {
+  "selected_worker": "",
+  "selected_tool": "",
+  "next_action": "",
+  "retries": 0,
+  "fallbacks": [],
+  "failures": []
+ },
+ "experiments": [],
+ "finalization": {
+  "verdict": "",
+  "overall_verdict": "",
+  "limitations": [],
+  "terminal_status": "JUSTIFIED_ABSTENTION",
+  "termination_reason": "no source-backed candidate could be assembled from permitted evidence",
+  "recommended_next_action": ""
+ }
+}

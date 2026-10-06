@@ -1,0 +1,15 @@
+{
+ "case": "Q3_tool_failure_recovery",
+ "status": "PASS",
+ "failures": [
+  "predict_cooperativity:RuntimeError"
+ ],
+ "fallbacks": [
+  "predict_cooperativity->run_scientific_capability"
+ ],
+ "fallback_trace_steps": [
+  6
+ ],
+ "terminal": "SUCCESS",
+ "evidence": "state.control.fallbacks + trace fallback field"
+}

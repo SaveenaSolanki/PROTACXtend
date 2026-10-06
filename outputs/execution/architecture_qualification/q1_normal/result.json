@@ -1,0 +1,17 @@
+{
+ "case": "Q1_normal_success",
+ "status": "PASS",
+ "terminal": "SUCCESS",
+ "candidate_count": 1,
+ "e3": [
+  "CRBN"
+ ],
+ "evidence_kinds": [
+  "DERIVED",
+  "INSUFFICIENT_EVIDENCE",
+  "MODEL_PREDICTED",
+  "RETRIEVED"
+ ],
+ "steps": 11,
+ "evidence": "state.json + trace.jsonl"
+}

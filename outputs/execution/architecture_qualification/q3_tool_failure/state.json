@@ -1,0 +1,432 @@
+{
+ "run_identity": {
+  "run_id": "q3_tool_failure",
+  "thread_id": "q3_tool_failure",
+  "architecture_version": "PROTACXTEND_AGENTIC_ARCHITECTURE_V1",
+  "state_schema_version": "therapeutic_hypothesis_state.v1",
+  "timestamp": "2026-10-06T10:35:42.258986+00:00",
+  "execution_mode": "scientific"
+ },
+ "request": {
+  "original_query": "Design a CRBN-recruiting PROTAC for BRD4",
+  "scientific_intent": "design",
+  "objective": "Design a CRBN-recruiting PROTAC for BRD4",
+  "constraints": [
+   "scientific-mode: source-backed evidence only",
+   "no fabricated measurements"
+  ],
+  "allowed_actions": [],
+  "forbidden_actions": [],
+  "assumptions": []
+ },
+ "biological_context": {
+  "disease": "",
+  "indication": "",
+  "tissue": "",
+  "cell_context": "SUM149",
+  "patient_context": "",
+  "biomarker_context": ""
+ },
+ "target_biology": {
+  "target": "BRD4",
+  "causal_evidence": [],
+  "target_validation": "resolved:O60885",
+  "desired_perturbation": "degradation",
+  "pathway_context": "",
+  "ppi_context": "",
+  "degradation_rationale": ""
+ },
+ "protac_design": {
+  "e3_candidates": [
+   "CRBN",
+   "VHL"
+  ],
+  "target_warheads": [
+   "MZ1 BRD4 ligand (JQ1 triazolodiazepine)"
+  ],
+  "e3_recruiters": [
+   "CRBN"
+  ],
+  "attachment_points": [
+   "warhead:1",
+   "e3_ligand:1",
+   "linker:1,2"
+  ],
+  "linker_candidates": [],
+  "candidate_structures": [
+   "Cc1sc2c(c1C)C(c1ccc(Cl)cc1)=N[C@@H](CC(=O)NCCCCNC(=O)COc1cccc3c1C(=O)N(C1CCC(=O)NC1=O)C3=O)c1nnc(C)n1-2"
+  ]
+ },
+ "interaction_state": {
+  "binary_binding": "UNKNOWN",
+  "ternary_complexes": "UNKNOWN",
+  "ternary_geometry": "not_assessable",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "conformational_state": "UNKNOWN",
+  "interface_contacts": "UNKNOWN",
+  "accessible_lysines": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "hook_effect_risk": "UNKNOWN"
+ },
+ "residence": {
+  "binary_target_residence": null,
+  "binary_e3_residence": null,
+  "ternary_residence": null,
+  "formation_rate": null,
+  "dissociation_rate": null,
+  "cooperativity_relationship": "",
+  "evidence_source": "",
+  "prediction_source": "",
+  "confidence": null,
+  "status": "INSUFFICIENT_EVIDENCE"
+ },
+ "cellular_pharmacology": {
+  "target_abundance": "UNKNOWN",
+  "e3_abundance": "UNKNOWN",
+  "localization": "UNKNOWN",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "degradation_prediction": "predicted",
+  "degradation_kinetics": "UNKNOWN",
+  "dc50": null,
+  "dmax": null,
+  "recovery_kinetics": "UNKNOWN"
+ },
+ "translational": {
+  "selectivity": "UNKNOWN",
+  "off_target_degradation": "UNKNOWN",
+  "toxicity": "UNKNOWN",
+  "resistance": "UNKNOWN",
+  "resistance_mechanisms": [],
+  "metabolism": "UNKNOWN",
+  "admet": "calculated",
+  "pk": "UNKNOWN",
+  "pd": "UNKNOWN",
+  "pk_pd_relationship": "UNKNOWN",
+  "synthesis_feasibility": "UNKNOWN"
+ },
+ "evidence": {
+  "claims": [
+   {
+    "claim_id": "c1",
+    "statement": "a source-backed PROTAC candidate was assembled",
+    "evidence_ids": [
+     "ev_e3_d2d299cc13b45b2f",
+     "ev_asm_4bd572aaa265cc61"
+    ],
+    "evidence_kind": "DERIVED",
+    "evidence_status": "SUPPORTED",
+    "inference_limit": ""
+   }
+  ],
+  "evidence_records": [
+   {
+    "evidence_id": "ev_target_8b4b1469d4fc1a4a",
+    "claim_id": "",
+    "content": "BRD4 -> O60885",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "SUPPORTED",
+    "source": "UniProt",
+    "source_version": "live",
+    "citation": "",
+    "tool": "resolve_target",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "6877da6eddd26301",
+    "supports_claims": [
+     "target_identity"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:35:43.398587+00:00"
+   },
+   {
+    "evidence_id": "ev_binders_44136fa355b3678a_366f5ca31bda616a",
+    "claim_id": "",
+    "content": "1 warhead record(s)",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "SUPPORTED",
+    "source": "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+    "source_version": "",
+    "citation": "",
+    "tool": "retrieve_target_binders",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "44136fa355b3678a",
+    "supports_claims": [
+     "warhead_evidence"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:01.964012+00:00"
+   },
+   {
+    "evidence_id": "ev_e3_d2d299cc13b45b2f",
+    "claim_id": "",
+    "content": "source-backed BRD4-CRBN pair dBET1",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "SUPPORTED",
+    "source": "10.1126/science.aab1433",
+    "source_version": "",
+    "citation": "",
+    "tool": "verified_components",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "5f46c46e6877a125",
+    "supports_claims": [
+     "e3_selection",
+     "route_supported"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:01.964507+00:00"
+   },
+   {
+    "evidence_id": "ev_asm_4bd572aaa265cc61",
+    "claim_id": "",
+    "content": "assembled dBET1",
+    "evidence_kind": "DERIVED",
+    "evidence_status": "SUPPORTED",
+    "source": "10.1126/science.aab1433",
+    "source_version": "",
+    "citation": "",
+    "tool": "ProtacDesignToolbox.assemble_components",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "4bd572aaa265cc61",
+    "supports_claims": [
+     "route_supported",
+     "candidate_assembly"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:01.968267+00:00"
+   },
+   {
+    "evidence_id": "ev_fallback_a5b07d35c28ac5cf",
+    "claim_id": "",
+    "content": "fallback ternary geometry proxy",
+    "evidence_kind": "DERIVED",
+    "evidence_status": "INSUFFICIENT_EVIDENCE",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "run_scientific_capability",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "",
+    "supports_claims": [],
+    "contradicts_claims": [],
+    "context": {
+     "original_tool": "predict_cooperativity",
+     "failure": "RuntimeError"
+    },
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:03.374967+00:00"
+   },
+   {
+    "evidence_id": "ev_deg_14c8373ac28fccfd",
+    "claim_id": "",
+    "content": "degradation ML prediction",
+    "evidence_kind": "MODEL_PREDICTED",
+    "evidence_status": "PARTIALLY_SUPPORTED",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "predict_degradation",
+    "tool_version": "",
+    "model": "chemprop/tack",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "14c8373ac28fccfd",
+    "supports_claims": [
+     "degradation_prediction"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:21.034429+00:00"
+   },
+   {
+    "evidence_id": "ev_admet_2061c831227aefca",
+    "claim_id": "",
+    "content": "ADMET/physchem calculation",
+    "evidence_kind": "DERIVED",
+    "evidence_status": "PARTIALLY_SUPPORTED",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "predict_admet",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "2061c831227aefca",
+    "supports_claims": [
+     "developability"
+    ],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": "2026-10-06T10:36:21.045950+00:00"
+   }
+  ],
+  "citations": [],
+  "provenance": [
+   "UniProt",
+   "PROTAC-DB MZ1; Zengerle, Chan & Ciulli, ACS Chem Biol 2015 (MZ1), DOI 10.1021/acschembio.5b00216; structure DOI 10.1038/nchembio.2329; PDB 5T35",
+   "10.1126/science.aab1433",
+   "10.1126/science.aab1433"
+  ],
+  "contradictions": [],
+  "disagreements": []
+ },
+ "axes": {
+  "target_engagement": "HIGH",
+  "ternary_geometry": "LOW",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "degradation_ml": "HIGH",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "cell_context": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "evidence_support": "UNKNOWN"
+ },
+ "epistemics": {
+  "known": [],
+  "derived": [],
+  "predicted": [],
+  "hypothesized": [],
+  "exploratory": [],
+  "uncertainties": [],
+  "unresolved_questions": []
+ },
+ "plan": {
+  "version": 1,
+  "goal": "design PROTAC for BRD4",
+  "steps": [
+   {
+    "step_id": "s1",
+    "worker": "evidence",
+    "action": "resolve_target",
+    "capability": "target_biology",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s2",
+    "worker": "evidence",
+    "action": "retrieve_target_binders",
+    "capability": "warhead_evidence",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s3",
+    "worker": "protac_design",
+    "action": "select_e3",
+    "capability": "e3_selection",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s4",
+    "worker": "protac_design",
+    "action": "assemble_reference",
+    "capability": "candidate_assembly",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s5",
+    "worker": "interaction_state",
+    "action": "assess_interaction",
+    "capability": "ternary_docking",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s6",
+    "worker": "translational",
+    "action": "predict_degradation",
+    "capability": "protac_scoring",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s7",
+    "worker": "translational",
+    "action": "predict_admet",
+    "capability": "admet",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   },
+   {
+    "step_id": "s8",
+    "worker": "critic",
+    "action": "verify",
+    "capability": "critic",
+    "status": "pending",
+    "observation": "",
+    "evidence_ids": [],
+    "blocked_reason": ""
+   }
+  ],
+  "revision_reason": "",
+  "triggering_evidence_ids": [],
+  "created_by": "coordinator"
+ },
+ "plan_history": [],
+ "control": {
+  "selected_worker": "",
+  "selected_tool": "",
+  "next_action": "",
+  "retries": 0,
+  "fallbacks": [
+   "predict_cooperativity->run_scientific_capability"
+  ],
+  "failures": [
+   "predict_cooperativity:RuntimeError"
+  ]
+ },
+ "experiments": [],
+ "finalization": {
+  "verdict": "PASS",
+  "overall_verdict": "PASS",
+  "limitations": [],
+  "terminal_status": "SUCCESS",
+  "termination_reason": "source-backed candidate assembled and verified",
+  "recommended_next_action": "proceed to developability assessment"
+ }
+}

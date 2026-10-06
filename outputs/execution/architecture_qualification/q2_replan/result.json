@@ -1,0 +1,17 @@
+{
+ "case": "Q2_true_replanning",
+ "status": "PASS",
+ "plan_versions": [
+  1,
+  2
+ ],
+ "revision_reason": "requested/assumed E3 route for BTK has no source-backed component pair; revise E3 assumption",
+ "triggering_evidence_ids": [
+  "ev_e3_missing_VHL_5d85ff944e96d810"
+ ],
+ "final_e3": [
+  "CRBN"
+ ],
+ "terminal": "SUCCESS",
+ "evidence": "state.plan v2 revision_reason + triggering evidence + trace revise_plan record"
+}

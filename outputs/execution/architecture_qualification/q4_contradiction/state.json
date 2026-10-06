@@ -1,0 +1,217 @@
+{
+ "run_identity": {
+  "run_id": "",
+  "thread_id": "",
+  "architecture_version": "PROTACXTEND_AGENTIC_ARCHITECTURE_V1",
+  "state_schema_version": "therapeutic_hypothesis_state.v1",
+  "timestamp": "",
+  "execution_mode": "scientific"
+ },
+ "request": {
+  "original_query": "",
+  "scientific_intent": "",
+  "objective": "",
+  "constraints": [],
+  "allowed_actions": [],
+  "forbidden_actions": [],
+  "assumptions": []
+ },
+ "biological_context": {
+  "disease": "",
+  "indication": "",
+  "tissue": "",
+  "cell_context": "",
+  "patient_context": "",
+  "biomarker_context": ""
+ },
+ "target_biology": {
+  "target": "BRD4",
+  "causal_evidence": [],
+  "target_validation": "UNKNOWN",
+  "desired_perturbation": "degradation",
+  "pathway_context": "",
+  "ppi_context": "",
+  "degradation_rationale": ""
+ },
+ "protac_design": {
+  "e3_candidates": [],
+  "target_warheads": [],
+  "e3_recruiters": [],
+  "attachment_points": [],
+  "linker_candidates": [],
+  "candidate_structures": []
+ },
+ "interaction_state": {
+  "binary_binding": "UNKNOWN",
+  "ternary_complexes": "UNKNOWN",
+  "ternary_geometry": "UNKNOWN",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "conformational_state": "UNKNOWN",
+  "interface_contacts": "UNKNOWN",
+  "accessible_lysines": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "hook_effect_risk": "UNKNOWN"
+ },
+ "residence": {
+  "binary_target_residence": null,
+  "binary_e3_residence": null,
+  "ternary_residence": null,
+  "formation_rate": null,
+  "dissociation_rate": null,
+  "cooperativity_relationship": "",
+  "evidence_source": "",
+  "prediction_source": "",
+  "confidence": null,
+  "status": "INSUFFICIENT_EVIDENCE"
+ },
+ "cellular_pharmacology": {
+  "target_abundance": "UNKNOWN",
+  "e3_abundance": "UNKNOWN",
+  "localization": "UNKNOWN",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "degradation_prediction": "UNKNOWN",
+  "degradation_kinetics": "UNKNOWN",
+  "dc50": null,
+  "dmax": null,
+  "recovery_kinetics": "UNKNOWN"
+ },
+ "translational": {
+  "selectivity": "UNKNOWN",
+  "off_target_degradation": "UNKNOWN",
+  "toxicity": "UNKNOWN",
+  "resistance": "UNKNOWN",
+  "resistance_mechanisms": [],
+  "metabolism": "UNKNOWN",
+  "admet": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "pd": "UNKNOWN",
+  "pk_pd_relationship": "UNKNOWN",
+  "synthesis_feasibility": "UNKNOWN"
+ },
+ "evidence": {
+  "claims": [
+   {
+    "claim_id": "c_coop",
+    "statement": "alpha>1 is supported",
+    "evidence_ids": [
+     "evA",
+     "evB"
+    ],
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "CONTRADICTED",
+    "inference_limit": ""
+   }
+  ],
+  "evidence_records": [
+   {
+    "evidence_id": "evA",
+    "claim_id": "c_coop",
+    "content": "5T35 ternary structure supports cooperative geometry",
+    "evidence_kind": "RETRIEVED",
+    "evidence_status": "SUPPORTED",
+    "source": "10.1038/nchembio.2329",
+    "source_version": "",
+    "citation": "",
+    "tool": "verified_components",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "",
+    "supports_claims": [],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": ""
+   },
+   {
+    "evidence_id": "evB",
+    "claim_id": "c_coop",
+    "content": "linker strain predicts low cooperativity for this linker",
+    "evidence_kind": "DERIVED",
+    "evidence_status": "CONTRADICTED",
+    "source": "",
+    "source_version": "",
+    "citation": "",
+    "tool": "geometry_proxy",
+    "tool_version": "",
+    "model": "",
+    "model_version": "",
+    "input_hash": "",
+    "output_hash": "",
+    "supports_claims": [],
+    "contradicts_claims": [],
+    "context": {},
+    "confidence": null,
+    "timestamp": ""
+   }
+  ],
+  "citations": [],
+  "provenance": [
+   "10.1038/nchembio.2329"
+  ],
+  "contradictions": [
+   {
+    "contradiction_id": "con1",
+    "claim_id": "c_coop",
+    "evidence_id_a": "evA",
+    "evidence_id_b": "evB",
+    "axis": "cooperativity",
+    "description": "retrieved structure vs derived geometry disagree",
+    "resolution": "UNRESOLVED",
+    "decision_relevant": true
+   }
+  ],
+  "disagreements": []
+ },
+ "axes": {
+  "target_engagement": "UNKNOWN",
+  "ternary_geometry": "UNKNOWN",
+  "cooperativity": "UNKNOWN",
+  "residence_time": "UNKNOWN",
+  "ubiquitination_competence": "UNKNOWN",
+  "degradation_ml": "UNKNOWN",
+  "permeability": "UNKNOWN",
+  "efflux": "UNKNOWN",
+  "cell_context": "UNKNOWN",
+  "pk": "UNKNOWN",
+  "evidence_support": "UNKNOWN"
+ },
+ "epistemics": {
+  "known": [],
+  "derived": [],
+  "predicted": [],
+  "hypothesized": [],
+  "exploratory": [],
+  "uncertainties": [],
+  "unresolved_questions": []
+ },
+ "plan": {
+  "version": 1,
+  "goal": "",
+  "steps": [],
+  "revision_reason": "",
+  "triggering_evidence_ids": [],
+  "created_by": "coordinator"
+ },
+ "plan_history": [],
+ "control": {
+  "selected_worker": "",
+  "selected_tool": "",
+  "next_action": "",
+  "retries": 0,
+  "fallbacks": [],
+  "failures": []
+ },
+ "experiments": [],
+ "finalization": {
+  "verdict": "",
+  "overall_verdict": "",
+  "limitations": [],
+  "terminal_status": "ERROR",
+  "termination_reason": "",
+  "recommended_next_action": ""
+ }
+}

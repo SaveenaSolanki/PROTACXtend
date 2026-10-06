@@ -1,0 +1,12 @@
+{
+ "case": "Q9_durability",
+ "status": "PASS",
+ "run_id": "q9_resume",
+ "steps_before_checkpoint": 6,
+ "steps_after_resume": 13,
+ "candidates_before": 1,
+ "candidates_after": 1,
+ "terminal": "SUCCESS",
+ "trace_continuity": true,
+ "evidence": "checkpoint.json + resumed trace.jsonl"
+}

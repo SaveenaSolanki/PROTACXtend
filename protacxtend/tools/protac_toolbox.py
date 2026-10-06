@@ -80,6 +80,11 @@ from protacxtend.tools.chemistry_core import (
     compute_descriptors as compute_core_descriptors,
 )
 from protacxtend.tools.structural_scoring import score_ternary_pose_for_candidate
+from protacxtend.identity_gate import (
+    candidate_passes_identity_gate,
+    evaluate_candidate_identity,
+    gate_payload,
+)
 
 try:  # pragma: no cover - optional scientific dependency.
     from rdkit import Chem, rdBase
@@ -1189,6 +1194,11 @@ class ProtacDesignToolbox:
                             candidate.warning_flags.append(warning)
                 if status == "unverified_no_rdkit":
                     candidate.warning_flags.append("install_rdkit_for_chemical_validation")
+                gate = evaluate_candidate_identity(candidate)
+                candidate.provenance = dict(candidate.provenance or {})
+                candidate.provenance["identity_assembly_gate"] = gate_payload(gate)
+                if not gate.all_required_passed and "identity_assembly_gate_failed" not in candidate.warning_flags:
+                    candidate.warning_flags.append("identity_assembly_gate_failed")
                 valid.append(candidate)
         return self.remove_duplicate_candidates(valid)
 
@@ -1221,6 +1231,10 @@ class ProtacDesignToolbox:
         the heuristic remains ONLY as a labelled fallback when the model path
         fails (model_version starts with 'heuristic_proxy').
         """
+        gated_candidates = [c for c in candidates if candidate_passes_identity_gate(c)]
+        if not gated_candidates:
+            return []
+        candidates = gated_candidates
         from protacxtend.tools.degradation_endpoint import predict_degradation_batch
         smiles = [c.full_protac_smiles for c in candidates]
         ids = [c.candidate_id for c in candidates]
@@ -2125,6 +2139,7 @@ class ProtacDesignToolbox:
         hook_by_id = {item.candidate_id: item for item in (hook_results or [])}
         e3_context_by_id = {item.candidate_id: item for item in (e3_context_results or [])}
 
+        candidates = [candidate for candidate in candidates if candidate_passes_identity_gate(candidate)]
         rows: list[RankingResult] = []
         for candidate in candidates:
             deg = degradation_by_id.get(candidate.candidate_id, DegradationPrediction(candidate_id=candidate.candidate_id))
@@ -2264,6 +2279,7 @@ class ProtacDesignToolbox:
             ),
             reverse=True,
         )
+        ordered = [candidate for candidate in ordered if candidate_passes_identity_gate(candidate)]
         finalists: list[CandidateRecord] = []
         for candidate in ordered:
             if len(finalists) >= max_finalists:

@@ -16,13 +16,13 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from protacxtend.backend.config import get_coverage_file
 from protacxtend.backend.schemas import CoverageCell
 from protacxtend.tools.protac_toolbox import chem_identity
 
 logger = logging.getLogger("protacpilot.coverage")
 
-ROOT = Path(__file__).resolve().parents[2]
-COVERAGE_FILE = ROOT / "outputs" / "coverage" / "coverage_cells.jsonl"
+COVERAGE_FILE = get_coverage_file(create=True)
 
 
 def _load() -> Dict[str, CoverageCell]:

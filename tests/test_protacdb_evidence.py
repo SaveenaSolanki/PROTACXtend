@@ -111,7 +111,15 @@ def test_ranking_uses_protacdb_prior_as_capped_visible_signal():
         e3_ligase=record["e3_ligase"],
         full_protac_smiles=record["smiles"],
         synthetic_feasibility_score=0.7,
-        provenance={"inchikey": record["inchikey"]},
+        provenance={
+            "inchikey": record["inchikey"],
+            "identity_assembly_gate": {
+                "all_required_passed": True,
+                "evidence_level": "source_backed_identity",
+                "reasons": [],
+                "gates": {},
+            },
+        },
     )
 
     ranking = toolbox.rank_candidates(

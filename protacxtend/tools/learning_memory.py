@@ -62,15 +62,15 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from protacxtend.backend.config import get_learning_dir
+
 logger = logging.getLogger("protacpilot.learning")
 
 # ─────────────────────────────────────────────────────────────────────
 # Storage layout
 # ─────────────────────────────────────────────────────────────────────
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-MEMORY_DIR = PACKAGE_ROOT / "memory"
-LEARNING_DIR = MEMORY_DIR / "learnings"
+LEARNING_DIR = get_learning_dir(create=True)
 STORE_PATH = LEARNING_DIR / "learning_store.jsonl"
 RUNS_DIR = LEARNING_DIR / "runs"
 PATTERNS_PATH = LEARNING_DIR / "patterns.md"

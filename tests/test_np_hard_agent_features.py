@@ -32,6 +32,16 @@ def _candidate(candidate_id="cand1", e3="CRBN"):
     )
 
 
+def _gate_passed(candidate):
+    candidate.provenance["identity_assembly_gate"] = {
+        "all_required_passed": True,
+        "evidence_level": "source_backed_identity",
+        "reasons": [],
+        "gates": {},
+    }
+    return candidate
+
+
 def test_cell_context_accepts_expression_overrides():
     toolbox = ProtacDesignToolbox()
     rows = toolbox.score_e3_context(
@@ -104,7 +114,7 @@ def test_cheap_filter_reduces_bad_candidates_before_expensive_modeling():
 
 def test_expensive_modeling_finalists_are_bounded():
     toolbox = ProtacDesignToolbox()
-    candidates = [_candidate(f"cand{i}") for i in range(20)]
+    candidates = [_gate_passed(_candidate(f"cand{i}")) for i in range(20)]
     rankings = []
     for i, candidate in enumerate(candidates):
         from protacxtend.backend.schemas import RankingResult

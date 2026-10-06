@@ -28,7 +28,9 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-OUTPUT_ROOT = Path(__file__).resolve().parents[1] / "outputs" / "runs"
+from protacxtend.backend.config import get_run_output_root
+
+OUTPUT_ROOT = get_run_output_root(create=True)
 
 
 class AgentRunRecord(BaseModel):
